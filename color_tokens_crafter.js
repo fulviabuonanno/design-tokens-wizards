@@ -70,6 +70,7 @@ const askForInput = async () => {
 // Paso 2: Generación de stops de color
 const generateStops = (color) => {
   return {
+    base: tinycolor(color).toHexString(),
     lightest: tinycolor(color).lighten(40).toHexString(),
     lighter: tinycolor(color).lighten(30).toHexString(),
     light: tinycolor(color).lighten(20).toHexString(),
