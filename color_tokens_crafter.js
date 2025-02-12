@@ -11,7 +11,8 @@ const askQuestion = (query) => {
   return new Promise((resolve) => rl.question(query, resolve));
 };
 
-// Paso 1: Nombre del color
+
+//Step 1: Naming the color
 const askForInput = async () => {
   console.log("\n=======================================");
   console.log(" 🔵 STEP 1: NAMING YOUR COLOR");
@@ -26,9 +27,8 @@ const askForInput = async () => {
 
   console.log("\n✨ Now, let's give this color a meaningful name!");
 
-  // Concepto
   let concept = await askQuestion("📝 What concept is this color for? (e.g., brand, ui, background) or press Enter to skip: ");
-  concept = concept.trim() || "color"; // Default to "color" if skipped
+  concept = concept.trim() || "color"; 
 
   if (concept && !/^[a-zA-Z0-9.-]+$/.test(concept)) {
     console.log("❌ The concept name should only contain letters, numbers, hyphens (-), and dots (.)");
@@ -36,9 +36,9 @@ const askForInput = async () => {
     return;
   }
 
-  // Variante
+  
   let variant = await askQuestion("🎨 Would you like to define a variant name? (e.g., primary, secondary) or press Enter to skip: ");
-  variant = variant.trim() || null; // Null if skipped
+  variant = variant.trim() || null; 
 
   if (variant && !/^[a-zA-Z0-9.-]+$/.test(variant)) {
     console.log("❌ The variant name should only contain letters, numbers, hyphens (-), and dots (.)");
@@ -50,36 +50,35 @@ const askForInput = async () => {
   console.log(" 🔄 STEP 2: SELECTING FORMATS");
   console.log("=======================================\n");
 
-  // Selección de formatos
-  console.log("Now, let's decide which formats you'd like to generate your color in. HEX will always be included.\n");
-
   const askYesNo = async (question) => {
     let answer;
     do {
       answer = (await askQuestion(question)).trim().toLowerCase();
-      if (answer !== "yes" && answer !== "no") {
-        console.log("❌ Please enter 'yes' or 'no'.");
+      if (answer !== "yes" && answer !== "no" && answer !== "y" && answer !== "n") {
+        console.log("❌ Please enter 'yes', 'y', 'no', or 'n'.");
       }
-    } while (answer !== "yes" && answer !== "no");
-    return answer === "yes";
+    } while (answer !== "yes" && answer !== "no" && answer !== "y" && answer !== "n");
+  
+    
+    return answer === "yes" || answer === "y";
   };
   
-  // Preguntar por los formatos con validación estricta
-  let generateRGB = await askYesNo("📌 Include RGB format? (yes/no): ");
-  let generateRGBA = await askYesNo("📌 Include RGBA format? (yes/no): ");
-  let generateHSL = await askYesNo("📌 Include HSL format? (yes/no): ");
   
+  let generateRGB = await askYesNo("📌 Include color tokens in RGB format? (yes/no or y/n): ");
+  let generateRGBA = await askYesNo("📌 Include color tokens RGBA format? (yes/no or y/n): ");
+  let generateHSL = await askYesNo("📌 Include color tokens HSL format? (yes/no or y/n): ");
+    
   console.log("\n=======================================");
   console.log(" 🔄 STEP 3: GENERATING COLOR STOPS");
   console.log("=======================================\n");
 
-  // Generación de los stops de color
+  
   const stops = generateStops(hex);
 
   return { hex: hex.trim(), concept, variant, generateRGB, generateRGBA, generateHSL, stops };
 };
 
-// Paso 2: Generación de stops de color
+
 const generateStops = (color) => {
   return {
     base: tinycolor(color).toHexString(),
@@ -92,7 +91,7 @@ const generateStops = (color) => {
   };
 };
 
-// Paso 3: Guardado y generación de archivos
+
 const main = async () => {
   console.log("\n=======================================");
   console.log(" 🚀 STARTING THE PROCESS");
@@ -111,40 +110,40 @@ const main = async () => {
   console.log(" 📂 STEP 4: GENERATING OUTPUT FILES");
   console.log("=======================================\n");
 
- // Crear carpeta "tokens" si no existe
+ 
 const tokensFolder = 'outputs/tokens';
 if (!fs.existsSync("outputs")) fs.mkdirSync("outputs");
 if (!fs.existsSync("outputs/tokens")) fs.mkdirSync("outputs/tokens");
 
-// Si el usuario no define concept, usamos "color" solo como nivel principal
+
 const finalConcept = concept || "color";
 
-// Generar tokens en HEX
+
 const tokensData = {};
 
-// Si el usuario definió un concepto, creamos el nivel correspondiente
+
 if (concept) {
   if (variant) {
-    // Si hay variant, lo usamos como subnivel de concepto
+    
     tokensData[finalConcept] = {
       [variant]: { base: { value: hex, type: "color" }, ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString(), type: "color" }])) }
     };
   } else {
-    // Si no hay variant, solo usamos el concepto
+    
     tokensData[finalConcept] = {
       base: { value: hex, type: "color" },
       ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString(), type: "color" }]))
     };
   }
 } else {
-  // Si no hay concepto, solo se agrega el objeto vacío
+  
   tokensData.color = {};
 }
 
 fs.writeFileSync(`${tokensFolder}/tokens_hex.json`, JSON.stringify(tokensData, null, 2));
 console.log("✅ Saved: outputs/tokens/tokens_hex.json");
 
-// Generar tokens RGB
+
 if (generateRGB) {
   const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
   if (variant) {
@@ -161,7 +160,7 @@ if (generateRGB) {
   console.log("✅ Saved: outputs/tokens/tokens_rgb.json");
 }
 
-// Generar tokens RGBA
+
 if (generateRGBA) {
   const tokensRGBAData = JSON.parse(JSON.stringify(tokensData));
   if (variant) {
@@ -186,7 +185,7 @@ if (generateRGBA) {
   console.log("✅ Saved: outputs/tokens/tokens_rgba.json");
 }
 
-// Generar tokens HSL
+
 if (generateHSL) {
   const tokensHSLData = JSON.parse(JSON.stringify(tokensData));
   if (variant) {
@@ -202,8 +201,6 @@ if (generateHSL) {
   fs.writeFileSync(`${tokensFolder}/tokens_hsl.json`, JSON.stringify(tokensHSLData, null, 2));
   console.log("✅ Saved: outputs/tokens/tokens_hsl.json");
 }
-
-
 
   console.log("\n=======================================");
   console.log(" 🎨 STEP 5: PROCESS COMPLETED SUCCESSFULLY!");
