@@ -111,88 +111,67 @@ const main = async () => {
   console.log(" 📂 STEP 4: GENERATING OUTPUT FILES");
   console.log("=======================================\n");
 
-  // Crear carpetas si no existen
-  const formatsFolder = 'outputs/formats';
-  const tokensFolder = 'outputs/tokens';
-
-// Asegurar que las carpetas de salida existen
+ // Crear carpeta "tokens" si no existe
+const tokensFolder = 'outputs/tokens';
 if (!fs.existsSync("outputs")) fs.mkdirSync("outputs");
-if (!fs.existsSync("outputs/formats")) fs.mkdirSync("outputs/formats");
 if (!fs.existsSync("outputs/tokens")) fs.mkdirSync("outputs/tokens");
 
+// Generar tokens en HEX
+const tokensData = { color: {} };
 
-  // Generar formatos
-  const formatsData = { HEX: { value: hex } };
-  fs.writeFileSync(`${formatsFolder}/formats.json`, JSON.stringify(formatsData, null, 2));
-  console.log("✅ Saved: outputs/formats/formats.json");
+// Si el usuario ingresó un concepto, creamos el nivel correspondiente
+if (concept) {
+  tokensData.color[concept] = variant ? { [variant]: {} } : {};
+} else {
+  tokensData.color = {}; // Si no hay concepto, color será un objeto vacío
+}
 
-  if (generateRGB) {
-    const formatsRGBData = { stops: Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toRgbString() }])) };
-    fs.writeFileSync(`${formatsFolder}/formats_rgb.json`, JSON.stringify(formatsRGBData, null, 2));
-    console.log("✅ Saved: outputs/formats/formats_rgb.json");
-  }
+// Agregar "base"
+tokensData.color[concept || 'color'] = {
+  base: { value: hex, type: "color" },
+  ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString(), type: "color" }]))
+};
 
-  if (generateRGBA) {
-    const formatsRGBAData = { stops: Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toRgbString() }])) };
-    fs.writeFileSync(`${formatsFolder}/formats_rgba.json`, JSON.stringify(formatsRGBAData, null, 2));
-    console.log("✅ Saved: outputs/formats/formats_rgba.json");
-  }
+fs.writeFileSync(`${tokensFolder}/tokens_hex.json`, JSON.stringify(tokensData, null, 2));
+console.log("✅ Saved: outputs/tokens/tokens_hex.json");
 
-  if (generateHSL) {
-    const formatsHSLData = { stops: Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHslString() }])) };
-    fs.writeFileSync(`${formatsFolder}/formats_hsl.json`, JSON.stringify(formatsHSLData, null, 2));
-    console.log("✅ Saved: outputs/formats/formats_hsl.json");
-  }
+// Generar tokens RGB
+if (generateRGB) {
+  const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
+  tokensRGBData.color[concept || 'color'] = {
+    base: { value: rgb, type: "color" },
+    ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toRgbString(), type: "color" }]))
+  };
+  fs.writeFileSync(`${tokensFolder}/tokens_rgb.json`, JSON.stringify(tokensRGBData, null, 2));
+  console.log("✅ Saved: outputs/tokens/tokens_rgb.json");
+}
 
-  // Generar tokens
-  const tokensData = { color: {} };
+// Generar tokens RGBA
+if (generateRGBA) {
+  const tokensRGBAData = JSON.parse(JSON.stringify(tokensData));
+  tokensRGBAData.color[concept || 'color'] = {
+    base: { value: rgba, type: "color" },
+    ...Object.fromEntries(Object.entries(stops).map(([k, v]) => {
+      const rgbaValue = tinycolor(v).toRgb(); 
+      const rgbaString = `rgba(${rgbaValue.r},${rgbaValue.g},${rgbaValue.b},${rgbaValue.a})`;
+      return [k, { value: rgbaString, type: "color" }];
+    }))
+  };
+  fs.writeFileSync(`${tokensFolder}/tokens_rgba.json`, JSON.stringify(tokensRGBAData, null, 2));
+  console.log("✅ Saved: outputs/tokens/tokens_rgba.json");
+}
 
-  // Si el usuario ingresó un concepto, creamos el nivel correspondiente
-  if (concept) {
-    tokensData.color[concept] = variant ? { [variant]: {} } : {};
-  } else {
-    tokensData.color = {}; // Si no hay concepto, color será un objeto vacío
-  }
-  
-  // Determinar en qué nivel se deben guardar los valores
-  const target = concept
-    ? variant
-      ? tokensData.color[concept][variant] // Si hay concepto y variante
-      : tokensData.color[concept] // Si solo hay concepto
-    : tokensData.color; // Si no hay concepto, se guarda directamente en color
-  
-  // Agregar "base"
-  target["base"] = { value: hex, type: "color" };
-  
-  // Agregar los stops
-  Object.keys(stops).forEach((shade) => {
-    target[shade] = { value: tinycolor(stops[shade]).toHexString(), type: "color" };
-  });
-  
-  // Guardar en el archivo tokens.json
-  fs.writeFileSync("outputs/tokens/tokens.json", JSON.stringify(tokensData, null, 2));
-  console.log("✅ Saved: outputs/tokens/tokens.json");
-  
-  
+// Generar tokens HSL
+if (generateHSL) {
+  const tokensHSLData = JSON.parse(JSON.stringify(tokensData));
+  tokensHSLData.color[concept || 'color'] = {
+    base: { value: hsl, type: "color" },
+    ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHslString(), type: "color" }]))
+  };
+  fs.writeFileSync(`${tokensFolder}/tokens_hsl.json`, JSON.stringify(tokensHSLData, null, 2));
+  console.log("✅ Saved: outputs/tokens/tokens_hsl.json");
+}
 
-  // Guardar tokens por formato
-  if (generateRGB) {
-    const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
-    fs.writeFileSync(`${tokensFolder}/tokens_rgb.json`, JSON.stringify(tokensRGBData, null, 2));
-    console.log("✅ Saved: outputs/tokens/tokens_rgb.json");
-  }
-
-  if (generateRGBA) {
-    const tokensRGBAData = JSON.parse(JSON.stringify(tokensData));
-    fs.writeFileSync(`${tokensFolder}/tokens_rgba.json`, JSON.stringify(tokensRGBAData, null, 2));
-    console.log("✅ Saved: outputs/tokens/tokens_rgba.json");
-  }
-
-  if (generateHSL) {
-    const tokensHSLData = JSON.parse(JSON.stringify(tokensData));
-    fs.writeFileSync(`${tokensFolder}/tokens_hsl.json`, JSON.stringify(tokensHSLData, null, 2));
-    console.log("✅ Saved: outputs/tokens/tokens_hsl.json");
-  }
 
   console.log("\n=======================================");
   console.log(" 🎨 STEP 5: PROCESS COMPLETED SUCCESSFULLY!");
