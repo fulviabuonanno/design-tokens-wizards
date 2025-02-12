@@ -1,6 +1,6 @@
-# color-tokens-craft 🎨
+# color-tokens-crafter 🎨
 
-Hello, Design System aficionados! 👋 Welcome to **color-tokens-craft** — a script that helps you **craft color tokens** in just a few simple steps. Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamlines the process, saving you time and effort. Let's dive in!
+Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a script that helps you **craft color tokens** in just a few simple steps. Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamlines the process, saving you time and effort. Let's dive in!
 
 ### 🚀 **Features:**
 
