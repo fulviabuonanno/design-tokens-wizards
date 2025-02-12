@@ -53,10 +53,22 @@ const askForInput = async () => {
   // Selección de formatos
   console.log("Now, let's decide which formats you'd like to generate your color in. HEX will always be included.\n");
 
-  let generateRGB = (await askQuestion("📌 Would you like to include RGB format? (yes/no): ")).toLowerCase().startsWith("y");
-  let generateRGBA = (await askQuestion("📌 Would you like to include RGBA format? (yes/no): ")).toLowerCase().startsWith("y");
-  let generateHSL = (await askQuestion("📌 Would you like to include HSL format? (yes/no): ")).toLowerCase().startsWith("y");
-
+  const askYesNo = async (question) => {
+    let answer;
+    do {
+      answer = (await askQuestion(question)).trim().toLowerCase();
+      if (answer !== "yes" && answer !== "no") {
+        console.log("❌ Please enter 'yes' or 'no'.");
+      }
+    } while (answer !== "yes" && answer !== "no");
+    return answer === "yes";
+  };
+  
+  // Preguntar por los formatos con validación estricta
+  let generateRGB = await askYesNo("📌 Include RGB format? (yes/no): ");
+  let generateRGBA = await askYesNo("📌 Include RGBA format? (yes/no): ");
+  let generateHSL = await askYesNo("📌 Include HSL format? (yes/no): ");
+  
   console.log("\n=======================================");
   console.log(" 🔄 STEP 3: GENERATING COLOR STOPS");
   console.log("=======================================\n");
@@ -103,8 +115,11 @@ const main = async () => {
   const formatsFolder = 'outputs/formats';
   const tokensFolder = 'outputs/tokens';
 
-  if (!fs.existsSync(formatsFolder)) fs.mkdirSync(formatsFolder, { recursive: true });
-  if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
+// Asegurar que las carpetas de salida existen
+if (!fs.existsSync("outputs")) fs.mkdirSync("outputs");
+if (!fs.existsSync("outputs/formats")) fs.mkdirSync("outputs/formats");
+if (!fs.existsSync("outputs/tokens")) fs.mkdirSync("outputs/tokens");
+
 
   // Generar formatos
   const formatsData = { HEX: { value: hex } };
@@ -132,19 +147,32 @@ const main = async () => {
   // Generar tokens
   const tokensData = { color: {} };
 
-  if (!tokensData.color[concept]) {
-    tokensData.color[concept] = {};
+  // Si el usuario ingresó un concepto, creamos el nivel correspondiente
+  if (concept) {
+    tokensData.color[concept] = variant ? { [variant]: {} } : {};
+  } else {
+    tokensData.color = {}; // Si no hay concepto, color será un objeto vacío
   }
   
-  tokensData.color[concept][variant] = Object.fromEntries(
-    Object.entries(stops).map(([shade, value]) => [
-      shade,
-      { value, type: "color" }
-    ])
-  );
+  // Determinar en qué nivel se deben guardar los valores
+  const target = concept
+    ? variant
+      ? tokensData.color[concept][variant] // Si hay concepto y variante
+      : tokensData.color[concept] // Si solo hay concepto
+    : tokensData.color; // Si no hay concepto, se guarda directamente en color
   
+  // Agregar "base"
+  target["base"] = { value: hex, type: "color" };
+  
+  // Agregar los stops
+  Object.keys(stops).forEach((shade) => {
+    target[shade] = { value: tinycolor(stops[shade]).toHexString(), type: "color" };
+  });
+  
+  // Guardar en el archivo tokens.json
   fs.writeFileSync("outputs/tokens/tokens.json", JSON.stringify(tokensData, null, 2));
   console.log("✅ Saved: outputs/tokens/tokens.json");
+  
   
 
   // Guardar tokens por formato
