@@ -131,20 +131,20 @@ const main = async () => {
   // Generar tokens
   const tokensData = { color: {} };
 
-  if (variant) {
-    tokensData.color[concept] = { [variant]: { value: hex, type: "color", stops: {} } };
-  } else {
-    tokensData.color[concept] = { value: hex, type: "color", stops: {} };
+  if (!tokensData.color[concept]) {
+    tokensData.color[concept] = {};
   }
-
-  Object.keys(stops).forEach((shade) => {
-    const target = variant ? tokensData.color[concept][variant].stops : tokensData.color[concept].stops;
-    target[shade] = { value: tinycolor(stops[shade]).toHexString(), type: "color" };
-  });
-
-  // Crear tokens.json en outputs/tokens
-  fs.writeFileSync(`${tokensFolder}/tokens.json`, JSON.stringify(tokensData, null, 2));
+  
+  tokensData.color[concept][variant] = Object.fromEntries(
+    Object.entries(stops).map(([shade, value]) => [
+      shade,
+      { value, type: "color" }
+    ])
+  );
+  
+  fs.writeFileSync("outputs/tokens/tokens.json", JSON.stringify(tokensData, null, 2));
   console.log("✅ Saved: outputs/tokens/tokens.json");
+  
 
   // Guardar tokens por formato
   if (generateRGB) {
