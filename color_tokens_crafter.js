@@ -12,7 +12,6 @@ const askQuestion = (query) => {
 };
 
 
-//Step 1: Naming the color
 const askForInput = async () => {
   console.log("\n=======================================");
   console.log(" 🔵 STEP 1: NAMING YOUR COLOR");
