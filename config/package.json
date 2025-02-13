@@ -1,7 +1,7 @@
 {
   "name": "color-tokens-crafter",
   "version": "1.0.0",
-  "description": "A tool to generate color tokens",
+  "description": "A tool to generate color tokens and export them to a JSON file",
   "main": "color_tokens_crafter.js",
   "dependencies": {
     "tinycolor2": "^1.6.0"
