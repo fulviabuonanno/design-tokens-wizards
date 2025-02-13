@@ -2,7 +2,7 @@
 
 Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a script that helps you **craft color tokens** in just a few simple steps. Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamlines the process, saving you time and effort. Let's dive in!
 
-### 🚀 **Features:**
+### 🚀 **Features: Version 1.0.**
 
 1. **Select a Base Color**  
    Start by entering a base color, typically in **HEX format** (e.g., `#FABADA`).
@@ -15,6 +15,12 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 
 4. **Tokens Studio Export**  
    The script exports your color tokens in **Tokens Studio format** for easy integration with your design system. Get your **JSON files** ready for import!
+
+5. **Batch Processing**  
+   Now you can process multiple base colors in one go. Simply provide a list of colors, and the script will generate tokens for each one.
+
+6. **Customizable Naming Conventions**  
+   Define your own naming conventions and structures for tokens to better fit your design system.
 
 ---
 
@@ -37,18 +43,11 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 
 ---
 
-### ⚠️ **Important Limitation:**
-
-- Currently, the script **only supports the creation of one color at a time**. If you need to create tokens for multiple colors, you'll need to manually index them in the generated **Tokens Studio JSON** file. 
-
----
-
 ### 🔜 **Next Features Coming Soon:**
 
-- Add more base colors and generate token sets for entire palettes.
-- Customize naming conventions and structures for tokens.
 - Control the number of color stops to suit your design system's needs.
 - Incorporate **color accessibility** checks to ensure your colors are accessible to all users.
+- Improvement of suggestions while aggregating new colors.
 
 ---
 
