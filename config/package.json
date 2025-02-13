@@ -1,0 +1,14 @@
+{
+  "name": "color-tokens-crafter",
+  "version": "1.0.0",
+  "description": "A tool to generate color tokens",
+  "main": "color_tokens_crafter.js",
+  "dependencies": {
+    "tinycolor2": "^1.6.0"
+  },
+  "scripts": {
+    "start": "node color_tokens_crafter.js"
+  },
+  "author": "",
+  "license": "MIT"
+}
