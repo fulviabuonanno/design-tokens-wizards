@@ -11,43 +11,68 @@ const askQuestion = (query) => {
   return new Promise((resolve) => rl.question(query, resolve));
 };
 
-
-//Step 1: Naming the color
 const askForInput = async () => {
+
   console.log("\n=======================================");
-  console.log(" 🔵 STEP 1: NAMING YOUR COLOR");
+  console.log("⭐️ STEP 1: ENTER HEX VALUE");
   console.log("=======================================\n");
 
-  let hex = await askQuestion("🎨 Please enter a HEX color (e.g., #FABADA): ");
+  let hex = await askQuestion("🎨 Let's start by entering a HEX value (e.g., #FABADA): \n>\x1b[34m#\x1b[0m");
   if (!tinycolor(hex).isValid()) {
-    console.log(`❌ Oops! The HEX color "${hex}" seems invalid. Please provide a valid HEX color.`);
+    console.log(`❌ Oops! HEX color "${hex}" seems invalid. Please provide a valid HEX color.`);
     rl.close();
     return;
   }
 
-  console.log("\n✨ Now, let's give this color a meaningful name!");
+  console.log("\n=======================================");
+  console.log("🤔 STEP 2: NAMING YOUR COLOR");
+  console.log("=======================================\n");
 
-  let concept = await askQuestion("📝 What concept is this color for? (e.g., brand, ui, background) or press Enter to skip: ");
+  console.log("\n✨ Now, let's give this color token a meaningful and structured name!\n");
+  let concept = await askQuestion("📝 What concept is this color for? \n(e.g., brand, background) or press Enter to skip: \n>");
   concept = concept.trim() || "color"; 
 
   if (concept && !/^[a-zA-Z0-9.-]+$/.test(concept)) {
-    console.log("❌ The concept name should only contain letters, numbers, hyphens (-), and dots (.)");
+    console.log("❌ Concept name should only contain letters, numbers, hyphens (-), and dots (.)");
     rl.close();
     return;
   }
 
-  
-  let variant = await askQuestion("🎨 Would you like to define a variant name? (e.g., primary, secondary) or press Enter to skip: ");
-  variant = variant.trim() || null; 
+ console.log("\n\n🎨 How would you like to name this color?");
+ const namingChoice = await askQuestion("\tA. Variant naming (e.g., primary, secondary, tertiary)\n\tB. Ordered list naming (e.g., 01, 02, 03 or 1, 2, 3...)\n\nPlease choose the criteria A, or B: \n>");
 
-  if (variant && !/^[a-zA-Z0-9.-]+$/.test(variant)) {
-    console.log("❌ The variant name should only contain letters, numbers, hyphens (-), and dots (.)");
-    rl.close();
-    return;
-  }
+ let variant = null;
+ let isValidNaming = false;
+
+ while (!isValidNaming) {
+   switch (namingChoice.trim()) {
+     case "A":
+       variant = await askQuestion("🎨 Would you like to define a variant name \n(e.g., primary, secondary, tertiary)? Press Enter to skip: \n>");
+       variant = variant.trim() || null;
+       if (variant && !/^[a-zA-Z0-9.-]+$/.test(variant)) {
+         console.log("❌ Variant name should only contain letters, numbers, hyphens (-), and dots (.)");
+       } else {
+         isValidNaming = true;
+       }
+       break;
+     case "B":
+       variant = await askQuestion("🎨 Would you like to use ordered list name \n(e.g., 01, 02, 03 or 1, 2, 3)? Press Enter to skip: \n>");
+       variant = variant.trim() || null;
+       if (variant && !/^[0-9]+$/.test(variant) && !/^[0-9]{2}$/.test(variant)) {
+         console.log("❌ Ordered criteria name should only contain numbers (e.g., 01, 02 or 1, 2).");
+       } else {
+         isValidNaming = true;
+       }
+       break;
+     default:
+      console.log("=======================================\n");
+       console.log("❌ Please choose a valid option (A or B).");
+       return;
+   }
+ }
 
   console.log("\n=======================================");
-  console.log(" 🔄 STEP 2: SELECTING FORMATS");
+  console.log("🔄 STEP 3: SELECTING FORMATS");
   console.log("=======================================\n");
 
   const askYesNo = async (question) => {
@@ -69,7 +94,7 @@ const askForInput = async () => {
   let generateHSL = await askYesNo("📌 Include color tokens HSL format? (yes/no or y/n): ");
     
   console.log("\n=======================================");
-  console.log(" 🔄 STEP 3: GENERATING COLOR STOPS");
+  console.log("📝 STEP 4: GENERATING COLOR STOPS");
   console.log("=======================================\n");
 
   
@@ -77,7 +102,6 @@ const askForInput = async () => {
 
   return { hex: hex.trim(), concept, variant, generateRGB, generateRGBA, generateHSL, stops };
 };
-
 
 const generateStops = (color) => {
   return {
@@ -91,11 +115,12 @@ const generateStops = (color) => {
   };
 };
 
-
 const main = async () => {
   console.log("\n=======================================");
-  console.log(" 🚀 STARTING THE PROCESS");
-  console.log("=======================================\n");
+  console.log("🚀 STARTING THE PROCESS");
+  console.log("=======================================");
+
+  console.log("\n❤️ Welcome to \x1b[1m\x1b[34mColor Tokens Crafter\x1b[0m script! \nFollow the steps below to generate your color(s) \nand make them ready for importing or syncing \nin \x1b[4mTokens Studio\x1b[0m format.");
 
   const input = await askForInput();
   if (!input) return;
@@ -107,7 +132,7 @@ const main = async () => {
   const hsl = color.toHslString();
 
   console.log("\n=======================================");
-  console.log(" 📂 STEP 4: GENERATING OUTPUT FILES");
+  console.log("📂 STEP 5: GENERATING OUTPUT FILES" );
   console.log("=======================================\n");
 
  
@@ -140,8 +165,8 @@ if (concept) {
   tokensData.color = {};
 }
 
-fs.writeFileSync(`${tokensFolder}/tokens_hex.json`, JSON.stringify(tokensData, null, 2));
-console.log("✅ Saved: outputs/tokens/tokens_hex.json");
+fs.writeFileSync(`${tokensFolder}/tokens.json`, JSON.stringify(tokensData, null, 2));
+console.log("✅ Saved: outputs/tokens/tokens.json");
 
 
 if (generateRGB) {
@@ -203,13 +228,13 @@ if (generateHSL) {
 }
 
   console.log("\n=======================================");
-  console.log(" 🎨 STEP 5: PROCESS COMPLETED SUCCESSFULLY!");
+  console.log("✅💪 STEP 6: PROCESS COMPLETED SUCCESSFULLY!");
   console.log("=======================================\n");
 
-  console.log("✅ All files have been generated inside the 'outputs/formats/' and 'outputs/tokens/' folders.");
+  console.log("✅ All files have been generated inside 'outputs/tokens/' folder.");
   console.log("📁 You can now use them as needed.\n");
 
-  console.log("Thank you for using the color converter! 🚀🎨\n");
+  console.log("Thank you for using the Color Tokens Crafter! ❤️🚀🎨\n");
   console.log("=======================================\n");
 
   rl.close();
