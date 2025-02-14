@@ -48,6 +48,8 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 - Control the number of color stops to suit your design system's needs.
 - Incorporate **color accessibility** checks to ensure your colors are accessible to all users.
 - Improvement of suggestions while aggregating new colors.
+- Exporting in CSS and SCSS files for color testing.
+- Capability of building semantic/component tokens. 
 
 ---
 
