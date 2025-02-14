@@ -70,7 +70,7 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 
 ---
 
-### 🛠️ **Powered by TinyColor** ✨
+### 🛠️ **Dependencies** ✨
 
 This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. Huge thanks to **Brian Grinstead** for this fantastic tool!
 
