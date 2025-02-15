@@ -1,6 +1,22 @@
 const tinycolor = require("tinycolor2");
 const fs = require("fs");
+const path = require("path"); // New import
 const readline = require("readline");
+
+// Function to display a loader for a specified duration
+const showLoader = (message, duration) => {
+  process.stdout.write(message);
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      process.stdout.write('.');
+    }, 500);
+    setTimeout(() => {
+      clearInterval(interval);
+      process.stdout.write('\n');
+      resolve();
+    }, duration);
+  });
+};
 
 // Create an interface for reading input from the command line
 const rl = readline.createInterface({
@@ -32,26 +48,26 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
   console.log("=======================================\n");
 
   // Ask for a HEX color value
-  let hex = await askQuestion("🎨 Let's start by entering a HEX value (e.g., #FABADA): \n>\x1b[34m#\x1b[0m");
+  let hex = await askQuestion("🎨 Let's start by entering a HEX value (e.g., #FABADA): \n>>>\x1b[34m#\x1b[0m");
   if (!tinycolor(hex).isValid()) {
-    console.log(`❌ Oops! HEX color "${hex}" seems invalid. Please provide a valid HEX color.`);
+    console.log(`❌ Oops! HEX color "${hex}" seems invalid. Please provide a valid HEX color.\n\n`);
     rl.close();
     return;
   }
 
   console.log("\n=======================================");
-  console.log("🤔 STEP 2: NAMING YOUR COLOR");
+  console.log("🔤 STEP 2: NAME YOUR COLOR");
   console.log("=======================================\n");
 
   // Ask for a concept name for the color
   let concept = previousConcept;
   if (!concept) {
-    console.log("\n✨ Now, let's give this color token a meaningful and structured name!\n");
-    concept = await askQuestion("📝 What concept is this color for? \n(e.g., brand, background) or press Enter to skip: \n>");
+    console.log("✨ Now, let's give this color token a meaningful and structured name!\n");
+    concept = await askQuestion("📝 What concept would you like to assign to color token? \n(e.g., brand, background) or press Enter to skip:\n>>>");
     concept = concept.trim() || "color"; 
 
     if (concept && !/^[a-zA-Z0-9.-]+$/.test(concept)) {
-      console.log("❌ Concept name should only contain letters, numbers, hyphens (-), and dots (.)");
+      console.log("❌ Concept name should only contain letters, numbers, hyphens (-), and dots (.)\n");
       rl.close();
       return;
     }
@@ -62,41 +78,43 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
 
   if (!namingChoice) {
     // Ask for a variant or ordered list name
-    console.log("\n\n🎨 How would you like to name this color?");
-    namingChoice = (await askQuestion("\tA. Variant naming (e.g., primary, secondary, tertiary)\n\tB. Ordered list naming (e.g., 01, 02, 03 or 1, 2, 3...)\n\nPlease choose the criteria A, or B: \n>")).trim().toUpperCase();
+    console.log("\n🎨 Which modifier criteria would you like to use for naming this token?");
+    namingChoice = (await askQuestion("\tA. Variant naming approach (e.g., primary, secondary, tertiary)\n\tB. Scale naming approach (e.g., 01, 02, 03 or 1, 2, 3...)\n\nPlease choose the criteria A, or B:\n>>>")).trim().toUpperCase();
   }
 
   while (!isValidNaming) {
     switch (namingChoice) {
       case "A":
+      case "a":
         const suggestedVariant = getNextVariant(existingVariants);
-        variant = await askQuestion(`🎨 Would you like to define a variant name \n(e.g., primary, secondary, tertiary)? Suggested: ${suggestedVariant}\nPress Enter to skip: \n>`);
+        variant = await askQuestion(`🎨 Would you like to define a variant name \n(e.g., primary, secondary, tertiary)? Suggested: ${suggestedVariant}\nPress Enter to skip: \n>>>`);
         variant = variant.trim() || suggestedVariant;
         if (variant && !/^[a-zA-Z0-9.-]+$/.test(variant)) {
-          console.log("❌ Variant name should only contain letters, numbers, hyphens (-), and dots (.)");
+          console.log("❌ Variant name should only contain letters, numbers, hyphens (-), and dots (.)\n");
         } else {
           isValidNaming = true;
         }
         break;
       case "B":
+      case "b":
         const suggestedOrder = existingVariants.length > 0 ? (parseInt(existingVariants[existingVariants.length - 1]) + 1).toString().padStart(2, '0') : "01";
-        variant = await askQuestion(`🎨 Would you like to use ordered list name \n(e.g., 01, 02, 03 or 1, 2, 3)? Suggested: ${suggestedOrder}\nPress Enter to skip: \n>`);
+        variant = await askQuestion(`\n🎨 Would you like to use ordered list name \n(e.g., 01, 02, 03 or 1, 2, 3)? Suggested: ${suggestedOrder}\nPress Enter to skip: \n>>>`);
         variant = variant.trim() || suggestedOrder;
         if (variant && !/^[0-9]+$/.test(variant) && !/^[0-9]{2}$/.test(variant)) {
-          console.log("❌ Ordered criteria name should only contain numbers (e.g., 01, 02 or 1, 2).");
+          console.log("❌ Ordered criteria name should only contain numbers (e.g., 01, 02 or 1, 2).\n");
         } else {
           isValidNaming = true;
         }
         break;
       default:
         console.log("=======================================\n");
-        console.log("❌ Please choose a valid option (A or B).");
-        return;
+        console.log("❌ Please choose a valid option (🅰️🅰️ or 🅱️ )\n.");
+        namingChoice = (await askQuestion("\tA. Variant naming approach (e.g., primary, secondary, tertiary)\n\tB. Scale naming approach (e.g., 01, 02, 03 or 1, 2, 3...)\n\nPlease choose the criteria A, or B:\n>>>")).trim().toUpperCase();
     }
   }
 
   console.log("\n=======================================");
-  console.log("🔄 STEP 3: SELECTING FORMATS");
+  console.log("🤖 STEP 3: SELECT COLOR FORMATS");
   console.log("=======================================\n");
 
   // Ask if the user wants to generate color tokens in different formats
@@ -105,7 +123,7 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
   let generateHSL = await askYesNo("📌 Include color tokens HSL format? (yes/no or y/n): ");
     
   console.log("\n=======================================");
-  console.log("📝 STEP 4: GENERATING COLOR STOPS");
+  console.log("📝 STEP 4: GENERATING COLOR TOKENS");
   console.log("=======================================\n");
 
   // Generate color stops (variations) based on the base color
@@ -127,10 +145,10 @@ const generateStops = (color) => {
   };
 };
 
-// Function to save color tokens to files
+// Function to save color tokens to files (update the folder path to be absolute)
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
-  fs.writeFileSync(`${folder}/${fileName}`, JSON.stringify(tokensData, null, 2));
-  console.log(`✅ Saved: ${folder}/${fileName}`);
+  const filePath = path.join(folder, fileName);
+  fs.writeFileSync(filePath, JSON.stringify(tokensData, null, 2));
 };
 
 // Function to get the next variant name in sequence
@@ -161,11 +179,11 @@ const convertTokensToCSS = (tokens) => {
   return cssVariables;
 };
 
-// Function to save CSS variables to a file
+// Function to save CSS variables to a file (use absolute path)
 const saveCSSTokensToFile = (tokens, folder, fileName) => {
   const cssContent = convertTokensToCSS(tokens);
-  fs.writeFileSync(`${folder}/${fileName}`, cssContent);
-  console.log(`✅ Saved CSS variables: ${folder}/${fileName}`);
+  const filePath = path.join(folder, fileName);
+  fs.writeFileSync(filePath, cssContent);
 };
 
 // Function to convert tokens to SCSS variables
@@ -184,37 +202,43 @@ const convertTokensToSCSS = (tokens) => {
   return scssVariables;
 };
 
-// Function to save SCSS variables to a file
+// Function to save SCSS variables to a file (use absolute path)
 const saveSCSSTokensToFile = (tokens, folder, fileName) => {
   const scssContent = convertTokensToSCSS(tokens);
-  fs.writeFileSync(`${folder}/${fileName}`, scssContent);
-  console.log(`✅ Saved SCSS variables: ${folder}/${fileName}`);
+  const filePath = path.join(folder, fileName);
+  fs.writeFileSync(filePath, scssContent);
 };
 
 // Main function to orchestrate the color token generation process
 const main = async () => {
   console.log("\n=======================================");
-  console.log("🚀 STARTING THE PROCESS");
+  console.log("🪄 STARTING THE MAGIC");
   console.log("=======================================");
 
-  console.log("\n❤️ Welcome to \x1b[1m\x1b[34mColor Tokens Crafter\x1b[0m script! \nFollow the steps below to generate your color(s) \nand make them ready for importing or syncing \nin \x1b[4mTokens Studio\x1b[0m format.");
+  await showLoader("Loading", 2000);
+
+  console.log("\n❤️ Welcome to \x1b[1m\x1b[34mColor Tokens Wizard\x1b[0m script! \nLet 🧙 help you to build your color tokens by following the steps below to generate your color(s) \nand make them ready for importing or syncing \nin \x1b[4mTokens Studio\x1b[0m format.");
 
   let tokensData = {};
-  const tokensFolder = 'outputs/tokens';
+  const outputsDir = path.join(__dirname, "outputs");
+  const tokensFolder = path.join(outputsDir, "tokens");
+  const cssFolder = path.join(outputsDir, "css");
+  const scssFolder = path.join(outputsDir, "scss");
   let namingChoice = null;
   let previousConcept = null;
 
   // Create output directories if they don't exist
-  if (!fs.existsSync("outputs")) fs.mkdirSync("outputs");
-  if (!fs.existsSync("outputs/tokens")) fs.mkdirSync("outputs/tokens");
-  if (!fs.existsSync("outputs/css")) fs.mkdirSync("outputs/css"); // Ensure CSS directory exists
-  if (!fs.existsSync("outputs/scss")) fs.mkdirSync("outputs/scss"); // Ensure SCSS directory exists
+  if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
+  if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder);
+  if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder);
+  if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder);
 
   let addMoreColors = true;
 
   while (addMoreColors) {
-    // Get user input for generating color tokens
-    const input = await askForInput(Object.keys(tokensData), namingChoice, previousConcept);
+    // Pass variants for the current concept (if any) instead of global tokensData keys.
+    const existingVariants = previousConcept && tokensData[previousConcept] ? Object.keys(tokensData[previousConcept]) : [];
+    const input = await askForInput(existingVariants, namingChoice, previousConcept);
     if (!input) return;
 
     const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice } = input;
@@ -243,6 +267,7 @@ const main = async () => {
 
     // Save color tokens in HEX format
     saveTokensToFile(tokensData, 'HEX', tokensFolder, 'tokens.json');
+    console.log("✅ Saved: outputs/tokens/tokens.json");
 
     // Save color tokens in RGB format if selected
     if (generateRGB) {
@@ -255,6 +280,7 @@ const main = async () => {
         });
       });
       saveTokensToFile(tokensRGBData, 'RGB', tokensFolder, 'tokens_rgb.json');
+      console.log("✅ Saved: outputs/tokens/tokens_rgb.json");
     }
 
     // Save color tokens in RGBA format if selected
@@ -270,6 +296,7 @@ const main = async () => {
         });
       });
       saveTokensToFile(tokensRGBAData, 'RGBA', tokensFolder, 'tokens_rgba.json');
+      console.log("✅ Saved: outputs/tokens/tokens_rgba.json");
     }
 
     // Save color tokens in HSL format if selected
@@ -283,35 +310,37 @@ const main = async () => {
         });
       });
       saveTokensToFile(tokensHSLData, 'HSL', tokensFolder, 'tokens_hsl.json');
+      console.log("✅ Saved: outputs/tokens/tokens_hsl.json");
     }
+
+    // Save CSS variables
+    saveCSSTokensToFile(tokensData, cssFolder, 'variables.css');
+    console.log("✅ Saved: outputs/css/variables.css");
+
+    // Save SCSS variables
+    saveSCSSTokensToFile(tokensData, scssFolder, 'variables.scss');
+    console.log("✅ Saved: outputs/scss/variables.scss");
 
     console.log("\n=======================================");
     console.log("➕ EXTRA STEP: ADD MORE COLORS");
     console.log("=======================================\n");
 
     // Ask if the user wants to add more colors
-    addMoreColors = await askYesNo("🎨 Would you like to add another color? (yes/no or y/n): ");
+    addMoreColors = await askYesNo("🎨 Would you like to add another color? (yes/no or y/n):");
   }
 
-  // Save CSS variables
-  saveCSSTokensToFile(tokensData, 'outputs/css', 'variables.css');
-
-  // Save SCSS variables
-  saveSCSSTokensToFile(tokensData, 'outputs/scss', 'variables.scss');
+  await showLoader("Finalizing", 2000);
 
   console.log("\n=======================================");
-  console.log("✅💪 PROCESS COMPLETED SUCCESSFULLY!");
+  console.log("📄 OUTPUT JSON FILES");
   console.log("=======================================\n");
 
-  console.log("✅ All files have been generated inside 'outputs/tokens/' folder.");
-  console.log("📁 You can now use them as needed.\n");
+  console.log("✅ The JSON files for Tokens Studio have been generated inside 📁'outputs/tokens/' folder.");
+  console.log("✅ The CSS and SCSS files have been generated inside 📁'outputs/css/' and 📁'outputs/scss/'\n");
 
-  console.log("=======================================");
-  console.log("📄 CSS & SCSS FILES");
+  console.log("\n=======================================");
+  console.log("✅💪 PROCESS COMPLETED");
   console.log("=======================================\n");
-  console.log("Here are the generated CSS and SCSS files containing your color tokens. You can provide these files to your developers for immediate use and testing:\n");
-  console.log("📁 outputs/css/variables.css");
-  console.log("📁 outputs/scss/variables.scss\n");
 
   console.log("Thank you for using the Color Tokens Crafter! ❤️🚀🎨\n");
   console.log("=======================================\n");
