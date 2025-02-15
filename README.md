@@ -1,92 +1,67 @@
-# color-tokens-wizard 🪄🧙🎨
+# 🪄 **design-tokens-wizard** 🎨✨
 
-Hello, Design System aficionados! 👋 Welcome to **color-tokens-wizard** — a script that helps you **craft color tokens** in just a few simple steps... Just like magic!
-Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamlines the process, saving you time and effort. Let's dive in and ride this unicorn! 🦄
-
-### 🚀 **Features: Version 1.1.**
-
-1. **Select a Base Color**  
-   Start by entering a base color, typically in **HEX format** (e.g., `#FABADA`).
-
-2. **Generate Color Stops**  
-   Automatically generate **6 color stops** (lightest, lighter, light, dark, darker, darkest) based on your base color. Say goodbye to manually calculating these variations!
-
-3. **Multiple Format Outputs**  
-   By default, your color is saved in **HEX** format, but you can also generate files in **RGB, RGBA, and HSL** formats. Choose what fits your needs!
-
-4. **Tokens Studio Export**  
-   The script exports your color tokens in **Tokens Studio format** for easy integration with your design system. Get your **JSON files** ready for import!
-
-5. **Batch Processing**  
-   Now you can process multiple base colors in one go. Simply provide a list of colors, and the script will generate tokens for each one.
-
-6. **Customizable Naming Conventions**  
-   Define your own naming conventions and structures for tokens to better fit your design system.
-
-7. **CSS & SCSS files with color tokens as variables**  
-   Have your tokens converted and ready to be used in your dev project.
+Welcome to the enchanted world of **design-tokens-wizard**! 🦄 This mystical tool helps you effortlessly craft design tokens in multiple formats (HEX, RGB, RGBA, HSL) for your design system with just a few easy steps.
 
 ---
 
-### 🛠️ **How to Use:**
+## 🧙‍♂️ **How to Use:**
 
-1. **Install Dependencies**
-   To install the package, run `npm install tinyColor` in your terminal.
+### 1. **Install Dependencies**  
+Run the spell:  
+`npm install tinyColor`  
+This installs the necessary package to handle color conversions.
 
-2. **Run the Script**  
-   Simply execute the script in your terminal via `node color-tokens-wizard.js`.
+### 2. **Run the Script**  
+Cast the magic with:  
+`node color-tokens-wizard.js`  
+This will execute the script and start the process.
 
-3. **Enter a HEX Color**  
-   When prompted, input your base HEX color. If you're unsure about the format, feel free to check the example.
+### 3. **Enter a HEX Color**  
+When prompted, input your base HEX color (e.g., `#FABADA`). If you’re unsure about the format, feel free to check the example!
 
-4. **Define Concept & Modifier**  
-   You'll be asked to provide a name for the (case A) **concept** (e.g., `brand`, `feedback`, etc.) and/or (case B) the modifier: **variant** (e.g., `primary`, `secondary`, `tertiary`) and/or **scale** (e.g., `01, 02, 03` etc.)
+### 4. **Define Concept & Modifier**  
+You’ll be asked to name your color’s **concept** (e.g., `brand`, `feedback`) and **modifier** (e.g., `primary`, `secondary`, `01`, `02`). This helps categorize your tokens.
 
-5. **Choose Output Formats**  
-   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default **HEX** file.
+### 5. **Choose Output Formats**  
+Select which formats you’d like the tool to generate. You can get **HEX**, **RGB**, **RGBA**, and **HSL** formats, along with the default **HEX**.
 
-6. **Adding More Colors**  
-   If user wants to add more colors to it's selection, then it's possible by repeating steps 3 and 4 and then, by the choosen criteria, the **JSON FIles** will overwrite in the `tokens/` directories.
+### 6. **Add More Colors**  
+Want more colors? Simply repeat steps 3-5 for each new color. The tool will update your **JSON files** accordingly, stored in the `tokens/` directory.
 
-7. **Export the Tokens**  
-   Once the color naming and formats are defined, the script will create all the **JSON files** in the `outputs/tokens/` directory.
+### 7. **Export Tokens**  
+Once everything is defined, the script will generate **JSON files** with your tokens. These will be saved in the `tokens/` directory for easy integration.
 
-8. **Generaion of CSS/SCCS files**  
-   Once everything is ready the script will create all the **JSON files** in the `outputs/css/` and `outputs/scss/` directories.
-   
-=======
-
-2. **Run the Script**  
-   Simply execute the script in your terminal via `node color-tokens-crafter.js`.
-
-3. **Enter a HEX Color**  
-   When prompted, input your base HEX color. If you're unsure about the format, feel free to check the example.
-
-4. **Define Concept & Modifier**  
-   You'll be asked to provide a name for the (case A) **concept** (e.g., `brand`, `feedback`, etc.) and/or (case B) the modifier: **variant** (e.g., `primary`, `secondary`, `tertiary`) and/or **scale** (e.g., `01, 02, 03` etc.)
-
-5. **Choose Output Formats**  
-   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default **HEX** file. 
-
-6. **Export the Tokens**  
-   Once the color naming and formats are defined, the script will create all the **JSON files** in the `tokens/` directories.
-
-7. **Adding More Colors**  
-   If user wants to add more colors to it's selection, then it's possible by repeating steps 3 and 4 and then, by the choosen criteria, the **JSON FIles** will overwrite in the `tokens/` directories.
+### 8. **Generate CSS/SCSS Files**  
+Finally, the tool will generate **CSS** and **SCSS** files with your design tokens as variables, ready for use in your development project. These will be saved in the `outputs/` directories.
 
 ---
 
-### 💡 **Why Use This Script?**
+## 🌟 **Features:**
 
-- **Efficiency:** Automatically generate multiple formats and color variations without manual effort.
-- **Integration:** Seamlessly integrate with Tokens Studio and other design systems.
-- **Flexibility:** Customize your workflow to fit your project requirements.
+- **Generate Color Stops:** Automatically creates 6 variations of your color (lightest, lighter, light, dark, darker, darkest).
+  
+- **Multiple Format Outputs:** The tool can output tokens in **HEX**, **RGB**, **RGBA**, and **HSL** formats to suit your project.
+
+- **Tokens Studio Export:** Instantly export your design tokens in **JSON** format for easy integration with your design system.
+
+- **Batch Processing:** Add multiple base colors in one go. The tool will process them all and generate tokens for each.
+
+- **Custom Naming:** Define your own naming conventions for the tokens, based on your needs.
+
+- **CSS & SCSS Files:** Automatically generate **CSS** and **SCSS** files with design tokens as variables.
 
 ---
 
-### 🛠️ **Dependencies** ✨
+## ✨ **Why Use This Script?**
+- **Efficiency:** Save time by automating the generation of color variations and format conversions.
+- **Seamless Integration:** Quickly integrate with Tokens Studio and other design systems.
+- **Flexibility:** Tailor the tool’s workflow to fit your unique project requirements.
 
-This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. Huge thanks to **Brian Grinstead** for this fantastic tool!
+---
 
-You can check out TinyColor's repository here:  
-[https://github.com/bgrins/TinyColor](https://github.com/bgrins/TinyColor)
+## 🛠️ **Dependencies:**
+This enchanted script uses the powerful **[TinyColor](https://github.com/bgrins/TinyColor)** library for color conversions. Big thanks to **Brian Grinstead** for creating this magical tool!
+
+---
+
+With **design-tokens-wizard**, you’ll breeze through design token creation like a wizard mastering their craft. ✨🧙‍♂️ Let the magic begin!
