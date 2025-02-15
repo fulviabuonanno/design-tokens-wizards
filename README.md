@@ -26,30 +26,26 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 
 ### 🛠️ **How to Use:**
 
-1. **Run the Script**  
-   Simply execute the script in your terminal.
+1. **Install Dependencies**
+   To install the package, run `npm install tinyColor` in your terminal.
 
-2. **Enter a HEX Color**  
+2. **Run the Script**  
+   Simply execute the script in your terminal via `node color-tokens-crafter.js`.
+
+3. **Enter a HEX Color**  
    When prompted, input your base HEX color. If you're unsure about the format, feel free to check the example.
 
-3. **Define Concept & Variant**  
-   You'll be asked to provide a name for the **concept** (e.g., `primary`, `ui-background`, etc.) and an optional **variant** (e.g., `light`, `dark`). Press **Enter** to skip if not needed.
+4. **Define Concept & Modifier**  
+   You'll be asked to provide a name for the (case A) **concept** (e.g., `brand`, `feedback`, etc.) and/or (case B) the modifier: **variant** (e.g., `primary`, `secondary`, `tertiary`) and/or **scale** (e.g., `01, 02, 03` etc.)
 
-4. **Choose Output Formats**  
-   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default HEX. Press **Enter** to skip any formats you don't need.
+5. **Choose Output Formats**  
+   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default **HEX** file. 
 
-5. **Export the Tokens**  
-   Once the color and formats are defined, the script will create **JSON files** in the `formats/` and `tokens/` directories.
+6. **Export the Tokens**  
+   Once the color naming and formats are defined, the script will create all the **JSON files** in the `tokens/` directories.
 
----
-
-### 🔜 **Next Features Coming Soon:**
-
-- Control the number of color stops to suit your design system's needs.
-- Incorporate **color accessibility** checks to ensure your colors are accessible to all users.
-- Improvement of suggestions while aggregating new colors.
-- Exporting in CSS and SCSS files for color testing.
-- Capability of building semantic/component tokens. 
+7. **Adding More Colors**  
+   If user wants to add more colors to it's selection, then it's possible by repeating steps 3 and 4 and then, by the choosen criteria, the **JSON FIles** will overwrite in the `tokens/` directories.
 
 ---
 
@@ -58,15 +54,6 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 - **Efficiency:** Automatically generate multiple formats and color variations without manual effort.
 - **Integration:** Seamlessly integrate with Tokens Studio and other design systems.
 - **Flexibility:** Customize your workflow to fit your project requirements.
-
----
-
-### 🧑‍💻 **Getting Started:**
-
-1. Clone or download this repository.
-2. Install dependencies via `npm install`.
-3. Run the script with `node color-tokens-craft.js`.
-4. Follow the prompts and let the script do the heavy lifting for you!
 
 ---
 
