@@ -53,6 +53,26 @@ Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamline
 
 8. **Generaion of CSS/SCCS files**  
    Once everything is ready the script will create all the **JSON files** in the `outputs/css/` and `outputs/scss/` directories.
+   
+=======
+
+2. **Run the Script**  
+   Simply execute the script in your terminal via `node color-tokens-crafter.js`.
+
+3. **Enter a HEX Color**  
+   When prompted, input your base HEX color. If you're unsure about the format, feel free to check the example.
+
+4. **Define Concept & Modifier**  
+   You'll be asked to provide a name for the (case A) **concept** (e.g., `brand`, `feedback`, etc.) and/or (case B) the modifier: **variant** (e.g., `primary`, `secondary`, `tertiary`) and/or **scale** (e.g., `01, 02, 03` etc.)
+
+5. **Choose Output Formats**  
+   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default **HEX** file. 
+
+6. **Export the Tokens**  
+   Once the color naming and formats are defined, the script will create all the **JSON files** in the `tokens/` directories.
+
+7. **Adding More Colors**  
+   If user wants to add more colors to it's selection, then it's possible by repeating steps 3 and 4 and then, by the choosen criteria, the **JSON FIles** will overwrite in the `tokens/` directories.
 
 ---
 
@@ -65,11 +85,6 @@ Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamline
 ---
 
 ### 🛠️ **Dependencies** ✨
-
-This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. Huge thanks to **Brian Grinstead** for this fantastic tool!
-
-You can check out TinyColor's repository here:  
-[https://github.com/bgrins/TinyColor](https://github.com/bgrins/TinyColor)
 
 This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. Huge thanks to **Brian Grinstead** for this fantastic tool!
 
