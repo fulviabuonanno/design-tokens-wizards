@@ -1,8 +1,9 @@
-# color-tokens-crafter 🎨
+# color-tokens-wizard 🪄🧙🎨
 
-Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a script that helps you **craft color tokens** in just a few simple steps. Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamlines the process, saving you time and effort. Let's dive in!
+Hello, Design System aficionados! 👋 Welcome to **color-tokens-wizard** — a script that helps you **craft color tokens** in just a few simple steps... Just like magic!
+Whether you're working with HEX, RGB, RGBA, or HSL formats, this tool streamlines the process, saving you time and effort. Let's dive in and ride this unicorn! 🦄
 
-### 🚀 **Features: Version 1.0.**
+### 🚀 **Features: Version 1.1.**
 
 1. **Select a Base Color**  
    Start by entering a base color, typically in **HEX format** (e.g., `#FABADA`).
@@ -22,32 +23,36 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 6. **Customizable Naming Conventions**  
    Define your own naming conventions and structures for tokens to better fit your design system.
 
+7. **CSS & SCSS files with color tokens as variables**  
+   Have your tokens converted and ready to be used in your dev project.
+
 ---
 
 ### 🛠️ **How to Use:**
 
-1. **Run the Script**  
-   Simply execute the script in your terminal.
+1. **Install Dependencies**
+   To install the package, run `npm install tinyColor` in your terminal.
 
-2. **Enter a HEX Color**  
+2. **Run the Script**  
+   Simply execute the script in your terminal via `node color-tokens-wizard.js`.
+
+3. **Enter a HEX Color**  
    When prompted, input your base HEX color. If you're unsure about the format, feel free to check the example.
 
-3. **Define Concept & Variant**  
-   You'll be asked to provide a name for the **concept** (e.g., `primary`, `ui-background`, etc.) and an optional **variant** (e.g., `light`, `dark`). Press **Enter** to skip if not needed.
+4. **Define Concept & Modifier**  
+   You'll be asked to provide a name for the (case A) **concept** (e.g., `brand`, `feedback`, etc.) and/or (case B) the modifier: **variant** (e.g., `primary`, `secondary`, `tertiary`) and/or **scale** (e.g., `01, 02, 03` etc.)
 
-4. **Choose Output Formats**  
-   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default HEX. Press **Enter** to skip any formats you don't need.
+5. **Choose Output Formats**  
+   Decide whether you want to generate **RGB**, **RGBA**, or **HSL** formats alongside the default **HEX** file.
 
-5. **Export the Tokens**  
-   Once the color and formats are defined, the script will create **JSON files** in the `formats/` and `tokens/` directories.
+6. **Adding More Colors**  
+   If user wants to add more colors to it's selection, then it's possible by repeating steps 3 and 4 and then, by the choosen criteria, the **JSON FIles** will overwrite in the `tokens/` directories.
 
----
+7. **Export the Tokens**  
+   Once the color naming and formats are defined, the script will create all the **JSON files** in the `outputs/tokens/` directory.
 
-### 🔜 **Next Features Coming Soon:**
-
-- Control the number of color stops to suit your design system's needs.
-- Incorporate **color accessibility** checks to ensure your colors are accessible to all users.
-- Improvement of suggestions while aggregating new colors.
+8. **Generaion of CSS/SCCS files**  
+   Once everything is ready the script will create all the **JSON files** in the `outputs/css/` and `outputs/scss/` directories.
 
 ---
 
@@ -59,16 +64,12 @@ Hello, Design System aficionados! 👋 Welcome to **color-tokens-crafter** — a
 
 ---
 
-### 🧑‍💻 **Getting Started:**
+### 🛠️ **Dependencies** ✨
 
-1. Clone or download this repository.
-2. Install dependencies via `npm install`.
-3. Run the script with `node color-tokens-craft.js`.
-4. Follow the prompts and let the script do the heavy lifting for you!
+This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. Huge thanks to **Brian Grinstead** for this fantastic tool!
 
----
-
-### 🛠️ **Powered by TinyColor** ✨
+You can check out TinyColor's repository here:  
+[https://github.com/bgrins/TinyColor](https://github.com/bgrins/TinyColor)
 
 This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. Huge thanks to **Brian Grinstead** for this fantastic tool!
 
