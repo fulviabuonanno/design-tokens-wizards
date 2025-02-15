@@ -1,0 +1,34 @@
+{
+  "brand": {
+    "secondary": {
+      "base": {
+        "value": "hsl(0, 100%, 50%)",
+        "type": "color"
+      },
+      "lightest": {
+        "value": "hsl(0, 100%, 90%)",
+        "type": "color"
+      },
+      "lighter": {
+        "value": "hsl(0, 100%, 80%)",
+        "type": "color"
+      },
+      "light": {
+        "value": "hsl(0, 100%, 70%)",
+        "type": "color"
+      },
+      "dark": {
+        "value": "hsl(0, 100%, 30%)",
+        "type": "color"
+      },
+      "darker": {
+        "value": "hsl(0, 100%, 20%)",
+        "type": "color"
+      },
+      "darkest": {
+        "value": "hsl(0, 100%, 10%)",
+        "type": "color"
+      }
+    }
+  }
+}
