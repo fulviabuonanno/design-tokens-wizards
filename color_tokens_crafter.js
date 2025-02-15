@@ -144,6 +144,53 @@ const getNextVariant = (existingVariants) => {
   return `variant${existingVariants.length + 1}`;
 };
 
+// Function to convert tokens to CSS variables
+const convertTokensToCSS = (tokens) => {
+  let cssVariables = ':root {\n';
+  const processTokens = (obj, prefix = '') => {
+    for (const key in obj) {
+      if (obj[key].value) {
+        cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+      } else {
+        processTokens(obj[key], `${prefix}${key}-`);
+      }
+    }
+  };
+  processTokens(tokens);
+  cssVariables += '}';
+  return cssVariables;
+};
+
+// Function to save CSS variables to a file
+const saveCSSTokensToFile = (tokens, folder, fileName) => {
+  const cssContent = convertTokensToCSS(tokens);
+  fs.writeFileSync(`${folder}/${fileName}`, cssContent);
+  console.log(`✅ Saved CSS variables: ${folder}/${fileName}`);
+};
+
+// Function to convert tokens to SCSS variables
+const convertTokensToSCSS = (tokens) => {
+  let scssVariables = '';
+  const processTokens = (obj, prefix = '') => {
+    for (const key in obj) {
+      if (obj[key].value) {
+        scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+      } else {
+        processTokens(obj[key], `${prefix}${key}-`);
+      }
+    }
+  };
+  processTokens(tokens);
+  return scssVariables;
+};
+
+// Function to save SCSS variables to a file
+const saveSCSSTokensToFile = (tokens, folder, fileName) => {
+  const scssContent = convertTokensToSCSS(tokens);
+  fs.writeFileSync(`${folder}/${fileName}`, scssContent);
+  console.log(`✅ Saved SCSS variables: ${folder}/${fileName}`);
+};
+
 // Main function to orchestrate the color token generation process
 const main = async () => {
   console.log("\n=======================================");
@@ -160,6 +207,8 @@ const main = async () => {
   // Create output directories if they don't exist
   if (!fs.existsSync("outputs")) fs.mkdirSync("outputs");
   if (!fs.existsSync("outputs/tokens")) fs.mkdirSync("outputs/tokens");
+  if (!fs.existsSync("outputs/css")) fs.mkdirSync("outputs/css"); // Ensure CSS directory exists
+  if (!fs.existsSync("outputs/scss")) fs.mkdirSync("outputs/scss"); // Ensure SCSS directory exists
 
   let addMoreColors = true;
 
@@ -244,12 +293,25 @@ const main = async () => {
     addMoreColors = await askYesNo("🎨 Would you like to add another color? (yes/no or y/n): ");
   }
 
+  // Save CSS variables
+  saveCSSTokensToFile(tokensData, 'outputs/css', 'variables.css');
+
+  // Save SCSS variables
+  saveSCSSTokensToFile(tokensData, 'outputs/scss', 'variables.scss');
+
   console.log("\n=======================================");
   console.log("✅💪 PROCESS COMPLETED SUCCESSFULLY!");
   console.log("=======================================\n");
 
   console.log("✅ All files have been generated inside 'outputs/tokens/' folder.");
   console.log("📁 You can now use them as needed.\n");
+
+  console.log("=======================================");
+  console.log("📄 CSS & SCSS FILES");
+  console.log("=======================================\n");
+  console.log("Here are the generated CSS and SCSS files containing your color tokens. You can provide these files to your developers for immediate use and testing:\n");
+  console.log("📁 outputs/css/variables.css");
+  console.log("📁 outputs/scss/variables.scss\n");
 
   console.log("Thank you for using the Color Tokens Crafter! ❤️🚀🎨\n");
   console.log("=======================================\n");
