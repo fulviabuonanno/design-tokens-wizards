@@ -1,0 +1,17 @@
+{
+  "name": "color-tokens-wizard",
+  "version": "2.0.0",
+  "description": "A wizard for managing color tokens",
+  "main": "index.js",
+  "scripts": {
+    "color": "node wizards/color_tokens_wizard.js",
+    "size": "node wizards/size_tokens_wizard.js"
+  },
+  "author": "Fulvia Buonanno",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^12.4.2",
+    "path": "^0.12.7",
+    "tinycolor2": "^1.6.0"
+  }
+}
