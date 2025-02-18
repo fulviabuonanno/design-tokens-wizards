@@ -244,6 +244,43 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
+// Function to convert tokens to SCSS variables
+const convertTokensToSCSS = (tokens, name) => {
+  let scssVariables = '';
+  for (const key in tokens) {
+    scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
+  }
+  return scssVariables;
+};
+
+// Function to save SCSS variables to a file
+const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
+  const filePath = path.join(folder, fileName);
+  const fileExists = fs.existsSync(filePath);
+  const scssContent = convertTokensToSCSS(tokens, name);
+  fs.writeFileSync(filePath, scssContent);
+  return fileExists;
+};
+
+// Function to delete files for units that are not included
+const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
+  const unitFiles = {
+    pt: `size_variables_pt.${fileExtension}`,
+    rem: `size_variables_rem.${fileExtension}`,
+    em: `size_variables_em.${fileExtension}`
+  };
+
+  for (const [unit, fileName] of Object.entries(unitFiles)) {
+    if (!selectedUnits.includes(unit)) {
+      const filePath = path.join(folder, fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`🗑️ Deleted: ${filePath}`);
+      }
+    }
+  }
+};
+
 // Main function to orchestrate the size token generation process
 const main = async () => {
   console.log(chalk.black.bgBlueBright("\n======================================="));
@@ -265,17 +302,22 @@ const main = async () => {
   const outputsDir = path.join(__dirname, "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "size");
   const cssFolder = path.join(outputsDir, "css", "size");
+  const scssFolder = path.join(outputsDir, "scss", "size");
 
   // Create output directories if they don't exist
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
+  if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
 
   // Save size tokens in JSON format
   const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, 'size_tokens_px.json');
 
   // Save CSS variables
   const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'size_variables.css');
+
+  // Save SCSS variables
+  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'size_variables.scss');
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
@@ -292,6 +334,8 @@ const main = async () => {
   ]);
 
   let unitsAnswer;
+  let unitFileExists, unitCssFileExists, unitScssFileExists;
+
   if (convertAnswer.convert) {
     console.log(chalk.black.bgBlueBright("\n======================================="));
     console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
@@ -321,11 +365,23 @@ const main = async () => {
     const units = unitsAnswer.units;
     for (const unit of units) {
       const convertedTokens = convertPxToOtherUnits(tokensData, unit);
-      const unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens_${unit}.json`);
-      const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables_${unit}.css`);
-      console.log(chalk.green(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
-      console.log(chalk.green(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
+      unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens_${unit}.json`);
+      unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables_${unit}.css`);
+      unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables_${unit}.scss`);
+      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
+      console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
+      console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables_${unit}.scss`));
     }
+
+    // Delete unused unit files
+    deleteUnusedUnitFiles(tokensFolder, units, 'json');
+    deleteUnusedUnitFiles(cssFolder, units, 'css');
+    deleteUnusedUnitFiles(scssFolder, units, 'scss');
+  } else {
+    // Delete all unit files if no conversion is selected
+    deleteUnusedUnitFiles(tokensFolder, [], 'json');
+    deleteUnusedUnitFiles(cssFolder, [], 'css');
+    deleteUnusedUnitFiles(scssFolder, [], 'scss');
   }
   
   await showLoader(chalk.magenta("\nFinalizing your spell..."), 2000);
@@ -334,19 +390,21 @@ const main = async () => {
   console.log(chalk.bold("📄 OUTPUT JSON FILES"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  console.log(chalk.green(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_px.json`));
-  console.log(chalk.green(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_px.css`));
+  console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_px.json`));
+  console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_px.css`));
+  console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables_px.scss`));
 
   if (convertAnswer.convert) {
     const units = unitsAnswer.units;
     for (const unit of units) {
-      console.log(chalk.green(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
-      console.log(chalk.green(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
+      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
+      console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
+      console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables_${unit}.scss`));
     }
   }
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
-  console.log(chalk.bold("✅💪 SPELL COMPLETED"));
+  console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   console.log(chalk.red("Thank you for summoning the power of the Size Tokens Wizard! ❤️🪄📏\n"));
