@@ -1,15 +1,17 @@
 {
-  "name": "color-tokens-wizard",
+  "name": "design-tokens-wizard",
   "version": "2.0.0",
-  "description": "A wizard for managing color tokens",
-  "main": "index.js",
+  "description": "Some little script 🧙🦄🧝‍♀️ fellas that will help you generate your design tokens in just a few steps!",
+  "main": "color_wiz.js",
+  "type": "module",
   "scripts": {
-    "color": "node wizards/color_tokens_wizard.js",
-    "size": "node wizards/size_tokens_wizard.js"
+    "color": "node wizards/color_wiz.js",
+    "size": "node wizards/size_wiz.js"
   },
   "author": "Fulvia Buonanno",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^5.4.1",
     "inquirer": "^12.4.2",
     "path": "^0.12.7",
     "tinycolor2": "^1.6.0"

@@ -1,6 +1,12 @@
-const fs = require("fs");
-const path = require("path");
-const inquirer = require('inquirer').default; // Import default inquirer to avoid deprecation warning
+import fs from "fs";
+import path from "path";
+import inquirer from "inquirer";
+import { fileURLToPath } from 'url';
+import chalk from 'chalk';
+
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Function to display a loader for a specified duration
 const showLoader = (message, duration) => {
@@ -19,17 +25,17 @@ const showLoader = (message, duration) => {
 
 // Function to handle user input for generating size tokens
 const askForInput = async () => {
-  console.log("\n=======================================");
-  console.log("⭐️ STEP 1: DEFINE UNIT");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("⭐️ STEP 1: DEFINE UNIT"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   // Inform the user about the base unit
-  console.log("ℹ️ The base unit for size tokens is set to 'px'.");
+  console.log(chalk.blue("ℹ️ The base unit for size tokens is set to 'px'."));
   const unit = 'px';
 
-  console.log("\n=======================================");
-  console.log("🔤 STEP 2: NAME YOUR TOKENS");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🔤 STEP 2: NAME YOUR TOKENS"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   // Use inquirer to ask for a name for the size tokens
   const nameAnswer = await inquirer.prompt([
@@ -49,9 +55,9 @@ const askForInput = async () => {
   ]);
   const name = nameAnswer.name;
 
-  console.log("\n=======================================");
-  console.log("🔢 STEP 3: DEFINE SCALE");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🔢 STEP 3: DEFINE SCALE"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   // Use inquirer to ask for the scale
   const scaleAnswer = await inquirer.prompt([
@@ -69,14 +75,14 @@ const askForInput = async () => {
   ]);
 
   if (scaleAnswer.scale === 'C') {
-    console.log("\n=======================================");
-    console.log("📚 SCALE INFORMATION");
-    console.log("=======================================\n");
+    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.bold("📚 SCALE INFORMATION"));
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
     console.log("Scale Name       | Description                                      | Examples");
     console.log("--------------------------------------------------------------------------------");
     console.log("4px-Grid         | A standard scale where each step is 4 units.     | 4, 8, 12, 16, ...");
     console.log("8-point Grid     | A standard scale where each step is 8 units.     | 8, 16, 24, 32, ...");
-    console.log("=======================================\n");
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
 
     // Ask for the scale again after showing information
     const newScaleAnswer = await inquirer.prompt([
@@ -95,9 +101,9 @@ const askForInput = async () => {
 
   const scale = scaleAnswer.scale;
 
-  console.log("\n=======================================");
-  console.log("🔢 STEP 4: DEFINE NUMBER OF VALUES");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🔢 STEP 4: DEFINE NUMBER OF VALUES"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   // Use inquirer to ask for the number of values
   const numValuesAnswer = await inquirer.prompt([
@@ -118,9 +124,9 @@ const askForInput = async () => {
   ]);
   const numValues = parseInt(numValuesAnswer.numValues);
 
-  console.log("\n=======================================");
-  console.log("🔤 STEP 5: DEFINE SCALE NAMING CRITERIA");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🔤 STEP 5: DEFINE SCALE NAMING CRITERIA"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   // Function to ask for naming criteria
   const askForNamingCriteria = async () => {
@@ -145,9 +151,9 @@ const askForInput = async () => {
   // Check if T-shirt size is selected and number of values is more than 20
   while ((namingChoice === 'A' && numValues > 20) || (namingChoice === 'D' && numValues > 26)) {
     if (namingChoice === 'A' && numValues > 20) {
-      console.log("❌ T-shirt Size scale naming criteria is not recommended for more than 20 values. Please consider using Incremental or Cardinal naming criteria.");
+      console.log(chalk.red("❌ T-shirt Size scale naming criteria is not recommended for more than 20 values. Please consider using Incremental or Cardinal naming criteria."));
     } else if (namingChoice === 'D' && numValues > 26) {
-      console.log("❌ Alphabetical scale naming criteria is not recommended for more than 26 values.");
+      console.log(chalk.red("❌ Alphabetical scale naming criteria is not recommended for more than 26 values."));
     }
     namingChoice = await askForNamingCriteria();
   }
@@ -240,13 +246,13 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
 
 // Main function to orchestrate the size token generation process
 const main = async () => {
-  console.log("\n=======================================");
-  console.log("🪄 STARTING THE MAGIC");
-  console.log("=======================================");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🪄 STARTING THE MAGIC"));
+  console.log(chalk.black.bgBlueBright("======================================="));
 
-  await showLoader("\nCasting magic of tokens", 2000);
+  await showLoader(chalk.magenta("\n🧚 Casting the magic of tokens"), 2000);
 
-  console.log("\n❤️ Welcome to \x1b[1m\x1b[34mSize Tokens Wizard\x1b[0m script! \nLet this lil' 🧙 help you to build your tokens by following the steps below to generate your tokens \nand make them usable inside \x1b[4mTokens Studio\x1b[0m");
+  console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.blue("Size Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step. \nGenerate your tokens and prepare them ready for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
   const input = await askForInput();
   if (!input) return;
@@ -271,9 +277,9 @@ const main = async () => {
   // Save CSS variables
   const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'size_variables.css');
 
-  console.log("\n=======================================");
-  console.log("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   // Ask if the user wants to convert tokens to other units
   const convertAnswer = await inquirer.prompt([
@@ -287,9 +293,9 @@ const main = async () => {
 
   let unitsAnswer;
   if (convertAnswer.convert) {
-    console.log("\n=======================================");
-    console.log("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS");
-    console.log("=======================================\n");
+    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
 
     // Ask the user to select the units to convert to
     unitsAnswer = await inquirer.prompt([
@@ -317,34 +323,34 @@ const main = async () => {
       const convertedTokens = convertPxToOtherUnits(tokensData, unit);
       const unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens_${unit}.json`);
       const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables_${unit}.css`);
-      console.log(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`);
-      console.log(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`);
+      console.log(chalk.green(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
+      console.log(chalk.green(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
     }
   }
   
-  await showLoader("\nFinalizing your spell", 2000);
+  await showLoader(chalk.magenta("\nFinalizing your spell..."), 2000);
 
-  console.log("\n=======================================");
-  console.log("📄 OUTPUT JSON FILES");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("📄 OUTPUT JSON FILES"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  console.log(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_px.json`);
-  console.log(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_px.css`);
+  console.log(chalk.green(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_px.json`));
+  console.log(chalk.green(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_px.css`));
 
   if (convertAnswer.convert) {
     const units = unitsAnswer.units;
     for (const unit of units) {
-      console.log(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`);
-      console.log(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`);
+      console.log(chalk.green(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
+      console.log(chalk.green(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
     }
   }
 
-  console.log("\n=======================================");
-  console.log("✅💪 PROCESS COMPLETED");
-  console.log("=======================================\n");
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("✅💪 SPELL COMPLETED"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  console.log("Thank you for casting the power of the Size Tokens Wizard! ❤️🪄📏\n");
-  console.log("=======================================\n");
+  console.log(chalk.red("Thank you for summoning the power of the Size Tokens Wizard! ❤️🪄📏\n"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 };
 
 // Start the main function
