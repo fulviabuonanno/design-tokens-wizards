@@ -407,7 +407,7 @@ const main = async () => {
   console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  console.log(chalk.red("Thank you for summoning the power of the Size Tokens Wizard! ❤️🪄📏\n"));
+  console.log(chalk.blue("Thank you for summoning the power of the Size Tokens Wizard! ❤️🪄📏\n"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 };
 
