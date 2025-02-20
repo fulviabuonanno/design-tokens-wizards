@@ -73,8 +73,8 @@ Color tokens can be complex, but with this wizard 🧙, you can simplify the pro
 
 8. **Generate CSS & SCSS Files**  
    The script will create CSS and SCSS files with color tokens as variables, saved in the following directories:
-   - **CSS**: Stored in `outputs/css/color/color_variables.css`
-   - **SCSS**: Stored in `outputs/scss/color/color_variables.scss`
+   - **CSS**: Stored in `outputs/css/color/color_variables_{format}.css`
+   - **SCSS**: Stored in `outputs/scss/color/color_variables_{format}.scss`
 
 9. **Add More Colors to the Same Group**  
    To add more colors to the existing group, repeat steps 1 and 2. The script will overwrite the existing JSON files in the `tokens/` directory based on your criteria.
