@@ -121,18 +121,17 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
    - **Points (pt)**
    - **Rem (rem)**
    - **Em (em)**
+   - **Percentage(%)**
 
 9. **Export Size Tokens**  
    The script exports your size tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
 
 10. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your size tokens as variables:
-    - **CSS**: Stored in `outputs/css/size/size_variables.css`
-    - **SCSS**: Stored in `outputs/scss/size/size_variables.scss`
-
+    - **CSS**: Stored in `outputs/css/size/size_variables_{unit].css`
+    - **SCSS**: Stored in `outputs/scss/size/size_variables_{unit}.scss`
 
 ---
-
 
 ### 🛠️ **Dependencies** ✨
 
