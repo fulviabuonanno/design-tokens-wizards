@@ -115,8 +115,6 @@ const askForInput = async () => {
         const num = parseInt(input);
         if (isNaN(num) || num <= 0) {
           return `❌ Invalid number of values "${input}". Please provide a valid number.`;
-        } else if (num > 30) {
-          return `❌ Number of values "${input}" is too high. Please provide a number less than or equal to 30.`;
         }
         return true;
       }
@@ -130,17 +128,32 @@ const askForInput = async () => {
 
   // Function to ask for naming criteria
   const askForNamingCriteria = async () => {
+    let choices = [];
+    if (numValues <= 20) {
+      choices = [
+        { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 'A' },
+        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
+        { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
+      ];
+    } else if (numValues < 27) {
+      choices = [
+        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
+        { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
+      ];
+    } else { // numValues >= 27 (also applies for numValues >= 30)
+      choices = [
+        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' }
+      ];
+    }
     const namingChoiceAnswer = await inquirer.prompt([
       {
         type: 'list',
         name: 'namingChoice',
         message: 'Please choose scale naming criteria of your preference:',
-        choices: [
-          { name: 'A. T-shirt size (e.g., xs, sm, md, lg, xl)', value: 'A' },
-          { name: 'B. Incremental (e.g., 100, 200, 300)', value: 'B' },
-          { name: 'C. Cardinal (e.g., 1, 2, 3)', value: 'C' },
-          { name: 'D. Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
-        ]
+        choices: choices
       }
     ]);
     return namingChoiceAnswer.namingChoice;
@@ -177,7 +190,7 @@ const generateSizeTokens = (unit, numValues, namingChoice, scale) => {
     let name;
     switch (namingChoice) {
       case "A":
-        name = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl","14xl","15xl","13xl"][i - 1] || `size${i}`;
+        name = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `size${i}`;
         break;
       case "B":
         name = (i * 100).toString();
@@ -192,7 +205,7 @@ const generateSizeTokens = (unit, numValues, namingChoice, scale) => {
     const value = baseValue * i;
     tokens[name] = {
       value: `${value}${unit}`,
-      type: "size"
+      type: "sizing" 
     };
   }
   return tokens;
@@ -203,7 +216,8 @@ const convertPxToOtherUnits = (tokens, unit) => {
   const conversions = {
     pt: (value) => `${value * 0.75}pt`,
     rem: (value) => `${value / 16}rem`,
-    em: (value) => `${value / 16}em`
+    em: (value) => `${value / 16}em`,
+    percent: (value) => `${(value / 16) * 100}%`
   };
 
   const convertedTokens = {};
@@ -211,7 +225,7 @@ const convertPxToOtherUnits = (tokens, unit) => {
     const numericValue = parseFloat(token.value);
     convertedTokens[key] = {
       value: conversions[unit](numericValue),
-      type: "size"
+      type: "sizing"
     };
   }
   return convertedTokens;
@@ -267,7 +281,8 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
   const unitFiles = {
     pt: `size_variables_pt.${fileExtension}`,
     rem: `size_variables_rem.${fileExtension}`,
-    em: `size_variables_em.${fileExtension}`
+    em: `size_variables_em.${fileExtension}`,
+    percent: `size_variables_percent.${fileExtension}`
   };
 
   for (const [unit, fileName] of Object.entries(unitFiles)) {
@@ -287,7 +302,7 @@ const main = async () => {
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgBlueBright("======================================="));
 
-  await showLoader(chalk.magenta("\n🧚 Casting the magic of tokens"), 2000);
+  await showLoader(chalk.bold.magenta("\n🧚 Casting the magic of tokens"), 2000);
 
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.blue("Size Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step. \nGenerate your tokens and prepare them ready for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
@@ -299,7 +314,7 @@ const main = async () => {
   // Generate size tokens data
   const tokensData = generateSizeTokens(unit, numValues, namingChoice, scale);
 
-  const outputsDir = path.join(__dirname, "outputs");
+  const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "size");
   const cssFolder = path.join(outputsDir, "css", "size");
   const scssFolder = path.join(outputsDir, "scss", "size");
@@ -328,7 +343,7 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the tokens to other units (pt, rem, em)?',
+      message: 'Would you like to convert the tokens to other units (pt, rem, em, %)?',
       default: true
     }
   ]);
@@ -350,7 +365,8 @@ const main = async () => {
         choices: [
           { name: 'pt', value: 'pt' },
           { name: 'rem', value: 'rem' },
-          { name: 'em', value: 'em' }
+          { name: 'em', value: 'em' },
+          { name: '%', value: 'percent' }
         ],
         validate: (input) => {
           if (input.length === 0) {
@@ -384,10 +400,10 @@ const main = async () => {
     deleteUnusedUnitFiles(scssFolder, [], 'scss');
   }
   
-  await showLoader(chalk.magenta("\nFinalizing your spell..."), 2000);
+  await showLoader(chalk.bold.magenta("\n🪄 Finalizing your spell..."), 2000);
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
-  console.log(chalk.bold("📄 OUTPUT JSON FILES"));
+  console.log(chalk.bold("📄 OUTPUT FILES"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_px.json`));
@@ -407,7 +423,7 @@ const main = async () => {
   console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  console.log(chalk.red("Thank you for summoning the power of the Size Tokens Wizard! ❤️🪄📏\n"));
+  console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.blueBright("Size Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 };
 

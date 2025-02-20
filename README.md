@@ -1,8 +1,8 @@
-# design-tokens-wizards 🪄🧙🎨 Version 1.1.
+# design-tokens-wizards 🪄🧙🎨 
 
 Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`** — the enchanting scripts that helps you craft design tokens in just a few simple steps... as if by magic! 🪄✨
 
-With **`design-tokens-wizard`**, you’ll unlock:
+With **`design-tokens-wizards`**, you’ll unlock:
 
 **+Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!  
 **+Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.  
@@ -20,8 +20,8 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get
 To use the scripts, you need to have **Node.js** installed on your machine. You can download and install it from [Node.js official website](https://nodejs.org/).
 
 2. **Run the Script**  
-   ```markdown
-   Select which wizard will come to your aid by executing script in your terminal. These are all the wizards you'll have available:
+
+   Select which wizard will come to your aid by executing a script in your terminal. These are all the wizards you'll have available:
 
    | Token Group           | Script          | Command           | Description                                      | Versioning |
    |-----------------------|-----------------|-------------------|--------------------------------------------------|------------|
@@ -32,11 +32,12 @@ To use the scripts, you need to have **Node.js** installed on your machine. You 
    | **BORDER RADIUS WIZ** | Coming Soon 🔜  | -                 | Generate and manage border radius tokens         | -          |
    | **ACCESSIBILITY WIZ** | Coming Soon 🔜  | -                 | Validate color accessibility                     | -          |
    | **SHADOW WIZ**        | Coming Soon 🔜  | -                 | Generate and manage shadow tokens                | -          |
-   | **JSON POT WIZ**      | Coming Soon 🔜  | -                 | Merge all your json token files in one single file | -          |
-   ```
+   | **JSON POT WIZ**      | Coming Soon 🔜  | -                 | Merge all your JSON token files into one single file | -          |
+
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
+Version 1.2. 
 
 Color tokens can be complex, but with this wizard 🧙, you can simplify the process and save time. Start with a HEX value, and the wizard will convert it into RGB, RGBA, or HSL formats in just a few steps. The tokens are ready for use in the Tokens Studio plugin and also provide CSS/SCSS outputs for your developers.
 
@@ -81,6 +82,7 @@ Color tokens can be complex, but with this wizard 🧙, you can simplify the pro
 ---
 
 ### 📏 **Size Tokens Wizard** ✨
+Version 1.0.
 
 Managing size tokens can be a daunting task, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and the wizard will generate a range of size tokens in various units, ready for use in your design system and development projects.
 
