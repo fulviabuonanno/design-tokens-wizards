@@ -25,9 +25,9 @@ To use the scripts, you need to have **Node.js** installed on your machine. You 
 
    | Token Group           | Script          | Command           | Description                                      | Versioning |
    |-----------------------|-----------------|-------------------|--------------------------------------------------|------------|
-   | **COLOR WIZ**         | `color-wiz.js`  | `npm run color`   | Generate and manage color tokens                 | 1.2        |
-   | **SIZE WIZ**          | `size_wiz.js`   | `npm run size`    | Generate and manage size tokens                  | 1.0        |
-   | **SPACING WIZ**       | Coming Soon 🔜  | -                 | Generate and manage spacing tokens               | -          |
+   | **COLOR WIZ**         | `color-wiz.js`  | `npm run color`   | Generate and manage color tokens                 | 1.2.1      |
+   | **SIZE WIZ**          | `size_wiz.js`   | `npm run size`    | Generate and manage size tokens                  | 1.0.1      |
+   | **SPACE WIZ**         | `space_wiz.js`  | `npm run space`   | Generate and manage spacing tokens               | 1.0.1      |
    | **TYPOGRAPHY WIZ**    | Coming Soon 🔜  | -                 | Generate and manage typography tokens            | -          |
    | **BORDER RADIUS WIZ** | Coming Soon 🔜  | -                 | Generate and manage border radius tokens         | -          |
    | **ACCESSIBILITY WIZ** | Coming Soon 🔜  | -                 | Validate color accessibility                     | -          |
@@ -37,7 +37,7 @@ To use the scripts, you need to have **Node.js** installed on your machine. You 
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
-Version 1.2. 
+Version 1.2.1. 
 
 Color tokens can be complex, but with this wizard 🧙, you can simplify the process and save time. Start with a HEX value, and the wizard will convert it into RGB, RGBA, or HSL formats in just a few steps. The tokens are ready for use in the Tokens Studio plugin and also provide CSS/SCSS outputs for your developers.
 
@@ -82,7 +82,7 @@ Color tokens can be complex, but with this wizard 🧙, you can simplify the pro
 ---
 
 ### 📏 **Size Tokens Wizard** ✨
-Version 1.0.
+Version 1.0.1.
 
 Managing size tokens can be a daunting task, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and the wizard will generate a range of size tokens in various units, ready for use in your design system and development projects.
 
@@ -132,6 +132,60 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
     - **SCSS**: Stored in `outputs/scss/size/size_variables_{unit}.scss`
 
 ---
+
+---
+
+### 📏 **Space Tokens Wizard** ✨
+Version 1.0.1.
+
+Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
+
+1. **Run the Space Wiz Script**  
+   Begin by running the Space Wiz script to start the process. Open your terminal and execute the following command:
+   ```sh
+   npm run space
+   ```
+
+2. **Define the Base Unit**  
+   The default base unit for space tokens is pixels (px).
+
+3. **Name Your Space Tokens**  
+   Provide a name for your space tokens (e.g., space, margin, padding).
+
+4. **Select a Scale**  
+   Choose a predefined scale for your tokens:
+   - **4px Grid**: Steps increase in increments of 4
+   - **8-Point Grid**: Steps increase in increments of 8
+
+5. **Define the Number of Values**  
+   Specify how many space values you want to generate (e.g., 6 values for a small-to-large scale).
+
+6. **Choose Naming Criteria**  
+   Select a naming pattern for your space tokens:
+   - **T-shirt Sizes**: (xs, sm, md, lg, xl)
+   - **Incremental Numbers**: (100, 200, 300)
+   - **Cardinal Numbers**: (1, 2, 3)
+   - **Alphabetical**: (A, B, C or a, b, c)
+
+7. **Generate Space Tokens**  
+   The script will generate a list of space tokens based on the chosen scale and naming criteria.
+
+8. **Convert to Other Units (Optional)**  
+   By default, tokens are stored in pixels (px), but you can also convert them to:
+   - **Points (pt)**
+   - **Rem (rem)**
+   - **Em (em)**
+   - **Percentage(%)**
+
+9. **Export Space Tokens**  
+   The script exports your space tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
+
+10. **Generate CSS & SCSS Files**  
+    Automatically create CSS and SCSS files with your space tokens as variables:
+    - **CSS**: Stored in `outputs/css/space/space_variables_{unit}.css`
+    - **SCSS**: Stored in `outputs/scss/space/space_variables_{unit}.scss`
+
+----
 
 ### 🛠️ **Dependencies** ✨
 
