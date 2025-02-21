@@ -133,8 +133,6 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 
 ---
 
----
-
 ### 📏 **Space Tokens Wizard** ✨
 Version 1.0.1.
 
