@@ -5,6 +5,12 @@ import inquirer from "inquirer";
 import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 
+const versionArg = process.argv.find(arg => arg.startsWith("--version="));
+if (versionArg) {
+  const version = versionArg.split("=")[1];
+  console.log(chalk.bold.whiteBright.bgGray(`Color Tokens Wizard - Version ${version}`));
+}
+
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -500,3 +506,5 @@ if (formatChoices) {
 
 // Start the main function
 main();
+
+
