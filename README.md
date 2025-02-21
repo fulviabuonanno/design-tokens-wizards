@@ -23,7 +23,7 @@ To use the scripts, you need to have **Node.js** installed on your machine. You 
 
    Select which wizard will come to your aid by executing a script in your terminal. These are all the wizards you'll have available:
 
-   | Token Group           | Script          | Command           | Description                                      | Versioning |
+   | Token Group           | Script          | Command           | Description                                      | Version |
    |-----------------------|-----------------|-------------------|--------------------------------------------------|------------|
    | **COLOR WIZ**         | `color-wiz.js`  | `npm run color`   | Generate and manage color tokens                 | 1.2.1      |
    | **SIZE WIZ**          | `size_wiz.js`   | `npm run size`    | Generate and manage size tokens                  | 1.0.1      |
