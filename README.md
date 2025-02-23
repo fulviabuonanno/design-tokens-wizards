@@ -133,7 +133,7 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 
 ---
 
-### 📏 **Space Tokens Wizard** ✨
+### 🔳 **Space Tokens Wizard** ✨
 Version 1.0.1.
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
@@ -182,6 +182,54 @@ Creating and managing space tokens can be a daunting task, but with the Space To
     Automatically create CSS and SCSS files with your space tokens as variables:
     - **CSS**: Stored in `outputs/css/space/space_variables_{unit}.css`
     - **SCSS**: Stored in `outputs/scss/space/space_variables_{unit}.scss`
+
+----
+
+### ⭕️ **Border Radius Tokens Wizard** ✨  
+Version 1.0.0.
+
+Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
+
+1. **Run the Border Radius Wizard Script**  
+   Start by running the wizard script. Open your terminal and execute the following command:
+   ```sh
+  npm run radii
+   ```
+
+2. **Define the Token Name**  
+   Choose a name for your border-radius tokens (e.g., `border-radius`, `corner-radius`, `radius`).
+
+3. **Select Scale Structure**  
+   Decide whether to include 'none' and 'full' values for the border radius.
+
+4. **Define Intermediate Steps**  
+   Optionally, add intermediate steps for a more granular scale:
+   - **T-shirt Sizes:** (xs, sm, md, lg, xl)
+   - **Incremental Numbers:** (100, 200, 300, 400)
+   - **Cardinal Numbers:** (01, 02, 03, 04 or 1, 2, 3, 4)
+   - **Alphabetical:** (A, B, C, D or a, b, c, d)
+   - **Semantic:** (subtle, soft, moderate, bold)
+
+5. **Define Value Scale**  
+   Select a value scale based on either minimal or expressive bases:
+   - **Minimal Scale:** Base 4px
+   - **Expressive Scale:** Base 8px
+
+6. **Generate Border Radius Tokens**  
+   The script generates a list of border-radius tokens based on your input.
+
+7. **Convert to Other Units (Optional)**  
+   Convert tokens to other units such as:
+   - **Points (pt)**
+   - **Rem (rem)**
+
+8. **Export Border Radius Tokens**  
+   The tokens are exported in Tokens Studio format as JSON files, ready for integration into your design system.
+
+9. **Generate CSS & SCSS Files**  
+   Automatically create CSS and SCSS files with your border-radius tokens as variables:
+   - **CSS:** Stored in `outputs/css/border-radius/border_radius_variables_{unit}.css`
+   - **SCSS:** Stored in `outputs/scss/border-radius/border_radius_variables_{unit}.scss`
 
 ----
 
