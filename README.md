@@ -19,21 +19,22 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get
 1. **Install Node.JS**
 To use the scripts, you need to have **Node.js** installed on your machine. You can download and install it from [Node.js official website](https://nodejs.org/).
 
-2. **Run the Script**  
+2. **Run the Script**
 
-   Select which wizard will come to your aid by executing a script in your terminal. These are all the wizards you'll have available:
+Select the wizard that will come to your aid by executing the corresponding script in your terminal. Below is a list of available wizards:
 
-   | Token Group           | Script          | Command           | Description                                      | Version |
-   |-----------------------|-----------------|-------------------|--------------------------------------------------|------------|
-   | **COLOR WIZ**         | `color-wiz.js`  | `npm run color`   | Generate and manage color tokens                 | 1.2.1      |
-   | **SIZE WIZ**          | `size_wiz.js`   | `npm run size`    | Generate and manage size tokens                  | 1.0.1      |
-   | **SPACE WIZ**         | `space_wiz.js`  | `npm run space`   | Generate and manage spacing tokens               | 1.0.1      |
-   | **TYPOGRAPHY WIZ**    | Coming Soon 🔜  | -                 | Generate and manage typography tokens            | -          |
-   | **BORDER RADIUS WIZ** | Coming Soon 🔜  | `npm run radii`                  | Generate and manage border radius tokens         | -          |
-   | **ACCESSIBILITY WIZ** | Coming Soon 🔜  | -                 | Validate color accessibility                     | -          |
-   | **SHADOW WIZ**        | Coming Soon 🔜  | -                 | Generate and manage shadow tokens                | -          |
-   | **OPACITY WIZ**        | Coming Soon 🔜  | -                 | Generate and manage opacity tokens                | -          |
-   | **JSON POT WIZ**      | Coming Soon 🔜  | -                 | Helper to merge all your JSON token files into one single file | -          |
+| Token Wizard         | Script Name    | Run Command      | Description                                    | Version |
+|----------------------|----------------|------------------|------------------------------------------------|---------|
+| 🟡**COLOR WIZ**        | `color-wiz.js` | `npm run color`  | Generate and manage color tokens               | 1.2.1   |
+| 🔵**SIZE WIZ**         | `size_wiz.js`  | `npm run size`   | Generate and manage size tokens                | 1.0.1   |
+| 🟣**SPACE WIZ**        | `space_wiz.js` | `npm run space`  | Generate and manage spacing tokens             | 1.0.1   |
+| 🟢**BORDER RADIUS WIZ**| `radii_wiz.js` | `npm run radii`  | Generate and manage border radius tokens       | 1.0.0   |
+| **SHADOW WIZ**       | Coming Soon    | –                | Generate and manage shadow tokens              | –       |
+| **OPACITY WIZ**      | Coming Soon    | –                | Generate and manage opacity tokens  
+| **TYPOGRAPHY WIZ**   | Coming Soon    | –                | Generate and manage typography tokens          | –       |           | –       |
+| **FILE POT WIZ**     | Coming Soon    | –                | Merge all your token files into a single file  | –       |
+| **VOID POT WIZ**     | `void_wiz.js`  | `npm run void`   | Delete all your output files in one spell      | 1.0.0   |
+| **ACCESSIBILITY WIZ**| Coming Soon    | –                | Validate color accessibility                   | –       |
 
 ---
 
