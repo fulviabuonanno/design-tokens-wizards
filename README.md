@@ -4,11 +4,11 @@ Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`**
 
 With **`design-tokens-wizards`**, you’ll unlock:
 
-**+Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!  
-**+Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.  
-**+Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.  
-**+Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!  
-**+Ready-to-CSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
+- **+Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!  
+- **+Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.  
+- **+Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.  
+- **+Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!  
+- **+Ready-to-CSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
 
 Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get started and cast some design magic together!
 
@@ -29,10 +29,11 @@ To use the scripts, you need to have **Node.js** installed on your machine. You 
    | **SIZE WIZ**          | `size_wiz.js`   | `npm run size`    | Generate and manage size tokens                  | 1.0.1      |
    | **SPACE WIZ**         | `space_wiz.js`  | `npm run space`   | Generate and manage spacing tokens               | 1.0.1      |
    | **TYPOGRAPHY WIZ**    | Coming Soon 🔜  | -                 | Generate and manage typography tokens            | -          |
-   | **BORDER RADIUS WIZ** | Coming Soon 🔜  | -                 | Generate and manage border radius tokens         | -          |
+   | **BORDER RADIUS WIZ** | Coming Soon 🔜  | `npm run radii`                  | Generate and manage border radius tokens         | -          |
    | **ACCESSIBILITY WIZ** | Coming Soon 🔜  | -                 | Validate color accessibility                     | -          |
    | **SHADOW WIZ**        | Coming Soon 🔜  | -                 | Generate and manage shadow tokens                | -          |
-   | **JSON POT WIZ**      | Coming Soon 🔜  | -                 | Merge all your JSON token files into one single file | -          |
+   | **OPACITY WIZ**        | Coming Soon 🔜  | -                 | Generate and manage opacity tokens                | -          |
+   | **JSON POT WIZ**      | Coming Soon 🔜  | -                 | Helper to merge all your JSON token files into one single file | -          |
 
 ---
 
