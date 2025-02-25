@@ -1,5 +1,3 @@
-// Add more abbreviations for spacing tokens like "sp"
-
 // IMPORT NECESSARY MODULES
 import fs from "fs";
 import path from "path";

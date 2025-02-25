@@ -57,7 +57,8 @@ const askForInput = async () => {
       type: 'list',
       name: 'name',
       message: '📝 What name would you like to assign to your size tokens?',
-      choices: ['size', 'sizing', 'dimension', 'custom']
+      choices: ['size', 'sizing', 'dimension', 's', 'sz', 'd', ' dim', 'custom'],
+      loop: false
     }
   ]);
 
@@ -163,19 +164,19 @@ const askForInput = async () => {
     if (numValues <= 20) {
       choices = [
         { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 'A' },
-        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Incremental (e.g., 50, 100, 150)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
       ];
     } else if (numValues < 27) {
       choices = [
-        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Incremental (e.g., 50, 100, 150)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
       ];
     } else { // numValues >= 27
       choices = [
-        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Incremental (e.g., 50, 100, 150)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' }
       ];
     }
@@ -187,9 +188,10 @@ const askForInput = async () => {
         choices: choices
       }
     ]);
-
+    
     let cardinalFormat = 'unpadded';
     let alphabeticalCase = 'uppercase';
+    let incrementalStep = 100; // valor por defecto
     if (namingChoiceAnswer.namingChoice === 'C') {
       const cardinalFormatAnswer = await inquirer.prompt([
         {
@@ -216,18 +218,32 @@ const askForInput = async () => {
         }
       ]);
       alphabeticalCase = alphabeticalAnswer.alphabeticalCase;
+    } else if (namingChoiceAnswer.namingChoice === 'B') {
+      const incrementalAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'increment',
+          message: 'For Incremental scale, choose the step increment:',
+          choices: [
+            { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: '50' },
+            { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: '100' }
+          ]
+        }
+      ]);
+      incrementalStep = parseInt(incrementalAnswer.increment, 10);
     }
-
     return { 
       namingChoice: namingChoiceAnswer.namingChoice, 
       cardinalFormat, 
-      alphabeticalCase 
+      alphabeticalCase,
+      incrementalStep 
     };
   };
 
   let namingChoice = await askForNamingCriteria();
   let cardinalFormat = namingChoice.cardinalFormat;
   let alphabeticalCase = namingChoice.alphabeticalCase;
+  let incrementalStep = namingChoice.incrementalStep;
 
   // Validate naming criteria for T-shirt and Alphabetical choices given the number of values.
   while ((namingChoice.namingChoice === 'A' && numValues > 20) || (namingChoice.namingChoice === 'D' && numValues > 26)) {
@@ -239,9 +255,10 @@ const askForInput = async () => {
     namingChoice = await askForNamingCriteria();
     cardinalFormat = namingChoice.cardinalFormat;
     alphabeticalCase = namingChoice.alphabeticalCase;
+    incrementalStep = namingChoice.incrementalStep;
   }
 
-  return { unit, name, numValues, namingChoice: namingChoice.namingChoice, scale, cardinalFormat, alphabeticalCase };
+  return { unit, name, numValues, namingChoice: namingChoice.namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep };
 };
 
 /**
@@ -252,9 +269,10 @@ const askForInput = async () => {
  * @param {string} scale - Selected scale type ("A" or "B").
  * @param {string} cardinalFormat - Format for Cardinal naming ("padded" or "unpadded").
  * @param {string} alphabeticalCase - Case for Alphabetical naming ("uppercase" or "lowercase").
+ * @param {number} incrementalStep - Step increment for Incremental naming.
  * @returns {object} tokens - Generated tokens object.
  */
-const generateSizeTokens = (unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase) => {
+const generateSizeTokens = (unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep) => {
   const tokens = {};
   let baseValue;
   switch (scale) {
@@ -272,7 +290,7 @@ const generateSizeTokens = (unit, numValues, namingChoice, scale, cardinalFormat
         name = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `size${i}`;
         break;
       case "B":
-        name = (i * 100).toString();
+        name = (i * incrementalStep).toString();
         break;
       case "C":
         name = cardinalFormat === 'padded' ? i.toString().padStart(2, '0') : i.toString();
@@ -332,16 +350,29 @@ const sortObjectRecursively = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map(sortObjectRecursively);
   }
-  const sortedKeys = Object.keys(obj).sort((a, b) => {
-    // If both keys can be converted to numbers, sort numerically.
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  const customSort = (a, b) => {
+    const aInList = tshirtOrder.includes(a);
+    const bInList = tshirtOrder.includes(b);
+    if (aInList && bInList) {
+      return tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b);
+    } else if (aInList) {
+      return -1;
+    } else if (bInList) {
+      return 1;
+    }
     const numA = Number(a);
     const numB = Number(b);
     if (!isNaN(numA) && !isNaN(numB)) {
       return numA - numB;
     }
-    // Otherwise, use localeCompare.
     return a.localeCompare(b);
-  });
+  };
+  const sortedKeys = Object.keys(obj).sort(customSort);
   const sortedObj = {};
   sortedKeys.forEach(key => {
     sortedObj[key] = sortObjectRecursively(obj[key]);
@@ -357,33 +388,38 @@ const sortObjectRecursively = (obj) => {
  * @returns {string} JSON string representation.
  */
 const customStringify = (value, indent = 2) => {
-  const spacer = ' '.repeat(indent);
-  if (value === null || typeof value !== 'object') {
-    return JSON.stringify(value);
-  }
-  if (Array.isArray(value)) {
-    const items = value.map(item => customStringify(item, indent + 2));
-    return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
-  } else {
-    // Manually sort the keys using numeric comparison when possible.
-    const keys = Object.keys(value).sort((a, b) => {
-      const numA = Number(a);
-      const numB = Number(b);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        return numA - numB;
-      }
-      return a.localeCompare(b);
-    });
-    let result = "{\n";
-    keys.forEach((key, idx) => {
-      result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
-      if (idx < keys.length - 1) {
-        result += ",\n";
-      }
-    });
-    result += "\n" + ' '.repeat(indent - 2) + "}";
-    return result;
-  }
+    const spacer = ' '.repeat(indent);
+    if (value === null || typeof value !== 'object') {
+        return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+        const items = value.map(item => customStringify(item, indent + 2));
+        return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
+    } else {
+        let keys = Object.keys(value);
+        // Si el objeto tiene las keys "value" y "type", se reordenan.
+        if (keys.includes('value') && keys.includes('type')) {
+            keys = ['value', 'type', ...keys.filter(k => k !== 'value' && k !== 'type').sort((a, b) => a.localeCompare(b))];
+        } else {
+            keys = keys.sort((a, b) => {
+                const numA = Number(a);
+                const numB = Number(b);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return numA - numB;
+                }
+                return a.localeCompare(b);
+            });
+        }
+        let result = "{\n";
+        keys.forEach((key, idx) => {
+            result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
+            if (idx < keys.length - 1) {
+                result += ",\n";
+            }
+        });
+        result += "\n" + ' '.repeat(indent - 2) + "}";
+        return result;
+    }
 };
 
 /**
@@ -415,21 +451,35 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
  * @returns {string} CSS content.
  */
 const convertTokensToCSS = (tokens, name) => {
-    // Ordena las claves numéricamente cuando sean valores numéricos
-    const sortedKeys = Object.keys(tokens).sort((a, b) => {
-        const numA = Number(a);
-        const numB = Number(b);
-        if (!isNaN(numA) && !isNaN(numB)) {
-            return numA - numB;
-        }
-        return a.localeCompare(b);
-    });
-    let cssVariables = ':root {\n';
-    sortedKeys.forEach(key => {
-        cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
-    });
-    cssVariables += '}';
-    return cssVariables;
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  const customSort = (a, b) => {
+    const aInList = tshirtOrder.includes(a);
+    const bInList = tshirtOrder.includes(b);
+    if (aInList && bInList) {
+      return tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b);
+    } else if (aInList) {
+      return -1;
+    } else if (bInList) {
+      return 1;
+    }
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.localeCompare(b);
+  };
+  const sortedKeys = Object.keys(tokens).sort(customSort);
+  let cssVariables = ':root {\n';
+  sortedKeys.forEach(key => {
+    cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
+  });
+  cssVariables += '}';
+  return cssVariables;
 };
 
 /**
@@ -455,20 +505,34 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
  * @returns {string} SCSS content.
  */
 const convertTokensToSCSS = (tokens, name) => {
-    // Ordena las claves para asegurar que se genere de forma correcta
-    const sortedKeys = Object.keys(tokens).sort((a, b) => {
-        const numA = Number(a);
-        const numB = Number(b);
-        if (!isNaN(numA) && !isNaN(numB)) {
-            return numA - numB;
-        }
-        return a.localeCompare(b);
-    });
-    let scssVariables = '';
-    sortedKeys.forEach(key => {
-        scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
-    });
-    return scssVariables;
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  const customSort = (a, b) => {
+    const aInList = tshirtOrder.includes(a);
+    const bInList = tshirtOrder.includes(b);
+    if (aInList && bInList) {
+      return tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b);
+    } else if (aInList) {
+      return -1;
+    } else if (bInList) {
+      return 1;
+    }
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.localeCompare(b);
+  };
+  const sortedKeys = Object.keys(tokens).sort(customSort);
+  let scssVariables = '';
+  sortedKeys.forEach(key => {
+    scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
+  });
+  return scssVariables;
 };
 
 /**
@@ -506,7 +570,8 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
       const filePath = path.join(folder, fileName);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log(`🗑️ Deleted: ${filePath}`);
+        const relativePath = path.relative(process.cwd(), filePath);
+        console.log(`🗑️ Deleted: ${relativePath}`);
       }
     }
   }
@@ -531,10 +596,10 @@ const main = async () => {
   const input = await askForInput();
   if (!input) return;
 
-  const { unit, name, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase } = input;
+  const { unit, name, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep } = input;
 
   // Generate token data based on the user configuration.
-  const tokensData = generateSizeTokens(unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase);
+  const tokensData = generateSizeTokens(unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep);
 
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "size");
@@ -547,20 +612,15 @@ const main = async () => {
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
 
-  // Save size tokens in JSON format.
+  // SAVE THE DEFAULT TOKENS (PX) TO FILES (JSON, CSS & SCSS)
   const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, 'size_tokens_px.json');
-
-  // Save CSS variables.
-  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'size_variables.css');
-
-  // Save SCSS variables.
-  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'size_variables.scss');
+  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'size_variables_px.css');
+  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'size_variables_px.scss');
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  // Ask if the user wants to convert tokens to other units.
   const convertAnswer = await inquirer.prompt([
     {
       type: 'confirm',
@@ -570,58 +630,47 @@ const main = async () => {
     }
   ]);
 
-  let unitsAnswer;
-  let unitFileExists, unitCssFileExists, unitScssFileExists;
+  let units = [];
 
   if (convertAnswer.convert) {
-    console.log(chalk.black.bgBlueBright("\n======================================="));
-    console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
-    console.log(chalk.black.bgBlueBright("=======================================\n"));
-
-    // Prompt the user to select the units for conversion.
-    unitsAnswer = await inquirer.prompt([
+    const unitsAnswer = await inquirer.prompt([
       {
         type: 'checkbox',
         name: 'units',
-        message: 'Please, select the units you want to use to convert your tokens:',
+        message: 'Please, select the units you want to use to convert your tokens (leave empty to skip):',
         choices: [
           { name: 'pt', value: 'pt' },
           { name: 'rem', value: 'rem' },
           { name: 'em', value: 'em' },
           { name: '%', value: 'percent' }
-        ],
-        validate: (input) => {
-          if (input.length === 0) {
-            return "❌ You must select at least one unit.";
-          }
-          return true;
-        }
+        ]
+        // Se elimina la validación para permitir no seleccionar ninguna unidad.
       }
     ]);
 
-    // For each selected unit, convert and save the tokens.
-    const units = unitsAnswer.units;
-    for (const unit of units) {
-      const convertedTokens = convertPxToOtherUnits(tokensData, unit);
-      unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens_${unit}.json`);
-      unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables_${unit}.css`);
-      unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables_${unit}.scss`);
-      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
-      console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
-      console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables_${unit}.scss`));
+    units = unitsAnswer.units; // Puede quedar vacío.
+    
+    if (units.length > 0) {
+      for (const unit of units) {
+        // Se usa el sufijo para las unidades adicionales.
+        const unitSuffix = `_${unit}`;
+        const convertedTokens = convertPxToOtherUnits(tokensData, unit);
+        const unitJsonFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
+        const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables${unitSuffix}.css`);
+        const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables${unitSuffix}.scss`);
+        console.log(`✅ ${unitJsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens${unitSuffix}.json`);
+        console.log(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables${unitSuffix}.css`);
+        console.log(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables${unitSuffix}.scss`);
+      }
     }
+  } 
 
-    // Delete unit files for unselected units.
-    deleteUnusedUnitFiles(tokensFolder, units, 'json');
-    deleteUnusedUnitFiles(cssFolder, units, 'css');
-    deleteUnusedUnitFiles(scssFolder, units, 'scss');
-  } else {
-    // If conversion was not selected, delete all additional unit files.
-    deleteUnusedUnitFiles(tokensFolder, [], 'json');
-    deleteUnusedUnitFiles(cssFolder, [], 'css');
-    deleteUnusedUnitFiles(scssFolder, [], 'scss');
-  }
-  
+  // Borra los archivos de unidades que no fueron seleccionadas.
+  // Si 'units' está vacío, se borrarán todos los archivos adicionales.
+  deleteUnusedUnitFiles(tokensFolder, units, 'json');
+  deleteUnusedUnitFiles(cssFolder, units, 'css');
+  deleteUnusedUnitFiles(scssFolder, units, 'scss');
+
   await showLoader(chalk.bold.magenta("\n🪄 Finalizing your spell..."), 2000);
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
