@@ -1,3 +1,5 @@
+
+
 import fs from "fs";
 import path from "path";
 import inquirer from "inquirer";
@@ -57,16 +59,16 @@ const askForInput = async () => {
       type: 'list',
       name: 'name',
       message: '📝 What name would you like to assign to your size tokens?',
-      choices: ['size', 'sizing', 'dimension', 'other']
+      choices: ['size', 'sizing', 'dimension', 'custom']
     }
   ]);
 
   let name;
-  if (nameAnswer.name === 'other') {
-    const otherNameAnswer = await inquirer.prompt([
+  if (nameAnswer.name === 'custom') {
+    const customNameAnswer = await inquirer.prompt([
       {
         type: 'input',
-        name: 'otherName',
+        name: 'customName',
         message: '📝 Please provide a name for your size tokens:',
         validate: (input) => {
           if (!input) {
@@ -78,7 +80,7 @@ const askForInput = async () => {
         }
       }
     ]);
-    name = otherNameAnswer.otherName;
+    name = customNameAnswer.customName;
   } else {
     name = nameAnswer.name;
   }
@@ -524,7 +526,7 @@ const main = async () => {
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  await showLoader(chalk.bold.magenta("\n🧚 Casting the magic of tokens"), 2000);
+  await showLoader(chalk.bold.magenta("🧚 Casting the magic of tokens"), 2000);
 
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.blue("Size Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step. \nGenerate your tokens and prepare them ready for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 

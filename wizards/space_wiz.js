@@ -1,20 +1,24 @@
+// Add more abbreviations for spacing tokens like "sp"
+
+// IMPORT NECESSARY MODULES
 import fs from "fs";
 import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from 'url';
 import chalk from "chalk";
 
+// CHECK IF THE "--VERSION=" ARGUMENT WAS PROVIDED AND DISPLAY VERSION IF EXISTS
 const versionArg = process.argv.find(arg => arg.startsWith("--version="));
 if (versionArg) {
   const version = versionArg.split("=")[1];
   console.log(chalk.bold.whiteBright.bgGray(`Space Tokens Wizard - Version ${version}`));
 }
 
-// Get the directory name of the current module
+// GET THE CURRENT FILENAME AND DIRECTORY
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Function to display a loader for a specified duration
+// FUNCTION TO SHOW A LOADING ANIMATION FOR A GIVEN DURATION
 const showLoader = (message, duration) => {
   process.stdout.write(message);
   return new Promise((resolve) => {
@@ -29,36 +33,39 @@ const showLoader = (message, duration) => {
   });
 };
 
-// Function to handle user input for generating spacing tokens
+// FUNCTION TO ASK FOR USER INPUT VIA THE COMMAND LINE
 const askForInput = async () => {
+  // DISPLAY DIVIDERS AND TITLE FOR STEP 1
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("⭐️ STEP 1: BASE UNIT"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // Inform the user about the base unit
+  // INFORM THE USER THAT THE BASE UNIT IS 'PX'
   console.log(chalk.magenta("ℹ️ The base unit for spacing tokens is set to 'px'."));
   const unit = 'px';
 
+  // DISPLAY DIVIDERS AND TITLE FOR STEP 2 - NAMING TOKENS
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔤 STEP 2: NAME YOUR TOKENS"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // Ask for a name for the spacing tokens
+  // PROMPT THE USER TO SELECT A TOKEN NAME OR "CUSTOM"
   const nameAnswer = await inquirer.prompt([
     {
       type: 'list',
       name: 'name',
       message: '📝 What name would you like to assign to your spacing tokens?',
-      choices: ['space', 'spacing', 'sp', 'spc', 'other']
+      choices: ['space', 'spacing', 'sp', 'spc', 'custom']
     }
   ]);
 
   let name;
-  if (nameAnswer.name === 'other') {
-    const otherNameAnswer = await inquirer.prompt([
+  if (nameAnswer.name === 'custom') {
+    // IF CUSTOM IS SELECTED, ASK FOR A CUSTOM NAME WITH VALIDATION
+    const customNameAnswer = await inquirer.prompt([
       {
         type: 'input',
-        name: 'otherName',
+        name: 'customName',
         message: '📝 Please provide a name for your spacing tokens:',
         validate: (input) => {
           if (!input) {
@@ -70,16 +77,17 @@ const askForInput = async () => {
         }
       }
     ]);
-    name = otherNameAnswer.otherName;
+    name = customNameAnswer.customName;
   } else {
     name = nameAnswer.name;
   }
 
+  // DISPLAY DIVIDERS AND TITLE FOR STEP 3 - DEFINING SCALE
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔢 STEP 3: DEFINE SCALE"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // Ask for the scale to structure spacing values
+  // PROMPT THE USER TO SELECT A SCALE
   const scaleAnswer = await inquirer.prompt([
     {
       type: 'list',
@@ -94,6 +102,7 @@ const askForInput = async () => {
     }
   ]);
 
+  // IF USER CHOOSES "C", DISPLAY SCALE INFORMATION AND ASK AGAIN
   if (scaleAnswer.scale === 'C') {
     console.log(chalk.black.bgMagentaBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
@@ -104,7 +113,7 @@ const askForInput = async () => {
     console.log("8-point Grid     | A standard scale where each step is 8 units.     | 8, 16, 24, 32, ...");
     console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-    // Ask for the scale again after showing information
+    // ASK THE USER AGAIN FOR THE SCALE WITHOUT THE INFORMATION OPTION
     const newScaleAnswer = await inquirer.prompt([
       {
         type: 'list',
@@ -121,11 +130,12 @@ const askForInput = async () => {
 
   const scale = scaleAnswer.scale;
 
+  // DISPLAY DIVIDERS AND TITLE FOR STEP 4 - DEFINING NUMBER OF VALUES
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔢 STEP 4: DEFINE NUMBER OF VALUES"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // Ask for how many spacing values the user wants to define
+  // ASK THE USER HOW MANY TOKEN VALUES TO CREATE WITH VALIDATION
   const numValuesAnswer = await inquirer.prompt([
     {
       type: 'input',
@@ -142,11 +152,12 @@ const askForInput = async () => {
   ]);
   const numValues = parseInt(numValuesAnswer.numValues);
 
+  // DISPLAY DIVIDERS AND TITLE FOR STEP 5 - DEFINING SCALE NAMING CRITERIA
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔤 STEP 5: DEFINE SCALE NAMING CRITERIA"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // Ask for naming criteria based on the number of spacing values
+  // FUNCTION TO ASK FOR THE NAMING CRITERIA BASED ON THE NUMBER OF VALUES
   const askForNamingCriteria = async () => {
     let choices = [];
     if (numValues <= 20) {
@@ -157,13 +168,11 @@ const askForInput = async () => {
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
       ];
     } else if (numValues >= 27) {
-      // Para más de o igual a 27 valores, solo se muestran las opciones Incremental y Cardinal
       choices = [
         { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' }
       ];
     } else {
-      // Entre 21 y 26, se presentan las tres opciones
       choices = [
         { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
@@ -171,6 +180,7 @@ const askForInput = async () => {
       ];
     }
     
+    // ASK THE USER TO CHOOSE THE NAMING STYLE
     const namingChoiceAnswer = await inquirer.prompt([
       {
         type: 'list',
@@ -182,8 +192,9 @@ const askForInput = async () => {
     
     let cardinalFormat = 'unpadded';
     let alphabeticalCase;
-    let incrementalStep = 100; // valor por defecto
+    let incrementalStep = 100; 
     
+    // IF INCREMENTAL IS SELECTED, ASK FOR THE STEP VALUE
     if (namingChoiceAnswer.namingChoice === 'B') {
       const incrementalStepAnswer = await inquirer.prompt([
         {
@@ -198,6 +209,7 @@ const askForInput = async () => {
       ]);
       incrementalStep = incrementalStepAnswer.incrementalStep;
     }
+    // IF CARDINAL IS SELECTED, ASK FOR THE FORMAT (PADDED OR UNPADDED)
     if (namingChoiceAnswer.namingChoice === 'C') {
       const cardinalFormatAnswer = await inquirer.prompt([
         {
@@ -212,6 +224,7 @@ const askForInput = async () => {
       ]);
       cardinalFormat = cardinalFormatAnswer.cardinalFormat;
     }
+    // IF ALPHABETICAL IS SELECTED, ASK FOR THE CASE
     if (namingChoiceAnswer.namingChoice === 'D') {
       const alphabeticalCaseAnswer = await inquirer.prompt([
         {
@@ -235,9 +248,10 @@ const askForInput = async () => {
     };
   };
 
+  // GET THE NAMING CRITERIA FROM THE USER
   let { namingChoice, cardinalFormat, alphabeticalCase, incrementalStep } = await askForNamingCriteria();
 
-  // Validate naming choice against number of values
+  // ENSURE THE NAMING CRITERIA IS VALID BASED ON THE NUMBER OF VALUES
   while ((namingChoice === 'A' && numValues > 20) || (namingChoice === 'D' && numValues > 26)) {
     if (namingChoice === 'A' && numValues > 20) {
       console.log(chalk.red("❌ T-shirt Size naming criteria is not recommended for more than 20 values. Please choose Incremental or Cardinal naming criteria."));
@@ -247,13 +261,15 @@ const askForInput = async () => {
     ({ namingChoice, cardinalFormat, alphabeticalCase } = await askForNamingCriteria());
   }
 
+  // RETURN ALL THE USER INPUT DATA
   return { unit, name, numValues, namingChoice, cardinalFormat, alphabeticalCase, scale, incrementalStep };
 };
 
-// Function to generate spacing tokens based on user input
+// FUNCTION TO GENERATE SPACING TOKENS BASED ON THE GATHERED INPUT
 const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep = 100) => {
   const tokens = {};
   let baseValue;
+  // SET THE BASE VALUE BASED ON THE SELECTED SCALE
   switch (scale) {
     case "A":
       baseValue = 4;
@@ -262,6 +278,7 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFor
       baseValue = 8;
       break;
   }
+  // LOOP TO GENERATE EACH TOKEN BASED ON THE NAMING CRITERIA
   for (let i = 1; i <= numValues; i++) {
     let tokenName;
     switch (namingChoice) {
@@ -291,7 +308,7 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFor
   return tokens;
 };
 
-// Function to convert px values to other units for spacing tokens
+// FUNCTION TO CONVERT PX VALUES TO OTHER UNITS (PT, REM, EM, %)
 const convertPxToOtherUnits = (tokens, unit) => {
   const conversions = {
     pt: (value) => `${value * 0.75}pt`,
@@ -301,6 +318,7 @@ const convertPxToOtherUnits = (tokens, unit) => {
   };
 
   const convertedTokens = {};
+  // CONVERT EACH TOKEN USING THE SELECTED UNIT CONVERSION FUNCTION
   for (const [key, token] of Object.entries(tokens)) {
     const numericValue = parseFloat(token.value);
     convertedTokens[key] = {
@@ -311,12 +329,12 @@ const convertPxToOtherUnits = (tokens, unit) => {
   return convertedTokens;
 };
 
-// Function to save spacing tokens to a JSON file
+// FUNCTION TO SAVE TOKENS DATA TO A FILE IN JSON FORMAT
 const saveTokensToFile = (tokensData, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
   
-  // Ordena recursivamente las claves antes de stringify.
+  // SORT THE TOKENS DATA BEFORE STRINGIFYING
   const sortedTokensData = sortObjectRecursively(tokensData);
   const outputJSON = customStringify(sortedTokensData, 2);
   
@@ -324,20 +342,21 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
   return fileExists;
 };
 
-// Function to convert tokens to CSS variables
+// FUNCTION TO CONVERT TOKENS TO CSS VARIABLES FORMAT
 const convertTokensToCSS = (tokens, name) => {
   let cssVariables = ':root {\n';
-  
-  // Ordenar las claves manualmente usando el mismo criterio.
+  const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
   const sortedKeys = Object.keys(tokens).sort((a, b) => {
-    const numA = Number(a);
-    const numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return numA - numB;
+    const indexA = tshirtOrder.indexOf(a);
+    const indexB = tshirtOrder.indexOf(b);
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
     }
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
     return a.localeCompare(b);
   });
-  
+  // BUILD THE CSS VARIABLES STRING
   sortedKeys.forEach(key => {
     cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
   });
@@ -345,7 +364,7 @@ const convertTokensToCSS = (tokens, name) => {
   return cssVariables;
 };
 
-// Function to save CSS variables to a file
+// FUNCTION TO SAVE THE CSS VARIABLES TO A FILE
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -354,30 +373,28 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-// Function to convert tokens to SCSS variables
-/**
- * Function to convert tokens to SCSS variable declarations with sorted keys.
- * @param {object} tokens - Tokens object.
- * @param {string} name - Naming prefix.
- * @returns {string} SCSS content.
- */
+// FUNCTION TO CONVERT TOKENS TO SCSS VARIABLES FORMAT
 const convertTokensToSCSS = (tokens, name) => {
   let scssVariables = '';
+  const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
   const sortedKeys = Object.keys(tokens).sort((a, b) => {
-    const numA = Number(a);
-    const numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return numA - numB;
+    const indexA = tshirtOrder.indexOf(a);
+    const indexB = tshirtOrder.indexOf(b);
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
     }
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
     return a.localeCompare(b);
   });
+  // BUILD THE SCSS VARIABLES STRING
   sortedKeys.forEach(key => {
     scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
   });
   return scssVariables;
 };
 
-// Function to save SCSS variables to a file
+// FUNCTION TO SAVE THE SCSS VARIABLES TO A FILE
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -386,30 +403,32 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-// Function to delete files for units that are not included
-const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
+// FUNCTION TO DELETE UNUSED FILES THAT WERE CONVERTED TO DIFFERENT UNITS
+const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, filePrefix = 'space_variables') => {
   const unitFiles = {
-    pt: `space_variables_pt.${fileExtension}`,
-    rem: `space_variables_rem.${fileExtension}`,
-    em: `space_variables_em.${fileExtension}`,
-    percent: `space_variables_percent.${fileExtension}`
+    pt: `${filePrefix}_pt.${fileExtension}`,
+    rem: `${filePrefix}_rem.${fileExtension}`,
+    em: `${filePrefix}_em.${fileExtension}`,
+    percent: `${filePrefix}_percent.${fileExtension}`
   };
 
+  // LOOP OVER ALL POSSIBLE UNITS AND DELETE THE ONES NOT SELECTED
   for (const [unit, fileName] of Object.entries(unitFiles)) {
     if (!selectedUnits.includes(unit)) {
       const filePath = path.join(folder, fileName);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log(`🗑️ Deleted: ${filePath}`);
+        const relativePath = path.relative(process.cwd(), filePath);
+        console.log(`🗑️ Deleted: ${relativePath}`);
       }
     }
   }
 };
 
 /**
- * Recursively sorts an object by its keys using numeric order when possible.
- * @param {object} obj - The object to be sorted.
- * @returns {object} Sorted object.
+ * RECURSIVELY SORT AN OBJECT BY ITS KEYS USING NUMERIC ORDER WHEN POSSIBLE.
+ * @param {object} obj - THE OBJECT TO SORT.
+ * @returns {object} SORTED OBJECT.
  */
 const sortObjectRecursively = (obj) => {
   if (typeof obj !== 'object' || obj === null) return obj;
@@ -430,85 +449,106 @@ const sortObjectRecursively = (obj) => {
 };
 
 /**
- * Custom JSON stringify function that respects the key order.
- * It manually sorts the keys using a numeric comparison when possible.
- * @param {any} value - The value to stringify.
- * @param {number} indent - Current indentation level.
- * @returns {string} JSON string representation.
+ * CUSTOM JSON STRINGIFY FUNCTION THAT PRESERVES KEY ORDER.
+ * @param {any} value - THE VALUE TO STRINGIFY.
+ * @param {number} indent - CURRENT INDENTATION LEVEL.
+ * @returns {string} JSON STRING REPRESENTATION.
  */
 const customStringify = (value, indent = 2) => {
-  const spacer = ' '.repeat(indent);
-  if (value === null || typeof value !== 'object') {
-    return JSON.stringify(value);
-  }
-  if (Array.isArray(value)) {
-    const items = value.map(item => customStringify(item, indent + 2));
-    return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
-  }
-  const keys = Object.keys(value).sort((a, b) => {
-    const numA = Number(a);
-    const numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return numA - numB;
+    const spacer = ' '.repeat(indent);
+    if (value === null || typeof value !== 'object') {
+        return JSON.stringify(value);
     }
-    return a.localeCompare(b);
-  });
-  let result = "{\n";
-  keys.forEach((key, idx) => {
-    result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
-    if (idx < keys.length - 1) {
-      result += ",\n";
+    if (Array.isArray(value)) {
+        const items = value.map(item => customStringify(item, indent + 2));
+        return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
     }
-  });
-  result += "\n" + ' '.repeat(indent - 2) + "}";
-  return result;
+    
+    // DEFINE A PREFERRED ORDER FOR KEYS
+    const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+  
+    const customComparator = (a, b) => {
+        const indexA = tshirtOrder.indexOf(a);
+        const indexB = tshirtOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) {
+            return indexA - indexB;
+        }
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+  
+        const numA = Number(a);
+        const numB = Number(b);
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return numA - numB;
+        }
+  
+        if (a === 'value' && b === 'type') return -1;
+        if (a === 'type' && b === 'value') return 1;
+  
+        return a.localeCompare(b);
+    };
+    const keys = Object.keys(value).sort(customComparator);
+    let result = "{\n";
+    keys.forEach((key, idx) => {
+        result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
+        if (idx < keys.length - 1) {
+            result += ",\n";
+        }
+    });
+    result += "\n" + ' '.repeat(indent - 2) + "}";
+    return result;
 };
 
-// Main function to orchestrate the spacing token generation process
+// MAIN FUNCTION THAT EXECUTES THE SCRIPT
 const main = async () => {
+  // DISPLAY THE START MESSAGE
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
-  console.log(chalk.black.bgMagentaBright("======================================="));
+  console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
+  // SHOW LOADER WHILE "CASTING THE MAGIC" OF TOKENS
   await showLoader(chalk.bold.yellow("\n🧚 Casting the magic of tokens"), 2000);
 
+  // GREETING MESSAGE TO THE USER
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.magenta("Spacing Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step. \nGenerate your tokens and prepare them for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
+  // ASK THE USER FOR INPUT
   const input = await askForInput();
   if (!input) return;
 
   const { unit, name, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep } = input;
 
-  // Generate spacing tokens data
+  // GENERATE THE SPACING TOKENS WITH THE PROVIDED INPUT
   const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep);
 
+  // DEFINE OUTPUT FOLDERS FOR TOKENS, CSS, AND SCSS FILES
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "space");
   const cssFolder = path.join(outputsDir, "css", "space");
   const scssFolder = path.join(outputsDir, "scss", "space");
 
-  // Create output directories if they don't exist
+  // CREATE OUTPUT FOLDERS IF THEY DO NOT EXIST
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
 
-  const convertAnswer = await inquirer.prompt([
+  // DISPLAY THE SECTION FOR CONVERTING TOKENS TO OTHER UNITS
+  console.log(chalk.black.bgMagentaBright("\n======================================="));
+  console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
+  console.log(chalk.black.bgMagentaBright("=======================================\n"));
+
+  // ASK THE USER IF THEY WANT TO CONVERT TOKENS TO OTHER UNITS
+  const convertTokensResp = await inquirer.prompt([
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the tokens to other units (pt, rem, em, %)?',
-      default: true
+      message: "Would you like to convert the tokens to other units (pt, rem, em, %)? (Y/n)",
+      default: true,
     }
   ]);
 
   let unitsAnswer;
-  let unitFileExists, unitCssFileExists, unitScssFileExists;
-
-  if (convertAnswer.convert) {
-    console.log(chalk.black.bgMagentaBright("\n======================================="));
-    console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
-    console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-    // Ask the user to select the units to convert to
+  if (convertTokensResp.convert) {
+    // IF YES, ASK WHICH UNITS TO CONVERT TO
     unitsAnswer = await inquirer.prompt([
       {
         type: 'checkbox',
@@ -520,45 +560,20 @@ const main = async () => {
           { name: 'em', value: 'em' },
           { name: '%', value: 'percent' }
         ],
-        validate: (input) => {
-          if (input.length === 0) {
-            return "❌ You must select at least one unit.";
-          }
-          return true;
-        }
+        validate: (input) => input.length === 0 ? "❌ You must select at least one unit." : true,
       }
     ]);
-
-    // Convert and save tokens in selected units
-    const units = unitsAnswer.units;
-    for (const unit of units) {
-      const convertedTokens = convertPxToOtherUnits(tokensData, unit);
-      unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `space_tokens_${unit}.json`);
-      unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `space_variables_${unit}.css`);
-      unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `space_variables_${unit}.scss`);
-      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens_${unit}.json`));
-      console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_${unit}.css`));
-      console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables_${unit}.scss`));
-    }
-
-    // Delete unused unit files
-    deleteUnusedUnitFiles(tokensFolder, units, 'json');
-    deleteUnusedUnitFiles(cssFolder, units, 'css');
-    deleteUnusedUnitFiles(scssFolder, units, 'scss');
-  } else {
-    // Delete all unit files if no conversion is selected
-    deleteUnusedUnitFiles(tokensFolder, [], 'json');
-    deleteUnusedUnitFiles(cssFolder, [], 'css');
-    deleteUnusedUnitFiles(scssFolder, [], 'scss');
   }
   
+  // SHOW A LOADER WHILE FINALIZING THE SPELL
   await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell..."), 2000);
 
+  // DISPLAY THE OUTPUT FILES SECTION
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // Save the px tokens files
+  // SAVE THE DEFAULT TOKENS (PX) TO FILES (JSON, CSS & SCSS)
   const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, `space_tokens_px.json`);
   const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, `space_variables_px.css`);
   const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, `space_variables_px.scss`);
@@ -567,15 +582,28 @@ const main = async () => {
   console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_px.css`));
   console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables_px.scss`));
 
-  if (convertAnswer.convert) {
+  // IF THE USER CHOSE TO CONVERT, PROCESS CONVERSION FOR EACH SELECTED UNIT
+  if (convertTokensResp.convert) {
     const units = unitsAnswer.units;
     for (const unit of units) {
+      
+      const convertedTokens = convertPxToOtherUnits(tokensData, unit);
+      const unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `space_tokens_${unit}.json`);
+      const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `space_variables_${unit}.css`);
+      const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `space_variables_${unit}.scss`);
+      
       console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens_${unit}.json`));
       console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_${unit}.css`));
       console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables_${unit}.scss`));
     }
+    
+    // DELETE FILES FOR UNSELECTED UNITS
+    deleteUnusedUnitFiles(tokensFolder, units, 'json', 'space_tokens');
+    deleteUnusedUnitFiles(cssFolder, units, 'css');
+    deleteUnusedUnitFiles(scssFolder, units, 'scss');
   }
 
+  // DISPLAY THE COMPLETION MESSAGE
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
@@ -584,5 +612,5 @@ const main = async () => {
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 };
 
-// Start the main function
+// BEGIN EXECUTION OF THE MAIN FUNCTION
 main();

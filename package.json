@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "color": "node wizards/color_wiz.js --version=1.2.1",
-    "size": "node wizards/size_wiz.js --version=1.0.1",
-    "space": "node wizards/space_wiz.js --version=1.0.1",
+    "size": "node wizards/size_wiz.js --version=1.1.0",
+    "space": "node wizards/space_wiz.js --version=1.1.0",
     "radii": "node wizards/radii_wiz.js --version=1.0.0",
     "clear": "node spells/clear_spell.js --version=1.0.0"
   },
@@ -20,8 +20,8 @@
   },
   "scriptVersions": {
     "color": "1.2.1",
-    "size": "1.0.1",
-    "space": "1.0.1",
+    "size": "1.1.0",
+    "space": "1.1.0",
     "radii": "1.0.0",
     "clear": "1.0.0"
   }
