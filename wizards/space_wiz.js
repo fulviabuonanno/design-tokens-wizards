@@ -32,7 +32,7 @@ const showLoader = (message, duration) => {
 // Function to handle user input for generating spacing tokens
 const askForInput = async () => {
   console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("⭐️ STEP 1: DEFINE UNIT"));
+  console.log(chalk.bold("⭐️ STEP 1: BASE UNIT"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
   // Inform the user about the base unit
@@ -46,20 +46,34 @@ const askForInput = async () => {
   // Ask for a name for the spacing tokens
   const nameAnswer = await inquirer.prompt([
     {
-      type: 'input',
+      type: 'list',
       name: 'name',
-      message: '📝 What name would you like to assign to your spacing tokens? \n(e.g., space, spacing): \n>>>',
-      validate: (input) => {
-        if (!input) {
-          return "❌ Name is required. Please provide a valid name.";
-        } else if (!/^[a-zA-Z0-9.-]+$/.test(input)) {
-          return "❌ Name should only contain letters, numbers, hyphens (-), and dots (.)";
-        }
-        return true;
-      }
+      message: '📝 What name would you like to assign to your spacing tokens?',
+      choices: ['space', 'spacing', 'sp', 'spc', 'other']
     }
   ]);
-  const name = nameAnswer.name;
+
+  let name;
+  if (nameAnswer.name === 'other') {
+    const otherNameAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'otherName',
+        message: '📝 Please provide a name for your spacing tokens:',
+        validate: (input) => {
+          if (!input) {
+            return "❌ Name is required. Please provide a valid name.";
+          } else if (!/^[a-zA-Z0-9.-]+$/.test(input)) {
+            return "❌ Name should only contain letters, numbers, hyphens (-), and dots (.)";
+          }
+          return true;
+        }
+      }
+    ]);
+    name = otherNameAnswer.otherName;
+  } else {
+    name = nameAnswer.name;
+  }
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔢 STEP 3: DEFINE SCALE"));
@@ -138,22 +152,25 @@ const askForInput = async () => {
     if (numValues <= 20) {
       choices = [
         { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 'A' },
-        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
       ];
-    } else if (numValues < 27) {
+    } else if (numValues >= 27) {
+      // Para más de o igual a 27 valores, solo se muestran las opciones Incremental y Cardinal
       choices = [
-        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
-        { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
-        { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
-      ];
-    } else {
-      choices = [
-        { name: 'Incremental (e.g., 100, 200, 300)', value: 'B' },
+        { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' }
       ];
+    } else {
+      // Entre 21 y 26, se presentan las tres opciones
+      choices = [
+        { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'B' },
+        { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' },
+        { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
+      ];
     }
+    
     const namingChoiceAnswer = await inquirer.prompt([
       {
         type: 'list',
@@ -162,10 +179,63 @@ const askForInput = async () => {
         choices: choices
       }
     ]);
-    return namingChoiceAnswer.namingChoice;
+    
+    let cardinalFormat = 'unpadded';
+    let alphabeticalCase;
+    let incrementalStep = 100; // valor por defecto
+    
+    if (namingChoiceAnswer.namingChoice === 'B') {
+      const incrementalStepAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'incrementalStep',
+          message: 'For Incremental scale, choose the step increment:',
+          choices: [
+            { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
+            { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
+          ]
+        }
+      ]);
+      incrementalStep = incrementalStepAnswer.incrementalStep;
+    }
+    if (namingChoiceAnswer.namingChoice === 'C') {
+      const cardinalFormatAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'cardinalFormat',
+          message: 'For Cardinal scale, choose the format:',
+          choices: [
+            { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
+            { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+          ]
+        }
+      ]);
+      cardinalFormat = cardinalFormatAnswer.cardinalFormat;
+    }
+    if (namingChoiceAnswer.namingChoice === 'D') {
+      const alphabeticalCaseAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'alphabeticalCase',
+          message: 'For Alphabetical scale, choose the case:',
+          choices: [
+            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
+            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
+          ]
+        }
+      ]);
+      alphabeticalCase = alphabeticalCaseAnswer.alphabeticalCase;
+    }
+    
+    return { 
+      namingChoice: namingChoiceAnswer.namingChoice, 
+      cardinalFormat, 
+      alphabeticalCase,
+      incrementalStep 
+    };
   };
 
-  let namingChoice = await askForNamingCriteria();
+  let { namingChoice, cardinalFormat, alphabeticalCase, incrementalStep } = await askForNamingCriteria();
 
   // Validate naming choice against number of values
   while ((namingChoice === 'A' && numValues > 20) || (namingChoice === 'D' && numValues > 26)) {
@@ -174,14 +244,14 @@ const askForInput = async () => {
     } else if (namingChoice === 'D' && numValues > 26) {
       console.log(chalk.red("❌ Alphabetical naming criteria is not recommended for more than 26 values."));
     }
-    namingChoice = await askForNamingCriteria();
+    ({ namingChoice, cardinalFormat, alphabeticalCase } = await askForNamingCriteria());
   }
 
-  return { unit, name, numValues, namingChoice, scale };
+  return { unit, name, numValues, namingChoice, cardinalFormat, alphabeticalCase, scale, incrementalStep };
 };
 
 // Function to generate spacing tokens based on user input
-const generateSpacingTokens = (unit, numValues, namingChoice, scale) => {
+const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep = 100) => {
   const tokens = {};
   let baseValue;
   switch (scale) {
@@ -199,13 +269,17 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale) => {
         tokenName = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `space${i}`;
         break;
       case "B":
-        tokenName = (i * 100).toString();
+        tokenName = (i * incrementalStep).toString();
         break;
       case "C":
-        tokenName = i.toString();
+        tokenName = cardinalFormat === 'padded' ? i.toString().padStart(2, '0') : i.toString();
         break;
       case "D":
-        tokenName = String.fromCharCode(64 + i).toUpperCase();
+        if (alphabeticalCase === 'lowercase') {
+          tokenName = String.fromCharCode(96 + i);
+        } else {
+          tokenName = String.fromCharCode(64 + i);
+        }
         break;
     }
     const value = baseValue * i;
@@ -241,16 +315,32 @@ const convertPxToOtherUnits = (tokens, unit) => {
 const saveTokensToFile = (tokensData, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
-  fs.writeFileSync(filePath, JSON.stringify(tokensData, null, 2));
+  
+  // Ordena recursivamente las claves antes de stringify.
+  const sortedTokensData = sortObjectRecursively(tokensData);
+  const outputJSON = customStringify(sortedTokensData, 2);
+  
+  fs.writeFileSync(filePath, outputJSON);
   return fileExists;
 };
 
 // Function to convert tokens to CSS variables
 const convertTokensToCSS = (tokens, name) => {
   let cssVariables = ':root {\n';
-  for (const key in tokens) {
+  
+  // Ordenar las claves manualmente usando el mismo criterio.
+  const sortedKeys = Object.keys(tokens).sort((a, b) => {
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.localeCompare(b);
+  });
+  
+  sortedKeys.forEach(key => {
     cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
-  }
+  });
   cssVariables += '}';
   return cssVariables;
 };
@@ -265,11 +355,25 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
 };
 
 // Function to convert tokens to SCSS variables
+/**
+ * Function to convert tokens to SCSS variable declarations with sorted keys.
+ * @param {object} tokens - Tokens object.
+ * @param {string} name - Naming prefix.
+ * @returns {string} SCSS content.
+ */
 const convertTokensToSCSS = (tokens, name) => {
   let scssVariables = '';
-  for (const key in tokens) {
+  const sortedKeys = Object.keys(tokens).sort((a, b) => {
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.localeCompare(b);
+  });
+  sortedKeys.forEach(key => {
     scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
-  }
+  });
   return scssVariables;
 };
 
@@ -302,6 +406,64 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
   }
 };
 
+/**
+ * Recursively sorts an object by its keys using numeric order when possible.
+ * @param {object} obj - The object to be sorted.
+ * @returns {object} Sorted object.
+ */
+const sortObjectRecursively = (obj) => {
+  if (typeof obj !== 'object' || obj === null) return obj;
+  if (Array.isArray(obj)) return obj.map(sortObjectRecursively);
+  const sortedKeys = Object.keys(obj).sort((a, b) => {
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.localeCompare(b);
+  });
+  const sortedObj = {};
+  sortedKeys.forEach(key => {
+    sortedObj[key] = sortObjectRecursively(obj[key]);
+  });
+  return sortedObj;
+};
+
+/**
+ * Custom JSON stringify function that respects the key order.
+ * It manually sorts the keys using a numeric comparison when possible.
+ * @param {any} value - The value to stringify.
+ * @param {number} indent - Current indentation level.
+ * @returns {string} JSON string representation.
+ */
+const customStringify = (value, indent = 2) => {
+  const spacer = ' '.repeat(indent);
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    const items = value.map(item => customStringify(item, indent + 2));
+    return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
+  }
+  const keys = Object.keys(value).sort((a, b) => {
+    const numA = Number(a);
+    const numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return numA - numB;
+    }
+    return a.localeCompare(b);
+  });
+  let result = "{\n";
+  keys.forEach((key, idx) => {
+    result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
+    if (idx < keys.length - 1) {
+      result += ",\n";
+    }
+  });
+  result += "\n" + ' '.repeat(indent - 2) + "}";
+  return result;
+};
+
 // Main function to orchestrate the spacing token generation process
 const main = async () => {
   console.log(chalk.black.bgMagentaBright("\n======================================="));
@@ -315,10 +477,10 @@ const main = async () => {
   const input = await askForInput();
   if (!input) return;
 
-  const { unit, name, numValues, namingChoice, scale } = input;
+  const { unit, name, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep } = input;
 
   // Generate spacing tokens data
-  const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale);
+  const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep);
 
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "space");
@@ -328,23 +490,7 @@ const main = async () => {
   // Create output directories if they don't exist
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
-  if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
-  if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
 
-  // Save spacing tokens in JSON format
-  const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, 'space_tokens_px.json');
-
-  // Save CSS variables
-  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'space_variables.css');
-
-  // Save SCSS variables
-  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'space_variables.scss');
-
-  console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
-  console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // Ask if the user wants to convert tokens to other units
   const convertAnswer = await inquirer.prompt([
     {
       type: 'confirm',
@@ -411,6 +557,11 @@ const main = async () => {
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
+
+  // Save the px tokens files
+  const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, `space_tokens_px.json`);
+  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, `space_variables_px.css`);
+  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, `space_variables_px.scss`);
 
   console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens_px.json`));
   console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_px.css`));
