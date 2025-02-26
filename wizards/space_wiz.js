@@ -1,22 +1,22 @@
-// IMPORT NECESSARY MODULES
+// Import modules for file operations, path handling, CLI prompts, URL handling, and terminal styling.
 import fs from "fs";
 import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from 'url';
 import chalk from "chalk";
 
-// CHECK IF THE "--VERSION=" ARGUMENT WAS PROVIDED AND DISPLAY VERSION IF EXISTS
+// Check if a version flag argument was provided (e.g., --version=1.0.0). If so, display the version.
 const versionArg = process.argv.find(arg => arg.startsWith("--version="));
 if (versionArg) {
   const version = versionArg.split("=")[1];
   console.log(chalk.bold.whiteBright.bgGray(`Space Tokens Wizard - Version ${version}`));
 }
 
-// GET THE CURRENT FILENAME AND DIRECTORY
+// Resolve the filename and directory name for ES Modules.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// FUNCTION TO SHOW A LOADING ANIMATION FOR A GIVEN DURATION
+// Define a loader function to simulate progress (prints dots over the duration).
 const showLoader = (message, duration) => {
   process.stdout.write(message);
   return new Promise((resolve) => {
@@ -31,23 +31,22 @@ const showLoader = (message, duration) => {
   });
 };
 
-// FUNCTION TO ASK FOR USER INPUT VIA THE COMMAND LINE
+// ==================================================================
+// Ask for user input specific to spacing tokens.
+// This function guides the user through several prompts to define token properties.
 const askForInput = async () => {
-  // DISPLAY DIVIDERS AND TITLE FOR STEP 1
+  
+  // STEP 1: Define base unit. For spacing tokens, this script always uses pixels.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("⭐️ STEP 1: BASE UNIT"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // INFORM THE USER THAT THE BASE UNIT IS 'PX'
   console.log(chalk.magenta("ℹ️ The base unit for spacing tokens is set to 'px'."));
   const unit = 'px';
 
-  // DISPLAY DIVIDERS AND TITLE FOR STEP 2 - NAMING TOKENS
+  // STEP 2: Ask the user for a name to assign to the spacing tokens.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔤 STEP 2: NAME YOUR TOKENS"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // PROMPT THE USER TO SELECT A TOKEN NAME OR "CUSTOM"
   const nameAnswer = await inquirer.prompt([
     {
       type: 'list',
@@ -56,10 +55,9 @@ const askForInput = async () => {
       choices: ['space', 'spacing', 'sp', 'spc', 'custom']
     }
   ]);
-
   let name;
+  // If the user selects "custom", prompt for a custom name and validate it.
   if (nameAnswer.name === 'custom') {
-    // IF CUSTOM IS SELECTED, ASK FOR A CUSTOM NAME WITH VALIDATION
     const customNameAnswer = await inquirer.prompt([
       {
         type: 'input',
@@ -80,12 +78,10 @@ const askForInput = async () => {
     name = nameAnswer.name;
   }
 
-  // DISPLAY DIVIDERS AND TITLE FOR STEP 3 - DEFINING SCALE
+  // STEP 3: Ask the user to choose a scale for spacing values. Scale options define the grid used.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔢 STEP 3: DEFINE SCALE"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // PROMPT THE USER TO SELECT A SCALE
   const scaleAnswer = await inquirer.prompt([
     {
       type: 'list',
@@ -99,8 +95,8 @@ const askForInput = async () => {
       filter: (input) => input.toUpperCase()
     }
   ]);
-
-  // IF USER CHOOSES "C", DISPLAY SCALE INFORMATION AND ASK AGAIN
+  
+  // If the user selects "More information", display additional details about each scale choice.
   if (scaleAnswer.scale === 'C') {
     console.log(chalk.black.bgMagentaBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
@@ -110,8 +106,6 @@ const askForInput = async () => {
     console.log("4px-Grid         | A standard scale where each step is 4 units.     | 4, 8, 12, 16, ...");
     console.log("8-point Grid     | A standard scale where each step is 8 units.     | 8, 16, 24, 32, ...");
     console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-    // ASK THE USER AGAIN FOR THE SCALE WITHOUT THE INFORMATION OPTION
     const newScaleAnswer = await inquirer.prompt([
       {
         type: 'list',
@@ -125,15 +119,12 @@ const askForInput = async () => {
     ]);
     scaleAnswer.scale = newScaleAnswer.scale;
   }
-
   const scale = scaleAnswer.scale;
 
-  // DISPLAY DIVIDERS AND TITLE FOR STEP 4 - DEFINING NUMBER OF VALUES
+  // STEP 4: Ask the user to define how many spacing token values to generate.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔢 STEP 4: DEFINE NUMBER OF VALUES"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // ASK THE USER HOW MANY TOKEN VALUES TO CREATE WITH VALIDATION
   const numValuesAnswer = await inquirer.prompt([
     {
       type: 'input',
@@ -150,14 +141,14 @@ const askForInput = async () => {
   ]);
   const numValues = parseInt(numValuesAnswer.numValues);
 
-  // DISPLAY DIVIDERS AND TITLE FOR STEP 5 - DEFINING SCALE NAMING CRITERIA
+  // STEP 5: Ask the user to choose a naming criteria for the scale.
+  // Options include T-shirt sizes, Incremental values, Cardinal (numbered), or Alphabetical values.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔤 STEP 5: DEFINE SCALE NAMING CRITERIA"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // FUNCTION TO ASK FOR THE NAMING CRITERIA BASED ON THE NUMBER OF VALUES
   const askForNamingCriteria = async () => {
     let choices = [];
+    // When the number of values is 20 or less, allow all naming options.
     if (numValues <= 20) {
       choices = [
         { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 'A' },
@@ -166,6 +157,7 @@ const askForInput = async () => {
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
       ];
     } else if (numValues >= 27) {
+      // For higher value counts, restrict to incremental or cardinal naming.
       choices = [
         { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'B' },
         { name: 'Cardinal (e.g., 1, 2, 3)', value: 'C' }
@@ -177,8 +169,7 @@ const askForInput = async () => {
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'D' }
       ];
     }
-    
-    // ASK THE USER TO CHOOSE THE NAMING STYLE
+    // Prompt for the naming criteria.
     const namingChoiceAnswer = await inquirer.prompt([
       {
         type: 'list',
@@ -187,12 +178,11 @@ const askForInput = async () => {
         choices: choices
       }
     ]);
-    
+    // Set default additional options.
     let cardinalFormat = 'unpadded';
     let alphabeticalCase;
     let incrementalStep = 100; 
-    
-    // IF INCREMENTAL IS SELECTED, ASK FOR THE STEP VALUE
+    // For incremental naming, choose the step increment.
     if (namingChoiceAnswer.namingChoice === 'B') {
       const incrementalStepAnswer = await inquirer.prompt([
         {
@@ -207,7 +197,7 @@ const askForInput = async () => {
       ]);
       incrementalStep = incrementalStepAnswer.incrementalStep;
     }
-    // IF CARDINAL IS SELECTED, ASK FOR THE FORMAT (PADDED OR UNPADDED)
+    // For cardinal naming, choose padded or unpadded format.
     if (namingChoiceAnswer.namingChoice === 'C') {
       const cardinalFormatAnswer = await inquirer.prompt([
         {
@@ -222,7 +212,7 @@ const askForInput = async () => {
       ]);
       cardinalFormat = cardinalFormatAnswer.cardinalFormat;
     }
-    // IF ALPHABETICAL IS SELECTED, ASK FOR THE CASE
+    // For alphabetical naming, choose between uppercase or lowercase.
     if (namingChoiceAnswer.namingChoice === 'D') {
       const alphabeticalCaseAnswer = await inquirer.prompt([
         {
@@ -237,7 +227,6 @@ const askForInput = async () => {
       ]);
       alphabeticalCase = alphabeticalCaseAnswer.alphabeticalCase;
     }
-    
     return { 
       namingChoice: namingChoiceAnswer.namingChoice, 
       cardinalFormat, 
@@ -246,10 +235,10 @@ const askForInput = async () => {
     };
   };
 
-  // GET THE NAMING CRITERIA FROM THE USER
+  // Prompt the naming criteria.
   let { namingChoice, cardinalFormat, alphabeticalCase, incrementalStep } = await askForNamingCriteria();
 
-  // ENSURE THE NAMING CRITERIA IS VALID BASED ON THE NUMBER OF VALUES
+  // Validate naming criteria when the number of values exceeds recommended limits.
   while ((namingChoice === 'A' && numValues > 20) || (namingChoice === 'D' && numValues > 26)) {
     if (namingChoice === 'A' && numValues > 20) {
       console.log(chalk.red("❌ T-shirt Size naming criteria is not recommended for more than 20 values. Please choose Incremental or Cardinal naming criteria."));
@@ -259,15 +248,19 @@ const askForInput = async () => {
     ({ namingChoice, cardinalFormat, alphabeticalCase } = await askForNamingCriteria());
   }
 
-  // RETURN ALL THE USER INPUT DATA
+  // Return all user input data to be used in token generation.
   return { unit, name, numValues, namingChoice, cardinalFormat, alphabeticalCase, scale, incrementalStep };
 };
 
-// FUNCTION TO GENERATE SPACING TOKENS BASED ON THE GATHERED INPUT
+
+// ==================================================================
+// Generate spacing tokens using the input information.
+// Tokens are generated based on the chosen numeric scale and naming criteria.
 const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep = 100) => {
   const tokens = {};
   let baseValue;
-  // SET THE BASE VALUE BASED ON THE SELECTED SCALE
+  
+  // Determine the base multiplication value depending on the scale.
   switch (scale) {
     case "A":
       baseValue = 4;
@@ -276,9 +269,11 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFor
       baseValue = 8;
       break;
   }
-  // LOOP TO GENERATE EACH TOKEN BASED ON THE NAMING CRITERIA
+  
+  // Loop through the number of values to generate tokens.
   for (let i = 1; i <= numValues; i++) {
     let tokenName;
+    // Determine token name based on chosen naming criteria.
     switch (namingChoice) {
       case "A":
         tokenName = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `space${i}`;
@@ -297,6 +292,7 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFor
         }
         break;
     }
+    // Calculate the spacing value.
     const value = baseValue * i;
     tokens[tokenName] = {
       value: `${value}${unit}`,
@@ -306,7 +302,11 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale, cardinalFor
   return tokens;
 };
 
-// FUNCTION TO CONVERT PX VALUES TO OTHER UNITS (PT, REM, EM, %)
+
+// ==================================================================
+// Token Conversion and File Saving Functions:
+
+// Convert tokens from pixels to another selected unit (pt, rem, em, or percent).
 const convertPxToOtherUnits = (tokens, unit) => {
   const conversions = {
     pt: (value) => `${value * 0.75}pt`,
@@ -314,9 +314,7 @@ const convertPxToOtherUnits = (tokens, unit) => {
     em: (value) => `${value / 16}em`,
     percent: (value) => `${(value / 16) * 100}%`
   };
-
   const convertedTokens = {};
-  // CONVERT EACH TOKEN USING THE SELECTED UNIT CONVERSION FUNCTION
   for (const [key, token] of Object.entries(tokens)) {
     const numericValue = parseFloat(token.value);
     convertedTokens[key] = {
@@ -327,12 +325,11 @@ const convertPxToOtherUnits = (tokens, unit) => {
   return convertedTokens;
 };
 
-// FUNCTION TO SAVE TOKENS DATA TO A FILE IN JSON FORMAT
+// Save tokens to a JSON file. The tokens are first recursively sorted and then stringified.
 const saveTokensToFile = (tokensData, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
   
-  // SORT THE TOKENS DATA BEFORE STRINGIFYING
   const sortedTokensData = sortObjectRecursively(tokensData);
   const outputJSON = customStringify(sortedTokensData, 2);
   
@@ -340,10 +337,11 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
   return fileExists;
 };
 
-// FUNCTION TO CONVERT TOKENS TO CSS VARIABLES FORMAT
+// Convert tokens into CSS custom property declarations.
 const convertTokensToCSS = (tokens, name) => {
   let cssVariables = ':root {\n';
   const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+  // Sort tokens based on a predefined T-shirt order.
   const sortedKeys = Object.keys(tokens).sort((a, b) => {
     const indexA = tshirtOrder.indexOf(a);
     const indexB = tshirtOrder.indexOf(b);
@@ -354,7 +352,6 @@ const convertTokensToCSS = (tokens, name) => {
     if (indexB !== -1) return 1;
     return a.localeCompare(b);
   });
-  // BUILD THE CSS VARIABLES STRING
   sortedKeys.forEach(key => {
     cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
   });
@@ -362,7 +359,7 @@ const convertTokensToCSS = (tokens, name) => {
   return cssVariables;
 };
 
-// FUNCTION TO SAVE THE CSS VARIABLES TO A FILE
+// Save CSS tokens to a file.
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -371,7 +368,7 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-// FUNCTION TO CONVERT TOKENS TO SCSS VARIABLES FORMAT
+// Convert tokens into SCSS variable declarations.
 const convertTokensToSCSS = (tokens, name) => {
   let scssVariables = '';
   const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
@@ -385,14 +382,13 @@ const convertTokensToSCSS = (tokens, name) => {
     if (indexB !== -1) return 1;
     return a.localeCompare(b);
   });
-  // BUILD THE SCSS VARIABLES STRING
   sortedKeys.forEach(key => {
     scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
   });
   return scssVariables;
 };
 
-// FUNCTION TO SAVE THE SCSS VARIABLES TO A FILE
+// Save SCSS tokens to a file.
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -401,7 +397,7 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-// FUNCTION TO DELETE UNUSED FILES THAT WERE CONVERTED TO DIFFERENT UNITS
+// Delete files that were generated for units that were not selected by the user.
 const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, filePrefix = 'space_variables') => {
   const unitFiles = {
     pt: `${filePrefix}_pt.${fileExtension}`,
@@ -409,8 +405,6 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, filePrefix 
     em: `${filePrefix}_em.${fileExtension}`,
     percent: `${filePrefix}_percent.${fileExtension}`
   };
-
-  // LOOP OVER ALL POSSIBLE UNITS AND DELETE THE ONES NOT SELECTED
   for (const [unit, fileName] of Object.entries(unitFiles)) {
     if (!selectedUnits.includes(unit)) {
       const filePath = path.join(folder, fileName);
@@ -423,11 +417,8 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, filePrefix 
   }
 };
 
-/**
- * RECURSIVELY SORT AN OBJECT BY ITS KEYS USING NUMERIC ORDER WHEN POSSIBLE.
- * @param {object} obj - THE OBJECT TO SORT.
- * @returns {object} SORTED OBJECT.
- */
+// ==================================================================
+// Utility: Recursively sort an object by its keys (using numeric ordering when possible).
 const sortObjectRecursively = (obj) => {
   if (typeof obj !== 'object' || obj === null) return obj;
   if (Array.isArray(obj)) return obj.map(sortObjectRecursively);
@@ -446,12 +437,7 @@ const sortObjectRecursively = (obj) => {
   return sortedObj;
 };
 
-/**
- * CUSTOM JSON STRINGIFY FUNCTION THAT PRESERVES KEY ORDER.
- * @param {any} value - THE VALUE TO STRINGIFY.
- * @param {number} indent - CURRENT INDENTATION LEVEL.
- * @returns {string} JSON STRING REPRESENTATION.
- */
+// Utility: Custom stringify function that preserves key order.
 const customStringify = (value, indent = 2) => {
     const spacer = ' '.repeat(indent);
     if (value === null || typeof value !== 'object') {
@@ -461,10 +447,7 @@ const customStringify = (value, indent = 2) => {
         const items = value.map(item => customStringify(item, indent + 2));
         return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
     }
-    
-    // DEFINE A PREFERRED ORDER FOR KEYS
     const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
-  
     const customComparator = (a, b) => {
         const indexA = tshirtOrder.indexOf(a);
         const indexB = tshirtOrder.indexOf(b);
@@ -473,16 +456,13 @@ const customStringify = (value, indent = 2) => {
         }
         if (indexA !== -1) return -1;
         if (indexB !== -1) return 1;
-  
         const numA = Number(a);
         const numB = Number(b);
         if (!isNaN(numA) && !isNaN(numB)) {
             return numA - numB;
         }
-  
         if (a === 'value' && b === 'type') return -1;
         if (a === 'type' && b === 'value') return 1;
-  
         return a.localeCompare(b);
     };
     const keys = Object.keys(value).sort(customComparator);
@@ -497,44 +477,45 @@ const customStringify = (value, indent = 2) => {
     return result;
 };
 
-// MAIN FUNCTION THAT EXECUTES THE SCRIPT
+// ==================================================================
+// Main function that orchestrates the wizard process.
 const main = async () => {
-  // DISPLAY THE START MESSAGE
+  
+  // Display starting messages.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // SHOW LOADER WHILE "CASTING THE MAGIC" OF TOKENS
+  // Show a loader animation to simulate process startup.
   await showLoader(chalk.bold.yellow("\n🧚 Casting the magic of tokens"), 2000);
 
-  // GREETING MESSAGE TO THE USER
+  // Display a welcome message with instructions.
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.magenta("Spacing Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step. \nGenerate your tokens and prepare them for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
-  // ASK THE USER FOR INPUT
+  // Prompt for required input from the user.
   const input = await askForInput();
   if (!input) return;
-
   const { unit, name, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep } = input;
 
-  // GENERATE THE SPACING TOKENS WITH THE PROVIDED INPUT
+  // Generate the spacing tokens based on the user input.
   const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, cardinalFormat, alphabeticalCase, incrementalStep);
 
-  // DEFINE OUTPUT FOLDERS FOR TOKENS, CSS, AND SCSS FILES
+  // Define output directories for tokens, CSS, and SCSS files.
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "space");
   const cssFolder = path.join(outputsDir, "css", "space");
   const scssFolder = path.join(outputsDir, "scss", "space");
 
-  // CREATE OUTPUT FOLDERS IF THEY DO NOT EXIST
+  // Ensure output directories exist.
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
 
-  // DISPLAY THE SECTION FOR CONVERTING TOKENS TO OTHER UNITS
+  //====================================================================
+  // UNIT CONVERSION:
+  // Ask the user whether to convert tokens into other units (pt, rem, em, percent).
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  // ASK THE USER IF THEY WANT TO CONVERT TOKENS TO OTHER UNITS
   const convertTokensResp = await inquirer.prompt([
     {
       type: 'confirm',
@@ -544,9 +525,11 @@ const main = async () => {
     }
   ]);
 
-  let unitsAnswer;
+  let units = [];
+  let unitsAnswer = { units: [] }; 
+
+  // If conversion is selected, prompt for the units.
   if (convertTokensResp.convert) {
-    // IF YES, ASK WHICH UNITS TO CONVERT TO (user can press enter to skip)
     unitsAnswer = await inquirer.prompt([
       {
         type: 'checkbox',
@@ -560,17 +543,31 @@ const main = async () => {
         ]
       }
     ]);
-  }
-  
-  // SHOW A LOADER WHILE FINALIZING THE SPELL
-  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell..."), 2000);
+    units = unitsAnswer.units; 
+    // If units are selected, convert tokens and save files for each.
+    if (units.length > 0) {
+      for (const unit of units) {
+        const unitSuffix = `_${unit}`;
+        const convertedTokens = convertPxToOtherUnits(tokensData, unit);
+        const unitJsonFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `space_tokens${unitSuffix}.json`);
+        const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `space_variables${unitSuffix}.css`);
+        const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `space_variables${unitSuffix}.scss`);
+        console.log(chalk.whiteBright(`✅ ${unitJsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens${unitSuffix}.json`));
+        console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables${unitSuffix}.css`));
+        console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables${unitSuffix}.scss`));
+      }
+    }
+  } 
 
-  // DISPLAY THE OUTPUT FILES SECTION
+  //====================================================================
+  // FINAL FILE SAVING:
+  // After conversions, display a final loader before saving primary files in base (px) unit.
+  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell..."), 2000);
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  // SAVE THE DEFAULT TOKENS (PX) TO FILES (JSON, CSS & SCSS)
+  // Save primary tokens in px to JSON, CSS, and SCSS formats.
   const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, `space_tokens_px.json`);
   const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, `space_variables_px.css`);
   const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, `space_variables_px.scss`);
@@ -579,35 +576,26 @@ const main = async () => {
   console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_px.css`));
   console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables_px.scss`));
 
-  // IF THE USER CHOSE TO CONVERT, PROCESS CONVERSION FOR EACH SELECTED UNIT
+  // If conversion units were selected, output update messages.
   if (convertTokensResp.convert) {
     const units = unitsAnswer.units;
     for (const unit of units) {
-      
-      const convertedTokens = convertPxToOtherUnits(tokensData, unit);
-      const unitFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `space_tokens_${unit}.json`);
-      const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `space_variables_${unit}.css`);
-      const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `space_variables_${unit}.scss`);
-      
-      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens_${unit}.json`));
-      console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_${unit}.css`));
-      console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables_${unit}.scss`));
+      console.log(chalk.whiteBright(`✅ ${unit} converted tokens have been saved.`));
     }
-    
-    // DELETE FILES FOR UNSELECTED UNITS
-    deleteUnusedUnitFiles(tokensFolder, units, 'json', 'space_tokens');
-    deleteUnusedUnitFiles(cssFolder, units, 'css', 'space_tokens');
-    deleteUnusedUnitFiles(scssFolder, units, 'scss', 'space_tokens');
   }
+  
+  // Clean up any unused unit files.
+  deleteUnusedUnitFiles(tokensFolder, units, 'json', 'space_tokens');
+  deleteUnusedUnitFiles(cssFolder, units, 'css', 'space_variables');
+  deleteUnusedUnitFiles(scssFolder, units, 'scss', 'space_variables');
 
-  // DISPLAY THE COMPLETION MESSAGE
+  // Display finalization messages.
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
   console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.magentaBright("Spacing Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 };
 
-// BEGIN EXECUTION OF THE MAIN FUNCTION
+// Run the main wizard function.
 main();
