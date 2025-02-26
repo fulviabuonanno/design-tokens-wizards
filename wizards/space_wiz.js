@@ -546,19 +546,18 @@ const main = async () => {
 
   let unitsAnswer;
   if (convertTokensResp.convert) {
-    // IF YES, ASK WHICH UNITS TO CONVERT TO
+    // IF YES, ASK WHICH UNITS TO CONVERT TO (user can press enter to skip)
     unitsAnswer = await inquirer.prompt([
       {
         type: 'checkbox',
         name: 'units',
-        message: 'Please, select the units you want to use to convert your tokens:',
+        message: 'Please, select the units you want to use to convert your tokens (leave empty to skip):',
         choices: [
           { name: 'pt', value: 'pt' },
           { name: 'rem', value: 'rem' },
           { name: 'em', value: 'em' },
           { name: '%', value: 'percent' }
-        ],
-        validate: (input) => input.length === 0 ? "❌ You must select at least one unit." : true,
+        ]
       }
     ]);
   }
@@ -597,8 +596,8 @@ const main = async () => {
     
     // DELETE FILES FOR UNSELECTED UNITS
     deleteUnusedUnitFiles(tokensFolder, units, 'json', 'space_tokens');
-    deleteUnusedUnitFiles(cssFolder, units, 'css');
-    deleteUnusedUnitFiles(scssFolder, units, 'scss');
+    deleteUnusedUnitFiles(cssFolder, units, 'css', 'space_tokens');
+    deleteUnusedUnitFiles(scssFolder, units, 'scss', 'space_tokens');
   }
 
   // DISPLAY THE COMPLETION MESSAGE

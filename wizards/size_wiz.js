@@ -57,7 +57,7 @@ const askForInput = async () => {
       type: 'list',
       name: 'name',
       message: '📝 What name would you like to assign to your size tokens?',
-      choices: ['size', 'sizing', 'dimension', 's', 'sz', 'd', ' dim', 'custom'],
+      choices: ['size', 'sizing', 'dimension', 's', 'sz', 'd', 'dim', 'custom'],
       loop: false
     }
   ]);
@@ -556,13 +556,14 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
  * @param {string} folder - The target folder.
  * @param {Array} selectedUnits - Array of selected unit strings.
  * @param {string} fileExtension - The extension of the files (e.g., "json", "css", "scss").
+ * @param {string} prefix - The prefix of the files (e.g., "size_tokens").
  */
-const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
+const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, prefix) => {
   const unitFiles = {
-    pt: `size_variables_pt.${fileExtension}`,
-    rem: `size_variables_rem.${fileExtension}`,
-    em: `size_variables_em.${fileExtension}`,
-    percent: `size_variables_percent.${fileExtension}`
+    pt: `${prefix}_pt.${fileExtension}`,
+    rem: `${prefix}_rem.${fileExtension}`,
+    em: `${prefix}_em.${fileExtension}`,
+    percent: `${prefix}_percent.${fileExtension}`
   };
 
   for (const [unit, fileName] of Object.entries(unitFiles)) {
@@ -631,9 +632,10 @@ const main = async () => {
   ]);
 
   let units = [];
+  let unitsAnswer = { units: [] }; // Initialize unitsAnswer to avoid ReferenceError
 
   if (convertAnswer.convert) {
-    const unitsAnswer = await inquirer.prompt([
+    unitsAnswer = await inquirer.prompt([
       {
         type: 'checkbox',
         name: 'units',
@@ -658,18 +660,13 @@ const main = async () => {
         const unitJsonFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
         const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables${unitSuffix}.css`);
         const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables${unitSuffix}.scss`);
+        
         console.log(`✅ ${unitJsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens${unitSuffix}.json`);
         console.log(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables${unitSuffix}.css`);
         console.log(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables${unitSuffix}.scss`);
       }
     }
   } 
-
-  // Borra los archivos de unidades que no fueron seleccionadas.
-  // Si 'units' está vacío, se borrarán todos los archivos adicionales.
-  deleteUnusedUnitFiles(tokensFolder, units, 'json');
-  deleteUnusedUnitFiles(cssFolder, units, 'css');
-  deleteUnusedUnitFiles(scssFolder, units, 'scss');
 
   await showLoader(chalk.bold.magenta("\n🪄 Finalizing your spell..."), 2000);
 
@@ -684,11 +681,17 @@ const main = async () => {
   if (convertAnswer.convert) {
     const units = unitsAnswer.units;
     for (const unit of units) {
-      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
+      console.log(chalk.whiteBright(`✅ ${unitJsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_${unit}.json`));
       console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_${unit}.css`));
       console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables_${unit}.scss`));
     }
   }
+
+  // Borra los archivos de unidades que no fueron seleccionadas.
+  // Si 'units' está vacío, se borrarán todos los archivos adicionales.
+  deleteUnusedUnitFiles(tokensFolder, units, 'json', 'size_tokens');
+  deleteUnusedUnitFiles(cssFolder, units, 'css', 'size_variables');
+  deleteUnusedUnitFiles(scssFolder, units, 'scss', 'size_variables');
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
