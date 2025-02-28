@@ -76,7 +76,7 @@ const askForInput = async () => {
     {
       type: 'list',
       name: 'scale',
-      message: '🔢 Select the scale to use for your spacing values: \n',
+      message: '🔢 Select the scale to use for your spacing values:',
       choices: [
         { name: '4-Point Grid System', value: '4' },
         { name: '8-Point Grid System', value: '8' },
@@ -117,7 +117,7 @@ const askForInput = async () => {
     {
       type: 'input',
       name: 'numValues',
-      message: '🔢 How many values would you like to define? \n',
+      message: '🔢 How many values would you like to define?\n>>>',
       validate: (input) => {
         const num = parseInt(input);
         if (isNaN(num) || num <= 0) {

@@ -87,7 +87,7 @@ const askForInput = async () => {
     {
       type: 'list',
       name: 'scale',
-      message: '🔢 Select the scale to use for your values: \n',
+      message: '🔢 Select the scale to use for your values:',
       choices: [
         { name: '4-Point Grid System', value: '4' },
         { name: '8-Point Grid System', value: '8' },
@@ -128,7 +128,7 @@ const askForInput = async () => {
     {
       type: 'input',
       name: 'numValues',
-      message: '🔢 How many values would you like to define? \n',
+      message: '🔢 How many values would you like to define?\n>>>',
       validate: (input) => {
         const num = parseInt(input);
         if (isNaN(num) || num <= 0) {
@@ -557,40 +557,61 @@ const main = async () => {
         const unitSuffix = `_${unit}`;
         const convertedTokens = convertTokens(tokensData, unit);
         
-        const unitJsonFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
-        const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables${unitSuffix}.css`);
-        const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables${unitSuffix}.scss`);
-        console.log(chalk.whiteBright(`✅ ${unitJsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens${unitSuffix}.json`));
-        console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables${unitSuffix}.css`));
-        console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables${unitSuffix}.scss`));
+        saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
+        saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables${unitSuffix}.css`);
+        saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables${unitSuffix}.scss`);
       }
     }
   } 
 
   await showLoader(chalk.bold.magenta("\n🪄 Finalizing your spell"), 2000);
 
-  console.log(chalk.black.bgBlueBright("\n======================================="));
-  console.log(chalk.bold("📄 OUTPUT FILES"));
-  console.log(chalk.black.bgBlueBright("=======================================\n"));
-  console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/size/size_tokens_px.json`));
-  console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/size/size_variables_px.css`));
-  console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/size/size_variables_px.scss`));
+  const hasChanges = jsonFileExists || cssFileExists || scssFileExists || (units.length > 0);
 
-  if (convertAnswer.convert) {
-    const units = unitsAnswer.units;
-    for (const unit of units) {
-      console.log(chalk.whiteBright(`✅ ${unit} file processed for tokens, CSS and SCSS conversions.`));
+  if (hasChanges) {
+    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.bold("🚧 CHANGES IN OUTPUT FILES"));
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
+    console.log(chalk.whiteBright(`🆕 ${jsonFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`🆕 ${cssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`🆕 ${scssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
+  
+    if (units.length > 0) {
+      for (const unit of units) {
+        const unitSuffix = `_${unit}`;
+        console.log(chalk.whiteBright(`🆕 Converted (${unit}): ${path.relative(process.cwd(), path.join(tokensFolder, `size_tokens${unitSuffix}.json`))}`));
+        console.log(chalk.whiteBright(`🆕 Converted (${unit}): ${path.relative(process.cwd(), path.join(cssFolder, `size_variables${unitSuffix}.css`))}`));
+        console.log(chalk.whiteBright(`🆕 Converted (${unit}): ${path.relative(process.cwd(), path.join(scssFolder, `size_variables${unitSuffix}.scss`))}`));
+      }
+    }
+    
+    deleteUnusedUnitFiles(tokensFolder, units, 'json', 'size_tokens');
+    deleteUnusedUnitFiles(cssFolder, units, 'css', 'size_variables');
+    deleteUnusedUnitFiles(scssFolder, units, 'scss', 'size_variables');
+  
+    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
+  } else {
+    
+    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.bold("📄 OUTPUT FILES"));
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
+    console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
+    
+    if (units.length > 0) {
+      for (const unit of units) {
+        const unitSuffix = `_${unit}`;
+        console.log(chalk.whiteBright(`✅ Converted (${unit}): ${path.relative(process.cwd(), path.join(tokensFolder, `size_tokens${unitSuffix}.json`))}`));
+        console.log(chalk.whiteBright(`✅ Converted (${unit}): ${path.relative(process.cwd(), path.join(cssFolder, `size_variables${unitSuffix}.css`))}`));
+        console.log(chalk.whiteBright(`✅ Converted (${unit}): ${path.relative(process.cwd(), path.join(scssFolder, `size_variables${unitSuffix}.scss`))}`));
+      }
     }
   }
-  
-  deleteUnusedUnitFiles(tokensFolder, units, 'json', 'size_tokens');
-  deleteUnusedUnitFiles(cssFolder, units, 'css', 'size_variables');
-  deleteUnusedUnitFiles(scssFolder, units, 'scss', 'size_variables');
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
-  
   console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.blueBright("Size Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 };
