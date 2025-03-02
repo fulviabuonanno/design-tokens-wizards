@@ -577,11 +577,15 @@ const main = async () => {
     console.log(chalk.whiteBright(`🆕 ${scssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
   
     if (units.length > 0) {
+      console.log(chalk.black.bgBlueBright("\n======================================="));
+      console.log(chalk.bold("🔄 CONVERTED UNITS"));
+      console.log(chalk.black.bgBlueBright("=======================================\n"));
       for (const unit of units) {
         const unitSuffix = `_${unit}`;
-        console.log(chalk.whiteBright(`🆕 Converted (${unit}): ${path.relative(process.cwd(), path.join(tokensFolder, `size_tokens${unitSuffix}.json`))}`));
-        console.log(chalk.whiteBright(`🆕 Converted (${unit}): ${path.relative(process.cwd(), path.join(cssFolder, `size_variables${unitSuffix}.css`))}`));
-        console.log(chalk.whiteBright(`🆕 Converted (${unit}): ${path.relative(process.cwd(), path.join(scssFolder, `size_variables${unitSuffix}.scss`))}`));
+        console.log(chalk.whiteBright(`✅ Converted (${unit}):`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${name}_tokens${unitSuffix}.json`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${name}_variables${unitSuffix}.css`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${name}_variables${unitSuffix}.scss`))}`));
       }
     }
     
@@ -589,7 +593,6 @@ const main = async () => {
     deleteUnusedUnitFiles(cssFolder, units, 'css', 'size_variables');
     deleteUnusedUnitFiles(scssFolder, units, 'scss', 'size_variables');
   
-    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
   } else {
     
     console.log(chalk.black.bgBlueBright("\n======================================="));
@@ -600,11 +603,15 @@ const main = async () => {
     console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
     
     if (units.length > 0) {
+      console.log(chalk.black.bgBlueBright("\n======================================="));
+      console.log(chalk.bold("🔄 CONVERTED UNITS"));
+      console.log(chalk.black.bgBlueBright("=======================================\n"));
       for (const unit of units) {
         const unitSuffix = `_${unit}`;
-        console.log(chalk.whiteBright(`✅ Converted (${unit}): ${path.relative(process.cwd(), path.join(tokensFolder, `size_tokens${unitSuffix}.json`))}`));
-        console.log(chalk.whiteBright(`✅ Converted (${unit}): ${path.relative(process.cwd(), path.join(cssFolder, `size_variables${unitSuffix}.css`))}`));
-        console.log(chalk.whiteBright(`✅ Converted (${unit}): ${path.relative(process.cwd(), path.join(scssFolder, `size_variables${unitSuffix}.scss`))}`));
+        console.log(chalk.whiteBright(`✅ Converted (${unit}):`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${name}_tokens${unitSuffix}.json`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${name}_variables${unitSuffix}.css`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${name}_variables${unitSuffix}.scss`))}`));
       }
     }
   }

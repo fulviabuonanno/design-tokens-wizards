@@ -32,7 +32,7 @@ const askForInput = async () => {
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("⭐️ STEP 1: BASE UNIT"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-  console.log(chalk.magenta("ℹ️ The base unit for spacing tokens is set to 'px'."));
+  console.log(chalk.yellowBright("ℹ️ The base unit for spacing tokens is set to 'px'."));
   const unit = 'px';
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
@@ -184,7 +184,7 @@ const askForInput = async () => {
       incrementalStep = incrementalStepAnswer.incrementalStep;
     }
     
-    if (namingChoiceAnswer.namingChoice === 'C') {
+    if (namingChoiceAnswer.namingChoice === 'ordinal') {
       const ordinalFormatAnswer = await inquirer.prompt([
         {
           type: 'list',
@@ -199,7 +199,7 @@ const askForInput = async () => {
       ordinalFormat = ordinalFormatAnswer.ordinalFormat;
     }
     
-    if (namingChoiceAnswer.namingChoice === 'D') {
+    if (namingChoiceAnswer.namingChoice === 'alphabetical') {
       const alphabeticalCaseAnswer = await inquirer.prompt([
         {
           type: 'list',
@@ -442,7 +442,7 @@ const main = async () => {
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  await showLoader(chalk.bold.yellow("\n🧚 Casting the magic of tokens"), 2000);
+  await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 2000);
 
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.magenta("Spacing Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step. \nGenerate your tokens and prepare them for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
@@ -460,72 +460,100 @@ const main = async () => {
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
 
-  console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
-  console.log(chalk.black.bgMagentaBright("=======================================\n"));
-  const convertTokensResp = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'convert',
-      message: "Would you like to convert the tokens to other units (rem, em) (Y/n)",
-      default: true,
-    }
-  ]);
+  const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, 'space_tokens_px.json');
+  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'space_variables_px.css');
+  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'space_variables_px.scss');
 
-  let units = [];
-  let unitsAnswer = { units: [] }; 
+      console.log(chalk.black.bgMagentaBright("\n======================================="));
+      console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
+      console.log(chalk.black.bgMagentaBright("=======================================\n"));
+      const convertTokensResp = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'convert',
+          message: "Would you like to convert the tokens to other units (rem, em) (Y/n)",
+          default: true,
+        }
+      ]);
 
-  if (convertTokensResp.convert) {
-    unitsAnswer = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'units',
-        message: 'Please, select the units you want to use to convert your tokens (leave empty to skip):',
-        choices: [
-          { name: 'rem', value: 'rem' },
-          { name: 'em', value: 'em' }
-        ]
-      }
-    ]);
-    units = unitsAnswer.units; 
+      let units = [];
+      let unitsAnswer = { units: [] }; 
+
+      if (convertTokensResp.convert) {
+        unitsAnswer = await inquirer.prompt([
+          {
+            type: 'checkbox',
+            name: 'units',
+            message: 'Please, select the units you want to use to convert your tokens (leave empty to skip):',
+            choices: [
+              { name: 'rem', value: 'rem' },
+              { name: 'em', value: 'em' }
+            ]
+          }
+        ]);
+        units = unitsAnswer.units; 
+        
+        if (units.length > 0) {
+          for (const unit of units) {
+            const unitSuffix = `_${unit}`;
+            const convertedTokens = convertPxToOtherUnits(tokensData, unit);
+            const unitJsonFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `space_tokens${unitSuffix}.json`);
+            const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `space_variables${unitSuffix}.css`);
+            const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `space_variables${unitSuffix}.scss`);          }
+        }
+      } 
+
+      await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell"), 2000);
+
+      const hasChanges = jsonFileExists || cssFileExists || scssFileExists || (units.length > 0);
     
-    if (units.length > 0) {
-      for (const unit of units) {
-        const unitSuffix = `_${unit}`;
-        const convertedTokens = convertPxToOtherUnits(tokensData, unit);
-        const unitJsonFileExists = saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `space_tokens${unitSuffix}.json`);
-        const unitCssFileExists = saveCSSTokensToFile(convertedTokens, name, cssFolder, `space_variables${unitSuffix}.css`);
-        const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, name, scssFolder, `space_variables${unitSuffix}.scss`);
-        console.log(chalk.whiteBright(`✅ ${unitJsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens${unitSuffix}.json`));
-        console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables${unitSuffix}.css`));
-        console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables${unitSuffix}.scss`));
+      if (hasChanges) {
+        console.log(chalk.black.bgMagentaBright("\n======================================="));
+        console.log(chalk.bold("🚧 CHANGES IN OUTPUT FILES"));
+        console.log(chalk.black.bgMagentaBright("=======================================\n"));
+        console.log(chalk.whiteBright(`🆕 ${jsonFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(tokensFolder, 'space_tokens_px.json'))}`));
+        console.log(chalk.whiteBright(`🆕 ${cssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(cssFolder, 'space_variables_px.css'))}`));
+        console.log(chalk.whiteBright(`🆕 ${scssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(scssFolder, 'space_variables_px.scss'))}`));
+      
+        if (units.length > 0) {
+          console.log(chalk.black.bgMagentaBright("\n======================================="));
+          console.log(chalk.bold("🔄 CONVERTED UNITS"));
+          console.log(chalk.black.bgMagentaBright("=======================================\n"));
+          for (const unit of units) {
+            const unitSuffix = `_${unit}`;
+            console.log(chalk.whiteBright(`✅ Converted (${unit}):`));
+            console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${name}_tokens${unitSuffix}.json`))}`));
+            console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${name}_variables${unitSuffix}.css`))}`));
+            console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${name}_variables${unitSuffix}.scss`))}`));
+          }
+        }
+        
+        deleteUnusedUnitFiles(tokensFolder, units, 'json', 'space_tokens');
+        deleteUnusedUnitFiles(cssFolder, units, 'css', 'space_variables');
+        deleteUnusedUnitFiles(scssFolder, units, 'scss', 'space_variables');
+      
+      } else {
+        
+        console.log(chalk.black.bgMagentaBright("\n======================================="));
+        console.log(chalk.bold("📄 OUTPUT FILES"));
+        console.log(chalk.black.bgMagentaBright("=======================================\n"));
+        console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(tokensFolder, 'space_tokens_px.json'))}`));
+        console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(cssFolder, 'space_variables_px.css'))}`));
+        console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(scssFolder, 'space_variables_px.scss'))}`));
+        
+        if (units.length > 0) {
+          console.log(chalk.black.bgMagentaBright("\n======================================="));
+          console.log(chalk.bold("🔄 CONVERTED UNITS"));
+          console.log(chalk.black.bgMagentaBright("=======================================\n"));
+          for (const unit of units) {
+            const unitSuffix = `_${unit}`;
+            console.log(chalk.whiteBright(`✅ Converted (${unit}):`));
+            console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${name}_tokens${unitSuffix}.json`))}`));
+            console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${name}_variables${unitSuffix}.css`))}`));
+            console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${name}_variables${unitSuffix}.scss`))}`));
+          }
+        }
       }
-    }
-  } 
-
-  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 2000);
-  console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("📄 OUTPUT FILES"));
-  console.log(chalk.black.bgMagentaBright("=======================================\n"));
-
-  const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, `space_tokens_px.json`);
-  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, `space_variables_px.css`);
-  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, `space_variables_px.scss`);
-
-  console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/space/space_tokens_px.json`));
-  console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/space/space_variables_px.css`));
-  console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/space/space_variables_px.scss`));
-
-  if (convertTokensResp.convert) {
-    const units = unitsAnswer.units;
-    for (const unit of units) {
-      console.log(chalk.whiteBright(`✅ ${unit} converted tokens have been saved.`));
-    }
-  }
-  
-  deleteUnusedUnitFiles(tokensFolder, units, 'json', 'space_tokens');
-  deleteUnusedUnitFiles(cssFolder, units, 'css', 'space_variables');
-  deleteUnusedUnitFiles(scssFolder, units, 'scss', 'space_variables');
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
