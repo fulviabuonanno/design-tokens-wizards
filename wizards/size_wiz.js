@@ -355,17 +355,8 @@ const customStringify = (value, indent = 2) => {
         const items = value.map(item => customStringify(item, indent + 2));
         return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
     } else {
-        let keys = Object.keys(value);
-        if (keys.includes('value') && keys.includes('type')) {
-            keys = ['value', 'type', ...keys.filter(k => k !== 'value' && k !== 'type').sort((a, b) => a.localeCompare(b))];
-        } else {
-            keys = keys.sort((a, b) => {
-                const numA = Number(a);
-                const numB = Number(b);
-                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-                return a.localeCompare(b);
-            });
-        }
+        // Preserve key order as pre-sorted by sortObjectRecursively.
+        const keys = Object.keys(value);
         let result = "{\n";
         keys.forEach((key, idx) => {
             result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
@@ -381,6 +372,11 @@ const customStringify = (value, indent = 2) => {
  * First, the tokens are recursively sorted and then stringified using the custom function.
  */
 const saveTokensToFile = (tokensData, folder, fileName) => {
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
   const sortedTokensData = sortObjectRecursively(tokensData);
@@ -507,6 +503,9 @@ const main = async () => {
   const input = await askForInput();
   if (!input) return;
   const { unit, name, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep } = input;
+  
+  // NEW: if naming criteria is t-shirt, force the top-level key to "size"
+  const topKey = (namingChoice === 't-shirt') ? 'size' : name;
 
   const tokensData = generateTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep);
 
@@ -520,9 +519,9 @@ const main = async () => {
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
 
-  const jsonFileExists = saveTokensToFile({ [name]: tokensData }, tokensFolder, 'size_tokens_px.json');
-  const cssFileExists = saveCSSTokensToFile(tokensData, name, cssFolder, 'size_variables_px.css');
-  const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'size_variables_px.scss');
+  const jsonFileExists = saveTokensToFile({ [topKey]: tokensData }, tokensFolder, 'size_tokens_px.json');
+  const cssFileExists = saveCSSTokensToFile(tokensData, topKey, cssFolder, 'size_variables_px.css');
+  const scssFileExists = saveSCSSTokensToFile(tokensData, topKey, scssFolder, 'size_variables_px.scss');
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING SIZE TOKENS TO OTHER UNITS"));
@@ -538,6 +537,7 @@ const main = async () => {
 
   let units = [];
   let unitsAnswer = { units: [] }; 
+  let deletedFiles = []; // <-- NEW: declare deletedFiles here
 
   if (convertAnswer.convert) {
     unitsAnswer = await inquirer.prompt([
@@ -557,68 +557,72 @@ const main = async () => {
         const unitSuffix = `_${unit}`;
         const convertedTokens = convertTokens(tokensData, unit);
         
-        saveTokensToFile({ [name]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
-        saveCSSTokensToFile(convertedTokens, name, cssFolder, `size_variables${unitSuffix}.css`);
-        saveSCSSTokensToFile(convertedTokens, name, scssFolder, `size_variables${unitSuffix}.scss`);
+        // Use topKey for generated files if naming criteria is t-shirt
+        saveTokensToFile({ [topKey]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
+        saveCSSTokensToFile(convertedTokens, topKey, cssFolder, `size_variables${unitSuffix}.css`);
+        saveSCSSTokensToFile(convertedTokens, topKey, scssFolder, `size_variables${unitSuffix}.scss`);
       }
     }
-  } 
-
-  await showLoader(chalk.bold.magenta("\n🪄 Finalizing your spell"), 2000);
-
-  const hasChanges = jsonFileExists || cssFileExists || scssFileExists || (units.length > 0);
-
-  if (hasChanges) {
-    console.log(chalk.black.bgBlueBright("\n======================================="));
-    console.log(chalk.bold("🚧 CHANGES IN OUTPUT FILES"));
-    console.log(chalk.black.bgBlueBright("=======================================\n"));
-    console.log(chalk.whiteBright(`🆕 ${jsonFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
-    console.log(chalk.whiteBright(`🆕 ${cssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
-    console.log(chalk.whiteBright(`🆕 ${scssFileExists ? 'Updated' : 'Saved'}: ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
-  
-    if (units.length > 0) {
-      console.log(chalk.black.bgBlueBright("\n======================================="));
-      console.log(chalk.bold("🔄 CONVERTED UNITS"));
-      console.log(chalk.black.bgBlueBright("=======================================\n"));
-      for (const unit of units) {
-        const unitSuffix = `_${unit}`;
-        console.log(chalk.whiteBright(`✅ Converted (${unit}):`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${name}_tokens${unitSuffix}.json`))}`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${name}_variables${unitSuffix}.css`))}`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${name}_variables${unitSuffix}.scss`))}`));
-      }
-    }
-    
-    deleteUnusedUnitFiles(tokensFolder, units, 'json', 'size_tokens');
-    deleteUnusedUnitFiles(cssFolder, units, 'css', 'size_variables');
-    deleteUnusedUnitFiles(scssFolder, units, 'scss', 'size_variables');
-  
   } else {
-    
-    console.log(chalk.black.bgBlueBright("\n======================================="));
-    console.log(chalk.bold("📄 OUTPUT FILES"));
-    console.log(chalk.black.bgBlueBright("=======================================\n"));
-    console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
-    console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
-    console.log(chalk.whiteBright(`✅ Saved: ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
-    
-    if (units.length > 0) {
-      console.log(chalk.black.bgBlueBright("\n======================================="));
-      console.log(chalk.bold("🔄 CONVERTED UNITS"));
-      console.log(chalk.black.bgBlueBright("=======================================\n"));
-      for (const unit of units) {
-        const unitSuffix = `_${unit}`;
-        console.log(chalk.whiteBright(`✅ Converted (${unit}):`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${name}_tokens${unitSuffix}.json`))}`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${name}_variables${unitSuffix}.css`))}`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${name}_variables${unitSuffix}.scss`))}`));
+    // No conversion: delete _rem and _em files.
+    const deleteFileIfExists = (folder, fileName) => {
+      const filePath = path.join(folder, fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        deletedFiles.push(path.relative(process.cwd(), filePath));
       }
+    };
+    deleteFileIfExists(tokensFolder, 'size_tokens_rem.json');
+    deleteFileIfExists(cssFolder, 'size_variables_rem.css');
+    deleteFileIfExists(scssFolder, 'size_variables_rem.scss');
+    deleteFileIfExists(tokensFolder, 'size_tokens_em.json');
+    deleteFileIfExists(cssFolder, 'size_variables_em.css');
+    deleteFileIfExists(scssFolder, 'size_variables_em.scss');
+  }
+
+  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 2000);
+
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("📄 OUTPUT FILES"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
+
+  let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
+  if (units.length > 0) {
+    console.log(chalk.whiteBright(`🆕 ${statusLabel}:`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
+    if (units.includes('rem')) {
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_rem.json'))}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_rem.css'))}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_rem.scss'))}`));
+    }
+    if (units.includes('em')) {
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_em.json'))}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_em.css'))}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_em.scss'))}`));
+    }
+  } else {
+    console.log(chalk.whiteBright(`🆕 ${statusLabel}:`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
+    if (deletedFiles.length > 0) {
+      console.log(chalk.whiteBright("🗑️ Deleted:"));
+      deletedFiles.forEach(deletedFile => {
+        console.log(chalk.whiteBright(`   -> ${deletedFile}`));
+      });
     }
   }
+
+  deleteUnusedUnitFiles(tokensFolder, units, 'json');
+  deleteUnusedUnitFiles(cssFolder, units, 'css');
+  deleteUnusedUnitFiles(scssFolder, units, 'scss');
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
+  
   console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.blueBright("Size Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 };

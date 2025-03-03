@@ -505,10 +505,10 @@ const main = async () => {
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
 
   const jsonFileExists = saveTokensToFile({ [tokenName]: tokensData }, tokensFolder, 'border_radius_tokens_px.json');
-  const cssFileExists = saveCSSTokensToFile(tokensData, tokenName, cssFolder, 'border_radius_variables.css');
-  const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables.scss');
+  const cssFileExists = saveCSSTokensToFile(tokensData, tokenName, cssFolder, 'border_radius_variables_px.css');
+  const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables_px.scss');
 
-  console.log(chalk.black.bgGreenBright("\n======================================="));
+  console.log(chalk.black.bgGreenBright("======================================="));
   console.log(chalk.bold("🔄 CONVERTING BORDER RADIUS TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
   const convertAnswer = await inquirer.prompt([
@@ -520,6 +520,8 @@ const main = async () => {
     }
   ]);
 
+  const units = convertAnswer.convert ? ['rem'] : [];
+
   if (convertAnswer.convert) {
     const convertedTokens = convertPxToOtherUnits(tokensData, 'rem');
     const unitFileExists = saveTokensToFile({ [tokenName]: convertedTokens }, tokensFolder, `border_radius_tokens_rem.json`);
@@ -527,21 +529,72 @@ const main = async () => {
     const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, tokenName, scssFolder, `border_radius_variables_rem.scss`);
 
     await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 2000);
+
     console.log(chalk.black.bgGreenBright("\n======================================="));
     console.log(chalk.bold("📄 OUTPUT FILES"));
     console.log(chalk.black.bgGreenBright("=======================================\n"));
-    
-    console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/border-radius/border_radius_tokens_px.json`));
-    console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/border-radius/border_radius_variables_px.css`));
-    console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/border-radius/border_radius_variables_px.scss`));  
-    console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/border-radius/border_radius_tokens_rem.json`));
-    console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/border-radius/border_radius_variables_rem.css`));
-    console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/border-radius/border_radius_variables_rem.scss`));
 
-    deleteUnusedUnitFiles(tokensFolder, ['rem'], 'json');
-    deleteUnusedUnitFiles(cssFolder, ['rem'], 'css');
-    deleteUnusedUnitFiles(scssFolder, ['rem'], 'scss');
+    // Mostrar archivos _px
+    if (jsonFileExists || cssFileExists || scssFileExists) {
+      console.log(chalk.whiteBright("🆕 Updated:"));
+    } else {
+      console.log(chalk.whiteBright("🆕 Saved:"));
+    }
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));
 
+    // Mostrar archivos convertidos a rem
+    if (units.length > 0) {
+      for (const unit of units) {
+        const unitSuffix = `_${unit}`;
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${tokenName}_tokens${unitSuffix}.json`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${tokenName}_variables${unitSuffix}.css`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${tokenName}_variables${unitSuffix}.scss`))}`));
+      }
+    }
+
+    deleteUnusedUnitFiles(tokensFolder, units, 'json');
+    deleteUnusedUnitFiles(cssFolder, units, 'css');
+    deleteUnusedUnitFiles(scssFolder, units, 'scss');
+
+  } else {
+    // Si no se convierte a rem, se eliminan los archivos _rem (si existen) y se registran los cambios.
+    const deletedFiles = [];
+    const deleteFileIfExists = (folder, fileName) => {
+      const filePath = path.join(folder, fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        deletedFiles.push(path.relative(process.cwd(), filePath));
+      }
+    };
+
+    deleteFileIfExists(tokensFolder, 'border_radius_tokens_rem.json');
+    deleteFileIfExists(cssFolder, 'border_radius_variables_rem.css');
+    deleteFileIfExists(scssFolder, 'border_radius_variables_rem.scss');
+
+    // Se muestra "CHANGES IN OUTPUT FILES" solo si se eliminó algún archivo; de lo contrario, se muestra "OUTPUT FILES"
+    if (deletedFiles.length > 0) {
+      console.log(chalk.black.bgGreenBright("\n======================================="));
+      console.log(chalk.bold("📄 OUTPUT FILES"));
+      console.log(chalk.black.bgGreenBright("=======================================\n"));
+    } else {
+      console.log(chalk.black.bgGreenBright("\n======================================="));
+      console.log(chalk.bold("📄 OUTPUT FILES"));
+      console.log(chalk.black.bgGreenBright("=======================================\n"));
+    }
+
+    console.log(chalk.whiteBright("🆕 Saved:"));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));
+
+    if (deletedFiles.length > 0) {
+      console.log(chalk.whiteBright("🗑️ Deleted:"));
+      deletedFiles.forEach(deletedFile => {
+        console.log(chalk.whiteBright(`   -> ${deletedFile}`));
+      });
+    }
   }
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
