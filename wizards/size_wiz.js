@@ -32,11 +32,6 @@ const showLoader = (message, duration) => {
   });
 };
 
-/**
- * Prompts the user for configuration inputs.
- * It gathers basic details like token naming, scale, number of values, and naming criteria.
- * Returns an object with all the necessary parameters.
- */
 const askForInput = async () => {
   
   console.log(chalk.black.bgBlueBright("\n======================================="));
@@ -244,10 +239,6 @@ const askForInput = async () => {
   return { unit, name, numValues, namingChoice: namingChoice.namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep };
 };
 
-/**
- * Generates size tokens based on user inputs.
- * Uses the scale (4px or 8px grid) and naming criteria to build a tokens object.
- */
 const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep) => {
   const tokens = {};
   let baseValue;
@@ -292,10 +283,6 @@ const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alp
   return tokens;
 };
 
-/**
- * Converts tokens from px to another unit (rem, em)
- * using predefined conversion functions.
- */
 const convertTokens = (tokens, unit) => {
   const conversions = {
     rem: (value) => `${value / 16}rem`,
@@ -312,9 +299,6 @@ const convertTokens = (tokens, unit) => {
   return convertedTokens;
 };
 
-/**
- * Recursively sorts an object by key, using numeric ordering when possible.
- */
 const sortObjectRecursively = (obj) => {
   if (typeof obj !== 'object' || obj === null) return obj;
   if (Array.isArray(obj)) return obj.map(sortObjectRecursively);
@@ -343,9 +327,6 @@ const sortObjectRecursively = (obj) => {
   return sortedObj;
 };
 
-/**
- * Custom function to stringify objects while preserving key order.
- */
 const customStringify = (value, indent = 2) => {
     const spacer = ' '.repeat(indent);
     if (value === null || typeof value !== 'object') {
@@ -367,10 +348,6 @@ const customStringify = (value, indent = 2) => {
     }
 };
 
-/**
- * Saves tokens data to a JSON file.
- * First, the tokens are recursively sorted and then stringified using the custom function.
- */
 const saveTokensToFile = (tokensData, folder, fileName) => {
   const tshirtOrder = [
     "3xs", "2xs", "xs", "s", "md", "lg", "xl",
@@ -385,9 +362,6 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
   return fileExists;
 };
 
-/**
- * Converts tokens into CSS variable declarations.
- */
 const convertTokensToCSS = (tokens, name) => {
   const tshirtOrder = [
     "3xs", "2xs", "xs", "s", "md", "lg", "xl",
@@ -414,9 +388,6 @@ const convertTokensToCSS = (tokens, name) => {
   return cssVariables;
 };
 
-/**
- * Saves CSS tokens to a file.
- */
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -425,9 +396,6 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-/**
- * Converts tokens into SCSS variable declarations.
- */
 const convertTokensToSCSS = (tokens, name) => {
   const tshirtOrder = [
     "3xs", "2xs", "xs", "s", "md", "lg", "xl",
@@ -453,9 +421,6 @@ const convertTokensToSCSS = (tokens, name) => {
   return scssVariables;
 };
 
-/**
- * Saves SCSS tokens to a file.
- */
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -464,9 +429,6 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-/**
- * Deletes files corresponding to units that were not selected by the user.
- */
 const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, prefix) => {
   const unitFiles = {
     rem: `${prefix}_rem.${fileExtension}`,
@@ -484,15 +446,6 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, prefix) => 
   }
 };
 
-/**
- * Main function orchestrating the token generation process:
- *  - Shows loaders and welcomes the user.
- *  - Collects user input step by step.
- *  - Generates tokens based on input.
- *  - Saves tokens as JSON, CSS, and SCSS files.
- *  - Optionally converts tokens to other units.
- *  - Deletes files related to unused units.
- */
 const main = async () => {
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
@@ -587,8 +540,9 @@ const main = async () => {
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
+  const labelIcon = statusLabel === "Saved" ? "✅" : "🆕";
   if (units.length > 0) {
-    console.log(chalk.whiteBright(`🆕 ${statusLabel}:`));
+    console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));
@@ -603,7 +557,7 @@ const main = async () => {
       console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_em.scss'))}`));
     }
   } else {
-    console.log(chalk.whiteBright(`🆕 ${statusLabel}:`));
+    console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'size_variables_px.css'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'size_variables_px.scss'))}`));

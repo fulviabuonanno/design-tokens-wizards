@@ -34,11 +34,6 @@ const showLoader = (message, duration) => {
   });
 };
 
-/**
- * Prompts the user for configuration input.
- * Gathers details such as the token name, whether to include extreme (none and full)
- * values, scale naming for intermediate tokens, and the value scale (minimal or expressive).
- */
 const askForInput = async () => {
   
   console.log(chalk.black.bgGreenBright("\n======================================="));
@@ -302,10 +297,6 @@ const askForInput = async () => {
   return { tokenName, unit: 'px', noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale };
 };
 
-/**
- * Generates the border radius tokens using the user’s choices.
- * It creates an array of tokens based on intermediate steps or ranges defined by extreme values.
- */
 const generateBorderRadiusTokens = (noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale) => {
   const tokensArray = [];
   const base = valueScale; 
@@ -360,10 +351,6 @@ const generateBorderRadiusTokens = (noneLabel, fullLabel, intermediateNaming, to
   return tokens;
 };
 
-/**
- * Converts pixel (px) token values to other units.
- * Supports conversion to rem.
- */
 const convertPxToOtherUnits = (tokens, unit) => {
   const conversions = {
     rem: (value) => `${value / 16}rem`
@@ -380,9 +367,6 @@ const convertPxToOtherUnits = (tokens, unit) => {
   return convertedTokens;
 };
 
-/**
- * Saves tokens data to a file in JSON format.
- */
 const saveTokensToFile = (tokensData, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -390,9 +374,6 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
   return fileExists;
 };
 
-/**
- * Converts tokens into CSS custom property declarations.
- */
 const convertTokensToCSS = (tokens, name) => {
   let cssVariables = ':root {\n';
   for (const key in tokens) {
@@ -402,9 +383,6 @@ const convertTokensToCSS = (tokens, name) => {
   return cssVariables;
 };
 
-/**
- * Saves CSS tokens to a file.
- */
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -413,9 +391,6 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-/**
- * Converts tokens into SCSS variable declarations.
- */
 const convertTokensToSCSS = (tokens, name) => {
   let scssVariables = '';
   for (const key in tokens) {
@@ -424,9 +399,6 @@ const convertTokensToSCSS = (tokens, name) => {
   return scssVariables;
 };
 
-/**
- * Saves SCSS tokens to a file.
- */
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
@@ -435,10 +407,6 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-/**
- * Deletes token files for units that were not selected by the user.
- * It checks in the tokens, CSS, or SCSS folders to remove unwanted files.
- */
 const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
   let unitFiles = {};
   if (folder.includes('tokens')) {
@@ -466,14 +434,6 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
   }
 };
 
-/**
- * Main function that orchestrates the wizard.
- *  - Displays loaders and welcomes the user.
- *  - Gets the user inputs for token configuration.
- *  - Generates border radius tokens.
- *  - Saves tokens in JSON, CSS, and SCSS formats.
- *  - Optionally converts tokens into other units and cleans up unused files.
- */
 const main = async () => {
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
@@ -534,7 +494,6 @@ const main = async () => {
     console.log(chalk.bold("📄 OUTPUT FILES"));
     console.log(chalk.black.bgGreenBright("=======================================\n"));
 
-    // Mostrar archivos _px
     if (jsonFileExists || cssFileExists || scssFileExists) {
       console.log(chalk.whiteBright("🆕 Updated:"));
     } else {
@@ -544,7 +503,6 @@ const main = async () => {
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));
 
-    // Mostrar archivos convertidos a rem
     if (units.length > 0) {
       for (const unit of units) {
         const unitSuffix = `_${unit}`;
@@ -559,7 +517,7 @@ const main = async () => {
     deleteUnusedUnitFiles(scssFolder, units, 'scss');
 
   } else {
-    // Si no se convierte a rem, se eliminan los archivos _rem (si existen) y se registran los cambios.
+    
     const deletedFiles = [];
     const deleteFileIfExists = (folder, fileName) => {
       const filePath = path.join(folder, fileName);
@@ -573,7 +531,6 @@ const main = async () => {
     deleteFileIfExists(cssFolder, 'border_radius_variables_rem.css');
     deleteFileIfExists(scssFolder, 'border_radius_variables_rem.scss');
 
-    // Se muestra "CHANGES IN OUTPUT FILES" solo si se eliminó algún archivo; de lo contrario, se muestra "OUTPUT FILES"
     if (deletedFiles.length > 0) {
       console.log(chalk.black.bgGreenBright("\n======================================="));
       console.log(chalk.bold("📄 OUTPUT FILES"));
