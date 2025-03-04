@@ -1,32 +1,25 @@
-// IMPORT NECESSARY MODULES FOR FILE SYSTEM ACCESS, PATH HANDLING, INTERACTIVE COMMAND LINE PROMPTS, AND STYLING CONSOLE OUTPUT.
 import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { fileURLToPath } from 'url';
 
-// HELPER FUNCTION: CAPITALIZE THE FIRST LETTER OF A STRING
 function capitalize(str) {
   if (!str) return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// DETERMINE THE CURRENT FILE NAME AND DIRECTORY NAME USING ES MODULE FEATURES.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// PARSE THE COMMAND LINE ARGUMENTS FOR A VERSION FLAG AND DISPLAY VERSION INFORMATION IF PROVIDED.
 const versionArg = process.argv.find(arg => arg.startsWith("--version="));
 if (versionArg) {
   const version = versionArg.split("=")[1];
   console.log(chalk.bold.whiteBright.bgGray(capitalize(`Clear Files Incantation - version ${version}`)));
 }
 
-// DEFINE THE 'OUTPUTS' DIRECTORY RELATIVE TO THE CURRENT DIRECTORY.
 const outputsDir = path.join(__dirname, '../outputs');
 
-// FUNCTION TO RECURSIVELY CLEAR A FOLDER BY DELETING ALL FILES WITHIN IT.
-// IF A DIRECTORY IS ENCOUNTERED, IT SHOULD RECURSIVELY PROCESS ITS CONTENT.
 async function clearFolder(dirPath) {
   let count = 0;
   try {
@@ -34,7 +27,7 @@ async function clearFolder(dirPath) {
     for (const entry of entries) {
       const fullPath = path.join(dirPath, entry.name);
       if (entry.isDirectory()) {
-        // RECURSIVELY CLEAR THE SUBDIRECTORY
+        
         count += await clearFolder(fullPath);
       } else {
         await fs.promises.unlink(fullPath);
@@ -47,7 +40,6 @@ async function clearFolder(dirPath) {
   return count;
 }
 
-// FUNCTION TO DISPLAY A LOADING MESSAGE WITH AN ANIMATED LOADER.
 function showLoader(message, ms) {
   let dots = "";
   return new Promise((resolve) => {
@@ -63,7 +55,6 @@ function showLoader(message, ms) {
   });
 }
 
-// FUNCTION TO PROCESS THE OUTPUT FOLDERS BASED ON THE USER'S SELECTIONS.
 async function processOutputs(clearCSS, clearSCSS, clearTokens) {
   
   console.log(chalk.bold.bgGray("\n======================================"));
@@ -102,7 +93,6 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens) {
   console.log(chalk.bold.yellow(("\n 🧙 The cleanup incantation has been successfully cast! 🎉\n")));
 }
 
-// FUNCTION TO START THE INTERACTIVE USER INTERFACE.
 async function startInterface() {
 
   console.log(chalk.bold.bgGray("\n======================================"));
