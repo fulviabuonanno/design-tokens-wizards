@@ -78,6 +78,7 @@ const askForInput = async () => {
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🔢 STEP 3: DEFINE SCALE"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
+
   const scaleAnswer = await inquirer.prompt([
     {
       type: 'list',
@@ -86,34 +87,115 @@ const askForInput = async () => {
       choices: [
         { name: '4-Point Grid System', value: '4' },
         { name: '8-Point Grid System', value: '8' },
+        { name: 'Modular Scale (multiplier based)', value: 'modular' },
+        { name: 'Custom Intervals', value: 'custom' },
+        { name: 'Fibonacci Scale', value: 'fibonacci' },
         { name: 'More Info', value: 'info' }
       ],
-      filter: (input) => input.toUpperCase() 
+      filter: (input) => input.toLowerCase()
     }
   ]);
+
   if (scaleAnswer.scale === 'info') {
-    
     console.log(chalk.black.bgBlueBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
     console.log(chalk.black.bgBlueBright("=======================================\n"));
-    console.log("Scale Name       | Description                                      | Examples");
-    console.log("--------------------------------------------------------------------------------");
-    console.log("4-Point Grid System         | A standard scale where each step is 4 units.     | 4, 8, 12, 16, ...");
-    console.log("8-Point Grid System     | A standard scale where each step is 8 units.     | 8, 16, 24, 32, ...");
-    console.log(chalk.black.bgBlueBright("=======================================\n"));
+    console.log("Scale Name                 | Description                                             | Examples");
+    console.log("--------------------------------------------------------------------------------------------");
+    console.log("4-Point Grid System        | Increments by 4 units to maintain consistency.          | 4, 8, 12, 16, ...");
+    console.log("8-Point Grid System        | Increments by 8 units for more spacious designs.        | 8, 16, 24, 32, ...");
+    console.log("Modular Scale              | Dynamic scale using a multiplier and factor for a harmonious progression. | 16, 32, 64, 128, ...");
+    console.log("Custom Intervals           | User-defined intervals for complete customization.      | 10, 20, 35, 50, ...");
+    console.log("Fibonacci Scale            | Generates values by multiplying the previous value by the golden ratio (≈1.618). Base value is repeated. | e.g., 4, 6.47, 10.47, ...");
+    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
     const newScaleAnswer = await inquirer.prompt([
       {
         type: 'list',
         name: 'scale',
-        message: '🔢 Select the scale to use for your values: \n',
+        message: '🔢 Select the scale to use for your values:',
         choices: [
           { name: '4-Point Grid System', value: '4' },
-          { name: '8-Point Grid System', value: '8' }
+          { name: '8-Point Grid System', value: '8' },
+          { name: 'Modular Scale (multiplier based)', value: 'modular' },
+          { name: 'Custom Intervals', value: 'custom' },
+          { name: 'Fibonacci Scale', value: 'fibonacci' }
         ]
       }
     ]);
     scaleAnswer.scale = newScaleAnswer.scale;
   }
+
+  if (scaleAnswer.scale === 'modular') {
+    
+    const modularBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'multiplier',
+        message: 'Enter the starting value to build your modular scale (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    const modularFactorAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'factor',
+        message: 'Enter the multiplication factor (e.g. 1.5):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    scaleAnswer.multiplier = parseFloat(modularBaseAnswer.multiplier);
+    scaleAnswer.factor = parseFloat(modularFactorAnswer.factor);
+  } else if (scaleAnswer.scale === 'custom') {
+    const customBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'base',
+        message: 'Enter the starting value for your custom intervals (e.g. 4)',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    const customStepAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'step',
+        message: 'Enter the step interval (e.g. 6):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.customIntervals = {
+      base: parseFloat(customBaseAnswer.base),
+      step: parseFloat(customStepAnswer.step)
+    };
+  } else if (scaleAnswer.scale === 'fibonacci') {
+    const fibonacciBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'fibonacciBase',
+        message: 'Enter a base value for your Fibonacci scale:',
+        default: '4',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    scaleAnswer.fibonacciBase = parseFloat(fibonacciBaseAnswer.fibonacciBase);
+  }
+
   const scale = scaleAnswer.scale;
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
@@ -175,74 +257,89 @@ const askForInput = async () => {
       const ordinalFormatAnswer = await inquirer.prompt([
         {
           type: 'list',
-          name: 'ordinalFormat',
-          message: 'For Ordinal scale, choose the format:',
-          choices: [
-            { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
-            { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
-          ]
-        }
-      ]);
-      ordinalFormat = ordinalFormatAnswer.ordinalFormat;
-    } else if (namingChoiceAnswer.namingChoice === 'alphabetical') {
-      const alphabeticalAnswer = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'alphabeticalCase',
-          message: 'For Alphabetical scale, choose the case:',
-          choices: [
-            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
-            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
-          ]
-        }
-      ]);
-      alphabeticalCase = alphabeticalAnswer.alphabeticalCase;
-    } else if (namingChoiceAnswer.namingChoice === 'incremental') {
-      const incrementalAnswer = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'increment',
-          message: 'For Incremental scale, choose the step increment:',
-          choices: [
-            { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: '50' },
-            { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: '100' }
-          ]
-        }
-      ]);
-      incrementalStep = parseInt(incrementalAnswer.increment, 10);
-    }
-    return { 
-      namingChoice: namingChoiceAnswer.namingChoice, 
-      ordinalFormat, 
-      alphabeticalCase,
-      incrementalStep 
-    };
-  };
-
-  let namingChoice = await askForNamingCriteria();
-  let ordinalFormat = namingChoice.ordinalFormat;
-  let alphabeticalCase = namingChoice.alphabeticalCase;
-  let incrementalStep = namingChoice.incrementalStep;
-
-  while ((namingChoice.namingChoice === 'A' && numValues > 20) || (namingChoice.namingChoice === 'D' && numValues > 26)) {
-    if (namingChoice.namingChoice === 'A' && numValues > 20) {
-      console.log(chalk.red("❌ T-shirt Size scale naming criteria is not recommended for more than 20 values. Please consider using Incremental or Ordinal naming criteria."));
-    } else if (namingChoice.namingChoice === 'D' && numValues > 26) {
-      console.log(chalk.red("❌ Alphabetical scale naming criteria is not recommended for more than 26 values."));
-    }
-    namingChoice = await askForNamingCriteria();
-    ordinalFormat = namingChoice.ordinalFormat;
-    alphabeticalCase = namingChoice.alphabeticalCase;
-    incrementalStep = namingChoice.incrementalStep;
+        name: 'ordinalFormat',
+        message: 'For Ordinal scale, choose the format:',
+        choices: [
+          { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
+          { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+        ]
+      }
+    ]);
+    ordinalFormat = ordinalFormatAnswer.ordinalFormat;
+  } else if (namingChoiceAnswer.namingChoice === 'alphabetical') {
+    const alphabeticalAnswer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'alphabeticalCase',
+        message: 'For Alphabetical scale, choose the case:',
+        choices: [
+          { name: 'Uppercase (A, B, C)', value: 'uppercase' },
+          { name: 'Lowercase (a, b, c)', value: 'lowercase' }
+        ]
+      }
+    ]);
+    alphabeticalCase = alphabeticalAnswer.alphabeticalCase;
+  } else if (namingChoiceAnswer.namingChoice === 'incremental') {
+    const incrementalAnswer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'increment',
+        message: 'For Incremental scale, choose the step increment:',
+        choices: [
+          { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: '50' },
+          { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: '100' }
+        ]
+      }
+    ]);
+    incrementalStep = parseInt(incrementalAnswer.increment, 10);
   }
-
-  return { unit, name, numValues, namingChoice: namingChoice.namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep };
+  return { 
+    namingChoice: namingChoiceAnswer.namingChoice, 
+    ordinalFormat, 
+    alphabeticalCase,
+    incrementalStep 
+  };
 };
 
-const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep) => {
+let namingChoice = await askForNamingCriteria();
+let ordinalFormat = namingChoice.ordinalFormat;
+let alphabeticalCase = namingChoice.alphabeticalCase;
+let incrementalStep = namingChoice.incrementalStep;
+
+while ((namingChoice.namingChoice === 'A' && numValues > 20) || (namingChoice.namingChoice === 'D' && numValues > 26)) {
+  if (namingChoice.namingChoice === 'A' && numValues > 20) {
+    console.log(chalk.red("❌ T-shirt Size scale naming criteria is not recommended for more than 20 values. Please consider using Incremental or Ordinal naming criteria."));
+  } else if (namingChoice.namingChoice === 'D' && numValues > 26) {
+    console.log(chalk.red("❌ Alphabetical scale naming criteria is not recommended for more than 26 values."));
+  }
+  namingChoice = await askForNamingCriteria();
+  ordinalFormat = namingChoice.ordinalFormat;
+  alphabeticalCase = namingChoice.alphabeticalCase;
+  incrementalStep = namingChoice.incrementalStep;
+}
+
+return { 
+  unit, 
+  name, 
+  numValues, 
+  namingChoice: namingChoice.namingChoice, 
+  scale, 
+  ordinalFormat, 
+  alphabeticalCase, 
+  incrementalStep,
+  multiplier: scaleAnswer.multiplier,      
+  factor: scaleAnswer.factor,              
+  customIntervals: scaleAnswer.customIntervals,
+  fibonacciBase: scaleAnswer.fibonacciBase // se incluye la base Fibonacci
+};
+};
+
+const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, customIntervals, factor, fibonacciBase) => {
   const tokens = {};
-  let baseValue;
-  
+  let baseValue = 0;
+  // Declaración para almacenar el valor previo en la escala Fibonacci
+  let prev;
+
   switch (scale) {
     case "4":
       baseValue = 4;
@@ -250,36 +347,60 @@ const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alp
     case "8":
       baseValue = 8;
       break;
+    case "modular":
+      // ... lógica modular ...
+      break;
+    case "custom":
+      // ... lógica custom ...
+      break;
+    case "fibonacci":
+      // No es necesario definir baseValue acá; se usará fibonacciBase en el loop
+      break;
   }
   
   for (let i = 1; i <= numValues; i++) {
-    let name;
-    
+    let tokenName;
     switch (namingChoice) {
       case "t-shirt":
-        name = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `size${i}`;
+        tokenName = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `size${i}`;
         break;
       case "incremental":
-        name = (i * incrementalStep).toString();
+        tokenName = (i * incrementalStep).toString();
         break;
       case "ordinal":
-        name = ordinalFormat === 'padded' ? i.toString().padStart(2, '0') : i.toString();
+        tokenName = ordinalFormat === 'padded' ? i.toString().padStart(2, '0') : i.toString();
         break;
       case "alphabetical":
-        if (alphabeticalCase === 'lowercase') {
-          name = String.fromCharCode(96 + i);
-        } else {
-          name = String.fromCharCode(64 + i);
-        }
+        tokenName = alphabeticalCase === 'lowercase' ? String.fromCharCode(96 + i) : String.fromCharCode(64 + i);
         break;
     }
-    const value = baseValue * i;
     
-    tokens[name] = {
+    let value;
+    if (scale === 'custom') {
+      value = customIntervals.base + customIntervals.step * (i - 1);
+    } else if (scale === 'modular') {
+      value = multiplier * Math.pow(factor, i - 1);
+    } else if (scale === 'fibonacci') {
+      // Usamos multiplicación por el ratio áureo en vez de la suma
+      const phi = 1.618;
+      if (i === 1) {
+        value = fibonacciBase;
+      } else {
+        value = prev * phi;
+      }
+      prev = value;
+    } else {
+      value = baseValue * i;
+    }
+    
+    value = Math.round(value * 100) / 100;
+    
+    tokens[tokenName] = {
       value: `${value}${unit}`,
-      type: "sizing" 
+      type: "sizing"
     };
   }
+  
   return tokens;
 };
 
@@ -336,7 +457,7 @@ const customStringify = (value, indent = 2) => {
         const items = value.map(item => customStringify(item, indent + 2));
         return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
     } else {
-        // Preserve key order as pre-sorted by sortObjectRecursively.
+        
         const keys = Object.keys(value);
         let result = "{\n";
         keys.forEach((key, idx) => {
@@ -348,18 +469,24 @@ const customStringify = (value, indent = 2) => {
     }
 };
 
-const saveTokensToFile = (tokensData, folder, fileName) => {
-  const tshirtOrder = [
-    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
-    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
-    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
-  ];
+const saveTokensToFile = (tokensObject, folder, fileName) => {
   const filePath = path.join(folder, fileName);
-  const fileExists = fs.existsSync(filePath);
-  const sortedTokensData = sortObjectRecursively(tokensData);
-  const outputJSON = customStringify(sortedTokensData, 2);
-  fs.writeFileSync(filePath, outputJSON);
-  return fileExists;
+  // Se reconstruye el objeto para ordenar las propiedades: value primero y type segundo.
+  const orderedObject = {};
+  Object.entries(tokensObject).forEach(([topKey, tokens]) => {
+    const orderedTokens = {};
+    // Se asume que tokens es un objeto con cada propiedad representando un token.
+    Object.keys(tokens).forEach(key => {
+      const token = tokens[key];
+      orderedTokens[key] = {
+        value: token.value,
+        type: token.type
+      };
+    });
+    orderedObject[topKey] = orderedTokens;
+  });
+  fs.writeFileSync(filePath, JSON.stringify(orderedObject, null, 2));
+  return fs.existsSync(filePath);
 };
 
 const convertTokensToCSS = (tokens, name) => {
@@ -396,7 +523,8 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-const convertTokensToSCSS = (tokens, name) => {
+const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
+  const filePath = path.join(folder, fileName);
   const tshirtOrder = [
     "3xs", "2xs", "xs", "s", "md", "lg", "xl",
     "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
@@ -418,15 +546,8 @@ const convertTokensToSCSS = (tokens, name) => {
   sortedKeys.forEach(key => {
     scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
   });
-  return scssVariables;
-};
-
-const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
-  const filePath = path.join(folder, fileName);
-  const fileExists = fs.existsSync(filePath);
-  const scssContent = convertTokensToSCSS(tokens, name);
-  fs.writeFileSync(filePath, scssContent);
-  return fileExists;
+  fs.writeFileSync(filePath, scssVariables);
+  return fs.existsSync(filePath);
 };
 
 const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, prefix) => {
@@ -455,12 +576,11 @@ const main = async () => {
 
   const input = await askForInput();
   if (!input) return;
-  const { unit, name, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep } = input;
-  
-  // NEW: if naming criteria is t-shirt, force the top-level key to "size"
-  const topKey = (namingChoice === 't-shirt') ? 'size' : name;
+  const { unit, name, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, factor, customIntervals, fibonacciBase } = input;
 
-  const tokensData = generateTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep);
+  const tokensData = generateTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, customIntervals, factor, fibonacciBase);
+
+  const topKey = (namingChoice === 't-shirt') ? 'size' : name;
 
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "size");
@@ -490,7 +610,7 @@ const main = async () => {
 
   let units = [];
   let unitsAnswer = { units: [] }; 
-  let deletedFiles = []; // <-- NEW: declare deletedFiles here
+  let deletedFiles = []; 
 
   if (convertAnswer.convert) {
     unitsAnswer = await inquirer.prompt([
@@ -510,14 +630,13 @@ const main = async () => {
         const unitSuffix = `_${unit}`;
         const convertedTokens = convertTokens(tokensData, unit);
         
-        // Use topKey for generated files if naming criteria is t-shirt
         saveTokensToFile({ [topKey]: convertedTokens }, tokensFolder, `size_tokens${unitSuffix}.json`);
         saveCSSTokensToFile(convertedTokens, topKey, cssFolder, `size_variables${unitSuffix}.css`);
         saveSCSSTokensToFile(convertedTokens, topKey, scssFolder, `size_variables${unitSuffix}.scss`);
       }
     }
   } else {
-    // No conversion: delete _rem and _em files.
+    
     const deleteFileIfExists = (folder, fileName) => {
       const filePath = path.join(folder, fileName);
       if (fs.existsSync(filePath)) {
