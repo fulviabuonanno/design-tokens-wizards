@@ -186,7 +186,6 @@ const askForInput = async () => {
         type: 'input',
         name: 'fibonacciBase',
         message: 'Enter a base value for your Fibonacci scale:',
-        default: '4',
         validate: (input) => {
           const num = parseFloat(input);
           return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -301,43 +300,28 @@ const askForInput = async () => {
   };
 };
 
-let namingChoice = await askForNamingCriteria();
-let ordinalFormat = namingChoice.ordinalFormat;
-let alphabeticalCase = namingChoice.alphabeticalCase;
-let incrementalStep = namingChoice.incrementalStep;
-
-while ((namingChoice.namingChoice === 'A' && numValues > 20) || (namingChoice.namingChoice === 'D' && numValues > 26)) {
-  if (namingChoice.namingChoice === 'A' && numValues > 20) {
-    console.log(chalk.red("❌ T-shirt Size scale naming criteria is not recommended for more than 20 values. Please consider using Incremental or Ordinal naming criteria."));
-  } else if (namingChoice.namingChoice === 'D' && numValues > 26) {
-    console.log(chalk.red("❌ Alphabetical scale naming criteria is not recommended for more than 26 values."));
-  }
-  namingChoice = await askForNamingCriteria();
-  ordinalFormat = namingChoice.ordinalFormat;
-  alphabeticalCase = namingChoice.alphabeticalCase;
-  incrementalStep = namingChoice.incrementalStep;
-}
+const namingCriteria = await askForNamingCriteria();
 
 return { 
   unit, 
   name, 
   numValues, 
-  namingChoice: namingChoice.namingChoice, 
+  namingChoice: namingCriteria.namingChoice, 
   scale, 
-  ordinalFormat, 
-  alphabeticalCase, 
-  incrementalStep,
+  ordinalFormat: namingCriteria.ordinalFormat, 
+  alphabeticalCase: namingCriteria.alphabeticalCase, 
+  incrementalStep: namingCriteria.incrementalStep,
   multiplier: scaleAnswer.multiplier,      
   factor: scaleAnswer.factor,              
   customIntervals: scaleAnswer.customIntervals,
-  fibonacciBase: scaleAnswer.fibonacciBase // se incluye la base Fibonacci
+  fibonacciBase: scaleAnswer.fibonacciBase 
 };
 };
 
 const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, customIntervals, factor, fibonacciBase) => {
   const tokens = {};
   let baseValue = 0;
-  // Declaración para almacenar el valor previo en la escala Fibonacci
+  
   let prev;
 
   switch (scale) {
@@ -348,13 +332,10 @@ const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alp
       baseValue = 8;
       break;
     case "modular":
-      // ... lógica modular ...
       break;
     case "custom":
-      // ... lógica custom ...
       break;
     case "fibonacci":
-      // No es necesario definir baseValue acá; se usará fibonacciBase en el loop
       break;
   }
   
@@ -381,7 +362,7 @@ const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alp
     } else if (scale === 'modular') {
       value = multiplier * Math.pow(factor, i - 1);
     } else if (scale === 'fibonacci') {
-      // Usamos multiplicación por el ratio áureo en vez de la suma
+      
       const phi = 1.618;
       if (i === 1) {
         value = fibonacciBase;
@@ -471,11 +452,11 @@ const customStringify = (value, indent = 2) => {
 
 const saveTokensToFile = (tokensObject, folder, fileName) => {
   const filePath = path.join(folder, fileName);
-  // Se reconstruye el objeto para ordenar las propiedades: value primero y type segundo.
+  
   const orderedObject = {};
   Object.entries(tokensObject).forEach(([topKey, tokens]) => {
     const orderedTokens = {};
-    // Se asume que tokens es un objeto con cada propiedad representando un token.
+    
     Object.keys(tokens).forEach(key => {
       const token = tokens[key];
       orderedTokens[key] = {
