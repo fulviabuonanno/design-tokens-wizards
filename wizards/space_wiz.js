@@ -76,38 +76,117 @@ const askForInput = async () => {
     {
       type: 'list',
       name: 'scale',
-      message: '🔢 Select the scale to use for your spacing values:',
+      message: '🔢 Select the scale to use for your values:',
       choices: [
         { name: '4-Point Grid System', value: '4' },
         { name: '8-Point Grid System', value: '8' },
+        { name: 'Modular Scale (multiplier based)', value: 'modular' },
+        { name: 'Custom Intervals', value: 'custom' },
+        { name: 'Fibonacci Scale', value: 'fibonacci' },
         { name: 'More Info', value: 'info' }
       ],
-      filter: (input) => input.toUpperCase()
+      filter: (input) => input.toLowerCase()
     }
   ]);
-  
+
   if (scaleAnswer.scale === 'info') {
-    console.log(chalk.black.bgMagentaBright("\n======================================="));
+    console.log(chalk.black.bgBlueBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
-    console.log(chalk.black.bgMagentaBright("=======================================\n"));
-    console.log("Scale Name       | Description                                      | Examples");
-    console.log("--------------------------------------------------------------------------------");
-    console.log("4-Point Grid System         | A standard scale where each step is 4 units.     | 4, 8, 12, 16, ...");
-    console.log("8-Point Grid System     | A standard scale where each step is 8 units.     | 8, 16, 24, 32, ...");
-    console.log(chalk.black.bgMagentaBright("=======================================\n"));
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
+    console.log("Scale Name                 | Description                                             | Examples");
+    console.log("--------------------------------------------------------------------------------------------");
+    console.log("4-Point Grid System        | Increments by 4 units to maintain consistency.          | 4, 8, 12, 16, ...");
+    console.log("8-Point Grid System        | Increments by 8 units for more spacious designs.        | 8, 16, 24, 32, ...");
+    console.log("Modular Scale              | Dynamic scale using a multiplier and factor for a harmonious progression. | 16, 32, 64, 128, ...");
+    console.log("Custom Intervals           | User-defined intervals for complete customization.      | 10, 20, 35, 50, ...");
+    console.log("Fibonacci Scale            | Generates values by multiplying the previous value by the golden ratio (≈1.618). Base value is repeated. | e.g., 4, 6.47, 10.47, ...");
+    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
     const newScaleAnswer = await inquirer.prompt([
       {
         type: 'list',
         name: 'scale',
-        message: '🔢 Select the scale to use for your spacing values: \n',
+        message: '🔢 Select the scale to use for your values:',
         choices: [
           { name: '4-Point Grid System', value: '4' },
-          { name: '8-Point Grid System', value: '8' }
+          { name: '8-Point Grid System', value: '8' },
+          { name: 'Modular Scale (multiplier based)', value: 'modular' },
+          { name: 'Custom Intervals', value: 'custom' },
+          { name: 'Fibonacci Scale', value: 'fibonacci' }
         ]
       }
     ]);
     scaleAnswer.scale = newScaleAnswer.scale;
   }
+
+  if (scaleAnswer.scale === 'modular') {
+    const modularBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'multiplier',
+        message: 'Enter the starting value to build your modular scale (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    const modularFactorAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'factor',
+        message: 'Enter the multiplication factor (e.g. 1.5):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    scaleAnswer.multiplier = parseFloat(modularBaseAnswer.multiplier);
+    scaleAnswer.factor = parseFloat(modularFactorAnswer.factor);
+  } else if (scaleAnswer.scale === 'custom') {
+    const customBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'base',
+        message: 'Enter the starting value for your custom intervals (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    const customStepAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'step',
+        message: 'Enter the step interval (e.g. 6):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.customIntervals = {
+      base: parseFloat(customBaseAnswer.base),
+      step: parseFloat(customStepAnswer.step)
+    };
+  } else if (scaleAnswer.scale === 'fibonacci') {
+    const fibonacciBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'fibonacciBase',
+        message: 'Enter a base value for your Fibonacci scale:',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    scaleAnswer.fibonacciBase = parseFloat(fibonacciBaseAnswer.fibonacciBase);
+  }
+
   const scale = scaleAnswer.scale;
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
@@ -232,13 +311,39 @@ const askForInput = async () => {
     ({ namingChoice, ordinalFormat, alphabeticalCase } = await askForNamingCriteria());
   }
 
-  return { unit, name, numValues, namingChoice, ordinalFormat, alphabeticalCase, scale, incrementalStep };
+  return { 
+    unit, 
+    name, 
+    numValues, 
+    namingChoice, 
+    scale, 
+    ordinalFormat, 
+    alphabeticalCase, 
+    incrementalStep,
+    multiplier: scaleAnswer.multiplier,      
+    factor: scaleAnswer.factor,              
+    customIntervals: scaleAnswer.customIntervals,
+    fibonacciBase: scaleAnswer.fibonacciBase
+  };
 };
 
-const generateSpacingTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep = 100) => {
+const generateSpacingTokens = (
+  unit,
+  numValues,
+  namingChoice,
+  scale,
+  ordinalFormat,
+  alphabeticalCase,
+  incrementalStep = 100,
+  multiplier,
+  factor,
+  customIntervals,
+  fibonacciBase
+) => {
   const tokens = {};
   let baseValue;
-  
+  let prev; // for Fibonacci calculation
+
   switch (scale) {
     case "4":
       baseValue = 4;
@@ -247,35 +352,79 @@ const generateSpacingTokens = (unit, numValues, namingChoice, scale, ordinalForm
       baseValue = 8;
       break;
   }
-  
+
   for (let i = 1; i <= numValues; i++) {
     let tokenName;
-    
+
     switch (namingChoice) {
       case "t-shirt":
-        tokenName = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `space${i}`;
+        tokenName = [
+          "3xs",
+          "2xs",
+          "xs",
+          "s",
+          "md",
+          "lg",
+          "xl",
+          "2xl",
+          "3xl",
+          "4xl",
+          "5xl",
+          "6xl",
+          "7xl",
+          "8xl",
+          "9xl",
+          "10xl",
+          "11xl",
+          "12xl",
+          "13xl",
+          "14xl",
+          "15xl"
+        ][i - 1] || `space${i}`;
         break;
       case "incremental":
         tokenName = (i * incrementalStep).toString();
         break;
       case "ordinal":
-        tokenName = ordinalFormat === 'padded' ? i.toString().padStart(2, '0') : i.toString();
+        tokenName =
+          ordinalFormat === "padded"
+            ? i.toString().padStart(2, "0")
+            : i.toString();
         break;
       case "alphabetical":
-        if (alphabeticalCase === 'lowercase') {
-          tokenName = String.fromCharCode(96 + i);
-        } else {
-          tokenName = String.fromCharCode(64 + i);
-        }
+        tokenName =
+          alphabeticalCase === "lowercase"
+            ? String.fromCharCode(96 + i)
+            : String.fromCharCode(64 + i);
         break;
     }
-    
-    const value = baseValue * i;
+
+    let value;
+
+    if (scale === "custom") {
+      value = customIntervals.base + customIntervals.step * (i - 1);
+    } else if (scale === "modular") {
+      value = multiplier * Math.pow(factor, i - 1);
+    } else if (scale === "fibonacci") {
+      const phi = 1.618;
+      if (i === 1) {
+        value = fibonacciBase;
+      } else {
+        value = prev * phi;
+      }
+      prev = value;
+    } else {
+      value = baseValue * i;
+    }
+
+    value = Math.round(value * 100) / 100;
+
     tokens[tokenName] = {
       value: `${value}${unit}`,
       type: "spacing"
     };
   }
+
   return tokens;
 };
 
@@ -446,9 +595,8 @@ const main = async () => {
 
   const input = await askForInput();
   if (!input) return;
-  const { unit, name, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep } = input;
-
-  const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep);
+  const { unit, name, numValues, namingChoice, ordinalFormat, alphabeticalCase, scale, incrementalStep, multiplier, factor, customIntervals, fibonacciBase } = input;
+  const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, factor, customIntervals, fibonacciBase);
 
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "space");
