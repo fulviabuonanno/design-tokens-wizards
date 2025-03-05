@@ -280,70 +280,273 @@ const askForInput = async () => {
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("STEP 3: DEFINE VALUE SCALE"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-  const valueScaleTypeAnswer = await inquirer.prompt([
+
+  const scaleAnswer = await inquirer.prompt([
     {
       type: 'list',
-      name: 'valueScaleType',
-      message: "Which value scale would you like to use for the border radius scale?",
+      name: 'scale',
+      message: 'Select the scale to use for the border radius values:',
       choices: [
         { name: '4-Point Grid System', value: '4' },
-        { name: '8-Point Grid System', value: '8' }
-      ]
+        { name: '8-Point Grid System', value: '8' },
+        { name: 'Modular Scale (multiplier based)', value: 'modular' },
+        { name: 'Custom Intervals', value: 'custom' },
+        { name: 'Fibonacci Scale', value: 'fibonacci' },
+        { name: 'More Info', value: 'info' }
+      ],
+      filter: (input) => input.toLowerCase()
     }
   ]);
-  const valueScaleType = valueScaleTypeAnswer.valueScaleType;
-  const valueScale = valueScaleType === '4' ? 4 : 8;
-  
-  return { tokenName, unit: 'px', noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale };
+
+  if (scaleAnswer.scale === 'info') {
+    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.bold("📚 SCALE INFORMATION"));
+    console.log(chalk.black.bgBlueBright("=======================================\n"));
+    console.log("Scale Name                 | Description                                              | Examples");
+    console.log("---------------------------------------------------------------------------------------------");
+    console.log("4-Point Grid System        | Increments by 4 units to maintain consistency.           | 4, 8, 12, 16, ...");
+    console.log("8-Point Grid System        | Increments by 8 units for more spacious designs.         | 8, 16, 24, 32, ...");
+    console.log("Modular Scale              | Uses a multiplier and factor for a harmonious progression.| e.g., 4, 6.4, 10.24, ...");
+    console.log("Custom Intervals           | User-defined intervals for complete customization.       | e.g., 4, 10, 16, 22, ...");
+    console.log("Fibonacci Scale            | Multiplies the previous value by ≈1.618.                   | e.g., 4, 6.47, 10.47, ...");
+    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
+    
+    const newScaleAnswer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'scale',
+        message: 'Select the scale to use for the border radius values:',
+        choices: [
+          { name: '4-Point Grid System', value: '4' },
+          { name: '8-Point Grid System', value: '8' },
+          { name: 'Modular Scale (multiplier based)', value: 'modular' },
+          { name: 'Custom Intervals', value: 'custom' },
+          { name: 'Fibonacci Scale', value: 'fibonacci' }
+        ]
+      }
+    ]);
+    scaleAnswer.scale = newScaleAnswer.scale;
+  }
+
+  if (scaleAnswer.scale === 'modular') {
+    const modularBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'multiplier',
+        message: 'Enter the starting value for your modular scale (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    const modularFactorAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'factor',
+        message: 'Enter the multiplication factor (e.g. 1.5):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.multiplier = parseFloat(modularBaseAnswer.multiplier);
+    scaleAnswer.factor = parseFloat(modularFactorAnswer.factor);
+    
+  } else if (scaleAnswer.scale === 'custom') {
+    const customBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'base',
+        message: 'Enter the starting value for your custom intervals (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    const customStepAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'step',
+        message: 'Enter the step interval (e.g. 6):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.customIntervals = {
+      base: parseFloat(customBaseAnswer.base),
+      step: parseFloat(customStepAnswer.step)
+    };
+    
+  } else if (scaleAnswer.scale === 'fibonacci') {
+    const fibonacciBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'fibonacciBase',
+        message: 'Enter a base value for your Fibonacci scale:',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.fibonacciBase = parseFloat(fibonacciBaseAnswer.fibonacciBase);
+  }
+
+  let valueScale;
+  if (scaleAnswer.scale === '4' || scaleAnswer.scale === '8') {
+    valueScale = scaleAnswer.scale === '4' ? 4 : 8;
+  }
+
+  return { 
+    tokenName, 
+    unit: 'px', 
+    noneLabel, 
+    fullLabel, 
+    intermediateNaming, 
+    totalTokens, 
+    valueScale,
+    scale: scaleAnswer.scale,            
+    multiplier: scaleAnswer.multiplier,      
+    factor: scaleAnswer.factor,              
+    customIntervals: scaleAnswer.customIntervals,
+    fibonacciBase: scaleAnswer.fibonacciBase
+  };
 };
 
-const generateBorderRadiusTokens = (noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale) => {
+const generateBorderRadiusTokens = (
+  noneLabel,
+  fullLabel,
+  intermediateNaming,
+  totalTokens,
+  scale,            // "4", "8", "modular", "custom" o "fibonacci"
+  valueScale,       // Para las escalas grid (4 o 8)
+  multiplier,       // Para escala modular
+  factor,           // Para escala modular
+  customIntervals,  // Para escala custom, { base, step }
+  fibonacciBase     // Para escala fibonacci
+) => {
   const tokensArray = [];
-  const base = valueScale; 
+  let prev; // Para cálculo Fibonacci
 
-  if (noneLabel === null && fullLabel === null) {
-    
-    let intermediateNames = [];
-    if (intermediateNaming !== null && intermediateNaming.scale === 'tshirt') {
-      intermediateNames = intermediateNaming.option === 'abbr' ? ["xs", "sm", "md", "lg"] : ["extra-small", "small", "medium", "large"];
-    } else if (intermediateNaming !== null && intermediateNaming.scale === 'ordinal') {
-      intermediateNames = intermediateNaming.option === 'padded' ? ["01", "02", "03", "04"] : ["1", "2", "3", "4"];
-    } else if (intermediateNaming !== null && intermediateNaming.scale === 'incremental') {
-      intermediateNames = intermediateNaming.option === '50' ? ["50", "100", "150", "200"] : ["100", "200", "300", "400"];
-    } else if (intermediateNaming !== null && intermediateNaming.scale === 'alphabetical') {
-      intermediateNames = intermediateNaming.option === 'uppercase' ? ["A", "B", "C", "D"] : ["a", "b", "c", "d"];
-    } else if (intermediateNaming === 'semantic') {
-      intermediateNames = ["subtle", "soft", "moderate", "bold"];
-    }
-    for (let i = 0; i < totalTokens; i++) {
-      const intermValue = `${base * (i + 1)}px`;
-      const intermName = intermediateNames[i] || `step-${i + 1}`;
-      tokensArray.push({ key: intermName.toLowerCase(), value: intermValue, type: "borderRadius" });
-    }
-  } else {
-    
-    tokensArray.push({ key: noneLabel.toLowerCase(), value: "0", type: "borderRadius" });
-    for (let i = 2; i < totalTokens; i++) {
-      const intermValue = `${base * (i - 1)}px`;
-      let intermediateNames = [];
-      if (intermediateNaming !== null && intermediateNaming.scale === 'tshirt') {
-        intermediateNames = intermediateNaming.option === 'abbr' ? ["xs", "sm", "md", "lg"] : ["extra-small", "small", "medium", "large"];
-      } else if (intermediateNaming !== null && intermediateNaming.scale === 'ordinal') {
-        intermediateNames = intermediateNaming.option === 'padded' ? ["01", "02", "03", "04"] : ["1", "2", "3", "4"];
-      } else if (intermediateNaming !== null && intermediateNaming.scale === 'incremental') {
-        intermediateNames = intermediateNaming.option === '50' ? ["50", "100", "150", "200"] : ["100", "200", "300", "400"];
-      } else if (intermediateNaming !== null && intermediateNaming.scale === 'alphabetical') {
-        intermediateNames = intermediateNaming.option === 'uppercase' ? ["A", "B", "C", "D"] : ["a", "b", "c", "d"];
-      } else if (intermediateNaming === 'semantic') {
-        intermediateNames = ["subtle", "soft", "moderate", "bold"];
-      }
-      const intermName = intermediateNames[i - 2] || `step-${i}`;
-      tokensArray.push({ key: intermName.toLowerCase(), value: intermValue, type: "borderRadius" });
-    }
-    
-    tokensArray.push({ key: fullLabel.toLowerCase(), value: "50%", type: "borderRadius" });
-  }
+  // Definimos arrays para la escala T-shirt
+  const tshirtAbbr = ["xs", "sm", "md", "lg", "xl", "xxl"];
+  const tshirtFull = ["extra small", "small", "medium", "large", "extra large", "xx large"];
   
+  for (let i = 1; i <= totalTokens; i++) {
+    let tokenName = "";
+    // Si existen extremos, el primero y el último se toman de noneLabel y fullLabel
+    if (noneLabel !== null && fullLabel !== null) {
+      if (i === 1) {
+        tokenName = noneLabel.toLowerCase();
+      } else if (i === totalTokens) {
+        tokenName = fullLabel.toLowerCase();
+      } else {
+        // Para los intermedios, usamos la lógica según la escala elegida
+        const intermediateIndex = i - 1; // empieza en 1
+        switch (intermediateNaming?.scale) {
+          case 'tshirt': {
+            const names = intermediateNaming.option === 'full' ? tshirtFull : tshirtAbbr;
+            tokenName = names[intermediateIndex - 1] || `tshirt-${i}`;
+            break;
+          }
+          case 'ordinal': {
+            tokenName =
+              intermediateNaming.option === 'padded'
+                ? String(intermediateIndex).padStart(2, "0")
+                : String(intermediateIndex);
+            break;
+          }
+          case 'incremental': {
+            // La opción viene definida como string (por ejemplo, "100" o "50")
+            tokenName = (parseInt(intermediateNaming.option) * intermediateIndex).toString();
+            break;
+          }
+          case 'alphabetical': {
+            tokenName =
+              intermediateNaming.option === 'uppercase'
+                ? String.fromCharCode(64 + intermediateIndex)  // A = 65
+                : String.fromCharCode(96 + intermediateIndex); // a = 97
+            break;
+          }
+          case 'semantic': {
+            // Aquí podrías definir un array predefinido de nombres semánticos o una lógica particular
+            tokenName = `semantic-${intermediateIndex}`;
+            break;
+          }
+          default: {
+            tokenName = `step-${i}`;
+          }
+        }
+      }
+    } else {
+      // Sin extremos, se consideran todos como intermedios
+      const intermediateIndex = i;
+      switch (intermediateNaming?.scale) {
+        case 'tshirt': {
+          const names = intermediateNaming.option === 'full' ? tshirtFull : tshirtAbbr;
+          tokenName = names[intermediateIndex - 1] || `tshirt-${i}`;
+          break;
+        }
+        case 'ordinal': {
+          tokenName =
+            intermediateNaming.option === 'padded'
+              ? String(intermediateIndex).padStart(2, "0")
+              : String(intermediateIndex);
+          break;
+        }
+        case 'incremental': {
+          tokenName = (parseInt(intermediateNaming.option) * intermediateIndex).toString();
+          break;
+        }
+        case 'alphabetical': {
+          tokenName =
+            intermediateNaming.option === 'uppercase'
+              ? String.fromCharCode(64 + intermediateIndex)
+              : String.fromCharCode(96 + intermediateIndex);
+          break;
+        }
+        case 'semantic': {
+          tokenName = `semantic-${intermediateIndex}`;
+          break;
+        }
+        default: {
+          tokenName = `step-${i}`;
+        }
+      }
+    }
+
+    let value;
+    if (scale === "custom") {
+      value = customIntervals.base + customIntervals.step * (i - 1);
+    } else if (scale === "modular") {
+      value = multiplier * Math.pow(factor, i - 1);
+    } else if (scale === "fibonacci") {
+      if (i === 1) {
+        value = fibonacciBase;
+      } else {
+        const phi = 1.618;
+        value = prev * phi;
+      }
+      prev = value;
+    } else {
+      // Escala 4-Point o 8-Point
+      value = valueScale * i;
+    }
+    value = Math.round(value * 100) / 100;
+
+    tokensArray.push({ key: tokenName, value: `${value}px`, type: "borderRadius" });
+  }
+
   const tokens = {};
   tokensArray.forEach(item => {
     tokens[item.key] = { value: item.value, type: item.type };
@@ -451,9 +654,9 @@ const main = async () => {
 
   const input = await askForInput();
   if (!input) return;
-  const { tokenName, noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale } = input;
+  const { tokenName, noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale, scale, multiplier, factor, customIntervals, fibonacciBase } = input;
   
-  const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale);
+  const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, scale, valueScale, multiplier, factor, customIntervals, fibonacciBase);
 
   const tokensFolder = path.join(outputsDir, "tokens", "border-radius");
   const cssFolder = path.join(outputsDir, "css", "border-radius");
@@ -468,7 +671,7 @@ const main = async () => {
   const cssFileExists = saveCSSTokensToFile(tokensData, tokenName, cssFolder, 'border_radius_variables_px.css');
   const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables_px.scss');
 
-  console.log(chalk.black.bgGreenBright("======================================="));
+  console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING BORDER RADIUS TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
   const convertAnswer = await inquirer.prompt([
