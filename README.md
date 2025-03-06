@@ -63,7 +63,7 @@ Color tokens can be complex, but with this wizard ðŸ§™, you can simplify the pro
    Provide a name for the concept (e.g., `brand`, `background`). Optionally, choose a modifier:
 
    - **Variant**: (e.g., `primary`, `secondary`, `tertiary`)
-   - **Scale**: (e.g., `incremental`, `alphabetical`, or `cardinal` scales)
+   - **Scale**: (e.g., `incremental`, `alphabetical`, or `ordinal` scales)
 
 4. **Generate Color Stops**  
    The script will automatically generate 6 color stops based on your base color:
@@ -128,7 +128,7 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard ðŸ§
 
    - **T-shirt Sizes**: (xs, sm, md, lg, xl)
    - **Incremental Numbers**: (100, 200, 300)
-   - **Cardinal Numbers**: (1, 2, 3)
+   - **ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
 7. **Generate Size Tokens**  
@@ -187,7 +187,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
    - **T-shirt Sizes**: (xs, sm, md, lg, xl)
    - **Incremental Numbers**: (100, 200, 300)
-   - **Cardinal Numbers**: (1, 2, 3)
+   - **ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
 7. **Generate Space Tokens**  
@@ -234,7 +234,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
    - **T-shirt Sizes:** (xs, sm, md, lg, xl)
    - **Incremental Numbers:** (100, 200, 300, 400)
-   - **Cardinal Numbers:** (01, 02, 03, 04 or 1, 2, 3, 4)
+   - **ordinal Numbers:** (01, 02, 03, 04 or 1, 2, 3, 4)
    - **Alphabetical:** (A, B, C, D or a, b, c, d)
    - **Semantic:** (subtle, soft, moderate, bold)
 
