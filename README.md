@@ -26,9 +26,9 @@ Select the wizard that will come to your aid by executing the corresponding scri
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
 | 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 1.2.1   |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.0.1   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.0.1   |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.0.0   |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.3.0   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.3.0   |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.3.0   |
 | **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
 | **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
 | **TYPOGRAPHY WIZ**       | Coming Soon    | –               | Generate and manage typography tokens    | –       |
@@ -79,24 +79,22 @@ Color tokens can be complex, but with this wizard 🧙, you can simplify the pro
 
 6. **Export Color Tokens**  
    The script will export your color tokens in Tokens Studio format, ready for integration into your design system. All JSON files will be prepared for import.
+   Stored in: `outputs/tokens/color/color_tokens*{unit}.json`
 
-7. **Batch Processing**  
-   You can process multiple base colors at once. Provide a list of colors, and the script will generate color tokens for each, creating separate JSON files for each.
-
-8. **Generate CSS & SCSS Files**  
+7. **Generate CSS & SCSS Files**  
    The script will create CSS and SCSS files with color tokens as variables, saved in the following directories:
 
    - **CSS**: Stored in `outputs/css/color/color_variables_{format}.css`
    - **SCSS**: Stored in `outputs/scss/color/color_variables_{format}.scss`
 
-9. **Add More Colors to the Same Group**  
+8. **Add More Colors to the Same Group**  
    To add more colors to the existing group, repeat steps 1 and 2. The script will overwrite the existing JSON files in the `tokens/` directory based on your criteria.
 
 ---
 
 ### 📏 **Size Tokens Wizard** ✨
 
-Version 1.0.1.
+Version 1.3.0
 
 Managing size tokens can be a daunting task, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and the wizard will generate a range of size tokens in various units, ready for use in your design system and development projects.
 
@@ -116,8 +114,11 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 4. **Select a Scale**  
    Choose a predefined scale for your tokens:
 
-   - **4px Grid**: Steps increase in increments of 4
-   - **8-Point Grid**: Steps increase in increments of 8
+- **4-Point Grid System**
+- **8-Point Grid System**
+- **Modular Scale** (multiplier based)
+- **Custom Intervals**
+- **Fibonacci Scale**
 
 5. **Define the Number of Values**  
    Specify how many size values you want to generate (e.g., 6 values for a small-to-large scale).
@@ -136,13 +137,12 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 8. **Convert to Other Units (Optional)**  
    By default, tokens are stored in pixels (px), but you can also convert them to:
 
-   - **Points (pt)**
    - **Rem (rem)**
    - **Em (em)**
-   - **Percentage(%)**
 
 9. **Export Size Tokens**  
    The script exports your size tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
+   Stored in: `outputs/tokens/size/size_tokens*{unit}.json`
 
 10. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your size tokens as variables:
@@ -153,7 +153,7 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 
 ### 🔳 **Space Tokens Wizard** ✨
 
-Version 1.0.1.
+Version 1.3.0
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
 
@@ -168,13 +168,16 @@ Creating and managing space tokens can be a daunting task, but with the Space To
    The default base unit for space tokens is pixels (px).
 
 3. **Name Your Space Tokens**  
-   Provide a name for your space tokens (e.g., space, margin, padding).
+   Provide a name for your space tokens (e.g., space, spc).
 
 4. **Select a Scale**  
    Choose a predefined scale for your tokens:
 
-   - **4px Grid**: Steps increase in increments of 4
-   - **8-Point Grid**: Steps increase in increments of 8
+- **4-Point Grid System**
+- **8-Point Grid System**
+- **Modular Scale** (multiplier based)
+- **Custom Intervals**
+- **Fibonacci Scale**
 
 5. **Define the Number of Values**  
    Specify how many space values you want to generate (e.g., 6 values for a small-to-large scale).
@@ -193,13 +196,12 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 8. **Convert to Other Units (Optional)**  
    By default, tokens are stored in pixels (px), but you can also convert them to:
 
-   - **Points (pt)**
    - **Rem (rem)**
    - **Em (em)**
-   - **Percentage(%)**
 
 9. **Export Space Tokens**  
    The script exports your space tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
+   Stored in: `outputs/tokens/space/space_tokens*{unit}.json`
 
 10. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your space tokens as variables:
@@ -210,7 +212,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
 
-Version 1.0.0.
+Version 1.3.0
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
 
@@ -239,8 +241,11 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 5. **Define Value Scale**  
    Select a value scale based on either minimal or expressive bases:
 
-   - **Minimal Scale:** Base 4px
-   - **Expressive Scale:** Base 8px
+- **4-Point Grid System**
+- **8-Point Grid System**
+- **Modular Scale** (multiplier based)
+- **Custom Intervals**
+- **Fibonacci Scale**
 
 6. **Generate Border Radius Tokens**  
    The script generates a list of border-radius tokens based on your input.
@@ -248,11 +253,11 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 7. **Convert to Other Units (Optional)**  
    Convert tokens to other units such as:
 
-   - **Points (pt)**
    - **Rem (rem)**
 
 8. **Export Border Radius Tokens**  
    The tokens are exported in Tokens Studio format as JSON files, ready for integration into your design system.
+   Stored in: `outputs/tokens/border-radius/border_radius_tokens*{unit}.json`
 
 9. **Generate CSS & SCSS Files**  
    Automatically create CSS and SCSS files with your border-radius tokens as variables:
