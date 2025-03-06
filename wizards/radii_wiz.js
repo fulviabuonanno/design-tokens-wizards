@@ -199,23 +199,11 @@ const askForInput = async () => {
           { name: "Incremental (e.g., 100, 200, 300, 400)", value: 'incremental' },
           { name: "Alphabetical (e.g., A, B, C... or a, b, c...)", value: 'alphabetical' },
           { name: "Semantic (e.g., subtle, moderate, pronounced)", value: 'semantic' },
-          { name: "More Info", value: 'info' }
         ]
       }
     ]);
     
-    if (scaleChoice.scaleChoice === 'info') {
-      console.log("\n=======================================");
-      console.log("SCALE INFORMATION:");
-      console.table([
-        { scale: 'T-shirt', example: 'xs, sm, md, lg, xl' },
-        { scale: 'Ordinal', example: '01, 02, 03.. or 1, 2, 3...' },
-        { scale: 'Incremental', example: '100, 200, 300, 400' },
-        { scale: 'Alphabetical', example: 'A, B, C... or a, b, c...' },
-        { scale: 'Semantic', example: 'subtle, moderate, pronounced' }
-      ]);
-      console.log("=======================================\n");
-    } else if (scaleChoice.scaleChoice === 'tshirt') {
+  if (scaleChoice.scaleChoice === 'tshirt') {
       const tshirtchoice = await inquirer.prompt([
         {
           type: 'list',
@@ -299,17 +287,21 @@ const askForInput = async () => {
   ]);
 
   if (scaleAnswer.scale === 'info') {
-    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.black.bgGreenBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
-    console.log(chalk.black.bgBlueBright("=======================================\n"));
-    console.log("Scale Name                 | Description                                              | Examples");
-    console.log("---------------------------------------------------------------------------------------------");
-    console.log("4-Point Grid System        | Increments by 4 units to maintain consistency.           | 4, 8, 12, 16, ...");
-    console.log("8-Point Grid System        | Increments by 8 units for more spacious designs.         | 8, 16, 24, 32, ...");
-    console.log("Modular Scale              | Uses a multiplier and factor for a harmonious progression.| e.g., 4, 6.4, 10.24, ...");
-    console.log("Custom Intervals           | User-defined intervals for complete customization.       | e.g., 4, 10, 16, 22, ...");
-    console.log("Fibonacci Scale            | Multiplies the previous value by ≈1.618.                   | e.g., 4, 6.47, 10.47, ...");
-    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
+    console.log(chalk.black.bgGreenBright("=======================================\n"));
+    console.log(`
+  ===============================================================================================
+  Scale Name               | Description                                           | Examples
+  ===============================================================================================
+  4-Point Grid System      | Increments by 4 units to maintain consistency.        | 4, 8, 12, 16, ...
+  8-Point Grid System      | Increments by 8 units for more spacious designs.      | 8, 16, 24, 32, ...
+  Modular Scale            | Uses a multiplier and factor for a harmonious flow.   | e.g., 4, 6.4, 10.24, ...
+  Custom Intervals         | User-defined intervals for complete customization.    | e.g., 4, 10, 16, 22, ...
+  Fibonacci Scale          | Multiplies the previous value by ≈1.618.              | e.g., 4, 6.47, 10.47, ...
+  ===============================================================================================
+    `);
+    console.log(chalk.black.bgGreenBright("\n=======================================\n"));
     
     const newScaleAnswer = await inquirer.prompt([
       {
@@ -428,31 +420,30 @@ const generateBorderRadiusTokens = (
   fullLabel,
   intermediateNaming,
   totalTokens,
-  scale,            // "4", "8", "modular", "custom" o "fibonacci"
-  valueScale,       // Para las escalas grid (4 o 8)
-  multiplier,       // Para escala modular
-  factor,           // Para escala modular
-  customIntervals,  // Para escala custom, { base, step }
-  fibonacciBase     // Para escala fibonacci
+  scale,            
+  valueScale,       
+  multiplier,       
+  factor,           
+  customIntervals,  
+  fibonacciBase     
 ) => {
   const tokensArray = [];
-  let prev; // Para cálculo Fibonacci
+  let prev; 
 
-  // Definimos arrays para la escala T-shirt
   const tshirtAbbr = ["xs", "sm", "md", "lg", "xl", "xxl"];
   const tshirtFull = ["extra small", "small", "medium", "large", "extra large", "xx large"];
   
   for (let i = 1; i <= totalTokens; i++) {
     let tokenName = "";
-    // Si existen extremos, el primero y el último se toman de noneLabel y fullLabel
+    
     if (noneLabel !== null && fullLabel !== null) {
       if (i === 1) {
         tokenName = noneLabel.toLowerCase();
       } else if (i === totalTokens) {
         tokenName = fullLabel.toLowerCase();
       } else {
-        // Para los intermedios, usamos la lógica según la escala elegida
-        const intermediateIndex = i - 1; // empieza en 1
+        
+        const intermediateIndex = i - 1; 
         switch (intermediateNaming?.scale) {
           case 'tshirt': {
             const names = intermediateNaming.option === 'full' ? tshirtFull : tshirtAbbr;
@@ -467,19 +458,19 @@ const generateBorderRadiusTokens = (
             break;
           }
           case 'incremental': {
-            // La opción viene definida como string (por ejemplo, "100" o "50")
+            
             tokenName = (parseInt(intermediateNaming.option) * intermediateIndex).toString();
             break;
           }
           case 'alphabetical': {
             tokenName =
               intermediateNaming.option === 'uppercase'
-                ? String.fromCharCode(64 + intermediateIndex)  // A = 65
-                : String.fromCharCode(96 + intermediateIndex); // a = 97
+                ? String.fromCharCode(64 + intermediateIndex)  
+                : String.fromCharCode(96 + intermediateIndex); 
             break;
           }
           case 'semantic': {
-            // Aquí podrías definir un array predefinido de nombres semánticos o una lógica particular
+            
             tokenName = `semantic-${intermediateIndex}`;
             break;
           }
@@ -489,7 +480,7 @@ const generateBorderRadiusTokens = (
         }
       }
     } else {
-      // Sin extremos, se consideran todos como intermedios
+      
       const intermediateIndex = i;
       switch (intermediateNaming?.scale) {
         case 'tshirt': {
@@ -539,7 +530,7 @@ const generateBorderRadiusTokens = (
       }
       prev = value;
     } else {
-      // Escala 4-Point o 8-Point
+      
       value = valueScale * i;
     }
     value = Math.round(value * 100) / 100;
