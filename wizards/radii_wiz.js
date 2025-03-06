@@ -13,9 +13,13 @@ if (versionArg) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define outputsDir globally so it can be used by deleteUnusedUnitFiles.
 const outputsDir = path.join(__dirname, "..", "outputs");
 
+/**
+ * Displays a loading message with progressing dots.
+ * @param {string} message - The message to show.
+ * @param {number} duration - Duration (in ms) for the loader.
+ */
 const showLoader = (message, duration) => {
   process.stdout.write(message);
   return new Promise((resolve) => {
@@ -31,37 +35,49 @@ const showLoader = (message, duration) => {
 };
 
 const askForInput = async () => {
-  // STEP 1: DEFINE TOKEN NAME
+  
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("STEP 1: DEFINE TOKEN NAME"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-
   const tokenNameAnswer = await inquirer.prompt([
     {
       type: 'list',
       name: 'tokenName',
       message: "How would you like to name your border radius tokens?",
       choices: [
-        { name: 'Border-radius', value: 'border-radius' },
-        { name: 'Corner-radius', value: 'corner-radius' },
-        { name: 'Corner', value: 'corner' },
-        { name: 'Radius', value: 'radius' },
-        { name: 'Radii', value: 'radii' },
-        { name: 'Br', value: 'br' },
-        { name: 'BorderRadius', value: 'borderRadius' }
-      ]
+        { name: 'border-radius', value: 'border-radius' },
+        { name: 'corner-radius', value: 'corner-radius' },
+        { name: 'radius', value: 'radius' },
+        { name: 'radii', value: 'radii' },
+        { name: 'br', value: 'br' },
+        { name: 'borderRadius', value: 'borderRadius' },
+        { name: 'custom', value: 'custom' }],
+        loop: false
     }
   ]);
-  const tokenName = tokenNameAnswer.tokenName;
+  let tokenName = tokenNameAnswer.tokenName;
+  if (tokenName === 'custom') {
+    const customTokenNameAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'customTokenName',
+        message: '📝 Please provide a custom name for your border radius tokens:',
+        validate: (input) => {
+          if (!input) {
+            return "❌ Name is required. Please provide a valid name.";
+          }
+          return true;
+        }
+      }
+    ]);
+    tokenName = customTokenNameAnswer.customTokenName;
+  }
 
-  // STEP 2: DEFINE SCALE STRUCTURE
-  // Initialize totalTokens with default (with extremes)
   let totalTokens = 6;
-  
+
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("STEP 2: DEFINE SCALE STRUCTURE"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-
   const noneFullAnswer = await inquirer.prompt([
     {
       type: 'confirm',
@@ -73,50 +89,88 @@ const askForInput = async () => {
 
   let noneLabel = "none";
   let fullLabel = "full";
+  
   if (noneFullAnswer.includeExtremes) {
-    // For the minimal value
     const noneResponse = await inquirer.prompt([
       {
         type: 'list',
         name: 'noneWord',
         message: "How would you like to name the minimum border-radius token?",
         choices: [
-          { name: 'None', value: 'none' },
-          { name: 'Flat', value: 'flat' },
-          { name: 'Square', value: 'square' },
-          { name: 'Plain', value: 'plain' }
+          { name: 'none', value: 'none' },
+          { name: 'flat', value: 'flat' },
+          { name: 'square', value: 'square' },
+          { name: 'plain', value: 'plain' },
+          { name: 'custom', value: 'custom' }
         ]
       }
     ]);
-    noneLabel = noneResponse.noneWord;
-
-    // For the maximal value
+    
+    if (noneResponse.noneWord === 'custom') {
+      const customNameAnswer = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'customName',
+          message: '📝 Please provide a name for your border-radius token:',
+          validate: (input) => {
+            if (!input) {
+              return "❌ Name is required. Please provide a valid name.";
+            } else if (!/^[a-zA-Z0-9.-]+$/.test(input)) {
+              return "❌ Name should only contain letters, numbers, hyphens (-), and dots (.)";
+            }
+            return true;
+          }
+        }
+      ]);
+      noneLabel = customNameAnswer.customName;
+    } else {
+      noneLabel = noneResponse.noneWord;
+    }
+    
     const fullResponse = await inquirer.prompt([
       {
         type: 'list',
         name: 'fullWord',
         message: "How would you like to name the maximum border-radius token?",
         choices: [
-          { name: 'Pill', value: 'pill' },
-          { name: 'Circle', value: 'circle' },
-          { name: 'Round', value: 'round' },
-          { name: 'Full', value: 'full' }
+          { name: 'pill', value: 'pill' },
+          { name: 'circle', value: 'circle' },
+          { name: 'round', value: 'round' },
+          { name: 'full', value: 'full' },
+          { name: 'custom', value: 'custom' }
         ]
       }
     ]);
-    fullLabel = fullResponse.fullWord;
+    
+    if (fullResponse.fullWord === 'custom') {
+      const customNameAnswer = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'customName',
+          message: '📝 Please provide a name for your border-radius token:',
+          validate: (input) => {
+            if (!input) {
+              return "❌ Name is required. Please provide a valid name.";
+            } else if (!/^[a-zA-Z0-9.-]+$/.test(input)) {
+              return "❌ Name should only contain letters, numbers, hyphens (-), and dots (.)";
+            }
+            return true;
+          }
+        }
+      ]);
+      fullLabel = customNameAnswer.customName;
+    } else {
+      fullLabel = fullResponse.fullWord;
+    }
   } else {
+    
     console.log(chalk.bold.yellow("\nLet's add intermediate values for your border radius tokens."));
     noneLabel = null;
     fullLabel = null;
     totalTokens = 4;
   }
 
-  // -- Moved from STEP 3 to STEP 2 --
-  // Instead of asking a yes/no question for intermediate steps when extremes were omitted,
-  // we assume they are required.
   let intermediateAnswer = { includeIntermediate: true };
-  // When extremes are included, ask normally:
   if (noneFullAnswer.includeExtremes) {
     intermediateAnswer = await inquirer.prompt([
       {
@@ -131,35 +185,25 @@ const askForInput = async () => {
       return { tokenName, unit: 'px', noneLabel, fullLabel, intermediateNaming: null, totalTokens: 2, valueScale: null };
     }
   }
+
   let intermediateNaming = null;
   while (true) {
     const scaleChoice = await inquirer.prompt([
       {
         type: 'list',
         name: 'scaleChoice',
-        message: "which border-radius scale naming do you want to use? choose one:",
+        message: "Which border-radius scale naming do you want to use? Choose one:",
         choices: [
-          { name: "T-shirt scale (e.g., xs, sm, md, lg, xl)", value: 'tshirt' },
-          { name: "Cardinal scale (e.g., 01, 02, 03... or 1, 2, 3...)", value: 'cardinal' },
-          { name: "Incremental scale (e.g., 100, 200, 300, 400)", value: 'incremental' },
-          { name: "Alphabetical scale (e.g., A, B, C... or a, b, c...)", value: 'alphabetical' },
-          { name: "Semantic scale (e.g., subtle, moderate, pronounced)", value: 'semantic' },
-          { name: "More info: show scale definitions", value: 'info' }
+          { name: "T-shirt (e.g., xs, sm, md, lg, xl)", value: 'tshirt' },
+          { name: "Ordinal (e.g., 01, 02, 03... or 1, 2, 3...)", value: 'ordinal' },
+          { name: "Incremental (e.g., 100, 200, 300, 400)", value: 'incremental' },
+          { name: "Alphabetical (e.g., A, B, C... or a, b, c...)", value: 'alphabetical' },
+          { name: "Semantic (e.g., subtle, moderate, pronounced)", value: 'semantic' },
         ]
       }
     ]);
-    if (scaleChoice.scaleChoice === 'info') {
-      console.log("\n=======================================");
-      console.log("SCALE INFORMATION:");
-      console.table([
-        { scale: 'T-shirt', example: 'xs, sm, md, lg, xl' },
-        { scale: 'Cardinal', example: '01, 02, 03.. or 1, 2, 3...' },
-        { scale: 'Incremental', example: '100, 200, 300, 400' },
-        { scale: 'Alphabetical', example: 'a, b, c... or a, b, c...' },
-        { scale: 'Semantic', example: 'subtle, moderate, etc' }
-      ]);
-      console.log("=======================================\n");
-    } else if (scaleChoice.scaleChoice === 'tshirt') {
+    
+  if (scaleChoice.scaleChoice === 'tshirt') {
       const tshirtchoice = await inquirer.prompt([
         {
           type: 'list',
@@ -173,26 +217,26 @@ const askForInput = async () => {
       ]);
       intermediateNaming = { scale: 'tshirt', option: tshirtchoice.tshirtoption };
       break;
-    } else if (scaleChoice.scaleChoice === 'cardinal') {
-      const cardinalChoice = await inquirer.prompt([
+    } else if (scaleChoice.scaleChoice === 'ordinal') {
+      const ordinalChoice = await inquirer.prompt([
         {
           type: 'list',
-          name: 'cardinalOption',
-          message: "For Cardinal scale, choose the format:",
+          name: 'ordinalOption',
+          message: "For Ordinal scale, choose the format:",
           choices: [
             { name: "Padded (e.g., 01, 02, 03)", value: 'padded' },
             { name: "Unpadded (e.g., 1, 2, 3)", value: 'unpadded' }
           ]
         }
       ]);
-      intermediateNaming = { scale: 'cardinal', option: cardinalChoice.cardinalOption };
+      intermediateNaming = { scale: 'ordinal', option: ordinalChoice.ordinalOption };
       break;
     } else if (scaleChoice.scaleChoice === 'alphabetical') {
       const alphabeticalChoice = await inquirer.prompt([
         {
           type: 'list',
           name: 'alphabeticalOption',
-          message: "For Alphabetical scale, choose the case:",
+          message: "For Alphabetical scale, choose the format:",
           choices: [
             { name: "Uppercase (A, B, C)", value: 'uppercase' },
             { name: "Lowercase (a, b, c)", value: 'lowercase' }
@@ -220,82 +264,280 @@ const askForInput = async () => {
       break;
     }
   }
+
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("STEP 3: DEFINE VALUE SCALE"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-  // Ask for the value scale type
-  const valueScaleTypeAnswer = await inquirer.prompt([
+
+  const scaleAnswer = await inquirer.prompt([
     {
       type: 'list',
-      name: 'valueScaleType',
-      message: "Which value scale would you like to use for the border radius scale?",
+      name: 'scale',
+      message: 'Select the scale to use for the border radius values:',
       choices: [
-        { name: 'Minimal scale (base 4px)', value: 'minimal' },
-        { name: 'Expressive scale (base 8px)', value: 'expressive' }
-      ]
+        { name: '4-Point Grid System', value: '4' },
+        { name: '8-Point Grid System', value: '8' },
+        { name: 'Modular Scale (multiplier based)', value: 'modular' },
+        { name: 'Custom Intervals', value: 'custom' },
+        { name: 'Fibonacci Scale', value: 'fibonacci' },
+        { name: 'More Info', value: 'info' }
+      ],
+      filter: (input) => input.toLowerCase()
     }
   ]);
-  const valueScaleType = valueScaleTypeAnswer.valueScaleType;
-  // Define the base value based on the selected scale type
-  const valueScale = valueScaleType === 'minimal' ? 4 : 8;
-  // Force a total of 6 tokens (always: none + 4 intermediates + full)
-  return { tokenName, unit: 'px', noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale };
+
+  if (scaleAnswer.scale === 'info') {
+    console.log(chalk.black.bgGreenBright("\n======================================="));
+    console.log(chalk.bold("📚 SCALE INFORMATION"));
+    console.log(chalk.black.bgGreenBright("=======================================\n"));
+    console.log(`
+  ===============================================================================================
+  Scale Name               | Description                                           | Examples
+  ===============================================================================================
+  4-Point Grid System      | Increments by 4 units to maintain consistency.        | 4, 8, 12, 16, ...
+  8-Point Grid System      | Increments by 8 units for more spacious designs.      | 8, 16, 24, 32, ...
+  Modular Scale            | Uses a multiplier and factor for a harmonious flow.   | e.g., 4, 6.4, 10.24, ...
+  Custom Intervals         | User-defined intervals for complete customization.    | e.g., 4, 10, 16, 22, ...
+  Fibonacci Scale          | Multiplies the previous value by ≈1.618.              | e.g., 4, 6.47, 10.47, ...
+  ===============================================================================================
+    `);
+    console.log(chalk.black.bgGreenBright("\n=======================================\n"));
+    
+    const newScaleAnswer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'scale',
+        message: 'Select the scale to use for the border radius values:',
+        choices: [
+          { name: '4-Point Grid System', value: '4' },
+          { name: '8-Point Grid System', value: '8' },
+          { name: 'Modular Scale (multiplier based)', value: 'modular' },
+          { name: 'Custom Intervals', value: 'custom' },
+          { name: 'Fibonacci Scale', value: 'fibonacci' }
+        ]
+      }
+    ]);
+    scaleAnswer.scale = newScaleAnswer.scale;
+  }
+
+  if (scaleAnswer.scale === 'modular') {
+    const modularBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'multiplier',
+        message: 'Enter the starting value for your modular scale (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    const modularFactorAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'factor',
+        message: 'Enter the multiplication factor (e.g. 1.5):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.multiplier = parseFloat(modularBaseAnswer.multiplier);
+    scaleAnswer.factor = parseFloat(modularFactorAnswer.factor);
+    
+  } else if (scaleAnswer.scale === 'custom') {
+    const customBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'base',
+        message: 'Enter the starting value for your custom intervals (e.g. 4):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    const customStepAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'step',
+        message: 'Enter the step interval (e.g. 6):',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.customIntervals = {
+      base: parseFloat(customBaseAnswer.base),
+      step: parseFloat(customStepAnswer.step)
+    };
+    
+  } else if (scaleAnswer.scale === 'fibonacci') {
+    const fibonacciBaseAnswer = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'fibonacciBase',
+        message: 'Enter a base value for your Fibonacci scale:',
+        validate: (input) => {
+          const num = parseFloat(input);
+          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+        }
+      }
+    ]);
+    
+    scaleAnswer.fibonacciBase = parseFloat(fibonacciBaseAnswer.fibonacciBase);
+  }
+
+  let valueScale;
+  if (scaleAnswer.scale === '4' || scaleAnswer.scale === '8') {
+    valueScale = scaleAnswer.scale === '4' ? 4 : 8;
+  }
+
+  return { 
+    tokenName, 
+    unit: 'px', 
+    noneLabel, 
+    fullLabel, 
+    intermediateNaming, 
+    totalTokens, 
+    valueScale,
+    scale: scaleAnswer.scale,            
+    multiplier: scaleAnswer.multiplier,      
+    factor: scaleAnswer.factor,              
+    customIntervals: scaleAnswer.customIntervals,
+    fibonacciBase: scaleAnswer.fibonacciBase
+  };
 };
 
-const generateBorderRadiusTokens = (noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale) => {
+const generateBorderRadiusTokens = (
+  noneLabel,
+  fullLabel,
+  intermediateNaming,
+  totalTokens,
+  scale,            
+  valueScale,       
+  multiplier,       
+  factor,           
+  customIntervals,  
+  fibonacciBase     
+) => {
   const tokensArray = [];
-  const base = valueScale; // either 4 or 8
-  // If totalTokens is 2, only "none" and "full" tokens are generated.
-  if (noneLabel === null && fullLabel === null) {
-    // Only generate intermediate tokens
-    let intermediateNames = [];
-    if (intermediateNaming !== null && intermediateNaming.scale === 'tshirt') {
-      if (intermediateNaming.option === 'abbr') {
-        intermediateNames = ["xs", "sm", "md", "lg"];
+  let prev; 
+
+  const tshirtAbbr = ["xs", "sm", "md", "lg", "xl", "xxl"];
+  const tshirtFull = ["extra small", "small", "medium", "large", "extra large", "xx large"];
+  
+  for (let i = 1; i <= totalTokens; i++) {
+    let tokenName = "";
+    
+    if (noneLabel !== null && fullLabel !== null) {
+      if (i === 1) {
+        tokenName = noneLabel.toLowerCase();
+      } else if (i === totalTokens) {
+        tokenName = fullLabel.toLowerCase();
       } else {
-        intermediateNames = ["extra-small", "small", "medium", "large"];
-      }
-    } else if (intermediateNaming !== null && intermediateNaming.scale === 'cardinal') {
-      intermediateNames = intermediateNaming.option === 'padded' ? ["01", "02", "03", "04"] : ["1", "2", "3", "4"];
-    } else if (intermediateNaming !== null && intermediateNaming.scale === 'incremental') {
-      intermediateNames = intermediateNaming.option === '50' ? ["50", "100", "150", "200"] : ["100", "200", "300", "400"];
-    } else if (intermediateNaming !== null && intermediateNaming.scale === 'alphabetical') {
-      intermediateNames = intermediateNaming.option === 'uppercase' ? ["A", "B", "C", "D"] : ["a", "b", "c", "d"];
-    } else if (intermediateNaming === 'semantic') {
-      intermediateNames = ["subtle", "soft", "moderate", "bold"];
-    }
-    // totalTokens here equals number of intermediate tokens (expected 4)
-    for (let i = 0; i < totalTokens; i++) {
-      const intermValue = `${base * (i + 1)}px`;
-      const intermName = intermediateNames[i] || `step-${i + 1}`;
-      tokensArray.push({ key: intermName.toLowerCase(), value: intermValue, type: "borderRadius" });
-    }
-  } else {
-    // Generate tokens with extremes: "none" first and "full" last.
-    tokensArray.push({ key: noneLabel.toLowerCase(), value: "0", type: "borderRadius" });
-    for (let i = 2; i < totalTokens; i++) {
-      const intermValue = `${base * (i - 1)}px`;
-      let intermediateNames = [];
-      if (intermediateNaming !== null && intermediateNaming.scale === 'tshirt') {
-        if (intermediateNaming.option === 'abbr') {
-          intermediateNames = ["xs", "sm", "md", "lg"];
-        } else {
-          intermediateNames = ["extra-small", "small", "medium", "large"];
+        
+        const intermediateIndex = i - 1; 
+        switch (intermediateNaming?.scale) {
+          case 'tshirt': {
+            const names = intermediateNaming.option === 'full' ? tshirtFull : tshirtAbbr;
+            tokenName = names[intermediateIndex - 1] || `tshirt-${i}`;
+            break;
+          }
+          case 'ordinal': {
+            tokenName =
+              intermediateNaming.option === 'padded'
+                ? String(intermediateIndex).padStart(2, "0")
+                : String(intermediateIndex);
+            break;
+          }
+          case 'incremental': {
+            
+            tokenName = (parseInt(intermediateNaming.option) * intermediateIndex).toString();
+            break;
+          }
+          case 'alphabetical': {
+            tokenName =
+              intermediateNaming.option === 'uppercase'
+                ? String.fromCharCode(64 + intermediateIndex)  
+                : String.fromCharCode(96 + intermediateIndex); 
+            break;
+          }
+          case 'semantic': {
+            
+            tokenName = `semantic-${intermediateIndex}`;
+            break;
+          }
+          default: {
+            tokenName = `step-${i}`;
+          }
         }
-      } else if (intermediateNaming !== null && intermediateNaming.scale === 'cardinal') {
-        intermediateNames = intermediateNaming.option === 'padded' ? ["01", "02", "03", "04"] : ["1", "2", "3", "4"];
-      } else if (intermediateNaming !== null && intermediateNaming.scale === 'incremental') {
-        intermediateNames = intermediateNaming.option === '50' ? ["50", "100", "150", "200"] : ["100", "200", "300", "400"];
-      } else if (intermediateNaming !== null && intermediateNaming.scale === 'alphabetical') {
-        intermediateNames = intermediateNaming.option === 'uppercase' ? ["A", "B", "C", "D"] : ["a", "b", "c", "d"];
-      } else if (intermediateNaming === 'semantic') {
-        intermediateNames = ["subtle", "soft", "moderate", "bold"];
       }
-      const intermName = intermediateNames[i - 2] || `step-${i}`;
-      tokensArray.push({ key: intermName.toLowerCase(), value: intermValue, type: "borderRadius" });
+    } else {
+      
+      const intermediateIndex = i;
+      switch (intermediateNaming?.scale) {
+        case 'tshirt': {
+          const names = intermediateNaming.option === 'full' ? tshirtFull : tshirtAbbr;
+          tokenName = names[intermediateIndex - 1] || `tshirt-${i}`;
+          break;
+        }
+        case 'ordinal': {
+          tokenName =
+            intermediateNaming.option === 'padded'
+              ? String(intermediateIndex).padStart(2, "0")
+              : String(intermediateIndex);
+          break;
+        }
+        case 'incremental': {
+          tokenName = (parseInt(intermediateNaming.option) * intermediateIndex).toString();
+          break;
+        }
+        case 'alphabetical': {
+          tokenName =
+            intermediateNaming.option === 'uppercase'
+              ? String.fromCharCode(64 + intermediateIndex)
+              : String.fromCharCode(96 + intermediateIndex);
+          break;
+        }
+        case 'semantic': {
+          tokenName = `semantic-${intermediateIndex}`;
+          break;
+        }
+        default: {
+          tokenName = `step-${i}`;
+        }
+      }
     }
-    tokensArray.push({ key: fullLabel.toLowerCase(), value: "50%", type: "borderRadius" });
+
+    let value;
+    if (scale === "custom") {
+      value = customIntervals.base + customIntervals.step * (i - 1);
+    } else if (scale === "modular") {
+      value = multiplier * Math.pow(factor, i - 1);
+    } else if (scale === "fibonacci") {
+      if (i === 1) {
+        value = fibonacciBase;
+      } else {
+        const phi = 1.618;
+        value = prev * phi;
+      }
+      prev = value;
+    } else {
+      
+      value = valueScale * i;
+    }
+    value = Math.round(value * 100) / 100;
+
+    tokensArray.push({ key: tokenName, value: `${value}px`, type: "borderRadius" });
   }
+
   const tokens = {};
   tokensArray.forEach(item => {
     tokens[item.key] = { value: item.value, type: item.type };
@@ -303,10 +545,8 @@ const generateBorderRadiusTokens = (noneLabel, fullLabel, intermediateNaming, to
   return tokens;
 };
 
-// Conversion function: only pt, rem, and em
 const convertPxToOtherUnits = (tokens, unit) => {
   const conversions = {
-    pt: (value) => `${value * 0.75}pt`,
     rem: (value) => `${value / 16}rem`
   };
 
@@ -361,22 +601,18 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   return fileExists;
 };
 
-// Update the deleteUnusedUnitFiles function to remove percent:
 const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
   let unitFiles = {};
   if (folder.includes('tokens')) {
     unitFiles = {
-      pt: `border_radius_tokens_pt.${fileExtension}`,
       rem: `border_radius_tokens_rem.${fileExtension}`
     };
   } else if (folder.includes('css')) {
     unitFiles = {
-      pt: `border_radius_variables_pt.${fileExtension}`,
       rem: `border_radius_variables_rem.${fileExtension}`
     };
   } else if (folder.includes('scss')) {
     unitFiles = {
-      pt: `border_radius_variables_pt.${fileExtension}`,
       rem: `border_radius_variables_rem.${fileExtension}`
     };
   }
@@ -399,15 +635,20 @@ const main = async () => {
 
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 2000);
 
-  console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.greenBright("Border Radius Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your border radius tokens step by step.\nGenerate your tokens and prepare them for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
+  console.log(
+    chalk.whiteBright("\n❤️ Welcome to the ") +
+    chalk.bold.greenBright("Border Radius Tokens Wizard") +
+    chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your border radius tokens step by step.\nGenerate your tokens and prepare them for using or syncing in ") +
+    chalk.underline("Tokens Studio") +
+    chalk.whiteBright(".")
+  );
 
   const input = await askForInput();
   if (!input) return;
+  const { tokenName, noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale, scale, multiplier, factor, customIntervals, fibonacciBase } = input;
+  
+  const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, scale, valueScale, multiplier, factor, customIntervals, fibonacciBase);
 
-  const { tokenName, noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale } = input;
-  const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale);
-
-  const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "border-radius");
   const cssFolder = path.join(outputsDir, "css", "border-radius");
   const scssFolder = path.join(outputsDir, "scss", "border-radius");
@@ -418,91 +659,101 @@ const main = async () => {
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
 
   const jsonFileExists = saveTokensToFile({ [tokenName]: tokensData }, tokensFolder, 'border_radius_tokens_px.json');
-  const cssFileExists = saveCSSTokensToFile(tokensData, tokenName, cssFolder, 'border_radius_variables.css');
-  const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables.scss');
+  const cssFileExists = saveCSSTokensToFile(tokensData, tokenName, cssFolder, 'border_radius_variables_px.css');
+  const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables_px.scss');
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING BORDER RADIUS TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-
   const convertAnswer = await inquirer.prompt([
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the tokens to other units (pt,rem)?',
+      message: 'Would you like to convert the tokens to other units (rem)?',
       default: false
     }
   ]);
 
-  let unitsAnswer;
-  let unitFileExists, unitCssFileExists, unitScssFileExists;
+  const units = convertAnswer.convert ? ['rem'] : [];
 
   if (convertAnswer.convert) {
+    const convertedTokens = convertPxToOtherUnits(tokensData, 'rem');
+    const unitFileExists = saveTokensToFile({ [tokenName]: convertedTokens }, tokensFolder, `border_radius_tokens_rem.json`);
+    const unitCssFileExists = saveCSSTokensToFile(convertedTokens, tokenName, cssFolder, `border_radius_variables_rem.css`);
+    const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, tokenName, scssFolder, `border_radius_variables_rem.scss`);
+
+    await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 2000);
+
     console.log(chalk.black.bgGreenBright("\n======================================="));
-    console.log(chalk.bold("🔄 CONVERTING BORDER RADIUS TOKENS TO OTHER UNITS"));
+    console.log(chalk.bold("📄 OUTPUT FILES"));
     console.log(chalk.black.bgGreenBright("=======================================\n"));
-    unitsAnswer = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'units',
-        message: 'Please, select the units you want to use for conversion:',
-        choices: [
-          { name: 'pt', value: 'pt' },
-          { name: 'rem', value: 'rem' }
-          // Removed 'em' option
-        ],
-        validate: (input) => {
-          if (input.length === 0) {
-            return "❌ You must select at least one unit.";
-          }
-          return true;
-        }
-      }
-    ]);
-    const units = unitsAnswer.units;
-    for (const unitConv of units) {
-      const convertedTokens = convertPxToOtherUnits(tokensData, unitConv);
-      unitFileExists = saveTokensToFile({ [tokenName]: convertedTokens }, tokensFolder, `border_radius_tokens_${unitConv}.json`);
-      unitCssFileExists = saveCSSTokensToFile(convertedTokens, tokenName, cssFolder, `border_radius_variables_${unitConv}.css`);
-      unitScssFileExists = saveSCSSTokensToFile(convertedTokens, tokenName, scssFolder, `border_radius_variables_${unitConv}.scss`);
-      console.log(chalk.whiteBright(`✅ ${unitFileExists ? 'Updated' : 'Saved'}: outputs/tokens/border-radius/border_radius_tokens_${unitConv}.json`));
-      console.log(chalk.whiteBright(`✅ ${unitCssFileExists ? 'Updated' : 'Saved'}: outputs/css/border-radius/border_radius_variables_${unitConv}.css`));
-      console.log(chalk.whiteBright(`✅ ${unitScssFileExists ? 'Updated' : 'Saved'}: outputs/scss/border-radius/border_radius_variables_${unitConv}.scss`));
+
+    if (jsonFileExists || cssFileExists || scssFileExists) {
+      console.log(chalk.whiteBright("🆕 Updated:"));
+    } else {
+      console.log(chalk.whiteBright("🆕 Saved:"));
     }
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));
+
+    if (units.length > 0) {
+      for (const unit of units) {
+        const unitSuffix = `_${unit}`;
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${tokenName}_tokens${unitSuffix}.json`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${tokenName}_variables${unitSuffix}.css`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${tokenName}_variables${unitSuffix}.scss`))}`));
+      }
+    }
+
     deleteUnusedUnitFiles(tokensFolder, units, 'json');
     deleteUnusedUnitFiles(cssFolder, units, 'css');
     deleteUnusedUnitFiles(scssFolder, units, 'scss');
+
   } else {
-    console.log(chalk.yellow("No conversion units selected. Previous output files for 'pt' and 'rem' have been removed."));
-    // Explicitly delete conversion files for tokens, CSS and SCSS
-    const conversionFiles = [
-      path.join(tokensFolder, 'border_radius_tokens_pt.json'),
-      path.join(tokensFolder, 'border_radius_tokens_rem.json'),
-      path.join(cssFolder, 'border_radius_variables_pt.css'),
-      path.join(cssFolder, 'border_radius_variables_rem.css'),
-      path.join(scssFolder, 'border_radius_variables_pt.scss'),
-      path.join(scssFolder, 'border_radius_variables_rem.scss')
-    ];
-    conversionFiles.forEach(file => {
-      if (fs.existsSync(file)) {
-        fs.unlinkSync(file);
-        const relativePath = path.relative(outputsDir, file);
-        console.log(chalk.whiteBright(`🗑️ Deleted: /outputs/${relativePath}`));
+    
+    const deletedFiles = [];
+    const deleteFileIfExists = (folder, fileName) => {
+      const filePath = path.join(folder, fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        deletedFiles.push(path.relative(process.cwd(), filePath));
       }
-    });
+    };
+
+    deleteFileIfExists(tokensFolder, 'border_radius_tokens_rem.json');
+    deleteFileIfExists(cssFolder, 'border_radius_variables_rem.css');
+    deleteFileIfExists(scssFolder, 'border_radius_variables_rem.scss');
+
+    if (deletedFiles.length > 0) {
+      console.log(chalk.black.bgGreenBright("\n======================================="));
+      console.log(chalk.bold("📄 OUTPUT FILES"));
+      console.log(chalk.black.bgGreenBright("=======================================\n"));
+    } else {
+      console.log(chalk.black.bgGreenBright("\n======================================="));
+      console.log(chalk.bold("📄 OUTPUT FILES"));
+      console.log(chalk.black.bgGreenBright("=======================================\n"));
+    }
+
+    console.log(chalk.whiteBright("🆕 Saved:"));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
+    console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));
+
+    if (deletedFiles.length > 0) {
+      console.log(chalk.whiteBright("🗑️ Deleted:"));
+      deletedFiles.forEach(deletedFile => {
+        console.log(chalk.whiteBright(`   -> ${deletedFile}`));
+      });
+    }
   }
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
-  console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
+  console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-  console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.greenBright("Border Radius Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄\n"));
-  console.log(chalk.black.bgGreenBright("\n======================================="));
-  console.log(chalk.bold("📄 OUTPUT FILES"));
+  
+  console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.greenBright("Border Radius Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
-  console.log(chalk.whiteBright(`✅ ${jsonFileExists ? 'Updated' : 'Saved'}: outputs/tokens/border-radius/border_radius_tokens_px.json`));
-  console.log(chalk.whiteBright(`✅ ${cssFileExists ? 'Updated' : 'Saved'}: outputs/css/border-radius/border_radius_variables.css`));
-  console.log(chalk.whiteBright(`✅ ${scssFileExists ? 'Updated' : 'Saved'}: outputs/scss/border-radius/border_radius_variables.scss`));
-  await showLoader(chalk.bold.yellow("\n💚 Finalizing your spell..."), 2000);
 };
 
 main();

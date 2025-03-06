@@ -11,11 +11,9 @@ if (versionArg) {
   console.log(chalk.bold.whiteBright.bgGray(`Color Tokens Wizard - Version ${version}`));
 }
 
-// Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Function to display a loader for a specified duration
 const showLoader = (message, duration) => {
   process.stdout.write(message);
   return new Promise((resolve) => {
@@ -30,18 +28,16 @@ const showLoader = (message, duration) => {
   });
 };
 
-// Function to ask a question and return the answer as a promise
 const askQuestion = (query) => {
   return inquirer.prompt([{ type: 'input', name: 'answer', message: query }]).then(answers => answers.answer);
 };
 
-// Function to handle user input for generating color tokens
 const askForInput = async (existingVariants = [], namingChoice = null, previousConcept = null, formatChoices = null) => {
+  
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("⭐️ STEP 1: ENTER HEX VALUE"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  // Ask for a HEX color value
+  
   let { hex } = await inquirer.prompt([
     {
       type: 'input',
@@ -54,15 +50,14 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🔤 STEP 2: NAME YOUR COLOR"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  // Ask for a concept name for the color
+  
   let concept = previousConcept;
   if (!concept) {
     let response = await inquirer.prompt([
       {
         type: 'input',
         name: 'concept',
-        message: "📝 What concept would you like to assign to color token?\n(e.g., brand, background)\n\x1b[31mPress Enter to use default:\x1b[0m\:\n>>>",
+        message: "📝 What concept would you like to assign to color token?\n(e.g., brand, background)\n\x1b[31mPress Enter to use default:\x1b[0m:\n>>>",
         default: 'color',
         validate: (input) => /^[a-zA-Z0-9.-]*$/.test(input) ? true : "❌ Concept name should only contain letters, numbers, hyphens (-), and dots (.)"
       }
@@ -74,7 +69,6 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
   let isValidNaming = false;
 
   if (!namingChoice) {
-    // Ask for a variant or ordered list name
     let response = await inquirer.prompt([
       {
         type: 'list',
@@ -94,6 +88,7 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
   while (!isValidNaming) {
     switch (namingChoice) {
       case "A":
+        
         const suggestedVariant = getNextVariant(existingVariants);
         let variantResponse = await inquirer.prompt([
           {
@@ -108,6 +103,7 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
         isValidNaming = true;
         break;
       case "B":
+        
         const suggestedOrder = existingVariants.length > 0 ? (parseInt(existingVariants[existingVariants.length - 1]) + 1).toString().padStart(2, '0') : "01";
         let orderResponse = await inquirer.prompt([
           {
@@ -122,6 +118,7 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
         isValidNaming = true;
         break;
       case "C":
+        
         const suggestedAlpha = existingVariants.length > 0 ? String.fromCharCode(existingVariants[existingVariants.length - 1].charCodeAt(0) + 1) : "A";
         let alphaResponse = await inquirer.prompt([
           {
@@ -136,6 +133,7 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
         isValidNaming = true;
         break;
       case "D":
+        
         const suggestedIncremental = existingVariants.length > 0 ? (parseInt(existingVariants[existingVariants.length - 1]) + 100).toString() : "100";
         let incrementalResponse = await inquirer.prompt([
           {
@@ -150,6 +148,7 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
         isValidNaming = true;
         break;
       default:
+        
         let choiceResponse = await inquirer.prompt([
           {
             type: 'list',
@@ -168,72 +167,66 @@ const askForInput = async (existingVariants = [], namingChoice = null, previousC
   }
 
   let generateRGB, generateRGBA, generateHSL;
-
-  // Replace the existing code for selecting color formats with the following:
-
-if (!formatChoices) {
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🤖 STEP 3: SELECT COLOR FORMATS"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  let formatResponse = await inquirer.prompt([
-    {
-      type: 'checkbox',
-      name: 'formats',
-      message: "Select color token formats to generate:",
-      choices: [
-        { name: 'RGB', value: 'RGB' },
-        { name: 'RGBA', value: 'RGBA' },
-        { name: 'HSL', value: 'HSL' }
-      ],
-      validate: (input) => {
-        if (input.length === 0) {
-          return "❌ Please select at least one format.";
+  if (!formatChoices) {
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("🤖 STEP 3: SELECT COLOR FORMATS"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
+  
+    let formatResponse = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'formats',
+        message: "Select color token formats to generate:",
+        choices: [
+          { name: 'RGB', value: 'RGB' },
+          { name: 'RGBA', value: 'RGBA' },
+          { name: 'HSL', value: 'HSL' }
+        ],
+        validate: (input) => {
+          if (input.length === 0) {
+            return "❌ Please select at least one format.";
+          }
+          return true;
         }
-        return true;
       }
-    }
-  ]);
-
-  const generateRGB = formatResponse.formats.includes('RGB');
-  const generateRGBA = formatResponse.formats.includes('RGBA');
-  const generateHSL = formatResponse.formats.includes('HSL');
-
-  formatChoices = { generateRGB, generateRGBA, generateHSL };
-} else {
-  ({ generateRGB, generateRGBA, generateHSL } = formatChoices);
-}
+    ]);
+  
+    generateRGB = formatResponse.formats.includes('RGB');
+    generateRGBA = formatResponse.formats.includes('RGBA');
+    generateHSL = formatResponse.formats.includes('HSL');
+  
+    formatChoices = { generateRGB, generateRGBA, generateHSL };
+  } else {
+    
+    ({ generateRGB, generateRGBA, generateHSL } = formatChoices);
+  }
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("📝 STEP 4: GENERATING COLOR TOKENS"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  // Generate color stops (variations) based on the base color
+  
   const stops = generateStops(hex);
 
   return { hex: hex.trim(), concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice, formatChoices };
 };
 
-// Function to generate color stops (variations) based on a base color
 const generateStops = (color) => {
   return {
-    base: tinycolor(color).toHexString(), // Base color in HEX format
-    lightest: tinycolor(color).lighten(40).toHexString(), // Lightest variation (40% lighter)
-    lighter: tinycolor(color).lighten(30).toHexString(), // Lighter variation (30% lighter)
-    light: tinycolor(color).lighten(20).toHexString(), // Light variation (20% lighter)
-    dark: tinycolor(color).darken(20).toHexString(), // Dark variation (20% darker)
-    darker: tinycolor(color).darken(30).toHexString(), // Darker variation (30% darker)
-    darkest: tinycolor(color).darken(40).toHexString() // Darkest variation (40% darker)
+    base: tinycolor(color).toHexString(), 
+    lightest: tinycolor(color).lighten(40).toHexString(), 
+    lighter: tinycolor(color).lighten(30).toHexString(), 
+    light: tinycolor(color).lighten(20).toHexString(), 
+    dark: tinycolor(color).darken(20).toHexString(), 
+    darker: tinycolor(color).darken(30).toHexString(), 
+    darkest: tinycolor(color).darken(40).toHexString() 
   };
 };
 
-// Function to save color tokens to files (update the folder path to be absolute)
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   fs.writeFileSync(filePath, JSON.stringify(tokensData, null, 2));
 };
 
-// Function to delete JSON files for formats that are not included
 const deleteUnusedFormatFiles = (folder, formats) => {
   const formatFiles = {
     RGB: 'color_tokens_rgb.json',
@@ -252,7 +245,6 @@ const deleteUnusedFormatFiles = (folder, formats) => {
   }
 };
 
-// Function to get the next variant name in sequence
 const getNextVariant = (existingVariants) => {
   const variants = ["primary", "secondary", "tertiary", "quaternary", "quinary", "senary", "septenary", "octonary", "nonary", "denary"];
   for (let variant of variants) {
@@ -263,7 +255,6 @@ const getNextVariant = (existingVariants) => {
   return `variant${existingVariants.length + 1}`;
 };
 
-// Function to convert tokens to CSS variables
 const convertTokensToCSS = (tokens) => {
   let cssVariables = ':root {\n';
   const processTokens = (obj, prefix = '') => {
@@ -280,14 +271,12 @@ const convertTokensToCSS = (tokens) => {
   return cssVariables;
 };
 
-// Function to save CSS variables to a file (use absolute path)
 const saveCSSTokensToFile = (tokens, folder, fileName) => {
   const cssContent = convertTokensToCSS(tokens);
   const filePath = path.join(folder, fileName);
   fs.writeFileSync(filePath, cssContent);
 };
 
-// Function to convert tokens to SCSS variables
 const convertTokensToSCSS = (tokens) => {
   let scssVariables = '';
   const processTokens = (obj, prefix = '') => {
@@ -303,14 +292,12 @@ const convertTokensToSCSS = (tokens) => {
   return scssVariables;
 };
 
-// Function to save SCSS variables to a file (use absolute path)
 const saveSCSSTokensToFile = (tokens, folder, fileName) => {
   const scssContent = convertTokensToSCSS(tokens);
   const filePath = path.join(folder, fileName);
   fs.writeFileSync(filePath, scssContent);
 };
 
-// Add this helper function near the other helper definitions:
 const convertTokensToFormat = (tokens, format) => {
   const converted = JSON.parse(JSON.stringify(tokens));
   Object.entries(converted).forEach(([concept, variants]) => {
@@ -330,7 +317,6 @@ const convertTokensToFormat = (tokens, format) => {
   return converted;
 };
 
-// Main function to orchestrate the color token generation process
 const main = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
@@ -349,7 +335,6 @@ const main = async () => {
   let previousConcept = null;
   let formatChoices = null;
 
-  // Create output directories if they don't exist
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
@@ -358,7 +343,7 @@ const main = async () => {
   let addMoreColors = true;
 
   while (addMoreColors) {
-    // Pass variants for the current concept (if any) instead of global tokensData keys.
+    
     const existingVariants = previousConcept && tokensData[previousConcept] ? Object.keys(tokensData[previousConcept]) : [];
     const input = await askForInput(existingVariants, namingChoice, previousConcept, formatChoices);
     if (!input) return;
@@ -367,20 +352,19 @@ const main = async () => {
     namingChoice = newNamingChoice;
     previousConcept = concept;
     formatChoices = newFormatChoices;
+
     const color = tinycolor(hex);
-    const rgb = color.toRgbString();
-    const rgba = color.toRgb();
-    const hsl = color.toHslString();
-
+    
     const finalConcept = concept || "color";
-
-    // Generate color tokens data
     if (!tokensData[finalConcept]) {
       tokensData[finalConcept] = {};
     }
 
     if (variant) {
-      tokensData[finalConcept][variant] = { base: { value: hex, type: "color" }, ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString(), type: "color" }])) };
+      tokensData[finalConcept][variant] = {
+        base: { value: hex, type: "color" },
+        ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString(), type: "color" }]))
+      };
     } else {
       tokensData[finalConcept].base = { value: hex, type: "color" };
       Object.entries(stops).forEach(([k, v]) => {
@@ -388,11 +372,9 @@ const main = async () => {
       });
     }
 
-    // Save color tokens in HEX format
     saveTokensToFile(tokensData, 'HEX', tokensFolder, 'color_tokens_hex.json');
     console.log("✅ Saved: outputs/tokens/colors/color_tokens_hex.json");
 
-    // Save color tokens in RGB format if selected
     if (generateRGB) {
       const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
       Object.entries(tokensRGBData).forEach(([concept, variants]) => {
@@ -406,7 +388,6 @@ const main = async () => {
       console.log("✅ Saved: outputs/tokens/colors/color_tokens_rgb.json");
     }
 
-    // Save color tokens in RGBA format if selected
     if (generateRGBA) {
       const tokensRGBAData = JSON.parse(JSON.stringify(tokensData));
       Object.entries(tokensRGBAData).forEach(([concept, variants]) => {
@@ -422,7 +403,6 @@ const main = async () => {
       console.log("✅ Saved: outputs/tokens/colors/color_tokens_rgba.json");
     }
 
-    // Save color tokens in HSL format if selected
     if (generateHSL) {
       const tokensHSLData = JSON.parse(JSON.stringify(tokensData));
       Object.entries(tokensHSLData).forEach(([concept, variants]) => {
@@ -436,47 +416,42 @@ const main = async () => {
       console.log("✅ Saved: outputs/tokens/colors/color_tokens_hsl.json");
     }
 
-    // Delete unused format files
     deleteUnusedFormatFiles(tokensFolder, formatChoices);
 
-    // Save CSS variables
     saveCSSTokensToFile(tokensData, cssFolder, 'color_variables.css');
     console.log("✅ Saved: outputs/css/colors/color_variables.css");
 
-    // Save SCSS variables
     saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables.scss');
     console.log("✅ Saved: outputs/scss/colors/color_variables.scss");
 
-    // In the main function, after saving the base HEX CSS and SCSS files, add:
-if (formatChoices) {
-  if (formatChoices.generateRGB) {
-    const tokensRGBConverted = convertTokensToFormat(tokensData, 'RGB');
-    saveCSSTokensToFile(tokensRGBConverted, cssFolder, 'color_variables_rgb.css');
-    console.log("✅ Saved: outputs/css/colors/color_variables_rgb.css");
-    saveSCSSTokensToFile(tokensRGBConverted, scssFolder, 'color_variables_rgb.scss');
-    console.log("✅ Saved: outputs/scss/colors/color_variables_rgb.scss");
-  }
-  if (formatChoices.generateRGBA) {
-    const tokensRGBAConverted = convertTokensToFormat(tokensData, 'RGBA');
-    saveCSSTokensToFile(tokensRGBAConverted, cssFolder, 'color_variables_rgba.css');
-    console.log("✅ Saved: outputs/css/colors/color_variables_rgba.css");
-    saveSCSSTokensToFile(tokensRGBAConverted, scssFolder, 'color_variables_rgba.scss');
-    console.log("✅ Saved: outputs/scss/colors/color_variables_rgba.scss");
-  }
-  if (formatChoices.generateHSL) {
-    const tokensHSLConverted = convertTokensToFormat(tokensData, 'HSL');
-    saveCSSTokensToFile(tokensHSLConverted, cssFolder, 'color_variables_hsl.css');
-    console.log("✅ Saved: outputs/css/colors/color_variables_hsl.css");
-    saveSCSSTokensToFile(tokensHSLConverted, scssFolder, 'color_variables_hsl.scss');
-    console.log("✅ Saved: outputs/scss/colors/color_variables_hsl.scss");
-  }
-}
+    if (formatChoices) {
+      if (formatChoices.generateRGB) {
+        const tokensRGBConverted = convertTokensToFormat(tokensData, 'RGB');
+        saveCSSTokensToFile(tokensRGBConverted, cssFolder, 'color_variables_rgb.css');
+        console.log("✅ Saved: outputs/css/colors/color_variables_rgb.css");
+        saveSCSSTokensToFile(tokensRGBConverted, scssFolder, 'color_variables_rgb.scss');
+        console.log("✅ Saved: outputs/scss/colors/color_variables_rgb.scss");
+      }
+      if (formatChoices.generateRGBA) {
+        const tokensRGBAConverted = convertTokensToFormat(tokensData, 'RGBA');
+        saveCSSTokensToFile(tokensRGBAConverted, cssFolder, 'color_variables_rgba.css');
+        console.log("✅ Saved: outputs/css/colors/color_variables_rgba.css");
+        saveSCSSTokensToFile(tokensRGBAConverted, scssFolder, 'color_variables_rgba.scss');
+        console.log("✅ Saved: outputs/scss/colors/color_variables_rgba.scss");
+      }
+      if (formatChoices.generateHSL) {
+        const tokensHSLConverted = convertTokensToFormat(tokensData, 'HSL');
+        saveCSSTokensToFile(tokensHSLConverted, cssFolder, 'color_variables_hsl.css');
+        console.log("✅ Saved: outputs/css/colors/color_variables_hsl.css");
+        saveSCSSTokensToFile(tokensHSLConverted, scssFolder, 'color_variables_hsl.scss');
+        console.log("✅ Saved: outputs/scss/colors/color_variables_hsl.scss");
+      }
+    }
 
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("➕ EXTRA STEP: ADD MORE COLORS"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-    // Ask if the user wants to add more colors
+  
     addMoreColors = await inquirer.prompt([
       {
         type: 'confirm',
@@ -497,14 +472,11 @@ if (formatChoices) {
   console.log(chalk.whiteBright("\n✅ The CSS and SCSS files have been generated inside \n📁'outputs/css/colors/' and 📁'outputs/scss/colors/' folders."));
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("✅🪄 SPELL COMPLETED"));
+  console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   console.log(chalk.bold.whiteBright("Thank you for summoning the ") + chalk.bold.yellow("Color Tokens Wizard") + chalk.bold.whiteBright("! ❤️🧙🎨\n"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 };
 
-// Start the main function
 main();
-
-
