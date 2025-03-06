@@ -90,17 +90,21 @@ const askForInput = async () => {
   ]);
 
   if (scaleAnswer.scale === 'info') {
-    console.log(chalk.black.bgBlueBright("\n======================================="));
+    console.log(chalk.black.bgMagentaBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
-    console.log(chalk.black.bgBlueBright("=======================================\n"));
-    console.log("Scale Name                 | Description                                             | Examples");
-    console.log("--------------------------------------------------------------------------------------------");
-    console.log("4-Point Grid System        | Increments by 4 units to maintain consistency.          | 4, 8, 12, 16, ...");
-    console.log("8-Point Grid System        | Increments by 8 units for more spacious designs.        | 8, 16, 24, 32, ...");
-    console.log("Modular Scale              | Dynamic scale using a multiplier and factor for a harmonious progression. | 16, 32, 64, 128, ...");
-    console.log("Custom Intervals           | User-defined intervals for complete customization.      | 10, 20, 35, 50, ...");
-    console.log("Fibonacci Scale            | Generates values by multiplying the previous value by the golden ratio (≈1.618). Base value is repeated. | e.g., 4, 6.47, 10.47, ...");
-    console.log(chalk.black.bgBlueBright("\n=======================================\n"));
+    console.log(chalk.black.bgMagentaBright("=======================================\n"));
+    console.log(`
+  ===============================================================================================
+  Scale Name               | Description                                           | Examples
+  ===============================================================================================
+  4-Point Grid System      | Increments by 4 units to maintain consistency.        | 4, 8, 12, 16, ...
+  8-Point Grid System      | Increments by 8 units for more spacious designs.      | 8, 16, 24, 32, ...
+  Modular Scale            | Uses a multiplier and factor for a harmonious flow.   | e.g., 4, 6.4, 10.24, ...
+  Custom Intervals         | User-defined intervals for complete customization.    | e.g., 4, 10, 16, 22, ...
+  Fibonacci Scale          | Multiplies the previous value by ≈1.618.              | e.g., 4, 6.47, 10.47, ...
+  ===============================================================================================
+    `);
+    console.log(chalk.black.bgMagentaBright("\n=======================================\n"));
     const newScaleAnswer = await inquirer.prompt([
       {
         type: 'list',
