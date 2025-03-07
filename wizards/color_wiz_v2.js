@@ -556,9 +556,9 @@ const main = async () => {
 
   await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
-  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.black.bgyellowBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
-  console.log(chalk.black.bgBlueBright("=======================================\n"));
+  console.log(chalk.black.bgyellowBright("=======================================\n"));
 
   const hexJsonPath = path.join(tokensFolder, 'color_tokens_hex.json');
   const cssPath = path.join(cssFolder, 'color_variables.css');
