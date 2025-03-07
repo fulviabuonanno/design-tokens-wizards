@@ -62,13 +62,13 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
 
     // Step 3: ENTER HEX VALUE
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("🚧 STEP 3: ENTER HEX VALUE"));
+    console.log(chalk.bold("🚧 STEP 3: CREATE BASE COLOR"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
     let hexResponse = await inquirer.prompt([
       {
         type: "input",
         name: "hex",
-        message: "Enter a HEX value (e.g., #FABADA):\n>>>",
+        message: "Enter a HEX value to use as base color (e.g., #FABADA):\n>>>",
         validate: (input) =>
           tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
       }
@@ -230,11 +230,6 @@ if (!formatChoices) {
 } else {
   ({ generateRGB, generateRGBA, generateHSL } = formatChoices);
 }
-
-// Step 6: GENERATING COLOR TOKENS
-console.log(chalk.black.bgYellowBright("\n======================================="));
-console.log(chalk.bold("🔁 STEP 6: GENERATING COLOR TOKENS"));
-console.log(chalk.black.bgYellowBright("=======================================\n"));
 
 return {
   hex: hex.trim(),
@@ -481,7 +476,6 @@ const main = async () => {
     }
 
     saveTokensToFile(tokensData, 'HEX', tokensFolder, 'color_tokens_hex.json');
-    console.log("✅ Saved: outputs/tokens/colors/color_tokens_hex.json");
 
     if (generateRGB) {
       const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
@@ -497,7 +491,6 @@ const main = async () => {
         });
       });
       saveTokensToFile(tokensRGBData, 'RGB', tokensFolder, 'color_tokens_rgb.json');
-      console.log("✅ Saved: outputs/tokens/colors/color_tokens_rgb.json");
     }
     
     if (generateRGBA) {
@@ -516,7 +509,6 @@ const main = async () => {
         });
       });
       saveTokensToFile(tokensRGBAData, 'RGBA', tokensFolder, 'color_tokens_rgba.json');
-      console.log("✅ Saved: outputs/tokens/colors/color_tokens_rgba.json");
     }
     
     if (generateHSL) {
@@ -533,38 +525,29 @@ const main = async () => {
         });
       });
       saveTokensToFile(tokensHSLData, 'HSL', tokensFolder, 'color_tokens_hsl.json');
-      console.log("✅ Saved: outputs/tokens/colors/color_tokens_hsl.json");
     }
 
     deleteUnusedFormatFiles(tokensFolder, formatChoices);
 
     saveCSSTokensToFile(tokensData, cssFolder, 'color_variables.css');
-    console.log("✅ Saved: outputs/css/colors/color_variables.css");
 
     saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables.scss');
-    console.log("✅ Saved: outputs/scss/colors/color_variables.scss");
 
     if (formatChoices) {
       if (formatChoices.generateRGB) {
         const tokensRGBConverted = convertTokensToFormat(tokensData, 'RGB');
         saveCSSTokensToFile(tokensRGBConverted, cssFolder, 'color_variables_rgb.css');
-        console.log("✅ Saved: outputs/css/colors/color_variables_rgb.css");
         saveSCSSTokensToFile(tokensRGBConverted, scssFolder, 'color_variables_rgb.scss');
-        console.log("✅ Saved: outputs/scss/colors/color_variables_rgb.scss");
       }
       if (formatChoices.generateRGBA) {
         const tokensRGBAConverted = convertTokensToFormat(tokensData, 'RGBA');
         saveCSSTokensToFile(tokensRGBAConverted, cssFolder, 'color_variables_rgba.css');
-        console.log("✅ Saved: outputs/css/colors/color_variables_rgba.css");
         saveSCSSTokensToFile(tokensRGBAConverted, scssFolder, 'color_variables_rgba.scss');
-        console.log("✅ Saved: outputs/scss/colors/color_variables_rgba.scss");
       }
       if (formatChoices.generateHSL) {
         const tokensHSLConverted = convertTokensToFormat(tokensData, 'HSL');
         saveCSSTokensToFile(tokensHSLConverted, cssFolder, 'color_variables_hsl.css');
-        console.log("✅ Saved: outputs/css/colors/color_variables_hsl.css");
         saveSCSSTokensToFile(tokensHSLConverted, scssFolder, 'color_variables_hsl.scss');
-        console.log("✅ Saved: outputs/scss/colors/color_variables_hsl.scss");
       }
     }
 
@@ -584,12 +567,47 @@ const main = async () => {
 
   await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("📄 OUTPUT JSON FILES"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("📄 OUTPUT FILES"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  console.log(chalk.whiteBright("✅ The JSON files for Tokens Studio have been generated inside \n📁'outputs/tokens/colors/' folder."));
-  console.log(chalk.whiteBright("\n✅ The CSS and SCSS files have been generated inside \n📁'outputs/css/colors/' and 📁'outputs/scss/colors/' folders."));
+  const hexJsonPath = path.join(tokensFolder, 'color_tokens_hex.json');
+  const cssPath = path.join(cssFolder, 'color_variables.css');
+  const scssPath = path.join(scssFolder, 'color_variables.scss');
+
+  const jsonFileExists = fs.existsSync(hexJsonPath);
+  const cssFileExists = fs.existsSync(cssPath);
+  const scssFileExists = fs.existsSync(scssPath);
+
+  let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
+  const labelIcon = statusLabel === "Saved" ? "✅" : "🆕";
+
+  console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
+  console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), hexJsonPath)}`));
+  console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssPath)}`));
+  console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssPath)}`));
+
+  // Display additional files if color formats were selected
+  if (formatChoices) {
+    if (formatChoices.generateRGB) {
+      const cssRGBPath = path.join(cssFolder, 'color_variables_rgb.css');
+      const scssRGBPath = path.join(scssFolder, 'color_variables_rgb.scss');
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssRGBPath)}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssRGBPath)}`));
+    }
+    if (formatChoices.generateRGBA) {
+      const cssRGBAPath = path.join(cssFolder, 'color_variables_rgba.css');
+      const scssRGBAPath = path.join(scssFolder, 'color_variables_rgba.scss');
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssRGBAPath)}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssRGBPath)}`));
+    }
+    if (formatChoices.generateHSL) {
+      const cssHSLPath = path.join(cssFolder, 'color_variables_hsl.css');
+      const scssHSLPath = path.join(scssFolder, 'color_variables_hsl.scss');
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssHSLPath)}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssHSLPath)}`));
+    }
+  }
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
