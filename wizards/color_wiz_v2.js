@@ -28,12 +28,10 @@ const showLoader = (message, duration) => {
   });
 };
 
-// Modify askForInput to accept a new parameter "scaleSettings"
 const askForInput = async (previousConcept = null, formatChoices = null, scaleSettings = null) => {
-  // Always use Global as the token type.
+  
   const finalColorType = "Global";
   
-  // Show reminder only when adding more colors.
   if (previousConcept) {
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("☝️ STEP 1: COLOR TOKEN TYPE"));
@@ -41,10 +39,9 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
     console.log("You're currently creating " + chalk.bold(finalColorType + " color tokens."));
   }
   
-  // Wrap Steps 2 to 4 (and the new preview in Step 4.5) in a loop until user confirms
   let concept, hex, stops, newScaleSettings;
   while (true) {
-    // Step 2: COLOR NAME
+    
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -60,7 +57,6 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
     ]);
     concept = response.name.trim();
 
-    // Step 3: ENTER HEX VALUE
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("🚧 STEP 3: CREATE BASE COLOR"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -73,10 +69,9 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
           tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
       }
     ]);
-    // Force HEX to uppercase:
+    
     hex = hexResponse.hex.toUpperCase();
 
-    // Step 4: SELECT SCALE TYPE or reuse previous scaleSettings
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
       console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -153,7 +148,6 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
         stopsCount = semanticStopsCount;
       }
       
-      // For ordinal and incremental scales, ask the free numeric prompt
       if (scaleType !== "shadesSemantic") {
         const response = await inquirer.prompt([
           {
@@ -183,7 +177,6 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
            : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
   }
 
-  // New Step 4.5: EXAMPLE COLOR PREVIEW
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -201,10 +194,9 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
   else {
     console.log(chalk.bold.greenBright("\nNo problem! Let's start over."));
   }
-  // If not confirmed, loop again to re-enter color name, hex, and scale.
+  
 }
 
-// Step 5: SELECT COLOR FORMATS
 console.log(chalk.black.bgYellowBright("\n======================================="));
 console.log(chalk.bold("🎨 STEP 5: SELECT COLOR FORMATS"));
 console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -248,7 +240,7 @@ const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
   const stops = {};
   const stepNum = parseInt(step);
   for (let i = 0; i < stopsCount; i++) {
-    const key = (i + 1) * stepNum; // Generates 10,20,30... when step is '10'; 50,100,150... when step is '50', etc.
+    const key = (i + 1) * stepNum; 
     let ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     let mixPercentage;
     if (ratio < 0.5) {
@@ -280,7 +272,6 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
   return stops;
 };
 
-// New helper function for Shades Semantic scale
 const generateStopsSemantic = (hex, stopsCount) => {
   let labels;
   switch (stopsCount) {
@@ -410,7 +401,6 @@ const convertTokensToFormat = (tokens, format) => {
   return converted;
 };
 
-// In main, add a variable to store scaleSettings and pass it to askForInput
 const main = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
@@ -453,7 +443,7 @@ const main = async () => {
     namingChoice = newNamingChoice;
     previousConcept = concept;
     formatChoices = newFormatChoices;
-    scaleSettings = newScaleSettings;  // preserve same scale settings for future colors
+    scaleSettings = newScaleSettings;  
 
     const color = tinycolor(hex);
     
@@ -462,7 +452,6 @@ const main = async () => {
       tokensData[finalConcept] = {};
     }
 
-    // When saving tokensData (inside the addMoreColors loop)
     if (variant) {
       tokensData[finalConcept][variant] = {
         base: { value: hex, type: "color" },
@@ -587,7 +576,6 @@ const main = async () => {
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssPath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssPath)}`));
 
-  // Display additional files if color formats were selected
   if (formatChoices) {
     if (formatChoices.generateRGB) {
       const cssRGBPath = path.join(cssFolder, 'color_variables_rgb.css');
