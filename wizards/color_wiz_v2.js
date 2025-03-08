@@ -4,6 +4,7 @@ import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from "url";
 import chalk from "chalk";
+import Table from "cli-table3";
 
 const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
 if (versionArg) {
@@ -29,49 +30,45 @@ const showLoader = (message, duration) => {
 };
 
 const askForInput = async (previousConcept = null, formatChoices = null, scaleSettings = null) => {
-  
   const finalColorType = "Global";
-  
   if (previousConcept) {
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("☝️ STEP 1: COLOR TOKEN TYPE"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
     console.log("You're currently creating " + chalk.bold(finalColorType + " color tokens."));
   }
-  
-  let concept, hex, stops, newScaleSettings;
+  // --- Prompt once for concept and base color (Steps 2 & 3) ---
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+  let response = await inquirer.prompt([
+    {
+      type: "input",
+      name: "name",
+      message: "Enter a name for the color (e.g., blue, yellow, red):\n>>>",
+      default: "color",
+      validate: (input) =>
+        /^[a-zA-Z0-9.-]*$/.test(input) ? true : "Name should only contain letters, numbers, hyphens, and dots."
+    }
+  ]);
+  const concept = response.name.trim();
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🚧 STEP 3: SELECT BASE COLOR"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+  let hexResponse = await inquirer.prompt([
+    {
+      type: "input",
+      name: "hex",
+      message: "Enter a HEX value to use as base color (e.g., #FABADA):\n>>>",
+      validate: (input) =>
+        tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
+    }
+  ]);
+  const hex = hexResponse.hex.toUpperCase();
+
+  let stops, newScaleSettings;
+  // --- Loop for scale selection & preview (Step 4 onward) ---
   while (true) {
-    
-    console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
-    console.log(chalk.black.bgYellowBright("=======================================\n"));
-    let response = await inquirer.prompt([
-      {
-        type: "input",
-        name: "name",
-        message: "Enter a name for the color (e.g., blue, yellow, red):\n>>>",
-        default: "color",
-        validate: (input) =>
-          /^[a-zA-Z0-9.-]*$/.test(input) ? true : "Name should only contain letters, numbers, hyphens, and dots."
-      }
-    ]);
-    concept = response.name.trim();
-
-    console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("🚧 STEP 3: CREATE BASE COLOR"));
-    console.log(chalk.black.bgYellowBright("=======================================\n"));
-    let hexResponse = await inquirer.prompt([
-      {
-        type: "input",
-        name: "hex",
-        message: "Enter a HEX value to use as base color (e.g., #FABADA):\n>>>",
-        validate: (input) =>
-          tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
-      }
-    ]);
-    
-    hex = hexResponse.hex.toUpperCase();
-
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
       console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -94,15 +91,13 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
           name: "scaleType",
           message: "Select the scale type for your color:",
           choices: [
-            { name: "Incremental (from 50 to 1000)", value: "incremental" },
-            { name: "Ordinal (10 steps)", value: "ordinal" },
+            { name: "Incremental", value: "incremental" },
+            { name: "Ordinal", value: "ordinal" },
             { name: "Shades Semantic", value: "shadesSemantic" }
           ]
         }
       ]);
-      let ordinalPadded;
-      let incrementalChoice;
-      let stopsCount;
+      let ordinalPadded, incrementalChoice, stopsCount;
       if (scaleType === "ordinal") {
         const { ordinalOption } = await inquirer.prompt([
           {
@@ -147,93 +142,60 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
         ]);
         stopsCount = semanticStopsCount;
       }
-      
       if (scaleType !== "shadesSemantic") {
         const response = await inquirer.prompt([
           {
             type: "number",
-          name: "stopsCount",
-          message: "How many values would you like to include in the color scale? (1-20)",
-          default: 10,
-          validate: (input) => {
-            const num = Number(input);
-            return num >= 1 && num <= 20 ? true : "Enter a number between 1 and 20.";
+            name: "stopsCount",
+            message: "How many values would you like to include in the color scale? (1-20)",
+            default: 10,
+            validate: (input) => {
+              const num = Number(input);
+              return num >= 1 && num <= 20 ? true : "Enter a number between 1 and 20.";
+            }
           }
-        }
-      ]);
-      stopsCount = response.stopsCount;
+        ]);
+        stopsCount = response.stopsCount;
+      }
+      newScaleSettings = {
+        type: scaleType,
+        padded: scaleType === "ordinal" ? ordinalPadded : null,
+        incrementalOption: scaleType === "incremental" ? incrementalChoice.incrementalOption : undefined,
+        stopsCount: stopsCount
+      };
+      stops = scaleType === "incremental"
+        ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount)
+        : (scaleType === "shadesSemantic"
+             ? generateStopsSemantic(hex, stopsCount)
+             : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
     }
-    
-    newScaleSettings = {
-      type: scaleType,
-      padded: scaleType === "ordinal" ? ordinalPadded : null,
-      incrementalOption: scaleType === "incremental" ? incrementalChoice.incrementalOption : undefined,
-      stopsCount: stopsCount
-    };
-    stops = scaleType === "incremental"
-      ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount)
-      : (scaleType === "shadesSemantic"
-           ? generateStopsSemantic(hex, stopsCount)
-           : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
+    // Preview and confirmation
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
+    console.log(`Base HEX: ${hex}`);
+    console.log(printStopsTable(stops));
+    const { confirmColor } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "confirmColor",
+        message: "Would you like to continue with this color nomenclature?",
+        default: true
+      }
+    ]);
+    if (confirmColor) break;
+    else {
+      console.log(chalk.bold.greenBright("\nLet's re-select the scale (Step 4) since you didn't confirm."));
+    }
   }
-
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-  console.log(`Base HEX: ${hex}`);
-  console.log("Generated Stops:", stops);
-  const { confirmColor } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "confirmColor",
-      message: "Would you like to continue with this color nomenclature?",
-      default: true
-    }
-  ]);
-  if (confirmColor) break;
-  else {
-    console.log(chalk.bold.greenBright("\nNo problem! Let's start over."));
-  }
-  
-}
-
-console.log(chalk.black.bgYellowBright("\n======================================="));
-console.log(chalk.bold("🎨 STEP 5: SELECT COLOR FORMATS"));
-console.log(chalk.black.bgYellowBright("=======================================\n"));
-let generateRGB, generateRGBA, generateHSL;
-if (!formatChoices) {
-  let formatResponse = await inquirer.prompt([
-    {
-      type: "checkbox",
-      name: "formats",
-      message: "Would you like to convert the tokens to other formats (RGB, RGBA, HSL)?",
-      choices: [
-        { name: "RGB", value: "RGB" },
-        { name: "RGBA", value: "RGBA" },
-        { name: "HSL", value: "HSL" }
-      ],
-      validate: (input) => (input.length === 0 ? "Select at least one format." : true)
-    }
-  ]);
-  generateRGB = formatResponse.formats.includes("RGB");
-  generateRGBA = formatResponse.formats.includes("RGBA");
-  generateHSL = formatResponse.formats.includes("HSL");
-  formatChoices = { generateRGB, generateRGBA, generateHSL };
-} else {
-  ({ generateRGB, generateRGBA, generateHSL } = formatChoices);
-}
-
-return {
-  hex: hex.trim(),
-  concept,
-  generateRGB,
-  generateRGBA,
-  generateHSL,
-  stops,
-  formatChoices,
-  colorType: finalColorType,
-  scaleSettings: newScaleSettings
-};
+  return {
+    hex: hex.trim(),
+    concept,
+    stops,
+    colorType: finalColorType,
+    formatChoices,
+    scaleSettings: newScaleSettings
+  };
 };
 
 const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
@@ -258,22 +220,22 @@ const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
 const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
   const stops = {};
   for (let i = 0; i < stopsCount; i++) {
-    let ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
-    const key = padded ? String(i + 1).padStart(2, "0") : String(i + 1);
-    let mixPercentage;
-    if (ratio < 0.5) {
-      mixPercentage = (1 - ratio * 2) * 100;
-      stops[key] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
-    } else {
-      mixPercentage = (ratio - 0.5) * 100;
-      stops[key] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
-    }
+    const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
+    const key = padded ? String(i + 1).padStart(2, '0') : String(i + 1);
+    const mixPercentage = ratio < 0.5 ? (1 - ratio * 2) * 100 : (ratio - 0.5) * 100;
+    stops[key] = tinycolor.mix(hex, ratio < 0.5 ? "white" : "black", mixPercentage).toHexString().toUpperCase();
+  }
+  if (padded) {
+    // Force ascending order: e.g., "01", "02", ..., "10", "11", ...
+    const sortedEntries = Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]));
+    return Object.fromEntries(sortedEntries);
   }
   return stops;
 };
 
 const generateStopsSemantic = (hex, stopsCount) => {
   let labels;
+  // Define labels with an odd number of entries so that "base" is always centered.
   switch (stopsCount) {
     case 1:
       labels = ["base"];
@@ -298,6 +260,7 @@ const generateStopsSemantic = (hex, stopsCount) => {
   }
   const stops = {};
   const total = labels.length;
+  // Ensure "base" is always placed in the center of the gradient.
   const baseIndex = Math.floor(total / 2);
   for (let i = 0; i < total; i++) {
     if (i === baseIndex) {
@@ -315,10 +278,21 @@ const generateStopsSemantic = (hex, stopsCount) => {
 
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
   const filePath = path.join(folder, fileName);
-  fs.writeFileSync(filePath, JSON.stringify(tokensData, null, 2));
+
+  // Sort tokens if keys are padded (i.e. match /^\d{2}$/)
+  const sortedTokensData = {};
+  for (const concept in tokensData) {
+    const entries = Object.entries(tokensData[concept]);
+    sortedTokensData[concept] = entries.every(([key]) => /^\d{2}$/.test(key))
+      ? Object.fromEntries(entries.sort((a, b) => Number(a[0]) - Number(b[0])))
+      : Object.fromEntries(entries.sort((a, b) => a[0].localeCompare(b[0])));
+  }
+
+  fs.writeFileSync(filePath, JSON.stringify(sortedTokensData, null, 2));
 };
 
 const deleteUnusedFormatFiles = (folder, formats) => {
+  if (!formats) return; // Early return if formats is null or undefined
   const formatFiles = {
     RGB: "color_tokens_rgb.json",
     RGBA: "color_tokens_rgba.json",
@@ -401,6 +375,34 @@ const convertTokensToFormat = (tokens, format) => {
   return converted;
 };
 
+// Updated helper to format stops output without quotes for keys and show a color sample using chalk:
+const formatStopsOutput = (stops) => {
+  return Object.entries(stops)
+    .map(([key, value]) => {
+      // key prints as-is without quotes, value remains in quotes.
+      const sample = chalk.bgHex(value).white("     "); // a block of spaces colored accordingly
+      return `${key}: ${value} ${sample}`;
+    })
+    .join(",\n");
+};
+
+// New helper to print stops as a table:
+const printStopsTable = (stops) => {
+  let entries = Object.entries(stops);
+  // If all keys are numeric (padded ordinal values), sort numerically in ascending order
+  if (entries.every(([key]) => /^\d+$/.test(key))) {
+    entries.sort((a, b) => Number(a[0]) - Number(b[0]));
+  }
+  const table = new Table({
+    head: [chalk.bold("Scale"), chalk.bold("HEX"), chalk.bold("Sample")],
+    style: { head: [], border: [] }
+  });
+  entries.forEach(([key, value]) => {
+    table.push([key, value, chalk.bgHex(value).white("     ")]);
+  });
+  return table.toString();
+};
+
 const main = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
@@ -453,13 +455,21 @@ const main = async () => {
     }
 
     if (variant) {
+      const sortedEntries = Object.keys(stops).every(key => /^\d{2}$/.test(key))
+        ? Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]))
+        : Object.entries(stops);
       tokensData[finalConcept][variant] = {
         base: { value: hex, type: "color" },
-        ...Object.fromEntries(Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }]))
+        ...Object.fromEntries(
+          sortedEntries.map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        )
       };
     } else {
       tokensData[finalConcept].base = { value: hex, type: "color" };
-      Object.entries(stops).forEach(([k, v]) => {
+      const sortedEntries = Object.keys(stops).every(key => /^\d{2}$/.test(key))
+        ? Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]))
+        : Object.entries(stops);
+      sortedEntries.forEach(([k, v]) => {
         tokensData[finalConcept][k] = { value: tinycolor(v).toHexString().toUpperCase(), type: "color" };
       });
     }
@@ -518,27 +528,9 @@ const main = async () => {
 
     deleteUnusedFormatFiles(tokensFolder, formatChoices);
 
-    saveCSSTokensToFile(tokensData, cssFolder, 'color_variables.css');
+    saveCSSTokensToFile(tokensData, cssFolder, 'color_variables_hex.css');
 
-    saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables.scss');
-
-    if (formatChoices) {
-      if (formatChoices.generateRGB) {
-        const tokensRGBConverted = convertTokensToFormat(tokensData, 'RGB');
-        saveCSSTokensToFile(tokensRGBConverted, cssFolder, 'color_variables_rgb.css');
-        saveSCSSTokensToFile(tokensRGBConverted, scssFolder, 'color_variables_rgb.scss');
-      }
-      if (formatChoices.generateRGBA) {
-        const tokensRGBAConverted = convertTokensToFormat(tokensData, 'RGBA');
-        saveCSSTokensToFile(tokensRGBAConverted, cssFolder, 'color_variables_rgba.css');
-        saveSCSSTokensToFile(tokensRGBAConverted, scssFolder, 'color_variables_rgba.scss');
-      }
-      if (formatChoices.generateHSL) {
-        const tokensHSLConverted = convertTokensToFormat(tokensData, 'HSL');
-        saveCSSTokensToFile(tokensHSLConverted, cssFolder, 'color_variables_hsl.css');
-        saveSCSSTokensToFile(tokensHSLConverted, scssFolder, 'color_variables_hsl.scss');
-      }
-    }
+    saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables_hex.scss');
 
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("➕ EXTRA STEP: ADD MORE COLORS"));
@@ -554,11 +546,47 @@ const main = async () => {
     ]).then(answers => answers.addMoreColors);
   }
 
+  // NEW CONVERSION PROMPT BLOCK
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🔄 CONVERTING COLOR TOKENS TO OTHER FORMATS"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+  const convertAnswer = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'convert',
+      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
+      default: true
+    }
+  ]);
+  let formatsAnswer = { formats: [] };
+  if (convertAnswer.convert) {
+    formatsAnswer = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'formats',
+        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
+        choices: [
+          { name: 'RGB', value: 'rgb' },
+          { name: 'RGBA', value: 'rgba' },
+          { name: 'HSL', value: 'hsl' }
+        ]
+      }
+    ]);
+  }
+  if (formatsAnswer.formats && formatsAnswer.formats.length > 0) {
+    formatsAnswer.formats.forEach(unit => {
+      const tokensConverted = convertTokensToFormat(tokensData, unit.toUpperCase());
+      saveCSSTokensToFile(tokensConverted, cssFolder, `color_variables_${unit}.css`);
+      saveSCSSTokensToFile(tokensConverted, scssFolder, `color_variables_${unit}.scss`);
+    });
+  }
+
+  // Finalize and print output file paths under a dedicated "OUTPUT FILES" section
   await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
-  console.log(chalk.black.bgyellowBright("\n======================================="));
+  console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
-  console.log(chalk.black.bgyellowBright("=======================================\n"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   const hexJsonPath = path.join(tokensFolder, 'color_tokens_hex.json');
   const cssPath = path.join(cssFolder, 'color_variables.css');
@@ -571,11 +599,13 @@ const main = async () => {
   let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
   const labelIcon = statusLabel === "Saved" ? "✅" : "🆕";
 
+  // Log primary output files
   console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), hexJsonPath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssPath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssPath)}`));
 
+  // Log output files for additional formats if selected
   if (formatChoices) {
     if (formatChoices.generateRGB) {
       const cssRGBPath = path.join(cssFolder, 'color_variables_rgb.css');
@@ -587,7 +617,7 @@ const main = async () => {
       const cssRGBAPath = path.join(cssFolder, 'color_variables_rgba.css');
       const scssRGBAPath = path.join(scssFolder, 'color_variables_rgba.scss');
       console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssRGBAPath)}`));
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssRGBPath)}`));
+      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssRGBAPath)}`));
     }
     if (formatChoices.generateHSL) {
       const cssHSLPath = path.join(cssFolder, 'color_variables_hsl.css');
