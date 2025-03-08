@@ -37,7 +37,7 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
     console.log(chalk.black.bgYellowBright("=======================================\n"));
     console.log("You're currently creating " + chalk.bold(finalColorType + " color tokens."));
   }
-  // --- Prompt once for concept and base color (Steps 2 & 3) ---
+  
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -67,7 +67,7 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
   const hex = hexResponse.hex.toUpperCase();
 
   let stops, newScaleSettings;
-  // --- Loop for scale selection & preview (Step 4 onward) ---
+  
   while (true) {
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
@@ -169,7 +169,7 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
              ? generateStopsSemantic(hex, stopsCount)
              : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
     }
-    // Preview and confirmation
+    
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -226,7 +226,7 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
     stops[key] = tinycolor.mix(hex, ratio < 0.5 ? "white" : "black", mixPercentage).toHexString().toUpperCase();
   }
   if (padded) {
-    // Force ascending order: e.g., "01", "02", ..., "10", "11", ...
+    
     const sortedEntries = Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]));
     return Object.fromEntries(sortedEntries);
   }
@@ -235,7 +235,7 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
 
 const generateStopsSemantic = (hex, stopsCount) => {
   let labels;
-  // Define labels with an odd number of entries so that "base" is always centered.
+  
   switch (stopsCount) {
     case 1:
       labels = ["base"];
@@ -260,7 +260,7 @@ const generateStopsSemantic = (hex, stopsCount) => {
   }
   const stops = {};
   const total = labels.length;
-  // Ensure "base" is always placed in the center of the gradient.
+  
   const baseIndex = Math.floor(total / 2);
   for (let i = 0; i < total; i++) {
     if (i === baseIndex) {
@@ -278,21 +278,34 @@ const generateStopsSemantic = (hex, stopsCount) => {
 
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
   const filePath = path.join(folder, fileName);
-
-  // Sort tokens if keys are padded (i.e. match /^\d{2}$/)
   const sortedTokensData = {};
+
   for (const concept in tokensData) {
-    const entries = Object.entries(tokensData[concept]);
-    sortedTokensData[concept] = entries.every(([key]) => /^\d{2}$/.test(key))
-      ? Object.fromEntries(entries.sort((a, b) => Number(a[0]) - Number(b[0])))
-      : Object.fromEntries(entries.sort((a, b) => a[0].localeCompare(b[0])));
+    const keys = Object.keys(tokensData[concept]);
+
+    
+    const numericKeys = keys
+      .filter(k => /^\d{2}$/.test(k))
+      .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    
+    const orderedKeys = numericKeys;
+    if (keys.includes("base")) {
+      orderedKeys.push("base");
+    }
+
+    
+    sortedTokensData[concept] = {};
+    for (const key of orderedKeys) {
+      sortedTokensData[concept][key] = tokensData[concept][key];
+    }
   }
 
   fs.writeFileSync(filePath, JSON.stringify(sortedTokensData, null, 2));
 };
 
 const deleteUnusedFormatFiles = (folder, formats) => {
-  if (!formats) return; // Early return if formats is null or undefined
+  if (!formats) return; 
   const formatFiles = {
     RGB: "color_tokens_rgb.json",
     RGBA: "color_tokens_rgba.json",
@@ -313,11 +326,24 @@ const deleteUnusedFormatFiles = (folder, formats) => {
 const convertTokensToCSS = (tokens) => {
   let cssVariables = ":root {\n";
   const processTokens = (obj, prefix = "") => {
-    for (const key in obj) {
-      if (obj[key].value) {
-        cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      
+      if (keys.every(k => /^\d{2}$/.test(k))) {
+        keys = keys.sort((a, b) => Number(a) - Number(b));
       } else {
-        processTokens(obj[key], `${prefix}${key}-`);
+        keys = keys.sort((a, b) => a.localeCompare(b));
+      }
+      
+      if (keys.includes("base")) {
+        keys = keys.filter(k => k !== "base").concat("base");
+      }
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+          cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+        } else {
+          processTokens(obj[key], `${prefix}${key}-`);
+        }
       }
     }
   };
@@ -335,11 +361,22 @@ const saveCSSTokensToFile = (tokens, folder, fileName) => {
 const convertTokensToSCSS = (tokens) => {
   let scssVariables = "";
   const processTokens = (obj, prefix = "") => {
-    for (const key in obj) {
-      if (obj[key].value) {
-        scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      if (keys.every(k => /^\d{2}$/.test(k))) {
+        keys = keys.sort((a, b) => Number(a) - Number(b));
       } else {
-        processTokens(obj[key], `${prefix}${key}-`);
+        keys = keys.sort((a, b) => a.localeCompare(b));
+      }
+      if (keys.includes("base")) {
+        keys = keys.filter(k => k !== "base").concat("base");
+      }
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+          scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+        } else {
+          processTokens(obj[key], `${prefix}${key}-`);
+        }
       }
     }
   };
@@ -375,21 +412,21 @@ const convertTokensToFormat = (tokens, format) => {
   return converted;
 };
 
-// Updated helper to format stops output without quotes for keys and show a color sample using chalk:
+
 const formatStopsOutput = (stops) => {
   return Object.entries(stops)
     .map(([key, value]) => {
-      // key prints as-is without quotes, value remains in quotes.
-      const sample = chalk.bgHex(value).white("     "); // a block of spaces colored accordingly
+      
+      const sample = chalk.bgHex(value).white("     "); 
       return `${key}: ${value} ${sample}`;
     })
     .join(",\n");
 };
 
-// New helper to print stops as a table:
+
 const printStopsTable = (stops) => {
   let entries = Object.entries(stops);
-  // If all keys are numeric (padded ordinal values), sort numerically in ascending order
+  
   if (entries.every(([key]) => /^\d+$/.test(key))) {
     entries.sort((a, b) => Number(a[0]) - Number(b[0]));
   }
@@ -546,7 +583,7 @@ const main = async () => {
     ]).then(answers => answers.addMoreColors);
   }
 
-  // NEW CONVERSION PROMPT BLOCK
+  
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING COLOR TOKENS TO OTHER FORMATS"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -581,7 +618,7 @@ const main = async () => {
     });
   }
 
-  // Finalize and print output file paths under a dedicated "OUTPUT FILES" section
+  
   await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -599,13 +636,13 @@ const main = async () => {
   let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
   const labelIcon = statusLabel === "Saved" ? "✅" : "🆕";
 
-  // Log primary output files
+  
   console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), hexJsonPath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssPath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssPath)}`));
 
-  // Log output files for additional formats if selected
+  
   if (formatChoices) {
     if (formatChoices.generateRGB) {
       const cssRGBPath = path.join(cssFolder, 'color_variables_rgb.css');
