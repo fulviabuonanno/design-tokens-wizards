@@ -221,6 +221,7 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
   const stops = {};
   for (let i = 0; i < stopsCount; i++) {
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
+    
     const key = padded ? String(i + 1).padStart(2, '0') : String(i + 1);
     const mixPercentage = ratio < 0.5 ? (1 - ratio * 2) * 100 : (ratio - 0.5) * 100;
     stops[key] = tinycolor.mix(hex, ratio < 0.5 ? "white" : "black", mixPercentage).toHexString().toUpperCase();
@@ -240,22 +241,22 @@ const generateStopsSemantic = (hex, stopsCount) => {
     case 1:
       labels = ["base"];
       break;
-    case 2:
+        case 2:
       labels = ["dark", "base", "light"];
       break;
-    case 4:
+        case 4:
       labels = ["darker", "dark", "base", "light", "lighter"];
       break;
-    case 6:
+        case 6:
       labels = ["darkest", "darker", "dark", "base", "light", "lighter", "lightest"];
       break;
-    case 8:
+        case 8:
       labels = ["ultra-dark", "darkest", "darker", "dark", "base", "light", "lighter", "lightest", "ultra-light"];
       break;
-    case 10:
+        case 10:
       labels = ["ultra-dark", "darkest", "darker", "dark", "semi-dark", "base", "semi-light", "light", "lighter", "lightest", "ultra-light"];
       break;
-    default:
+        default:
       return generateStopsOrdinal(hex, true, stopsCount);
   }
   const stops = {};
@@ -276,67 +277,96 @@ const generateStopsSemantic = (hex, stopsCount) => {
   return stops;
 };
 
+
+const semanticOrder = ["ultra-dark", "darkest", "darker", "dark", "semi-dark", "base", "semi-light", "light", "lighter", "lightest", "ultra-light"];
+
+
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const sortedTokensData = {};
-
   for (const concept in tokensData) {
-    const keys = Object.keys(tokensData[concept]);
-
+    let keys = Object.keys(tokensData[concept]);
     
-    const numericKeys = keys
-      .filter(k => /^\d{2}$/.test(k))
-      .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-
-    
-    const orderedKeys = numericKeys;
-    if (keys.includes("base")) {
-      orderedKeys.push("base");
+    if (keys.every(k => /^\d{2}$/.test(k) || k === "base")) {
+      
+      let numericKeys = keys.filter(k => /^\d{2}$/.test(k));
+      numericKeys = numericKeys.sort((a, b) => Number(a) - Number(b));
+      if (keys.includes("base")) {
+        numericKeys.push("base");
+      }
+      keys = numericKeys;
+    } else if (keys.every(k => /^\d+$/.test(k))) {
+      keys = keys.sort((a, b) => Number(a) - Number(b));
+    } else {
+      keys = keys.sort((a, b) => a.localeCompare(b));
+      if (keys.includes("base")) keys = keys.filter(k => k !== "base").concat("base");
     }
-
-    
     sortedTokensData[concept] = {};
-    for (const key of orderedKeys) {
+    for (const key of keys) {
       sortedTokensData[concept][key] = tokensData[concept][key];
     }
   }
-
   fs.writeFileSync(filePath, JSON.stringify(sortedTokensData, null, 2));
 };
 
-const deleteUnusedFormatFiles = (folder, formats) => {
-  if (!formats) return; 
+const deleteUnusedFormatFiles = (folders, formats) => {
+  if (!formats) return [];
+  
   const formatFiles = {
-    RGB: "color_tokens_rgb.json",
-    RGBA: "color_tokens_rgba.json",
-    HSL: "color_tokens_hsl.json"
+    RGB: {
+      tokens: "color_tokens_rgb.json",
+      css: "color_variables_rgb.css",
+      scss: "color_variables_rgb.scss"
+    },
+    RGBA: {
+      tokens: "color_tokens_rgba.json",
+      css: "color_variables_rgba.css",
+      scss: "color_variables_rgba.scss"
+    },
+    HSL: {
+      tokens: "color_tokens_hsl.json",
+      css: "color_variables_hsl.css",
+      scss: "color_variables_hsl.scss"
+    },
+    HEX: {
+      css: "color_variables_hex.css",
+      scss: "color_variables_hex.scss"
+    }
   };
 
-  for (const [format, fileName] of Object.entries(formatFiles)) {
+  const deletedFiles = [];
+
+  for (const [format, filesByFolder] of Object.entries(formatFiles)) {
+    
+    if (format === "HEX") continue;
     if (!formats[`generate${format}`]) {
-      const filePath = path.join(folder, fileName);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        console.log(`🗑️ Deleted: ${filePath}`);
+      for (const [folderKey, fileName] of Object.entries(filesByFolder)) {
+        const folderPath = folders[folderKey];
+        const filePath = path.join(folderPath, fileName);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          deletedFiles.push(filePath);
+        }
       }
     }
   }
+
+  return deletedFiles;
 };
+
 
 const convertTokensToCSS = (tokens) => {
   let cssVariables = ":root {\n";
   const processTokens = (obj, prefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
-      
-      if (keys.every(k => /^\d{2}$/.test(k))) {
+      if (keys.every(k => semanticOrder.includes(k))) {
+        keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
+      } else if (keys.every(k => /^\d{2}$/.test(k))) {
         keys = keys.sort((a, b) => Number(a) - Number(b));
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
-      }
-      
-      if (keys.includes("base")) {
-        keys = keys.filter(k => k !== "base").concat("base");
+        if (keys.includes("base")) keys = keys.filter(k => k !== "base").concat("base");
       }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
@@ -352,24 +382,19 @@ const convertTokensToCSS = (tokens) => {
   return cssVariables;
 };
 
-const saveCSSTokensToFile = (tokens, folder, fileName) => {
-  const cssContent = convertTokensToCSS(tokens);
-  const filePath = path.join(folder, fileName);
-  fs.writeFileSync(filePath, cssContent);
-};
 
 const convertTokensToSCSS = (tokens) => {
   let scssVariables = "";
   const processTokens = (obj, prefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
-      if (keys.every(k => /^\d{2}$/.test(k))) {
+      if (keys.every(k => semanticOrder.includes(k))) {
+        keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
+      } else if (keys.every(k => /^\d{2}$/.test(k))) {
         keys = keys.sort((a, b) => Number(a) - Number(b));
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
-      }
-      if (keys.includes("base")) {
-        keys = keys.filter(k => k !== "base").concat("base");
+        if (keys.includes("base")) keys = keys.filter(k => k !== "base").concat("base");
       }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
@@ -382,6 +407,12 @@ const convertTokensToSCSS = (tokens) => {
   };
   processTokens(tokens);
   return scssVariables;
+};
+
+const saveCSSTokensToFile = (tokens, folder, fileName) => {
+  const cssContent = convertTokensToCSS(tokens);
+  const filePath = path.join(folder, fileName);
+  fs.writeFileSync(filePath, cssContent);
 };
 
 const saveSCSSTokensToFile = (tokens, folder, fileName) => {
@@ -426,14 +457,26 @@ const formatStopsOutput = (stops) => {
 
 const printStopsTable = (stops) => {
   let entries = Object.entries(stops);
+  const semanticOrder = ["ultra-dark", "darkest", "darker", "dark", "semi-dark", "base", "semi-light", "light", "lighter", "lightest", "ultra-light"];
   
-  if (entries.every(([key]) => /^\d+$/.test(key))) {
-    entries.sort((a, b) => Number(a[0]) - Number(b[0]));
-  }
+  entries.sort((a, b) => {
+    const aIndex = semanticOrder.indexOf(a[0]);
+    const bIndex = semanticOrder.indexOf(b[0]);
+    
+    if (aIndex !== -1 && bIndex !== -1) {
+      if (aIndex !== bIndex) {
+        return aIndex - bIndex;
+      }
+    }
+    
+    return tinycolor(b[1]).toHsl().l - tinycolor(a[1]).toHsl().l;
+  });
+  
   const table = new Table({
     head: [chalk.bold("Scale"), chalk.bold("HEX"), chalk.bold("Sample")],
     style: { head: [], border: [] }
   });
+  
   entries.forEach(([key, value]) => {
     table.push([key, value, chalk.bgHex(value).white("     ")]);
   });
@@ -511,7 +554,37 @@ const main = async () => {
       });
     }
 
+    
+    
+
+    
+    const hexJsonExisted = fs.existsSync(path.join(tokensFolder, 'color_tokens_hex.json'));
+    const hexCssExisted  = fs.existsSync(path.join(cssFolder, 'color_variables_hex.css'));
+    const hexScssExisted = fs.existsSync(path.join(scssFolder, 'color_variables_hex.scss'));
+
+    
+    const convFilesPreexistence = {
+      RGB: {
+        tokens: fs.existsSync(path.join(tokensFolder, 'color_tokens_rgb.json')),
+        css:    fs.existsSync(path.join(cssFolder, 'color_variables_rgb.css')),
+        scss:   fs.existsSync(path.join(scssFolder, 'color_variables_rgb.scss'))
+      },
+      RGBA: {
+        tokens: fs.existsSync(path.join(tokensFolder, 'color_tokens_rgba.json')),
+        css:    fs.existsSync(path.join(cssFolder, 'color_variables_rgba.css')),
+        scss:   fs.existsSync(path.join(scssFolder, 'color_variables_rgba.scss'))
+      },
+      HSL: {
+        tokens: fs.existsSync(path.join(tokensFolder, 'color_tokens_hsl.json')),
+        css:    fs.existsSync(path.join(cssFolder, 'color_variables_hsl.css')),
+        scss:   fs.existsSync(path.join(scssFolder, 'color_variables_hsl.scss'))
+      }
+    };
+
+    
     saveTokensToFile(tokensData, 'HEX', tokensFolder, 'color_tokens_hex.json');
+    saveCSSTokensToFile(tokensData, cssFolder, 'color_variables_hex.css');
+    saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables_hex.scss');
 
     if (generateRGB) {
       const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
@@ -563,7 +636,7 @@ const main = async () => {
       saveTokensToFile(tokensHSLData, 'HSL', tokensFolder, 'color_tokens_hsl.json');
     }
 
-    deleteUnusedFormatFiles(tokensFolder, formatChoices);
+    deleteUnusedFormatFiles({ tokens: tokensFolder, css: cssFolder, scss: scssFolder }, formatChoices);
 
     saveCSSTokensToFile(tokensData, cssFolder, 'color_variables_hex.css');
 
@@ -583,93 +656,141 @@ const main = async () => {
     ]).then(answers => answers.addMoreColors);
   }
 
-  
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🔄 CONVERTING COLOR TOKENS TO OTHER FORMATS"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-  const convertAnswer = await inquirer.prompt([
+console.log(chalk.bold("🔄 CONVERTING COLOR TOKENS TO OTHER FORMATS"));
+console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+const convertAnswer = await inquirer.prompt([
+  {
+    type: 'confirm',
+    name: 'convert',
+    message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
+    default: true
+  }
+]);
+
+let formatsAnswer = { formats: [] };
+if (convertAnswer.convert) {
+  formatsAnswer = await inquirer.prompt([
     {
-      type: 'confirm',
-      name: 'convert',
-      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
-      default: true
+      type: 'checkbox',
+      name: 'formats',
+      message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
+      choices: [
+        { name: 'RGB', value: 'rgb' },
+        { name: 'RGBA', value: 'rgba' },
+        { name: 'HSL', value: 'hsl' }
+      ]
     }
   ]);
-  let formatsAnswer = { formats: [] };
-  if (convertAnswer.convert) {
-    formatsAnswer = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'formats',
-        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
-        choices: [
-          { name: 'RGB', value: 'rgb' },
-          { name: 'RGBA', value: 'rgba' },
-          { name: 'HSL', value: 'hsl' }
-        ]
-      }
-    ]);
+}
+
+let conversionFormats = { generateRGB: false, generateRGBA: false, generateHSL: false };
+
+// Archivos generados o sobrescritos
+let updatedFiles = [];
+let savedNewFiles = [];
+
+const formatPaths = {};
+
+// 1️⃣ REVISAR EXISTENCIA ANTES DE CREAR LOS ARCHIVOS
+formatsAnswer.formats.forEach(unit => {
+  const formatKey = unit.toUpperCase();
+  conversionFormats[`generate${formatKey}`] = true;
+
+  formatPaths[unit] = {
+    json: path.join(tokensFolder, `color_tokens_${unit}.json`),
+    css: path.join(cssFolder, `color_variables_${unit}.css`),
+    scss: path.join(scssFolder, `color_variables_${unit}.scss`)
+  };
+
+  // Verificar si existen antes de generarlos
+  const existedBefore = Object.values(formatPaths[unit]).some(fs.existsSync);
+
+  // Generar archivos
+  const tokensConverted = convertTokensToFormat(tokensData, formatKey);
+  saveTokensToFile(tokensConverted, formatKey, tokensFolder, `color_tokens_${unit}.json`);
+  saveCSSTokensToFile(tokensConverted, cssFolder, `color_variables_${unit}.css`);
+  saveSCSSTokensToFile(tokensConverted, scssFolder, `color_variables_${unit}.scss`);
+
+  // Revisar si fueron sobrescritos o generados por primera vez
+  if (existedBefore) {
+    updatedFiles.push(...Object.values(formatPaths[unit]));
+  } else {
+    savedNewFiles.push(...Object.values(formatPaths[unit]));
   }
-  if (formatsAnswer.formats && formatsAnswer.formats.length > 0) {
-    formatsAnswer.formats.forEach(unit => {
-      const tokensConverted = convertTokensToFormat(tokensData, unit.toUpperCase());
-      saveCSSTokensToFile(tokensConverted, cssFolder, `color_variables_${unit}.css`);
-      saveSCSSTokensToFile(tokensConverted, scssFolder, `color_variables_${unit}.scss`);
-    });
+});
+
+// 2️⃣ ELIMINAR ARCHIVOS NO SELECCIONADOS
+const deletedFiles = deleteUnusedFormatFiles(
+  { tokens: tokensFolder, css: cssFolder, scss: scssFolder },
+  conversionFormats
+);
+
+// --- BLOQUE HEX ----------
+const hexPaths = {
+  json: path.join(tokensFolder, 'color_tokens_hex.json'),
+  css: path.join(cssFolder, 'color_variables_hex.css'),
+  scss: path.join(scssFolder, 'color_variables_hex.scss')
+};
+
+// Revisar existencia de cada archivo HEX antes de guardarlos
+const hexExistence = {
+  json: fs.existsSync(hexPaths.json),
+  css: fs.existsSync(hexPaths.css),
+  scss: fs.existsSync(hexPaths.scss)
+};
+
+// Guardar archivos HEX
+saveTokensToFile(tokensData, "HEX", tokensFolder, "color_tokens_hex.json");
+saveCSSTokensToFile(tokensData, cssFolder, "color_variables_hex.css");
+saveSCSSTokensToFile(tokensData, scssFolder, "color_variables_hex.scss");
+
+// Clasificar archivos HEX según su existencia previa
+Object.entries(hexExistence).forEach(([key, existed]) => {
+  if (existed) {
+    updatedFiles.push(hexPaths[key]); // Si existía antes, va a Updated
+  } else {
+    savedNewFiles.push(hexPaths[key]); // Si no existía antes, va a Saved
   }
+});
 
-  
-  await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("📄 OUTPUT FILES"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
+// --- BLOQUE FINAL: OUTPUT FILES ---
+await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
-  const hexJsonPath = path.join(tokensFolder, 'color_tokens_hex.json');
-  const cssPath = path.join(cssFolder, 'color_variables.css');
-  const scssPath = path.join(scssFolder, 'color_variables.scss');
+// ---------- IMPRIMIR OUTPUT FILES ----------
+console.log(chalk.black.bgYellowBright("\n======================================="));
+console.log(chalk.bold("📄 OUTPUT FILES"));
+console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-  const jsonFileExists = fs.existsSync(hexJsonPath);
-  const cssFileExists = fs.existsSync(cssPath);
-  const scssFileExists = fs.existsSync(scssPath);
+if (updatedFiles.length > 0) {
+  console.log(chalk.whiteBright("🆕 Updated:"));
+  updatedFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+}
 
-  let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
-  const labelIcon = statusLabel === "Saved" ? "✅" : "🆕";
+if (savedNewFiles.length > 0) {
+  console.log(chalk.whiteBright("\n✅ Saved:"));
+  savedNewFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+}
 
-  
-  console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
-  console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), hexJsonPath)}`));
-  console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssPath)}`));
-  console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssPath)}`));
+if (deletedFiles.length > 0) {
+  console.log(""); // Separador en blanco
+  console.log(chalk.whiteBright("🗑️ Deleted:"));
+  deletedFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+}
 
-  
-  if (formatChoices) {
-    if (formatChoices.generateRGB) {
-      const cssRGBPath = path.join(cssFolder, 'color_variables_rgb.css');
-      const scssRGBPath = path.join(scssFolder, 'color_variables_rgb.scss');
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssRGBPath)}`));
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssRGBPath)}`));
-    }
-    if (formatChoices.generateRGBA) {
-      const cssRGBAPath = path.join(cssFolder, 'color_variables_rgba.css');
-      const scssRGBAPath = path.join(scssFolder, 'color_variables_rgba.scss');
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssRGBAPath)}`));
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssRGBAPath)}`));
-    }
-    if (formatChoices.generateHSL) {
-      const cssHSLPath = path.join(cssFolder, 'color_variables_hsl.css');
-      const scssHSLPath = path.join(scssFolder, 'color_variables_hsl.scss');
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssHSLPath)}`));
-      console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssHSLPath)}`));
-    }
-  }
+console.log(chalk.black.bgYellowBright("\n======================================="));
+console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
+console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  console.log(chalk.bold.whiteBright("Thank you for summoning the ") + chalk.bold.yellow("Color Tokens Wizard") + chalk.bold.whiteBright("! ❤️🧙🎨\n"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
+console.log(
+  chalk.bold.whiteBright("Thank you for summoning the ") +
+  chalk.bold.yellow("Color Tokens Wizard") +
+  chalk.bold.whiteBright("! ❤️🧙🎨\n")
+);
+console.log(chalk.black.bgYellowBright("=======================================\n"));
+ 
 };
 
 main();

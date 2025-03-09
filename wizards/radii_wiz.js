@@ -691,7 +691,7 @@ const main = async () => {
     if (jsonFileExists || cssFileExists || scssFileExists) {
       console.log(chalk.whiteBright("🆕 Updated:"));
     } else {
-      console.log(chalk.whiteBright("🆕 Saved:"));
+      console.log(chalk.whiteBright("✅ Saved:"));
     }
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
@@ -735,7 +735,7 @@ const main = async () => {
       console.log(chalk.black.bgGreenBright("=======================================\n"));
     }
 
-    console.log(chalk.whiteBright("🆕 Saved:"));
+    console.log(chalk.whiteBright("✅ Saved:"));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));
