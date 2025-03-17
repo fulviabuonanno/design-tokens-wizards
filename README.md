@@ -25,7 +25,7 @@ Select the wizard that will come to your aid by executing the corresponding scri
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 1.2.1   |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.0.0  |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.3.0   |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.3.0   |
 | 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.3.0   |
@@ -45,50 +45,71 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 1.2.1.
+Version 2.0.0
 
-Color tokens can be complex, but with this wizard 🧙, you can simplify the process and save time. Start with a HEX value, and the wizard will convert it into RGB, RGBA, or HSL formats in just a few steps. The tokens are ready for use in the Tokens Studio plugin and also provide CSS/SCSS outputs for your developers.
+Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
-1. **Run the Color Wiz Script**  
-   Begin by running the Color Wiz script to start the process. Open your terminal and execute the following command:
+1. **Invoke the Spell**  
+   Begin your journey by running the Color Tokens Wizard script. Open your terminal and cast the spell with:
 
    ```sh
    npm run color
    ```
 
-2. **Select a Base Color**  
-   Enter a HEX color code (e.g., `#FABADA`).
+2. **Summon a Base Color**  
+   Provide a HEX color code (e.g., `#FABADA`) when prompted. This will be the essence from which all your color stops are derived.
 
-3. **Define Concept & Modifier**  
-   Provide a name for the concept (e.g., `brand`, `background`). Optionally, choose a modifier:
+3. **Define Your Color Identity**  
+   Name your color token – whether it represents a global hue, a brand element, or a specific UI background.  
+   *Example: `blue`, `brand`, or `surface`.*
 
-   - **Variant**: (e.g., `primary`, `secondary`, `tertiary`)
-   - **Scale**: (e.g., `incremental`, `alphabetical`, or `ordinal` scales)
+   **Note:** This wizard currently supports the creation of **global colors** only.
 
-4. **Generate Color Stops**  
-   The script will automatically generate 6 color stops based on your base color:
+4. **Select and Customize the Scale**  
+   Choose the scale type that best suits your magical needs:
+   
+   - **Incremental:** Generate stops using an incremental step (e.g., 10, 50, or 100).  
+   - **Ordinal (Padded or Unpadded):** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).  
+   - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
 
-   - `Lightest`, `Lighter`, `Light`, `Dark`, `Darker`, `Darkest`
+5. **Behold the Preview**  
+   The wizard will cast a preview spell showing your color’s preview along with the stops table. You’ll see something like:
 
-5. **Choose Output Formats**  
-   By default, your color will be saved in HEX format. You can also choose to generate additional formats:
+   ```
+   Type: Global  Name: blue
+   ┌─────────┬───────────┬─────────┐
+   │ Scale   │ HEX       │ Sample  │
+   ├─────────┼───────────┼─────────┤
+   │ base    │ #FABADA   │ [🪄]    │
+   │ 01      │ #F0E3D2   │ [🪄]    │
+   │ 02      │ #E6D6BF   │ [🪄]    │
+   │ ...     │ ...       │ ...     │
+   └─────────┴───────────┴─────────┘
+   ```
 
-   - **RGB**
-   - **RGBA**
-   - **HSL**
+   Here, the wizard ensures that the `"base"` token always appears at the top of your stops table.
 
-6. **Export Color Tokens**  
-   The script will export your color tokens in Tokens Studio format, ready for integration into your design system. All JSON files will be prepared for import.
-   Stored in: `outputs/tokens/color/color_tokens*{unit}.json`
+6. **Confirm Your Enchantment**  
+   Review the preview and confirm if the nomenclature and scale feel right for your design magic. If not, you can re-select the scale until the spell feels just perfect.
 
-7. **Generate CSS & SCSS Files**  
-   The script will create CSS and SCSS files with color tokens as variables, saved in the following directories:
+7. **Generate Your Artifacts**  
+   Once confirmed, the wizard will:
+   
+   - Export your tokens in Tokens Studio JSON format, stored in `outputs/tokens/color/` (e.g., `color_tokens_hex.json`).
+   - Conjure CSS and SCSS files with your tokens as variables, stored in `outputs/css/color/` and `outputs/scss/color/` respectively.
+   - Optionally, convert your tokens into additional color formats such as RGB, RGBA, or HSL.
 
-   - **CSS**: Stored in `outputs/css/color/color_variables_{format}.css`
-   - **SCSS**: Stored in `outputs/scss/color/color_variables_{format}.scss`
+8. **Expand Your Palette**  
+   Should your creative spirit desire more color magic, simply add “more colors to the same group” and repeat the process. The wizard is always ready to extend your enchanted palette.
 
-8. **Add More Colors to the Same Group**  
-   To add more colors to the existing group, repeat steps 1 and 2. The script will overwrite the existing JSON files in the `tokens/` directory based on your criteria.
+9. **Finalize the Spell**  
+   Review the output files (listed as updated, saved, or deleted) and relish the magic you’ve created. Your design tokens are now fully prepared for integration into your design system.
+
+---
+
+**Note:** Additional semantic color capabilities are on the way to elevate your design magic even further!
+
+Let the art of token crafting infuse your project with endless creativity—and may your colors forever dazzle!
 
 ---
 
@@ -128,7 +149,7 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 
    - **T-shirt Sizes**: (xs, sm, md, lg, xl)
    - **Incremental Numbers**: (100, 200, 300)
-   - **ordinal Numbers**: (1, 2, 3)
+   - **Ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
 7. **Generate Size Tokens**  
@@ -187,7 +208,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
    - **T-shirt Sizes**: (xs, sm, md, lg, xl)
    - **Incremental Numbers**: (100, 200, 300)
-   - **ordinal Numbers**: (1, 2, 3)
+   - **Ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
 7. **Generate Space Tokens**  
@@ -234,7 +255,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
    - **T-shirt Sizes:** (xs, sm, md, lg, xl)
    - **Incremental Numbers:** (100, 200, 300, 400)
-   - **ordinal Numbers:** (01, 02, 03, 04 or 1, 2, 3, 4)
+   - **Ordinal Numbers:** (01, 02, 03, 04 or 1, 2, 3, 4)
    - **Alphabetical:** (A, B, C, D or a, b, c, d)
    - **Semantic:** (subtle, soft, moderate, bold)
 
@@ -269,27 +290,27 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 ### 🛠️ **Dependencies** ✨
 
 **For Color Conversion:**
-This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions.
+This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. **[Inquirer](https://github.com/SBoudrias/Inquirer.js)** library to create an interactive command line interface (CLI) for user conversations.
 
 You can check out TinyColor's repository here:  
-[https://github.com/bgrins/TinyColor](https://github.com/bgrins/TinyColor)
+[https://github.com/bgrins/TinyColor](https://github.com/bgrins/TinyColor)[https://github.com/SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
 
-**For Command Line Interface:**
-This script uses the **[Inquirer](https://github.com/SBoudrias/Inquirer.js)** library to create an interactive command line interface (CLI) for user conversations.
+**For Command Line Interface:****For CLI Styling:**
+### 📝 **License** ✨s script uses the **[Chalk](https://github.com/chalk/chalk)** library to add colors and styles to the command line interface (CLI), making it more visually appealing.
 
-You can check out Inquirer's repository here:  
-[https://github.com/SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
-
-**For CLI Styling:**
-This script uses the **[Chalk](https://github.com/chalk/chalk)** library to add colors and styles to the command line interface (CLI), making it more visually appealing.
-
-You can check out Chalk's repository here:  
+This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software as long as the original copyright notice and permission notice are included in all copies or substantial portions of the software.
 [https://github.com/chalk/chalk](https://github.com/chalk/chalk)
-
+For more details, you can read the full license text in the `LICENSE` file included in this repository or visit the [Open Source Initiative](https://opensource.org/licenses/MIT) for more information.
 ---
-
+---
 ### 📝 **License** ✨
 
+
+
+
+
+
+Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩### **Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️**
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software as long as the original copyright notice and permission notice are included in all copies or substantial portions of the software.
 
 For more details, you can read the full license text in the `LICENSE` file included in this repository or visit the [Open Source Initiative](https://opensource.org/licenses/MIT) for more information.
