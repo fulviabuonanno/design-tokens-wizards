@@ -52,6 +52,7 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
     }
   ]);
   const concept = response.name.trim();
+  const finalConcept = concept || "color";
   console.log(chalk.black.bgYellowBright("\n======================================="));
   console.log(chalk.bold("🚧 STEP 3: SELECT BASE COLOR"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
@@ -91,9 +92,9 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
           name: "scaleType",
           message: "Select the scale type for your color:",
           choices: [
-            { name: "Incremental", value: "incremental" },
-            { name: "Ordinal", value: "ordinal" },
-            { name: "Shades Semantic", value: "shadesSemantic" }
+            { name: "Incremental (e.g., 50, 100, 150, 200)", value: "incremental" },
+            { name: "Ordinal (e.g., 1, 2, 3)", value: "ordinal" },
+            { name: "Shades Semantic (e.g. dark, base, light)", value: "shadesSemantic" }
           ]
         }
       ]);
@@ -170,19 +171,19 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
              : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
     }
     
-    // Determina el modo y el padding según la escala seleccionada (scaleSettings.type)
+    
     let mode, padded;
     if (newScaleSettings.type === "ordinal") {
       mode = "ordinal";
-      padded = newScaleSettings.padded; // true o false según lo seleccionado
+      padded = newScaleSettings.padded; 
     } else if (newScaleSettings.type === "incremental") {
       mode = "incremental";
       padded = false;
     } else if (newScaleSettings.type === "shadesSemantic") {
       mode = "shades semantic";
-      padded = true; // Asumimos que para shades semantic se quiere padding
+      padded = true; 
     } else {
-      // Modo por defecto si no se cumple ninguno
+      
       mode = "stops"; 
       padded = false;
     }
@@ -190,6 +191,12 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
     console.log(chalk.black.bgYellowBright("\n======================================="));
     console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+console.log(
+  chalk.bold("Type: ") + chalk.whiteBright(finalColorType) + 
+  chalk.bold("  Name: ") + chalk.whiteBright(finalConcept) + "\n"
+);
+
     console.log(printStopsTable(stops, mode, padded));
     const { confirmColor } = await inquirer.prompt([
       {
@@ -311,37 +318,36 @@ const customStringify = (obj, indent = 2) => {
     }
     let keys = Object.keys(value);
 
-    // Caso incremental u ordinal/unpadded: si todas las claves son numéricas o "base"
+    // Si todas las claves son numéricas (o "base") → incremental o ordinal unpadded
     if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
       let numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
-      if (keys.includes("base")) numericKeys.push("base");
-      keys = numericKeys;
+      keys = keys.includes("base") ? ["base", ...numericKeys] : numericKeys;
     }
-    // Caso ordinal padded: dos dígitos (por ejemplo "01", "02", ...)
+    // Si todas las claves son padded (2 dígitos) o "base"
     else if (keys.every(k => /^\d{2}$/.test(k) || k === "base")) {
       const forcedOrder = [
         "01", "02", "03", "04", "05", "06", "07", "08", "09",
         "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"
       ];
       let forcedKeys = forcedOrder.filter(k => value.hasOwnProperty(k));
-      if (value.hasOwnProperty("base")) forcedKeys.push("base");
-      keys = forcedKeys;
+      keys = value.hasOwnProperty("base") ? ["base", ...forcedKeys] : forcedKeys;
     }
-    // Caso semantic shades: ordenar según semanticOrder
+    // Para escalas semánticas
     else if (keys.every(k => semanticOrder.includes(k))) {
       keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
     }
-    // Caso general: ordenar alfabéticamente
+    // Cualquier otro caso: orden alfabético y "base" primero si existe.
     else {
       keys.sort((a, b) => a.localeCompare(b));
-      if (keys.includes("base")) keys = keys.filter(k => k !== "base").concat("base");
+      if (keys.includes("base")) {
+        keys = ["base", ...keys.filter(k => k !== "base")];
+      }
     }
+
     let result = "{\n";
     keys.forEach((key, idx) => {
       result += " ".repeat(currentIndent + indent) + JSON.stringify(key) + ": " + stringify(value[key], currentIndent + indent);
-      if (idx < keys.length - 1) {
-        result += ",\n";
-      }
+      if (idx < keys.length - 1) result += ",\n";
     });
     result += "\n" + " ".repeat(currentIndent) + "}";
     return result;
@@ -349,7 +355,6 @@ const customStringify = (obj, indent = 2) => {
   return stringify(obj, 0);
 };
 
-// Luego, saveTokensToFile utiliza customStringify:
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   fs.writeFileSync(filePath, customStringify(tokensData, 2));
@@ -410,10 +415,10 @@ const convertTokensToCSS = (tokens) => {
       if (keys.every(k => semanticOrder.includes(k))) {
         keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
       } else if (keys.every(k => /^\d{2}$/.test(k))) {
-        // Claves padded (e.g. "01", "02", ...)
+        
         keys = keys.sort((a, b) => Number(a) - Number(b));
       } else if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
-        // Para escalas incrementales u otras donde las claves sean numéricas (o "base")
+        
         const numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
         if (keys.includes("base")) numericKeys.push("base");
         keys = numericKeys;
@@ -519,49 +524,26 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
       "semi-light", "base", "semi-dark", "dark",
       "darker", "darkest", "ultra-dark"
     ];
-
     entries.sort((a, b) => {
       const aIndex = semanticOrder.indexOf(a[0]);
       const bIndex = semanticOrder.indexOf(b[0]);
-
       return aIndex - bIndex;
     });
   } else if (mode === "ordinal" || mode === "incremental") {
-    
     if (padded) {
-      
-      const clearEntries = entries.filter(([key]) => parseInt(key, 10) <= 9); 
-      const darkEntries = entries.filter(([key]) => parseInt(key, 10) >= 10); 
-
-      
-      clearEntries.forEach(([key, value], idx) => {
-        clearEntries[idx][0] = key.padStart(2, "0"); 
+      // Convertir claves numéricas a dos dígitos (excepto "base")
+      entries.forEach(([key, value], idx) => {
+        if (key !== "base") {
+          entries[idx][0] = key.padStart(2, "0");
+        }
       });
-      darkEntries.forEach(([key, value], idx) => {
-        darkEntries[idx][0] = key.padStart(2, "0"); 
-      });
-
-      
-      clearEntries.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
-      darkEntries.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
-
-      
-      entries = [...clearEntries, ...darkEntries];
-    } else {
-      
-      entries.sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
     }
-
-    
-    const baseEntries = entries.filter(([key]) => key === "base");
-    const nonBaseEntries = entries.filter(([key]) => key !== "base");
-
-    const midIndex = Math.floor(nonBaseEntries.length / 2);
-    entries = [
-      ...nonBaseEntries.slice(0, midIndex),
-      ...baseEntries,
-      ...nonBaseEntries.slice(midIndex)
-    ];
+    // Ordenar: Si "base" está presente, siempre se coloca primero.
+    entries.sort((a, b) => {
+      if (a[0] === "base" && b[0] !== "base") return -1;
+      if (b[0] === "base" && a[0] !== "base") return 1;
+      return parseInt(a[0], 10) - parseInt(b[0], 10);
+    });
   }
 
   const table = new Table({
