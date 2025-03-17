@@ -408,67 +408,78 @@ const convertTokens = (tokens, unit) => {
 const sortObjectRecursively = (obj) => {
   if (typeof obj !== 'object' || obj === null) return obj;
   if (Array.isArray(obj)) return obj.map(sortObjectRecursively);
-  
-  const tshirtOrder = [
-    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
-    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
-    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
-  ];
-  const customSort = (a, b) => {
-    const aInList = tshirtOrder.includes(a);
-    const bInList = tshirtOrder.includes(b);
-    if (aInList && bInList) return tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b);
-    else if (aInList) return -1;
-    else if (bInList) return 1;
-    const numA = Number(a);
-    const numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-    return a.localeCompare(b);
-  };
-  const sortedKeys = Object.keys(obj).sort(customSort);
+  const sortedKeys = Object.keys(obj).sort((a, b) => {
+      const numA = Number(a);
+      const numB = Number(b);
+      if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+      }
+      return a.localeCompare(b);
+  });
   const sortedObj = {};
   sortedKeys.forEach(key => {
-    sortedObj[key] = sortObjectRecursively(obj[key]);
+      sortedObj[key] = sortObjectRecursively(obj[key]);
   });
   return sortedObj;
 };
 
 const customStringify = (value, indent = 2) => {
-    const spacer = ' '.repeat(indent);
-    if (value === null || typeof value !== 'object') {
-        return JSON.stringify(value);
-    }
-    if (Array.isArray(value)) {
-        const items = value.map(item => customStringify(item, indent + 2));
-        return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
-    } else {
-        
-        const keys = Object.keys(value);
-        let result = "{\n";
-        keys.forEach((key, idx) => {
-            result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
-            if (idx < keys.length - 1) result += ",\n";
-        });
-        result += "\n" + ' '.repeat(indent - 2) + "}";
-        return result;
-    }
+  const spacer = ' '.repeat(indent);
+  if (value === null || typeof value !== 'object') {
+      return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+      const items = value.map(item => customStringify(item, indent + 2));
+      return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
+  }
+  const tshirtOrder = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+  const customComparator = (a, b) => {
+      const indexA = tshirtOrder.indexOf(a);
+      const indexB = tshirtOrder.indexOf(b);
+      if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+      }
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      const numA = Number(a);
+      const numB = Number(b);
+      if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+      }
+      if (a === 'value' && b === 'type') return -1;
+      if (a === 'type' && b === 'value') return 1;
+      return a.localeCompare(b);
+  };
+  const keys = Object.keys(value).sort(customComparator);
+  let result = "{\n";
+  keys.forEach((key, idx) => {
+      result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
+      if (idx < keys.length - 1) {
+          result += ",\n";
+      }
+  });
+  result += "\n" + ' '.repeat(indent - 2) + "}";
+  return result;
 };
 
 const saveTokensToFile = (tokensObject, folder, fileName) => {
   const filePath = path.join(folder, fileName);
-  
+
   const orderedObject = {};
   Object.entries(tokensObject).forEach(([topKey, tokens]) => {
-    const orderedTokens = {};
-    
-    Object.keys(tokens).forEach(key => {
-      const token = tokens[key];
-      orderedTokens[key] = {
-        value: token.value,
-        type: token.type
+    const sortedKeys = Object.keys(tokens).sort((a, b) => {
+      return Number(a) - Number(b);
+    });
+    const sortedTokens = {};
+    sortedKeys.forEach(key => {
+      sortedTokens[key] = {
+        value: tokens[key].value,
+        type: tokens[key].type
       };
     });
-    orderedObject[topKey] = orderedTokens;
+    // If you want the top-level key to be "sizing" as in your desired output,
+    // change it here. For example:
+    orderedObject[topKey === 'size' ? 'sizing' : topKey] = sortedTokens;
   });
   fs.writeFileSync(filePath, JSON.stringify(orderedObject, null, 2));
   return fs.existsSync(filePath);
@@ -476,7 +487,7 @@ const saveTokensToFile = (tokensObject, folder, fileName) => {
 
 const convertTokensToCSS = (tokens, name) => {
   const tshirtOrder = [
-    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
     "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
     "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
   ];

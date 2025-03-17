@@ -4,16 +4,14 @@
   "main": "color_wiz.js",
   "type": "module",
   "scripts": {
-    "color": "node wizards/color_wiz.js --version=1.2.1",
-    "color2": "node wizards/color_wiz_v2.js --version=2.0.0",
+    "color": "node wizards/color_wiz.js --version=2.0.0",
     "size": "node wizards/size_wiz.js --version=1.3.0",
     "space": "node wizards/space_wiz.js --version=1.3.0",
     "radii": "node wizards/radii_wiz.js --version=1.3.0",
     "clear": "node spells/clear_spell.js --version=1.0.0"
   },
   "scriptVersions": {
-    "color": "1.2.1",
-    "color2": "2.0.0",
+    "color": "2.0.0",
     "size": "1.3.0",
     "space": "1.3.0",
     "radii": "1.3.0",
