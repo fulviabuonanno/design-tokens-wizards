@@ -318,12 +318,12 @@ const customStringify = (obj, indent = 2) => {
     }
     let keys = Object.keys(value);
 
-    // Si todas las claves son numéricas (o "base") → incremental o ordinal unpadded
+    
     if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
       let numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
       keys = keys.includes("base") ? ["base", ...numericKeys] : numericKeys;
     }
-    // Si todas las claves son padded (2 dígitos) o "base"
+    
     else if (keys.every(k => /^\d{2}$/.test(k) || k === "base")) {
       const forcedOrder = [
         "01", "02", "03", "04", "05", "06", "07", "08", "09",
@@ -332,11 +332,11 @@ const customStringify = (obj, indent = 2) => {
       let forcedKeys = forcedOrder.filter(k => value.hasOwnProperty(k));
       keys = value.hasOwnProperty("base") ? ["base", ...forcedKeys] : forcedKeys;
     }
-    // Para escalas semánticas
+    
     else if (keys.every(k => semanticOrder.includes(k))) {
       keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
     }
-    // Cualquier otro caso: orden alfabético y "base" primero si existe.
+    
     else {
       keys.sort((a, b) => a.localeCompare(b));
       if (keys.includes("base")) {
@@ -531,14 +531,14 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
     });
   } else if (mode === "ordinal" || mode === "incremental") {
     if (padded) {
-      // Convertir claves numéricas a dos dígitos (excepto "base")
+      
       entries.forEach(([key, value], idx) => {
         if (key !== "base") {
           entries[idx][0] = key.padStart(2, "0");
         }
       });
     }
-    // Ordenar: Si "base" está presente, siempre se coloca primero.
+    
     entries.sort((a, b) => {
       if (a[0] === "base" && b[0] !== "base") return -1;
       if (b[0] === "base" && a[0] !== "base") return 1;
