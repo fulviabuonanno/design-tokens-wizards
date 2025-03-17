@@ -4,11 +4,12 @@ Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`**
 
 With **`design-tokens-wizards`**, you’ll unlock:
 
+- **Enforce Naming Conventions:** Harness the power of our Design System lexicon to imbue each token with a spellbinding, standardized identity.
 - **+Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
 - **+Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
 - **+Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.
 - **+Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
-- **+Ready-to-CSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
+- **+Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
 
 Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get started and cast some design magic together!
 
@@ -61,7 +62,7 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
 
 3. **Define Your Color Identity**  
    Name your color token – whether it represents a global hue, a brand element, or a specific UI background.  
-   *Example: `blue`, `brand`, or `surface`.*
+   *Example: `blue`, `yellow`, or `red`.*
 
    **Note:** This wizard currently supports the creation of **global colors** only.
 
@@ -69,7 +70,7 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
    Choose the scale type that best suits your magical needs:
    
    - **Incremental:** Generate stops using an incremental step (e.g., 10, 50, or 100).  
-   - **Ordinal (Padded or Unpadded):** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).  
+   - **Ordinal:** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).  
    - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
 
 5. **Behold the Preview**  
