@@ -96,9 +96,10 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
 7. **Generate Your Artifacts**  
    Once confirmed, the wizard will:
    
-   - Export your tokens in Tokens Studio JSON format, stored in `outputs/tokens/color/` (e.g., `color_tokens_hex.json`).
-   - Conjure CSS and SCSS files with your tokens as variables, stored in `outputs/css/color/` and `outputs/scss/color/` respectively.
-   - Optionally, convert your tokens into additional color formats such as RGB, RGBA, or HSL.
+   - Export your tokens in Tokens Studio JSON format: 
+      Stored in: `outputs/tokens/color` as `color_tokens_{format}.json`
+   - Conjure CSS and SCSS files with your tokens as variables.
+      Stored in `outputs/css/color/` and `outputs/scss/color/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
 
 8. **Expand Your Palette**  
    Should your creative spirit desire more color magic, simply add “more colors to the same group” and repeat the process. The wizard is always ready to extend your enchanted palette.
@@ -164,7 +165,7 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
 
 9. **Export Size Tokens**  
    The script exports your size tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
-   Stored in: `outputs/tokens/size/size_tokens*{unit}.json`
+   Stored in: `outputs/tokens/size/size_tokens_{unit}.json`
 
 10. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your size tokens as variables:
