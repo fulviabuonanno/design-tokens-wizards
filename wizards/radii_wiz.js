@@ -3,6 +3,7 @@ import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from 'url';
 import chalk from "chalk";
+import Table from "cli-table3";
 
 const versionArg = process.argv.find(arg => arg.startsWith("--version="));
 if (versionArg) {
@@ -430,7 +431,7 @@ const generateBorderRadiusTokens = (
   const tokensArray = [];
   let prev; 
 
-  const tshirtAbbr = ["xs", "sm", "md", "lg", "xl", "xxl"];
+  const tshirtAbbr = ["xs", "sm", "md", "lg", "xl", "2xl"];
   const tshirtFull = ["extra small", "small", "medium", "large", "extra large", "xx large"];
   
   for (let i = 1; i <= totalTokens; i++) {
@@ -530,8 +531,13 @@ const generateBorderRadiusTokens = (
       }
       prev = value;
     } else {
-      
-      value = valueScale * i;
+      // If no intermediate tokens are used, valueScale may be null.
+      if (valueScale == null) {
+        // Assign defaults: first token ("none") is 0px, last token ("full") is 100px (or another desired number).
+        value = i === 1 ? 0 : 9999 ;
+      } else {
+        value = valueScale * i;
+      }
     }
     value = Math.round(value * 100) / 100;
 
@@ -633,7 +639,7 @@ const main = async () => {
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
 
-  await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 2000);
+  await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
   console.log(
     chalk.whiteBright("\n❤️ Welcome to the ") +
@@ -642,7 +648,8 @@ const main = async () => {
     chalk.underline("Tokens Studio") +
     chalk.whiteBright(".")
   );
-
+  
+ 
   const input = await askForInput();
   if (!input) return;
   const { tokenName, noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale, scale, multiplier, factor, customIntervals, fibonacciBase } = input;
@@ -661,6 +668,80 @@ const main = async () => {
   const jsonFileExists = saveTokensToFile({ [tokenName]: tokensData }, tokensFolder, 'border_radius_tokens_px.json');
   const cssFileExists = saveCSSTokensToFile(tokensData, tokenName, cssFolder, 'border_radius_variables_px.css');
   const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables_px.scss');
+
+  console.log(chalk.black.bgGreenBright("\n======================================="));
+  console.log(chalk.bold("🔢 STEP 2.5: BORDER RADIUS TOKEN PREVIEWS"));
+  console.log(chalk.black.bgGreenBright("=======================================\n"));
+
+  const scaleNames = {
+    "4": "4-Point Grid System",
+    "8": "8-Point Grid System",
+    modular: "Modular Scale (multiplier based)",
+    custom: "Custom Intervals",
+    fibonacci: "Fibonacci Scale"
+  };
+
+  const namingConventions = {
+    "t-shirt": "T-shirt Size",
+    incremental: "Incremental",
+    ordinal: "Ordinal",
+    alphabetical: "Alphabetical"
+  };
+
+  console.log(
+    chalk.bold.green("Token Name: ") + chalk.whiteBright(tokenName) + "\n" +
+    chalk.bold.green("Nº of Values: ") + chalk.whiteBright(totalTokens.toString()) + "\n" +
+    chalk.bold.green("Scale: ") + chalk.whiteBright(scaleNames[scale] || scale) + "\n" 
+  );
+ 
+  const tshirtOrder = ["xs", "sm", "md", "lg", "xl", "2xl"];
+
+  const sortedEntries = Object.entries(tokensData).sort((a, b) => {
+    const keyA = a[0].toLowerCase();
+    const keyB = b[0].toLowerCase();
+
+    // Always keep "none" as the first element and "full" as the last element.
+    if (keyA === "none") return -1;
+    if (keyB === "none") return 1;
+    if (keyA === "full") return 1;
+    if (keyB === "full") return -1;
+
+    const indexA = tshirtOrder.indexOf(keyA);
+    const indexB = tshirtOrder.indexOf(keyB);
+
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    return keyA.localeCompare(keyB, undefined, { numeric: true });
+  });
+
+  const table = new Table({
+    head: [chalk.bold("Scale"), chalk.bold("Value")],
+    style: { head: ["green"], border: ["green"] }
+  });
+
+  sortedEntries.forEach(([tokenName, token]) => {
+    table.push([tokenName, token.value]);
+  });
+
+  console.log(table.toString());
+
+  const { confirmSpacing } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirmSpacing",
+      message: "Would you like to continue with this nomenclature?",
+      default: true
+    }
+  ]);
+
+  if (!confirmSpacing) {
+    console.log(chalk.bold.yellowBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
+    return main(); // Restart the input process (e.g., back to Step 3)
+  }
+
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING BORDER RADIUS TOKENS TO OTHER UNITS"));
@@ -682,7 +763,7 @@ const main = async () => {
     const unitCssFileExists = saveCSSTokensToFile(convertedTokens, tokenName, cssFolder, `border_radius_variables_rem.css`);
     const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, tokenName, scssFolder, `border_radius_variables_rem.scss`);
 
-    await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 2000);
+    await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 1500);
 
     console.log(chalk.black.bgGreenBright("\n======================================="));
     console.log(chalk.bold("📄 OUTPUT FILES"));
@@ -747,6 +828,8 @@ const main = async () => {
       });
     }
   }
+
+
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
