@@ -8,8 +8,8 @@ With **`design-tokens-wizards`**, you’ll unlock:
 - **Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
 - **Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
 - **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.
-- **+Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
-- **+Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
+- **Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
+- **Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
 
 Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get started and cast some design magic together!
 
