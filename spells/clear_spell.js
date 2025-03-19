@@ -57,11 +57,11 @@ function showLoader(message, ms) {
 
 async function processOutputs(clearCSS, clearSCSS, clearTokens) {
   
-  console.log(chalk.bold.bgGray("\n======================================"));
+ console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🧹 STEP 2: PURGING FOLDER CONTENT"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  await showLoader("🚮 Summoning arcane cleanup... please stand by", 3000);
+  await showLoader("🚮 Summoning arcane cleanup... please stand by", 2000);
 
   let cssCount = 0, scssCount = 0, tokensCount = 0;
   const cssFolder = path.join(outputsDir, "css");
@@ -78,7 +78,7 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens) {
     tokensCount = await clearFolder(tokensFolder);
   }
 
-  console.log(chalk.bold.bgGray("\n======================================"));
+ console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🎉 FOLDERS CLEARED SUCCESSFULLY!".toUpperCase()));
   console.log(chalk.bold.bgGray("========================================\n"));
 
@@ -90,12 +90,12 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens) {
     console.log(chalk.bold(`✅ ${chalk.bold('TOKENS')} files deleted: ${tokensCount} 📄`));
   }
 
-  console.log(chalk.bold.yellow(("\n 🧙 The cleanup incantation has been successfully cast! 🎉\n")));
+  console.log(chalk.bold.yellow(("\n🧙 The cleanup incantation has been successfully cast! 🎉\n")));
 }
 
 async function startInterface() {
 
-  console.log(chalk.bold.bgGray("\n======================================"));
+ console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("📝 STEP 1: CHOOSE THE FOLDERS TO CLEAR"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
