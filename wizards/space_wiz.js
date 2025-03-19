@@ -3,6 +3,7 @@ import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from 'url';
 import chalk from "chalk";
+import Table from "cli-table3";
 
 const versionArg = process.argv.find(arg => arg.startsWith("--version="));
 if (versionArg) {
@@ -346,7 +347,7 @@ const generateSpacingTokens = (
 ) => {
   const tokens = {};
   let baseValue;
-  let prev; // for Fibonacci calculation
+  let prev; 
 
   switch (scale) {
     case "4":
@@ -593,7 +594,7 @@ const main = async () => {
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
-  await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 2000);
+  await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.magenta("Spacing Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step. \nGenerate your tokens and prepare them for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
@@ -601,6 +602,73 @@ const main = async () => {
   if (!input) return;
   const { unit, name, numValues, namingChoice, ordinalFormat, alphabeticalCase, scale, incrementalStep, multiplier, factor, customIntervals, fibonacciBase } = input;
   const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, factor, customIntervals, fibonacciBase);
+
+  console.log(chalk.black.bgMagentaBright("\n======================================="));
+  console.log(chalk.bold("🔢 STEP 5.5: SPACE TOKEN PREVIEWS"));
+  console.log(chalk.black.bgMagentaBright("=======================================\n"));
+
+  const scaleNames = {
+    "4": "4-Point Grid System",
+    "8": "8-Point Grid System",
+    modular: "Modular Scale (multiplier based)",
+    custom: "Custom Intervals",
+    fibonacci: "Fibonacci Scale"
+  };
+
+  const namingConventions = {
+    "t-shirt": "T-shirt Size",
+    incremental: "Incremental",
+    ordinal: "Ordinal",
+    alphabetical: "Alphabetical"
+  };
+
+  console.log(
+    chalk.bold.magenta("Tokens Name: ") + chalk.whiteBright(name) + "\n" +
+    chalk.bold.magenta("Nº of Values: ") + chalk.whiteBright(numValues.toString()) + "\n" +
+    chalk.bold.magenta("Scale: ") + chalk.whiteBright(scaleNames[scale] || scale)
+  );
+  console.log(
+    chalk.bold.magenta("Naming Convention: ") + chalk.whiteBright(namingConventions[namingChoice] || namingChoice) + "\n"
+  );
+
+  const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+
+  const sortedEntries = Object.entries(tokensData).sort((a, b) => {
+    const indexA = tshirtOrder.indexOf(a[0]);
+    const indexB = tshirtOrder.indexOf(b[0]);
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    return a[0].localeCompare(b[0], undefined, { numeric: true });
+  });
+
+  const table = new Table({
+    head: [chalk.bold("Scale"), chalk.bold("Value")],
+    style: { head: ["magenta"], border: ["magenta"] }
+  });
+
+  sortedEntries.forEach(([tokenName, token]) => {
+    table.push([tokenName, token.value]);
+  });
+
+  console.log(table.toString());
+
+  const { confirmSpacing } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirmSpacing",
+      message: "Would you like to continue with this nomenclature?",
+      default: true
+    }
+  ]);
+
+  if (!confirmSpacing) {
+    console.log(chalk.bold.yellowBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
+    
+    return main(); 
+  }
 
   const outputsDir = path.join(__dirname, "..", "outputs");
   const tokensFolder = path.join(outputsDir, "tokens", "space");
@@ -656,7 +724,7 @@ const main = async () => {
       }
     }
     
-    await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell"), 2000);
+    await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell"), 1500);
     
     console.log(chalk.black.bgMagentaBright("\n======================================="));
     console.log(chalk.bold("📄 OUTPUT FILES"));
@@ -687,7 +755,7 @@ const main = async () => {
     
   } else {
     
-    await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell"), 2000);
+    await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell"), 1500);
     
     const deletedFiles = [];
     const deleteFileIfExists = (folder, fileName) => {

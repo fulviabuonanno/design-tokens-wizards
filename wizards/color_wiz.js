@@ -202,13 +202,16 @@ console.log(
       {
         type: "confirm",
         name: "confirmColor",
-        message: "Would you like to continue with this color nomenclature?",
+        message: "Would you like to continue with this nomenclature?",
         default: true
       }
     ]);
-    if (confirmColor) break;
-    else {
-      console.log(chalk.bold.greenBright("\nLet's re-select the scale (Step 4) since you didn't confirm."));
+
+    if (!confirmColor) {
+      console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
+      return await askForInput(); 
+    } else {
+      break;
     }
   }
   return {
@@ -563,7 +566,7 @@ const generateOrdinalStops = (start, end) => {
   const stops = {};
   for (let i = start; i <= end; i++) {
     
-    const key = i.toString().padStart(2, "0");
+    const key = i.toString().padStart(2, "00");
     
     
     const intensity = Math.floor(255 - ((i - start) * (255 / (end - start))));

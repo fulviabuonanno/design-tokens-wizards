@@ -3,6 +3,7 @@ import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from 'url';
 import chalk from 'chalk';
+import Table from "cli-table3";
 
 const versionArg = process.argv.find(arg => arg.startsWith("--version="));
 if (versionArg) {
@@ -37,7 +38,7 @@ const askForInput = async () => {
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("⭐️ STEP 1: BASE UNIT"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
-  console.log(chalk.blue("ℹ️ The base unit for size tokens is set to 'px'."));
+  console.log(chalk.yellowBright("ℹ️ The base unit for size tokens is set to 'px'."));
   const unit = 'px';
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
@@ -347,7 +348,7 @@ const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alp
     let tokenName;
     switch (namingChoice) {
       case "t-shirt":
-        tokenName = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `size${i}`;
+        tokenName = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"][i - 1] || `size${i}`;
         break;
       case "incremental":
         tokenName = (i * incrementalStep).toString();
@@ -477,8 +478,8 @@ const saveTokensToFile = (tokensObject, folder, fileName) => {
         type: tokens[key].type
       };
     });
-    // If you want the top-level key to be "sizing" as in your desired output,
-    // change it here. For example:
+    
+    
     orderedObject[topKey === 'size' ? 'sizing' : topKey] = sortedTokens;
   });
   fs.writeFileSync(filePath, JSON.stringify(orderedObject, null, 2));
@@ -522,7 +523,7 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const tshirtOrder = [
-    "3xs", "2xs", "xs", "s", "md", "lg", "xl",
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
     "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
     "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
   ];
@@ -567,7 +568,9 @@ const main = async () => {
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
-  await showLoader(chalk.bold.magenta("🧚 Casting the magic of tokens"), 2000);
+
+  await showLoader(chalk.bold.yellowBright("🧚 Casting the magic of tokens"), 1500);
+
   console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.blue("Size Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step. \nGenerate your tokens and prepare them ready for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
 
   const input = await askForInput();
@@ -576,6 +579,73 @@ const main = async () => {
 
   const tokensData = generateTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, customIntervals, factor, fibonacciBase);
 
+  console.log(chalk.black.bgBlueBright("\n======================================="));
+  console.log(chalk.bold("🔢 STEP 5.5: SPACE TOKEN PREVIEWS"));
+  console.log(chalk.black.bgBlueBright("=======================================\n"));
+
+  const scaleNames = {
+    "4": "4-Point Grid System",
+    "8": "8-Point Grid System",
+    modular: "Modular Scale (multiplier based)",
+    custom: "Custom Intervals",
+    fibonacci: "Fibonacci Scale"
+  };
+
+  const namingConventions = {
+    "t-shirt": "T-shirt Size",
+    incremental: "Incremental",
+    ordinal: "Ordinal",
+    alphabetical: "Alphabetical"
+  };
+
+  console.log(
+    chalk.bold.blue("Tokens Name: ") + chalk.whiteBright(name) + "\n" +
+    chalk.bold.blue("Nº of Values: ") + chalk.whiteBright(numValues.toString()) + "\n" +
+    chalk.bold.blue("Scale: ") + chalk.whiteBright(scaleNames[scale] || scale)
+  );
+  console.log(
+    chalk.bold.blue("Naming Convention: ") + chalk.whiteBright(namingConventions[namingChoice] || namingChoice) + "\n"
+  );
+
+  const tshirtOrder = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+
+  const sortedEntries = Object.entries(tokensData).sort((a, b) => {
+    const indexA = tshirtOrder.indexOf(a[0]);
+    const indexB = tshirtOrder.indexOf(b[0]);
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    return a[0].localeCompare(b[0], undefined, { numeric: true });
+  });
+
+  const table = new Table({
+    head: [chalk.bold("Scale"), chalk.bold("Value")],
+    style: { head: ["blue"], border: ["blue"] }
+  });
+
+  sortedEntries.forEach(([tokenName, token]) => {
+    table.push([tokenName, token.value]);
+  });
+
+  console.log(table.toString());
+
+  const { confirmSpacing } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirmSpacing",
+      message: "Would you like to continue with this nomenclature?",
+      default: true
+    }
+  ]);
+
+  if (!confirmSpacing) {
+    console.log(chalk.bold.yellowBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
+    
+    return main(); 
+  }
+ 
   const topKey = (namingChoice === 't-shirt') ? 'size' : name;
 
   const outputsDir = path.join(__dirname, "..", "outputs");
@@ -648,7 +718,7 @@ const main = async () => {
     deleteFileIfExists(scssFolder, 'size_variables_em.scss');
   }
 
-  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 2000);
+  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 1500);
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
