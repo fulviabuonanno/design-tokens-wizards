@@ -5,9 +5,9 @@ Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`**
 With **`design-tokens-wizards`**, you’ll unlock:
 
 - **Enforce Naming Conventions:** Harness the power of our Design System lexicon to imbue each token with a spellbinding, standardized identity.
-- **+Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
-- **+Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
-- **+Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.
+- **Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
+- **Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
+- **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.
 - **+Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
 - **+Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
 
