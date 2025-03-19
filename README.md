@@ -27,9 +27,9 @@ Select the wizard that will come to your aid by executing the corresponding scri
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
 | 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.0.0  |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.3.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.3.0   |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.3.0   |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.0   |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.0   |
 | **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
 | **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
 | **TYPOGRAPHY WIZ**       | Coming Soon    | –               | Generate and manage typography tokens    | –       |
@@ -117,12 +117,14 @@ Let the art of token crafting infuse your project with endless creativity—and 
 
 ### 📏 **Size Tokens Wizard** ✨
 
-Version 1.3.0
+Version 1.4.0
 
-Managing size tokens can be a daunting task, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and the wizard will generate a range of size tokens in various units, ready for use in your design system and development projects.
+## Size Tokens Wizard ✨
+
+Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and let the wizard generate a range of size tokens in various units, ready for integration into your design system and development projects.
 
 1. **Run the Size Wiz Script**  
-   Begin by running the Size Wiz script to start the process. Open your terminal and execute the following command:
+   Begin by running the Size Wiz script to initialize the process. Open your terminal and execute:
 
    ```sh
    npm run size
@@ -132,51 +134,67 @@ Managing size tokens can be a daunting task, but with the Size Tokens Wizard �
    The default base unit for size tokens is pixels (px).
 
 3. **Name Your Size Tokens**  
-   Provide a name for your size tokens (e.g., size, spacing, dimension).
+   Provide a name for your size tokens (e.g., size, dimension).
 
 4. **Select a Scale**  
-   Choose a predefined scale for your tokens:
-
-- **4-Point Grid System**
-- **8-Point Grid System**
-- **Modular Scale** (multiplier based)
-- **Custom Intervals**
-- **Fibonacci Scale**
+   Choose from the predefined scales:
+   - **4-Point Grid System**
+   - **8-Point Grid System**
+   - **Modular Scale** (multiplier based)
+   - **Custom Intervals**
+   - **Fibonacci Scale**
 
 5. **Define the Number of Values**  
    Specify how many size values you want to generate (e.g., 6 values for a small-to-large scale).
 
 6. **Choose Naming Criteria**  
    Select a naming pattern for your size tokens:
-
    - **T-shirt Sizes**: (xs, sm, md, lg, xl)
    - **Incremental Numbers**: (100, 200, 300)
    - **Ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
-7. **Generate Size Tokens**  
-   The script will generate a list of size tokens based on the chosen scale and naming criteria.
+7. **Preview the Tokens**  
 
-8. **Convert to Other Units (Optional)**  
+   ```sh
+      Name: Size
+      ┌─────────┬─────────┐
+      │ Scale   │ Value   │
+      ├─────────┼─────────┤
+      │ 01      │ 16px    │
+      │ 02      │ 24px    │
+      │ 03      │ 32px    │
+      │ 04      │ 40px    │
+      └─────────┴─────────┘
+   ```
+
+Review the preview and confirm if the size tokens meet your requirements. 
+
+If adjustments are needed, simply re-run the wizard until the desired output is achieved.
+
+8. **Generate Size Tokens**  
+   The script will generate a list of size tokens based on your chosen scale and naming criteria.
+
+9. **Convert to Other Units (Optional)**  
    By default, tokens are stored in pixels (px), but you can also convert them to:
-
    - **Rem (rem)**
    - **Em (em)**
 
-9. **Export Size Tokens**  
-   The script exports your size tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
+10. **Export Size Tokens**  
+   The script exports your size tokens in Tokens Studio JSON format, making them ready for integration into your design system.  
    Stored in: `outputs/tokens/size/size_tokens_{unit}.json`
 
-10. **Generate CSS & SCSS Files**  
+11. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your size tokens as variables:
-    - **CSS**: Stored in `outputs/css/size/size_variables_{unit].css`
+    - **CSS**: Stored in `outputs/css/size/size_variables_{unit}.css`
     - **SCSS**: Stored in `outputs/scss/size/size_variables_{unit}.scss`
+
 
 ---
 
 ### 🔳 **Space Tokens Wizard** ✨
 
-Version 1.3.0
+Version 1.4.0
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
 
@@ -213,20 +231,34 @@ Creating and managing space tokens can be a daunting task, but with the Space To
    - **Ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
-7. **Generate Space Tokens**  
+7. **Preview the Tokens**  
+
+   ```sh
+      Name: Size
+      ┌─────────┬─────────┐
+      │ Scale   │ Value   │
+      ├─────────┼─────────┤
+      │ 01      │ 16px    │
+      │ 02      │ 24px    │
+      │ 03      │ 32px    │
+      │ 04      │ 40px    │
+      └─────────┴─────────┘
+   ```
+
+8. **Generate Space Tokens**  
    The script will generate a list of space tokens based on the chosen scale and naming criteria.
 
-8. **Convert to Other Units (Optional)**  
+9. **Convert to Other Units (Optional)**  
    By default, tokens are stored in pixels (px), but you can also convert them to:
 
    - **Rem (rem)**
    - **Em (em)**
 
-9. **Export Space Tokens**  
+10. **Export Space Tokens**  
    The script exports your space tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
    Stored in: `outputs/tokens/space/space_tokens*{unit}.json`
 
-10. **Generate CSS & SCSS Files**  
+11. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your space tokens as variables:
     - **CSS**: Stored in `outputs/css/space/space_variables_{unit}.css`
     - **SCSS**: Stored in `outputs/scss/space/space_variables_{unit}.scss`
@@ -235,7 +267,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
 
-Version 1.3.0
+Version 1.4.0
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
 
@@ -270,57 +302,74 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 - **Custom Intervals**
 - **Fibonacci Scale**
 
-6. **Generate Border Radius Tokens**  
+6. **Preview the Tokens**  
+
+   Name: border radius  
+   ┌─────────┬────────────────────────┐  
+   │ Scale   │ Value                  │  
+   ├─────────┼────────────────────────┤  
+   │ None    │ 0px                    │  
+   │ 01      │ 4px                    │  
+   │ 02      │ 8px                    │  
+   │ 03      │ 12px                    │  
+   │ Full    │ 9999px                 │  
+   └─────────┴────────────────────────┘
+   ```
+
+7. **Generate Border Radius Tokens**  
    The script generates a list of border-radius tokens based on your input.
 
-7. **Convert to Other Units (Optional)**  
+8. **Convert to Other Units (Optional)**  
    Convert tokens to other units such as:
 
    - **Rem (rem)**
 
-8. **Export Border Radius Tokens**  
+9. **Export Border Radius Tokens**  
    The tokens are exported in Tokens Studio format as JSON files, ready for integration into your design system.
    Stored in: `outputs/tokens/border-radius/border_radius_tokens*{unit}.json`
 
-9. **Generate CSS & SCSS Files**  
+10. **Generate CSS & SCSS Files**  
    Automatically create CSS and SCSS files with your border-radius tokens as variables:
    - **CSS:** Stored in `outputs/css/border-radius/border_radius_variables_{unit}.css`
    - **SCSS:** Stored in `outputs/scss/border-radius/border_radius_variables_{unit}.scss`
 
 ---
 
-### 🛠️ **Dependencies** ✨
+## 🛠️ Dependencies ✨
+Every wizard benefits from a little assistance. To empower our enchanting scripts, we rely on a handful of outstanding dependencies that streamline our process and amplify our magic:
 
-**For Color Conversion:**
-This script uses the amazing **[TinyColor](https://github.com/bgrins/TinyColor)** library to handle all the color conversions. **[Inquirer](https://github.com/SBoudrias/Inquirer.js)** library to create an interactive command line interface (CLI) for user conversations.
+For Color Conversion: This script uses the amazing TinyColor library to handle all the color conversions.
 
-You can check out TinyColor's repository here:  
-[https://github.com/bgrins/TinyColor](https://github.com/bgrins/TinyColor)[https://github.com/SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
+You can check out TinyColor's repository here:
+https://github.com/bgrins/TinyColor
 
-**For Command Line Interface:****For CLI Styling:**
-### 📝 **License** ✨s script uses the **[Chalk](https://github.com/chalk/chalk)** library to add colors and styles to the command line interface (CLI), making it more visually appealing.
+For Command Line Interface: This script uses the Inquirer library to create an interactive command line interface (CLI) for user conversations.
 
+You can check out Inquirer's repository here:
+https://github.com/SBoudrias/Inquirer.js
+
+For CLI Styling: This script uses the Chalk library to add colors and styles to the command line interface (CLI), making it more visually appealing.
+
+You can check out Chalk's repository here:
+https://github.com/chalk/chalk
+
+For enhanced command-line table formatting, this project leverages the "clitable-3" library. This dependency allows for dynamic and customizable table outputs when previewing tokens and other CLI interactions.
+
+Check out the clitable-3 repository for further details and documentation:
+https://github.com/your-org/clitable-3
+
+---
+
+
+## 📝 License ✨
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software as long as the original copyright notice and permission notice are included in all copies or substantial portions of the software.
-[https://github.com/chalk/chalk](https://github.com/chalk/chalk)
-For more details, you can read the full license text in the `LICENSE` file included in this repository or visit the [Open Source Initiative](https://opensource.org/licenses/MIT) for more information.
----
----
-### 📝 **License** ✨
 
-
-
-
-
-
-Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩### **Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️**
-This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software as long as the original copyright notice and permission notice are included in all copies or substantial portions of the software.
-
-For more details, you can read the full license text in the `LICENSE` file included in this repository or visit the [Open Source Initiative](https://opensource.org/licenses/MIT) for more information.
+For more details, you can read the full license text in the [LICENSE](./LICENSE) file included in this repository or visit the Open Source Initiative for more information.
 
 ---
 
-### **Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️**
+## Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️
 
 If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
 
-Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙
+Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙 

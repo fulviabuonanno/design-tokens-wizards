@@ -479,7 +479,6 @@ const saveTokensToFile = (tokensObject, folder, fileName) => {
       };
     });
     
-    
     orderedObject[topKey === 'size' ? 'sizing' : topKey] = sortedTokens;
   });
   fs.writeFileSync(filePath, JSON.stringify(orderedObject, null, 2));

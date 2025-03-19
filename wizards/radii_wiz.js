@@ -531,9 +531,9 @@ const generateBorderRadiusTokens = (
       }
       prev = value;
     } else {
-      // If no intermediate tokens are used, valueScale may be null.
+      
       if (valueScale == null) {
-        // Assign defaults: first token ("none") is 0px, last token ("full") is 100px (or another desired number).
+        
         value = i === 1 ? 0 : 9999 ;
       } else {
         value = valueScale * i;
@@ -649,7 +649,6 @@ const main = async () => {
     chalk.whiteBright(".")
   );
   
- 
   const input = await askForInput();
   if (!input) return;
   const { tokenName, noneLabel, fullLabel, intermediateNaming, totalTokens, valueScale, scale, multiplier, factor, customIntervals, fibonacciBase } = input;
@@ -700,7 +699,6 @@ const main = async () => {
     const keyA = a[0].toLowerCase();
     const keyB = b[0].toLowerCase();
 
-    // Always keep "none" as the first element and "full" as the last element.
     if (keyA === "none") return -1;
     if (keyB === "none") return 1;
     if (keyA === "full") return 1;
@@ -739,9 +737,8 @@ const main = async () => {
 
   if (!confirmSpacing) {
     console.log(chalk.bold.yellowBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
-    return main(); // Restart the input process (e.g., back to Step 3)
+    return main(); 
   }
-
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🔄 CONVERTING BORDER RADIUS TOKENS TO OTHER UNITS"));
@@ -828,8 +825,6 @@ const main = async () => {
       });
     }
   }
-
-
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));

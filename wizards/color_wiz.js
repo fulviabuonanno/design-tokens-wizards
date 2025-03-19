@@ -171,7 +171,6 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
              : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
     }
     
-    
     let mode, padded;
     if (newScaleSettings.type === "ordinal") {
       mode = "ordinal";
@@ -321,7 +320,6 @@ const customStringify = (obj, indent = 2) => {
     }
     let keys = Object.keys(value);
 
-    
     if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
       let numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
       keys = keys.includes("base") ? ["base", ...numericKeys] : numericKeys;
@@ -362,7 +360,6 @@ const saveTokensToFile = (tokensData, format, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   fs.writeFileSync(filePath, customStringify(tokensData, 2));
 };
-
 
 const deleteUnusedFormatFiles = (folders, formats) => {
   if (!formats) return [];
@@ -408,7 +405,6 @@ const deleteUnusedFormatFiles = (folders, formats) => {
 
   return deletedFiles;
 };
-
 
 const convertTokensToCSS = (tokens) => {
   let cssVariables = ":root {\n";
@@ -507,7 +503,6 @@ const convertTokensToFormat = (tokens, format) => {
   return converted;
 };
 
-
 const formatStopsOutput = (stops) => {
   return Object.entries(stops)
     .map(([key, value]) => {
@@ -561,13 +556,11 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
   return table.toString();
 };
 
-
 const generateOrdinalStops = (start, end) => {
   const stops = {};
   for (let i = start; i <= end; i++) {
     
     const key = i.toString().padStart(2, "00");
-    
     
     const intensity = Math.floor(255 - ((i - start) * (255 / (end - start))));
     const hexChannel = intensity.toString(16).padStart(2, "0");
@@ -578,9 +571,6 @@ const generateOrdinalStops = (start, end) => {
 };
 
 const stops = generateOrdinalStops(1, 20);
-
-
-
 
 const main = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -653,15 +643,10 @@ const main = async () => {
       });
     }
 
-    
-    
-
-    
     const hexJsonExisted = fs.existsSync(path.join(tokensFolder, 'color_tokens_hex.json'));
     const hexCssExisted  = fs.existsSync(path.join(cssFolder, 'color_variables_hex.css'));
     const hexScssExisted = fs.existsSync(path.join(scssFolder, 'color_variables_hex.scss'));
 
-    
     const convFilesPreexistence = {
       RGB: {
         tokens: fs.existsSync(path.join(tokensFolder, 'color_tokens_rgb.json')),
@@ -680,7 +665,6 @@ const main = async () => {
       }
     };
 
-    
     saveTokensToFile(tokensData, 'HEX', tokensFolder, 'color_tokens_hex.json');
     saveCSSTokensToFile(tokensData, cssFolder, 'color_variables_hex.css');
     saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables_hex.scss');
@@ -786,12 +770,10 @@ if (convertAnswer.convert) {
 
 let conversionFormats = { generateRGB: false, generateRGBA: false, generateHSL: false };
 
-
 let updatedFiles = [];
 let savedNewFiles = [];
 
 const formatPaths = {};
-
 
 formatsAnswer.formats.forEach(unit => {
   const formatKey = unit.toUpperCase();
@@ -803,16 +785,13 @@ formatsAnswer.formats.forEach(unit => {
     scss: path.join(scssFolder, `color_variables_${unit}.scss`)
   };
 
-  
   const existedBefore = Object.values(formatPaths[unit]).some(fs.existsSync);
 
-  
   const tokensConverted = convertTokensToFormat(tokensData, formatKey);
   saveTokensToFile(tokensConverted, formatKey, tokensFolder, `color_tokens_${unit}.json`);
   saveCSSTokensToFile(tokensConverted, cssFolder, `color_variables_${unit}.css`);
   saveSCSSTokensToFile(tokensConverted, scssFolder, `color_variables_${unit}.scss`);
 
-  
   if (existedBefore) {
     updatedFiles.push(...Object.values(formatPaths[unit]));
   } else {
@@ -820,12 +799,10 @@ formatsAnswer.formats.forEach(unit => {
   }
 });
 
-
 const deletedFiles = deleteUnusedFormatFiles(
   { tokens: tokensFolder, css: cssFolder, scss: scssFolder },
   conversionFormats
 );
-
 
 const hexPaths = {
   json: path.join(tokensFolder, 'color_tokens_hex.json'),
@@ -833,18 +810,15 @@ const hexPaths = {
   scss: path.join(scssFolder, 'color_variables_hex.scss')
 };
 
-
 const hexExistence = {
   json: fs.existsSync(hexPaths.json),
   css: fs.existsSync(hexPaths.css),
   scss: fs.existsSync(hexPaths.scss)
 };
 
-
 saveTokensToFile(tokensData, "HEX", tokensFolder, "color_tokens_hex.json");
 saveCSSTokensToFile(tokensData, cssFolder, "color_variables_hex.css");
 saveSCSSTokensToFile(tokensData, scssFolder, "color_variables_hex.scss");
-
 
 Object.entries(hexExistence).forEach(([key, existed]) => {
   if (existed) {
@@ -854,10 +828,7 @@ Object.entries(hexExistence).forEach(([key, existed]) => {
   }
 });
 
-
-
 await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
-
 
 console.log(chalk.black.bgYellowBright("\n======================================="));
 console.log(chalk.bold("📄 OUTPUT FILES"));
