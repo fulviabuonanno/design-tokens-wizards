@@ -46,7 +46,7 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.2.0.
+Version 2.2.0
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 

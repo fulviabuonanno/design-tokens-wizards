@@ -226,15 +226,20 @@ console.log(
 const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
   const stops = {};
   const stepNum = parseInt(step);
+  // Calculate a scaling factor so that the maximum mix percentage is adjusted based on stopsCount.
+  // For instance, if stopsCount is 10, maxMix will be 100;
+  // if stopsCount is lower, the maximum mix will be proportionally reduced.
+  const maxMix = 100 * (stopsCount - 1) / 9;
+  
   for (let i = 0; i < stopsCount; i++) {
     const key = (i + 1) * stepNum; 
-    let ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
+    const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     let mixPercentage;
     if (ratio < 0.5) {
-      mixPercentage = (1 - ratio * 2) * 100;
+      mixPercentage = (1 - ratio * 2) * maxMix;
       stops[key] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
     } else {
-      mixPercentage = ((ratio - 0.5) * 2) * 100;
+      mixPercentage = ((ratio - 0.5) * 2) * maxMix;
       stops[key] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
     }
   }
@@ -261,41 +266,61 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
 
 const generateStopsSemantic = (hex, stopsCount) => {
   let labels;
-  
+  // Use predefined label sets for known stopsCount values; otherwise, fall back to a default list.
   switch (stopsCount) {
     case 1:
       labels = ["base"];
       break;
-        case 2:
+    case 2:
       labels = ["dark", "base", "light"];
       break;
-        case 4:
+    case 4:
       labels = ["darker", "dark", "base", "light", "lighter"];
       break;
-        case 6:
+    case 6:
       labels = ["darkest", "darker", "dark", "base", "light", "lighter", "lightest"];
       break;
-        case 8:
+    case 8:
       labels = ["ultra-dark", "darkest", "darker", "dark", "base", "light", "lighter", "lightest", "ultra-light"];
       break;
-        case 10:
+    case 10:
       labels = ["ultra-dark", "darkest", "darker", "dark", "semi-dark", "base", "semi-light", "light", "lighter", "lightest", "ultra-light"];
       break;
-        default:
-      return generateStopsOrdinal(hex, true, stopsCount);
+    default:
+      const defaultLabels = ["ultra-dark", "darkest", "darker", "dark", "base", "light", "lighter", "lightest", "ultra-light"];
+      labels = [];
+      const extra = Math.max(0, stopsCount + 2 - defaultLabels.length);
+      if (extra > 0) {
+        labels = defaultLabels.slice();
+        while (labels.length < stopsCount + 2) {
+          labels.unshift(defaultLabels[0]);
+          labels.push(defaultLabels[defaultLabels.length - 1]);
+        }
+      } else {
+        const step = Math.floor(defaultLabels.length / (stopsCount + 1));
+        for (let i = 0; i < stopsCount + 2; i++) {
+          labels.push(defaultLabels[Math.min(i * step, defaultLabels.length - 1)]);
+        }
+      }
+      break;
   }
+  
   const stops = {};
   const total = labels.length;
-  
   const baseIndex = Math.floor(total / 2);
+  // Limit maximum mix to avoid saturating to 100%
+  const MAX_MIX = 90; // extreme stops will mix only up to 90%
+  
   for (let i = 0; i < total; i++) {
     if (i === baseIndex) {
       stops[labels[i]] = tinycolor(hex).toHexString().toUpperCase();
     } else if (i < baseIndex) {
-      const mixPercentage = Math.round(((baseIndex - i) / baseIndex) * 100);
+      // For darker shades, mix with black proportionally, capped by MAX_MIX.
+      const mixPercentage = Math.round(((baseIndex - i) / baseIndex) * MAX_MIX);
       stops[labels[i]] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
     } else {
-      const mixPercentage = Math.round(((i - baseIndex) / (total - 1 - baseIndex)) * 100);
+      // For lighter shades, mix with white proportionally, capped by MAX_MIX.
+      const mixPercentage = Math.round(((i - baseIndex) / (total - 1 - baseIndex)) * MAX_MIX);
       stops[labels[i]] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
     }
   }
