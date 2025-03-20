@@ -156,7 +156,7 @@ Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you 
 
 7. **Preview the Tokens**  
 
-   ```sh
+   ```
       Name: Size
       ┌─────────┬─────────┐
       │ Scale   │ Value   │
@@ -233,7 +233,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 7. **Preview the Tokens**  
 
-   ```sh
+   ```
       Name: Size
       ┌─────────┬─────────┐
       │ Scale   │ Value   │
@@ -304,6 +304,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 6. **Preview the Tokens**  
 
+```
    Name: border radius  
    ┌─────────┬────────────────────────┐  
    │ Scale   │ Value                  │  
@@ -314,21 +315,21 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
    │ 03      │ 12px                    │  
    │ Full    │ 9999px                 │  
    └─────────┴────────────────────────┘
-   ```
+```
 
-7. **Generate Border Radius Tokens**  
+8. **Generate Border Radius Tokens**  
    The script generates a list of border-radius tokens based on your input.
 
-8. **Convert to Other Units (Optional)**  
+9. **Convert to Other Units (Optional)**  
    Convert tokens to other units such as:
 
    - **Rem (rem)**
 
-9. **Export Border Radius Tokens**  
+10. **Export Border Radius Tokens**  
    The tokens are exported in Tokens Studio format as JSON files, ready for integration into your design system.
    Stored in: `outputs/tokens/border-radius/border_radius_tokens*{unit}.json`
 
-10. **Generate CSS & SCSS Files**  
+11. **Generate CSS & SCSS Files**  
    Automatically create CSS and SCSS files with your border-radius tokens as variables:
    - **CSS:** Stored in `outputs/css/border-radius/border_radius_variables_{unit}.css`
    - **SCSS:** Stored in `outputs/scss/border-radius/border_radius_variables_{unit}.scss`
