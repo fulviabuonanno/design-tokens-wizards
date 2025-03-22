@@ -3,6 +3,18 @@ import path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { fileURLToPath } from 'url';
+import Table from 'cli-table3';
+
+const versionArg = process.argv.find(arg => arg.startsWith("--version="));
+if (versionArg) {
+  const version = versionArg.split("=")[1];
+  console.log(chalk.bold.whiteBright.bgGray(capitalize(`Merge Files Incantation - version ${version}`)));
+}
+
+async function showLoader(message, duration) {
+  console.log(message);
+  return new Promise(resolve => setTimeout(resolve, duration));
+}
 
 function capitalize(str) {
     if (!str) return str;
@@ -50,7 +62,7 @@ function mergeTextFiles(filePaths) {
             return "";
         }
     });
-    // Join files with a single newline.
+    
     return contents.join('\n');
 }
 
@@ -73,8 +85,16 @@ function mergeJSONFiles(filePaths) {
 
 async function mergeOutputs() {
     console.log(chalk.bold.bgGray("\n========================================"));
-    console.log(chalk.bold("📝 MERGE SPELL: CONFIGURE FORMATS"));
+    console.log(chalk.bold("🪄 STARTING THE MERGING MAGIC"));
     console.log(chalk.bold.bgGray("========================================\n"));
+
+    await showLoader(chalk.bold.yellowBright("🚀 Initiating the spell"), 1500);
+    
+    console.log(
+      chalk.whiteBright("\n❤️ Greetings, traveler. Are you ready to complete your quest with our aid? \nLet’s conjure the") +
+      chalk.bold.gray(" Merge Spell") +
+      chalk.whiteBright("that magically transforms your design tokens into \npristine CSS, SCSS, and JSON files for seamless integration.\n")
+    );
 
     const answers = await inquirer.prompt([
         {
@@ -107,13 +127,26 @@ async function mergeOutputs() {
         }
     ]);
 
-    console.log(chalk.green("\n✨ Selected formats:"));
-    console.log(chalk.green(`Colors: ${answers.colorFormat}`));
-    console.log(chalk.green(`Size: ${answers.sizeFormat}`));
-    console.log(chalk.green(`Spacing: ${answers.spaceFormat}`));
-    console.log(chalk.green(`Border Radius: ${answers.borderRadiusFormat}\n`));
+    await showLoader(chalk.bold.yellowBright("\n🚀 Merging your design tokens..."), 1500);
 
-    // Expected suffixes for tokens based on selected formats.
+    console.log(chalk.bold.bgGray("\n========================================"));
+    console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
+    console.log(chalk.bold.bgGray("========================================\n"));
+   
+    const table = new Table({
+      head: ['Token Type', 'Format/Unit'],
+      colWidths: [20, 20]
+    });
+
+    table.push(
+      ['Colors', answers.colorFormat],
+      ['Size', answers.sizeFormat],
+      ['Spacing', answers.spaceFormat],
+      ['Border Radius', answers.borderRadiusFormat]
+    );
+
+    console.log(table.toString());
+
     const expectedSuffixes = [
         "_" + answers.colorFormat.toLowerCase(),
         "_" + answers.sizeFormat.toLowerCase(),
@@ -121,10 +154,8 @@ async function mergeOutputs() {
         "_" + answers.borderRadiusFormat.toLowerCase()
     ];
 
-    // Get all files recursively from the outputs folder.
     const allFiles = getFilesRecursive(outputsDir);
 
-    // Filter files by extension and expected suffix.
     const cssFiles = allFiles.filter(file => {
         const lowerName = path.basename(file).toLowerCase();
         return lowerName.endsWith('.css') && expectedSuffixes.some(suffix => lowerName.includes(suffix));
@@ -141,37 +172,54 @@ async function mergeOutputs() {
     const noFilesFound =
         cssFiles.length === 0 && scssFiles.length === 0 && jsonFiles.length === 0;
     if (noFilesFound) {
-        console.warn(chalk.yellow("\n⚠️ Warning: No files found in the outputs folder matching the selected formats. Nothing to merge.\n"));
+        console.warn(chalk.bold.yellow("\n⚠️ Warning: No files found in the outputs folder matching the selected formats. Nothing to merge.\n"));
         return;
     }
 
-    // Ensure final directory exists.
     if (!fs.existsSync(finalDir)) {
         fs.mkdirSync(finalDir, { recursive: true });
     }
 
-    // Merge and write CSS with proper formatting.
     let mergedCSS = mergeTextFiles(cssFiles);
-    // Remove all extra occurrences of ":root {" and any blank lines, and stray closing braces.
+    
     const cssLines = mergedCSS.split('\n').filter(line => {
       const trimmed = line.trim();
       return trimmed && !trimmed.startsWith(':root {') && trimmed !== '}';
     });
-    // Indent CSS properties.
+    
     const indentedLines = cssLines.map(line => '  ' + line.trim());
-    // Build final CSS string with a single closing brace at the end.
+    
     mergedCSS = ':root {\n' + indentedLines.join('\n') + '}';
     fs.writeFileSync(path.join(finalDir, 'tokens.css'), mergedCSS, 'utf-8');
 
-    // Merge and write SCSS without extra spaces between blocks.
     const mergedSCSS = mergeTextFiles(scssFiles);
     fs.writeFileSync(path.join(finalDir, 'tokens.scss'), mergedSCSS, 'utf-8');
 
-    // Merge and write JSON tokens without the _formats field.
     const mergedJSONObj = mergeJSONFiles(jsonFiles);
     fs.writeFileSync(path.join(finalDir, 'tokens.json'), JSON.stringify(mergedJSONObj, null, 2), 'utf-8');
 
+    console.log(chalk.bold.bgGray("\n========================================"));
+    console.log(chalk.bold("✅ FINAL OUTPUT FILES"));
+    console.log(chalk.bold.bgGray("========================================\n"));
+
+    const cssPath = path.join(finalDir, 'tokens.css');
+    const scssPath = path.join(finalDir, 'tokens.scss');
+    const jsonPath = path.join(finalDir, 'tokens.json');
+
+    function getRelative(filePath) {
+      return path.relative(process.cwd(), filePath);
+    }
+
+    function getStatus(filePath) {
+      const stats = fs.statSync(filePath);
+      return stats.birthtime.getTime() === stats.mtime.getTime() ? "✅ Saved" : "🆕 Updated";
+    }
+
+    console.log(chalk.whiteBright("CSS:  " + getRelative(cssPath) + " " + getStatus(cssPath)));
+    console.log(chalk.whiteBright("SCSS: " + getRelative(scssPath) + " " + getStatus(scssPath)));
+    console.log(chalk.whiteBright("JSON: " + getRelative(jsonPath) + " " + getStatus(jsonPath)));
+
     console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'final' folder!\n"));
-}
+} 
 
 mergeOutputs();
