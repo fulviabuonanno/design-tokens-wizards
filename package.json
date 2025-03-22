@@ -8,14 +8,16 @@
     "size": "node wizards/size_wiz.js --version=1.4.0",
     "space": "node wizards/space_wiz.js --version=1.4.0",
     "radii": "node wizards/radii_wiz.js --version=1.4.0",
-    "clear": "node spells/clear_spell.js --version=1.0.0"
+    "clear": "node spells/clear_spell.js --version=1.0.0",
+    "merge": "node spells/merge_spell.js --version=1.0.0"
   },
   "scriptVersions": {
     "color": "2.2.0",
     "size": "1.4.0",
     "space": "1.4.0",
     "radii": "1.4.0",
-    "clear": "1.0.0"
+    "clear": "1.0.0",
+    "merge": "1.0.0"
   },
   "author": "Fulvia Buonanno",
   "license": "MIT",
