@@ -26,7 +26,7 @@ Select the wizard that will come to your aid by executing the corresponding scri
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.0  |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.1 🆙 |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.0   |
 | 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.0   |
@@ -38,7 +38,7 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 | Spell                   | Script Name      | Run Command     | Description                                              | Version |
 | ----------------------- | ---------------- | --------------- | -------------------------------------------------------- | ------- |
-| **MERGE SPELL**         | Coming Soon      | –               | Combine all token files into a single unified file       | –       |
+| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.0.0  🆕    |
 | **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.0.0   |
 | **ACCESSIBILITY SPELL** | Coming Soon      | –               | Assess and ensure the accessibility of your color tokens | –       |
 
@@ -46,7 +46,7 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.2.0
+Version 2.2.1
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
