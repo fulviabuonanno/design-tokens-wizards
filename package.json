@@ -4,7 +4,7 @@
   "main": "color_wiz.js",
   "type": "module",
   "scripts": {
-    "color": "node wizards/color_wiz.js --version=2.2.0",
+    "color": "node wizards/color_wiz.js --version=2.2.1",
     "size": "node wizards/size_wiz.js --version=1.4.0",
     "space": "node wizards/space_wiz.js --version=1.4.0",
     "radii": "node wizards/radii_wiz.js --version=1.4.0",
@@ -12,7 +12,7 @@
     "merge": "node spells/merge_spell.js --version=1.0.0"
   },
   "scriptVersions": {
-    "color": "2.2.0",
+    "color": "2.2.1",
     "size": "1.4.0",
     "space": "1.4.0",
     "radii": "1.4.0",
