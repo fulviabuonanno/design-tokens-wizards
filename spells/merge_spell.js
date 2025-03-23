@@ -88,7 +88,7 @@ async function mergeOutputs() {
     console.log(chalk.bold("🪄 STARTING THE MERGING MAGIC"));
     console.log(chalk.bold.bgGray("========================================\n"));
 
-    await showLoader(chalk.bold.yellowBright("🚀 Initiating the spell"), 1500);
+    await showLoader(chalk.bold.yellowBright("🚀 Initiating the spell..."), 1500);
     
     console.log(
       chalk.whiteBright("\n❤️ Greetings, traveler. Are you ready to complete your quest with our aid? \nLet’s conjure the") +
@@ -100,28 +100,28 @@ async function mergeOutputs() {
         {
             type: 'list',
             name: 'colorFormat',
-            message: "Which color format would you like to use?",
+            message: "Which " + chalk.bold.yellowBright("color format") + " would you like to use?",
             choices: ['HEX', 'RGB', 'RGBA', 'HSL'],
             default: 'HEX'
         },
         {
             type: 'list',
-            name: 'sizeFormat',
-            message: "Which size format would you like to use?",
+            name: 'sizeUnit',
+            message: "Which " + chalk.bold.yellowBright("size unit") + " would you like to use?",
             choices: ['px', 'rem', 'em'],
             default: 'px'
         },
         {
             type: 'list',
-            name: 'spaceFormat',
-            message: "Which spacing format would you like to use?",
+            name: 'spaceUnit',
+            message: "Which " + chalk.bold.yellowBright("spacing unit") + " would you like to use?",
             choices: ['px', 'rem', 'em'],
             default: 'px'
         },
         {
             type: 'list',
-            name: 'borderRadiusFormat',
-            message: "Which border radius format would you like to use?",
+            name: 'borderRadiusUnit',
+            message: "Which " + chalk.bold.yellowBright("border radius unit") + " would you like to use?",
             choices: ['px', 'rem'],
             default: 'px'
         }
@@ -134,24 +134,24 @@ async function mergeOutputs() {
     console.log(chalk.bold.bgGray("========================================\n"));
    
     const table = new Table({
-      head: ['Token Type', 'Format/Unit'],
+      head: [chalk.bold.yellow('Token Type'), chalk.bold.yellow('Format/Unit')],
       colWidths: [20, 20]
     });
 
     table.push(
       ['Colors', answers.colorFormat],
-      ['Size', answers.sizeFormat],
-      ['Spacing', answers.spaceFormat],
-      ['Border Radius', answers.borderRadiusFormat]
+      ['Size', answers.sizeUnit],
+      ['Spacing', answers.spaceUnit],
+      ['Border Radius', answers.borderRadiusUnit]
     );
 
     console.log(table.toString());
 
     const expectedSuffixes = [
         "_" + answers.colorFormat.toLowerCase(),
-        "_" + answers.sizeFormat.toLowerCase(),
-        "_" + answers.spaceFormat.toLowerCase(),
-        "_" + answers.borderRadiusFormat.toLowerCase()
+        "_" + answers.sizeUnit.toLowerCase(),
+        "_" + answers.spaceUnit.toLowerCase(),
+        "_" + answers.borderRadiusUnit.toLowerCase()
     ];
 
     const allFiles = getFilesRecursive(outputsDir);
