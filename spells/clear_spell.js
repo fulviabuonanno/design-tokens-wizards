@@ -19,6 +19,7 @@ if (versionArg) {
 }
 
 const outputsDir = path.join(__dirname, '../outputs');
+const finalDir = path.join(__dirname, '../final');
 
 async function clearFolder(dirPath) {
   let count = 0;
@@ -26,8 +27,7 @@ async function clearFolder(dirPath) {
     const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(dirPath, entry.name);
-      if (entry.isDirectory()) {
-        
+      if (entry.isDirectory()) {        
         count += await clearFolder(fullPath);
       } else {
         await fs.promises.unlink(fullPath);
@@ -55,15 +55,14 @@ function showLoader(message, ms) {
   });
 }
 
-async function processOutputs(clearCSS, clearSCSS, clearTokens) {
-  
- console.log(chalk.bold.bgGray("\n========================================"));
+async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal) {
+  console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🧹 STEP 2: PURGING FOLDER CONTENT"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
   await showLoader("🚮 Summoning arcane cleanup... please stand by", 2000);
 
-  let cssCount = 0, scssCount = 0, tokensCount = 0;
+  let cssCount = 0, scssCount = 0, tokensCount = 0, finalCount = 0;
   const cssFolder = path.join(outputsDir, "css");
   const scssFolder = path.join(outputsDir, "scss");
   const tokensFolder = path.join(outputsDir, "tokens");
@@ -77,29 +76,35 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens) {
   if (clearTokens) {
     tokensCount = await clearFolder(tokensFolder);
   }
+  if (clearFinal) {
+    finalCount = await clearFolder(finalDir);
+  }
 
- console.log(chalk.bold.bgGray("\n========================================"));
+  console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🎉 FOLDERS CLEARED SUCCESSFULLY!".toUpperCase()));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  if (cssCount === 0 && scssCount === 0 && tokensCount === 0) {
+  if (cssCount === 0 && scssCount === 0 && tokensCount === 0 && finalCount === 0) {
     console.log(chalk.bold(capitalize("no files were found for deletion – all folders remain pristine.")));
   } else {
     console.log(chalk.bold(`✅ ${chalk.bold('CSS')} files deleted: ${cssCount} 📄`));
     console.log(chalk.bold(`✅ ${chalk.bold('SCSS')} files deleted: ${scssCount} 📄`));
     console.log(chalk.bold(`✅ ${chalk.bold('TOKENS')} files deleted: ${tokensCount} 📄`));
+    console.log(chalk.bold(`✅ ${chalk.bold('FINAL')} files deleted: ${finalCount} 📄`));
   }
 
-  console.log(chalk.bold.yellow(("\n🧙 The cleanup incantation has been successfully cast! 🎉\n")));
+  console.log(chalk.bold.yellow("\n🧙 The cleanup incantation has been successfully cast! 🎉\n"));
 }
 
 async function startInterface() {
-
- console.log(chalk.bold.bgGray("\n========================================"));
+  console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("📝 STEP 1: CHOOSE THE FOLDERS TO CLEAR"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  console.log(chalk.whiteBright("🪄Welcome to the ") + chalk.bold.gray("Clear Files Incantation") + chalk.whiteBright(" script! \nLet this spell help you keep your outputs folder tidy during script tests. \nUse this spell only for testing purposes to safely clean up generated files.\n"));
+  console.log(chalk.whiteBright("🪄Welcome to the ") +
+    chalk.bold.gray("Clear Files Incantation") +
+    chalk.whiteBright(" script! \nLet this spell help you keep your outputs folder tidy during script tests. \nUse this spell only for testing purposes to safely clean up generated files.\n")
+  );
 
   const answers = await inquirer.prompt([
     {
@@ -119,10 +124,16 @@ async function startInterface() {
       name: 'clearTokens',
       message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Tokens") + " folder? (yes/no)"),
       default: false,
+    },
+    {
+      type: 'confirm',
+      name: 'clearFinal',
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Final") + " folder? (yes/no)"),
+      default: false,
     }
   ]);
 
-  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearTokens);
+  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearTokens, answers.clearFinal);
 }
 
 startInterface();
