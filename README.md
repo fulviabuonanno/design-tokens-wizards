@@ -28,8 +28,8 @@ Select the wizard that will come to your aid by executing the corresponding scri
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
 | 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.2 🆙 |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1  |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1 🆙 |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1 🆙  |
 | **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
 | **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
 | **TYPOGRAPHY WIZ**       | Coming Soon    | –               | Generate and manage typography tokens    | –       |
@@ -38,8 +38,8 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 | Spell                   | Script Name      | Run Command     | Description                                              | Version |
 | ----------------------- | ---------------- | --------------- | -------------------------------------------------------- | ------- |
-| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.1.0  🆕    |
-| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.1.0   |
+| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.1.0  🆙    |
+| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.1.0 🆙  |
 | **ACCESSIBILITY SPELL** | Coming Soon      | –               | Assess and ensure the accessibility of your color tokens | –       |
 
 ---
