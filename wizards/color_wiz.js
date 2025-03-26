@@ -349,32 +349,11 @@ const customStringify = (obj, indent = 2) => {
       return "[\n" + " ".repeat(currentIndent + indent) + items.join(",\n" + " ".repeat(currentIndent + indent)) + "\n" + " ".repeat(currentIndent) + "]";
     }
     let keys = Object.keys(value);
-
-    if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
-      let numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
-      keys = keys.includes("base") ? ["base", ...numericKeys] : numericKeys;
+    // Ordenar alfabéticamente y forzar que "base" sea la primera
+    keys.sort((a, b) => a.localeCompare(b));
+    if (keys.includes("base")) {
+      keys = ["base", ...keys.filter(k => k !== "base")];
     }
-    
-    else if (keys.every(k => /^\d{2}$/.test(k) || k === "base")) {
-      const forcedOrder = [
-        "01", "02", "03", "04", "05", "06", "07", "08", "09",
-        "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"
-      ];
-      let forcedKeys = forcedOrder.filter(k => value.hasOwnProperty(k));
-      keys = value.hasOwnProperty("base") ? ["base", ...forcedKeys] : forcedKeys;
-    }
-    
-    else if (keys.every(k => semanticOrder.includes(k))) {
-      keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
-    }
-    
-    else {
-      keys.sort((a, b) => a.localeCompare(b));
-      if (keys.includes("base")) {
-        keys = ["base", ...keys.filter(k => k !== "base")];
-      }
-    }
-
     let result = "{\n";
     keys.forEach((key, idx) => {
       result += " ".repeat(currentIndent + indent) + JSON.stringify(key) + ": " + stringify(value[key], currentIndent + indent);
@@ -441,19 +420,20 @@ const convertTokensToCSS = (tokens) => {
   const processTokens = (obj, prefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
+      // Aplicar reglas de ordenamiento según contenido:
       if (keys.every(k => semanticOrder.includes(k))) {
         keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
       } else if (keys.every(k => /^\d{2}$/.test(k))) {
-        
         keys = keys.sort((a, b) => Number(a) - Number(b));
       } else if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
-        
-        const numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
-        if (keys.includes("base")) numericKeys.push("base");
-        keys = numericKeys;
+        keys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
-        if (keys.includes("base")) keys = keys.filter(k => k !== "base").concat("base");
+      }
+      // Asegurarse de que "base" quede siempre primero
+      if (obj.hasOwnProperty("base")) {
+        keys = keys.filter(k => k !== "base");
+        keys.unshift("base");
       }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
@@ -479,12 +459,14 @@ const convertTokensToSCSS = (tokens) => {
       } else if (keys.every(k => /^\d{2}$/.test(k))) {
         keys = keys.sort((a, b) => Number(a) - Number(b));
       } else if (keys.every(k => !isNaN(Number(k)) || k === "base")) {
-        const numericKeys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
-        if (keys.includes("base")) numericKeys.push("base");
-        keys = numericKeys;
+        keys = keys.filter(k => k !== "base").sort((a, b) => Number(a) - Number(b));
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
-        if (keys.includes("base")) keys = keys.filter(k => k !== "base").concat("base");
+      }
+      // Asegurarse de que "base" quede siempre primero
+      if (obj.hasOwnProperty("base")) {
+        keys = keys.filter(k => k !== "base");
+        keys.unshift("base");
       }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
@@ -575,12 +557,12 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
   }
 
   const table = new Table({
-    head: [chalk.bold("Scale"), chalk.bold("HEX"), chalk.bold("Sample")],
-    style: { head: [], border: [] }
+    head: [chalk.bold.yellowBright("Scale"), chalk.bold.yellowBright("HEX"), chalk.bold.yellowBright("Sample")],
+    style: { head: [], border: ["yellow"] }
   });
 
   entries.forEach(([key, value]) => {
-    table.push([key, value, chalk.bgHex(value).white("     ")]);
+    table.push([key, value, chalk.bgHex(value).white("         ")]);
   });
 
   return table.toString();

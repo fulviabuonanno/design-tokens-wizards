@@ -221,7 +221,7 @@ const askForInput = async () => {
     
     if (numValues <= 20) {
       choices = [
-        { name: 'T-shirt space (e.g., xs, sm, md, lg, xl)', value: 't-shirt' },
+        { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 't-shirt' },
         { name: 'Incremental (e.g., 50, 100, 150, 200)', value: 'incremental' },
         { name: 'Ordinal (e.g., 1, 2, 3)', value: 'ordinal' },
         { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'alphabetical' }
@@ -309,7 +309,7 @@ const askForInput = async () => {
 
   while ((namingChoice === 'A' && numValues > 20) || (namingChoice === 'D' && numValues > 26)) {
     if (namingChoice === 'A' && numValues > 20) {
-      console.log(chalk.red("❌ T-shirt space naming criteria is not recommended for more than 20 values. Please choose Incremental or ordinal naming criteria."));
+      console.log(chalk.red("❌ T-shirt size naming criteria is not recommended for more than 20 values. Please choose Incremental or ordinal naming criteria."));
     } else if (namingChoice === 'D' && numValues > 26) {
       console.log(chalk.red("❌ Alphabetical naming criteria is not recommended for more than 26 values."));
     }
@@ -462,17 +462,21 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
 
 const convertTokensToCSS = (tokens, name) => {
   let cssVariables = ':root {\n';
-  const sortedKeys = Object.keys(tokens).sort((a, b) => {
-    const numA = Number(a);
-    const numB = Number(b);
-    const bothNumbers = !isNaN(numA) && !isNaN(numB);
-    if (bothNumbers) {
-      return numA - numB;
-    }
-    return a.localeCompare(b);
-  });
+  const tshirtOrder = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+  const customComparator = (a, b) => {
+      const indexA = tshirtOrder.indexOf(a);
+      const indexB = tshirtOrder.indexOf(b);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      const numA = Number(a);
+      const numB = Number(b);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      return a.localeCompare(b);
+  };
+  const sortedKeys = Object.keys(tokens).sort(customComparator);
   sortedKeys.forEach(key => {
-    cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
+      cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
   });
   cssVariables += '}';
   return cssVariables;
@@ -488,17 +492,21 @@ const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
 
 const convertTokensToSCSS = (tokens, name) => {
   let scssVariables = '';
-  const sortedKeys = Object.keys(tokens).sort((a, b) => {
-    const numA = Number(a);
-    const numB = Number(b);
-    const bothNumbers = !isNaN(numA) && !isNaN(numB);
-    if (bothNumbers) {
-      return numA - numB;
-    }
-    return a.localeCompare(b);
-  });
+  const tshirtOrder = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+  const customComparator = (a, b) => {
+      const indexA = tshirtOrder.indexOf(a);
+      const indexB = tshirtOrder.indexOf(b);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      const numA = Number(a);
+      const numB = Number(b);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      return a.localeCompare(b);
+  };
+  const sortedKeys = Object.keys(tokens).sort(customComparator);
   sortedKeys.forEach(key => {
-    scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
+      scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
   });
   return scssVariables;
 };
@@ -631,7 +639,7 @@ const main = async () => {
     chalk.bold.magenta("Naming Convention: ") + chalk.whiteBright(namingConventions[namingChoice] || namingChoice) + "\n"
   );
 
-  const tshirtOrder = ["3xs", "2xs", "xs", "s", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
+  const tshirtOrder = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
 
   const sortedEntries = Object.entries(tokensData).sort((a, b) => {
     const indexA = tshirtOrder.indexOf(a[0]);
