@@ -579,7 +579,7 @@ const main = async () => {
   const tokensData = generateTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, customIntervals, factor, fibonacciBase);
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
-  console.log(chalk.bold("🔢 STEP 5.5: SPACE TOKEN PREVIEWS"));
+  console.log(chalk.bold("🔢 STEP 5.5: SIZE TOKEN PREVIEWS"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   const scaleNames = {
@@ -611,7 +611,7 @@ const main = async () => {
   const sortedEntries = Object.entries(tokensData).sort((a, b) => {
     const indexA = tshirtOrder.indexOf(a[0]);
     const indexB = tshirtOrder.indexOf(b[0]);
-    if (indexA !== -1 && indexB !== -1) {
+    if (indexA !== -1 && indexfB !== -1) {
       return indexA - indexB;
     }
     if (indexA !== -1) return -1;
