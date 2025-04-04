@@ -4,20 +4,20 @@
   "main": "color_wiz.js",
   "type": "module",
   "scripts": {
-    "color": "node wizards/color_wiz.js --version=2.2.1",
+    "color": "node wizards/color_wiz.js --version=2.2.2",
     "size": "node wizards/size_wiz.js --version=1.4.0",
-    "space": "node wizards/space_wiz.js --version=1.4.0",
-    "radii": "node wizards/radii_wiz.js --version=1.4.0",
-    "clear": "node spells/clear_spell.js --version=1.0.0",
-    "merge": "node spells/merge_spell.js --version=1.0.0"
+    "space": "node wizards/space_wiz.js --version=1.4.1",
+    "radii": "node wizards/radii_wiz.js --version=1.4.1",
+    "clear": "node spells/clear_spell.js --version=1.1.0",
+    "merge": "node spells/merge_spell.js --version=1.1.0"
   },
   "scriptVersions": {
-    "color": "2.2.1",
-    "size": "1.4.0",
+    "color": "2.2.2",
+    "size": "1.4.1",
     "space": "1.4.0",
-    "radii": "1.4.0",
+    "radii": "1.4.1",
     "clear": "1.0.0",
-    "merge": "1.0.0"
+    "merge": "1.1.0"
   },
   "author": "Fulvia Buonanno",
   "license": "MIT",

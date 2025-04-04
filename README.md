@@ -26,10 +26,10 @@ Select the wizard that will come to your aid by executing the corresponding scri
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.1 🆙 |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.2 🆙 |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.0   |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.0   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1 🆙 |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1 🆙  |
 | **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
 | **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
 | **TYPOGRAPHY WIZ**       | Coming Soon    | –               | Generate and manage typography tokens    | –       |
@@ -38,15 +38,15 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 | Spell                   | Script Name      | Run Command     | Description                                              | Version |
 | ----------------------- | ---------------- | --------------- | -------------------------------------------------------- | ------- |
-| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.0.0  🆕    |
-| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.0.0   |
+| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.1.0  🆙    |
+| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.1.0 🆙  |
 | **ACCESSIBILITY SPELL** | Coming Soon      | –               | Assess and ensure the accessibility of your color tokens | –       |
 
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.2.1
+Version 2.2.2
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -194,7 +194,7 @@ If adjustments are needed, simply re-run the wizard until the desired output is 
 
 ### 🔳 **Space Tokens Wizard** ✨
 
-Version 1.4.0
+Version 1.4.1
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
 
@@ -267,7 +267,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
 
-Version 1.4.0
+Version 1.4.1
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
 
@@ -333,6 +333,46 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
    Automatically create CSS and SCSS files with your border-radius tokens as variables:
    - **CSS:** Stored in `outputs/css/border-radius/border_radius_variables_{unit}.css`
    - **SCSS:** Stored in `outputs/scss/border-radius/border_radius_variables_{unit}.scss`
+
+---
+
+   ### 🧹 **Clear Spell** ✨
+
+   Version 1.1.0
+
+   The Clear Spell is a simple yet powerful tool to keep your project directory clean and organized. It removes all generated files, ensuring you can start fresh without any clutter.
+
+   1. **Run the Clear Spell Script**  
+      Open your terminal and execute the following command:
+
+      ```sh
+      npm run clear
+      ```
+
+   2. **What Happens Next**  
+      - All generated token files in the `outputs/tokens/` directory are deleted.
+      - CSS and SCSS files in the `outputs/css/` and `outputs/scss/` directories are removed.
+      - Final output files in the `final/` directory, including JSON, CSS, and SCSS files, will also be removed.
+      - Your project directory is left clean, free from outdated or unnecessary files.
+
+   ---
+
+   ### 🪄 **Merge Spell** ✨
+
+   Version 1.1.0 🆕
+
+   The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
+
+   1. **Run the Merge Spell Script**  
+      Open your terminal and execute the following command:
+
+      ```sh
+      npm run merge
+      ```
+
+   2. **What Happens Next**  
+      - All token files in the `outputs/tokens/` directory are merged into a single JSON, CSS and SCSS filee.
+      - The resulting file is structured consistently, ensuring seamless integration into your design system or development workflow.
 
 ---
 

@@ -693,26 +693,23 @@ const main = async () => {
     chalk.bold.green("Scale: ") + chalk.whiteBright(scaleNames[scale] || scale) + "\n" 
   );
  
+   const noneKey = noneLabel ? noneLabel.toLowerCase() : null;
+  const fullKey = fullLabel ? fullLabel.toLowerCase() : null;
   const tshirtOrder = ["xs", "sm", "md", "lg", "xl", "2xl"];
-
+    
   const sortedEntries = Object.entries(tokensData).sort((a, b) => {
-    const keyA = a[0].toLowerCase();
-    const keyB = b[0].toLowerCase();
-
-    if (keyA === "none") return -1;
-    if (keyB === "none") return 1;
-    if (keyA === "full") return 1;
-    if (keyB === "full") return -1;
-
-    const indexA = tshirtOrder.indexOf(keyA);
-    const indexB = tshirtOrder.indexOf(keyB);
-
-    if (indexA !== -1 && indexB !== -1) {
-      return indexA - indexB;
-    }
-    if (indexA !== -1) return -1;
-    if (indexB !== -1) return 1;
-    return keyA.localeCompare(keyB, undefined, { numeric: true });
+      const keyA = a[0].toLowerCase();
+      const keyB = b[0].toLowerCase();
+      
+      const weight = (key) => {
+          if (key === noneKey) return -Infinity;  // Siempre primero
+          if (key === fullKey) return Infinity;     // Siempre al final
+          const index = tshirtOrder.indexOf(key);
+          return index !== -1 ? index : 0;
+      };
+      
+      const diff = weight(keyA) - weight(keyB);
+      return diff !== 0 ? diff : keyA.localeCompare(keyB, undefined, { numeric: true });
   });
 
   const table = new Table({
