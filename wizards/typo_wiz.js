@@ -1158,18 +1158,20 @@ async function typographyWiz() {
   const finalTokens = tokens.typography; 
   
   const outputsDir = path.join(__dirname, "..", "outputs");
-  const typographyDir = path.join(outputsDir, "typography");
+  const tokensTypographyDir = path.join(outputsDir, "tokens", "typography");
+  const cssTypographyDir = path.join(outputsDir, "css", "typography");
+  const scssTypographyDir = path.join(outputsDir, "scss", "typography");
 
   // Ensure output directories exist
-  [outputsDir, typographyDir].forEach(dir => {
+  [outputsDir, tokensTypographyDir, cssTypographyDir, scssTypographyDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
   });
 
-  const jsonFilePath = path.join(typographyDir, "typography_tokens.json");
-  const cssFilePath = path.join(typographyDir, "typography_variables.css");
-  const scssFilePath = path.join(typographyDir, "typography_variables.scss");
+  const jsonFilePath = path.join(tokensTypographyDir, "typography_tokens.json");
+  const cssFilePath = path.join(cssTypographyDir, "typography_variables.css");
+  const scssFilePath = path.join(scssTypographyDir, "typography_variables.scss");
 
   const jsonFileExists = fs.existsSync(jsonFilePath);
   const cssFileExists = fs.existsSync(cssFilePath);

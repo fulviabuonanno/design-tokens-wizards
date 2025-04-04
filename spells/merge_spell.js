@@ -99,7 +99,7 @@ async function mergeOutputs() {
   await showLoader(chalk.bold.yellowBright("🚀 Initiating the spell..."), 1500);
   
   console.log(
-    chalk.whiteBright("\n❤️ Greetings, traveler. Are you ready to complete your quest with our aid? \nLet’s conjure the") +
+    chalk.whiteBright("\n❤️ Greetings, traveler. Are you ready to complete your quest with our aid? \nLet's conjure the") +
     chalk.bold.gray(" Merge Spell") +
     chalk.whiteBright(" that magically transforms your design tokens into \npristine CSS, SCSS, and JSON files for seamless integration.\n")
   );
@@ -112,14 +112,16 @@ async function mergeOutputs() {
       Colors: 'color_variables',
       Size: 'size_variables',
       Space: 'space_variables',
-      "Border Radius": 'border_radius_variables'
+      "Border Radius": 'border_radius_variables',
+      Typography: 'typography_variables'
     };
     
     const tokensMapping = {
       Colors: 'color_',
       Size: 'size_',
       Space: 'space_',
-      "Border Radius": 'border_radius_'
+      "Border Radius": 'border_radius_',
+      Typography: 'typography_'
     };
     
     const patternCss = cssMapping[tokenType] || '';
@@ -131,6 +133,23 @@ async function mergeOutputs() {
         const lowerFile = file.toLowerCase();
         const relativePath = path.relative(outputsDir, file).toLowerCase();
         
+        // Special case for typography which doesn't use suffixes
+        if (tokenType === 'Typography') {
+          if ((lowerFile.endsWith('.css') || lowerFile.endsWith('.scss')) &&
+              relativePath.includes(patternCss)) {
+            return true;
+          }
+          
+          if (lowerFile.endsWith('.json') &&
+              lowerFile.includes('_tokens') &&
+              relativePath.includes(patternTokens)) {
+            return true;
+          }
+          
+          return false;
+        }
+        
+        // Normal case for other token types with suffixes
         if ((lowerFile.endsWith('.css') || lowerFile.endsWith('.scss')) &&
             lowerFile.includes(suffix) &&
             relativePath.includes(patternCss)) {
@@ -153,6 +172,13 @@ async function mergeOutputs() {
   const availableSizeOptions         = getAvailableOptions(['px','rem','em'], 'Size');
   const availableSpaceOptions        = getAvailableOptions(['px','rem','em'], 'Space');
   const availableBorderRadiusOptions = getAvailableOptions(['px','rem'], 'Border Radius');
+  const hasTypographyFiles           = outputFiles.some(file => {
+    const lowerFile = file.toLowerCase();
+    const relativePath = path.relative(outputsDir, file).toLowerCase();
+    return lowerFile.includes('typography_') || relativePath.includes('typography_variables');
+  });
+
+  const availableTypographyOptions   = getAvailableOptions(['px','rem','em'], 'Typography');
 
   if (availableColorOptions.length === 0) {
     console.warn(chalk.yellow("⚠️ Warning: No files found with any of the color suffixes (_hex, _rgb, _rgba, _hsl)."));
@@ -166,12 +192,16 @@ async function mergeOutputs() {
   if (availableBorderRadiusOptions.length === 0) {
     console.warn(chalk.yellow("⚠️ Warning: No files found with any of the border radius suffixes (_px, _rem)."));
   }
+  if (availableTypographyOptions.length === 0) {
+    console.warn(chalk.yellow("⚠️ Warning: No files found with any of the typography suffixes (_px, _rem, _em)."));
+  }
 
   const availableOptionsDict = {
     Colors: availableColorOptions,
     Size: availableSizeOptions,
     Space: availableSpaceOptions,
-    "Border Radius": availableBorderRadiusOptions
+    "Border Radius": availableBorderRadiusOptions,
+    Typography: hasTypographyFiles ? ['Yes'] : []
   };
 
   let questions = [];
@@ -211,6 +241,14 @@ async function mergeOutputs() {
       default: availableOptionsDict["Border Radius"][0]
     });
   }
+  if (availableOptionsDict.Typography.length > 0) {
+    questions.push({
+      type: 'confirm',
+      name: 'includeTypography',
+      message: "Would you like to include " + chalk.bold.yellowBright("typography tokens") + " in the merge?",
+      default: true
+    });
+  }
 
   const answersFromPrompt = questions.length > 0 ? await inquirer.prompt(questions) : {};
   
@@ -218,7 +256,8 @@ async function mergeOutputs() {
     colorFormat: answersFromPrompt.colorFormat || "N/A",
     sizeUnit: answersFromPrompt.sizeUnit || "N/A",
     spaceUnit: answersFromPrompt.spaceUnit || "N/A",
-    borderRadiusUnit: answersFromPrompt.borderRadiusUnit || "N/A"
+    borderRadiusUnit: answersFromPrompt.borderRadiusUnit || "N/A",
+    includeTypography: answersFromPrompt.includeTypography || false
   };
 
   const expectedSuffixes = [];
@@ -233,6 +272,9 @@ async function mergeOutputs() {
   }
   if (availableOptionsDict["Border Radius"].length > 0) {
     expectedSuffixes.push("_" + answers.borderRadiusUnit.toLowerCase());
+  }
+  if (availableOptionsDict.Typography.length > 0 && answers.includeTypography) {
+    expectedSuffixes.push("typography");
   }
 
   await showLoader(chalk.bold.yellowBright("\n🚀 Merging your design tokens..."), 1500);
@@ -250,6 +292,7 @@ async function mergeOutputs() {
   tableRows.push(['Size', availableOptionsDict.Size.length > 0 ? answers.sizeUnit : "N/A"]);
   tableRows.push(['Space', availableOptionsDict.Space.length > 0 ? answers.spaceUnit : "N/A"]);
   tableRows.push(['Border Radius', availableOptionsDict["Border Radius"].length > 0 ? answers.borderRadiusUnit : "N/A"]);
+  tableRows.push(['Typography', availableOptionsDict.Typography.length > 0 ? (answers.includeTypography ? "Yes" : "No") : "N/A"]);
   table.push(...tableRows);
   console.log(table.toString());
 
@@ -294,6 +337,12 @@ async function mergeOutputs() {
   const mergedSizeJSON          = mergeJSONFilesByToken(outputFiles, 'size_tokens');
   const mergedSpaceJSON         = mergeJSONFilesByToken(outputFiles, 'space_tokens');
   const mergedBorderRadiusJSON  = mergeJSONFilesByToken(outputFiles, 'border_radius_tokens');
+  
+  // Only merge typography if the user selected to include it
+  let mergedTypographyJSON = {};
+  if (answers.includeTypography) {
+    mergedTypographyJSON = mergeJSONFilesByToken(outputFiles, 'typography_tokens');
+  }
 
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("✅ FINAL OUTPUT FILES"));
