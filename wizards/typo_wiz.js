@@ -24,13 +24,16 @@ async function showAccessibilityNotes(propertyType) {
     {
       type: 'confirm',
       name: 'showNotes',
-      message: '📝 Would you like to see accessibility guidelines for this property?',
+      message: '📝 Would you like to see ' + chalk.underline('accessibility guidelines') + ' for this typography property?',
       default: false
     }
   ]);
 
+  console.log(chalk.bold.bgRedBright("\n========================================\n"));
+
+
   if (showNotes) {
-    console.log(''); // Add empty line after question
+    console.log(''); 
     switch (propertyType) {
       case 'fontFamily':
         console.log(chalk.bold.yellow("⚠️  ACCESSIBILITY NOTE ABOUT FONT FAMILIES:"));
@@ -41,7 +44,7 @@ async function showAccessibilityNotes(propertyType) {
         console.log(chalk.yellow("• Some users may override your font choices with their system fonts"));
         console.log(chalk.yellow("• Always provide at least one system font fallback"));
         console.log(chalk.yellow("• Consider using system font stacks for better performance"));
-        console.log(chalk.yellow("• Dyslexia-friendly fonts: OpenDyslexic, Lexia Readable, Comic Sans MS"));
+        console.log(chalk.yellow("• Dyslexia-friendly fonts: ") + chalk.underline("OpenDyslexic, Lexia Readable, Comic Sans MS"));
         console.log(chalk.yellow("• Avoid using more than 2-3 different font families in your design"));
         break;
       
@@ -86,7 +89,7 @@ async function showAccessibilityNotes(propertyType) {
         console.log(chalk.yellow("• WCAG 2.2 Success Criterion 1.4.12 requires adjustable line spacing up to 1.5"));
         break;
     }
-    console.log(''); // Add empty line after notes
+    console.log(''); 
   }
 }
 
@@ -96,7 +99,7 @@ async function typographyWiz() {
   console.log(chalk.bold("🪄 STARTING THE MAGIC"));
   console.log(chalk.bold.bgRedBright("========================================\n"));
 
-  await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens... "), 2000);
+  await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens..."), 1500);
   console.log(
     chalk.whiteBright("\n❤️ Welcome to the ") +
         chalk.bold.yellow("Typography Tokens Wizard") +
@@ -105,22 +108,21 @@ async function typographyWiz() {
         chalk.whiteBright(" format.\n")
   );
 
-  console.log('\n');
   const { selectedProperties } = await inquirer.prompt([
     {
       type: 'checkbox',
       name: 'selectedProperties',
-      message: 'Which typography token categories would you like to create? (use space to select, enter to confirm):',
+      message: 'Which typography tokens would you like to create? (Use space to select, enter to confirm):',
       choices: [
-        { name: 'Font Family Tokens', value: 'fontFamily' },
-        { name: 'Font Size Tokens', value: 'fontSize' },
-        { name: 'Font Weight Tokens', value: 'fontWeight' },
-        { name: 'Letter Spacing Tokens', value: 'letterSpacing' },
-        { name: 'Line Height Tokens', value: 'lineHeight' }
+        { name: 'Font Family ', value: 'fontFamily' },
+        { name: 'Font Size ', value: 'fontSize' },
+        { name: 'Font Weight ', value: 'fontWeight' },
+        { name: 'Letter Spacing ', value: 'letterSpacing' },
+        { name: 'Line Height ', value: 'lineHeight' }
       ],
       validate: (answer) => {
         if (answer.length < 1) {
-          return chalk.bold.red('🚫 Please select at least one token category to generate your typography system.');
+          return chalk.bold.red('🚫 Please select at least one token category to generate your typography tokens');
         }
         return true;
       }
@@ -144,17 +146,17 @@ async function typographyWiz() {
     
     await showAccessibilityNotes('fontFamily');
     
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    console.log('\n');
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
     const { propertyName } = await inquirer.prompt([
       {
         type: 'list',
         name: 'propertyName',
-        message: 'Choose the token category name for font families in your design system:',
+        message: 'How would you like to name your font family tokens?',
         choices: [
-          { name: 'fontFamily (standard camelCase)', value: 'fontFamily' },
-          { name: 'font-family (standard kebab-case)', value: 'font-family' },
-          { name: 'fonts (simplified)', value: 'fonts' },
+          { name: 'fontFamily', value: 'fontFamily' },
+          { name: 'font-family', value: 'font-family' },
+          { name: 'fonts', value: 'fonts' },
+          { name: 'ff', value: 'ff' },
           { name: 'custom', value: 'custom' }
         ],
         default: 'fontFamily'
@@ -163,7 +165,6 @@ async function typographyWiz() {
     
     let customPropertyName = propertyName;
     if (propertyName === 'custom') {
-      console.log('\n');
       const { customName } = await inquirer.prompt([
         {
           type: 'input',
@@ -180,7 +181,6 @@ async function typographyWiz() {
     }
     
     console.log(chalk.bold.yellowBright(`\n🔢 Step ${currentStep}${String.fromCharCode(65 + substep++)}: Select Nº of Fonts`));
-    console.log('\n');
     const { numFonts } = await inquirer.prompt([
       { 
         type: 'list', 
@@ -192,33 +192,33 @@ async function typographyWiz() {
     ]);
     const totalFonts = parseInt(numFonts, 10);
     
-    console.log(chalk.bold.yellowBright(`\n📝 Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose naming convention for Font Family`));
-    console.log('\n');
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose naming convention for Font Family`));
     const { namingConvention } = await inquirer.prompt([
       { 
         type: 'list', 
         name: 'namingConvention', 
-        message: 'How would you like to name your individual font family tokens?',
+        message: 'Which naming convention for font family tokens would you like to use?',
         choices: [
-          { name: 'Semantic (primary, secondary, tertiary)', value: 'Ranking Scale' },
-          { name: 'Purpose-based (heading, body, code)', value: 'Function' },
-          { name: 'Numbered (font-1, font-2, font-3)', value: 'Ordinal' },
-          { name: 'Alphabetical (font-a, font-b, font-c)', value: 'Alphabetical' },
-          { name: 'Custom Names', value: 'Custom' }
+          { name: 'Semantic (primary, secondary, tertiary)', value: 'semantic' },
+          { name: 'Purpose-based (title, body, details)', value: 'purpose' },
+          { name: 'Ordinal (font-1, font-2, font-3)', value: 'ordinal' },
+          { name: 'Alphabetical (font-a, font-b, font-c)', value: 'alphabetical' },
+          { name: 'Custom', value: 'custom' }
         ]
       }
     ]);
 
-    fontNames = []; 
+    let namingOptions = {}; 
+    let fontNames = [];
     
-    if (namingConvention === 'Ranking Scale') {
+    if (namingConvention === 'semantic') {
       const ranking = ['primary', 'secondary', 'tertiary'];
       fontNames = ranking.slice(0, totalFonts);
-    } else if (namingConvention === 'Function') {
-      const fnNames = ['title', 'body', 'details'];
+    } else if (namingConvention === 'purpose') {
+      const fnNames = ['titles', 'body', 'details'];
       fontNames = fnNames.slice(0, totalFonts);
-    } else if (namingConvention === 'Ordinal') {
-      const { ordinalFormat } = await inquirer.prompt([
+    } else if (namingConvention === 'ordinal') {
+      const ordinalFormatAnswer = await inquirer.prompt([
         {
           type: 'list',
           name: 'ordinalFormat',
@@ -229,35 +229,44 @@ async function typographyWiz() {
           ]
         }
       ]);
+      namingOptions.format = ordinalFormatAnswer.ordinalFormat;
       
       for (let i = 1; i <= totalFonts; i++) {
-        const numberPart = ordinalFormat === 'padded' ? i.toString().padStart(2, '0') : i.toString();
+        const numberPart = namingOptions.format === 'padded' ? i.toString().padStart(2, '0') : i.toString();
         fontNames.push(numberPart);
       }
     } else if (namingConvention === 'Alphabetical') {
-      const { letterCase } = await inquirer.prompt([
+      const alphabeticalCaseAnswer = await inquirer.prompt([
         {
           type: 'list',
-          name: 'letterCase',
+          name: 'alphabeticalCase',
           message: 'For Alphabetical scale, choose the case:',
           choices: [
-            { name: 'Uppercase (e.g., A, B, C)', value: 'uppercase' },
-            { name: 'Lowercase (e.g., a, b, c)', value: 'lowercase' }
+            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
+            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
           ]
         }
       ]);
-      const alphabets = letterCase === 'uppercase' ? ['A', 'B', 'C'] : ['a', 'b', 'c'];
+      namingOptions.case = alphabeticalCaseAnswer.alphabeticalCase;
+      
+      const alphabets = namingOptions.case === 'uppercase' ? ['A', 'B', 'C'] : ['a', 'b', 'c'];
       fontNames = alphabets.slice(0, totalFonts);
-    } else if (namingConvention === 'Custom') {
+    } else if (namingConvention === 'custom') {
+      console.log(chalk.bold.yellowBright("\n📝 Enter custom names for your font families:"));
       for (let i = 1; i <= totalFonts; i++) {
         const { customName } = await inquirer.prompt([
-          { 
-            type: 'input', 
-            name: 'customName', 
-            message: `\nEnter custom name for font ${i}:` 
+          {
+            type: 'input',
+            name: 'customName',
+            message: `Enter name for font family ${i}:`,
+            validate: input => {
+              if (input.trim() === '') return 'Please enter a valid name';
+              if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Names must start with a letter and can only contain letters, numbers, and hyphens';
+              return true;
+            }
           }
         ]);
-        fontNames.push(customName.trim() || `FONT${i}`);
+        fontNames.push(customName.trim());
       }
     }
     
@@ -296,7 +305,7 @@ async function typographyWiz() {
           { 
             type: 'list', 
             name: 'selectedFont', 
-            message: `\nSelect a font family for "${name}":`, 
+            message: `Select a font family for "${name}":`, 
             choices: popularFonts, 
             default: popularFonts[0] 
           }
@@ -307,7 +316,7 @@ async function typographyWiz() {
           { 
             type: 'input', 
             name: 'customFont', 
-            message: `\nEnter the font family name for "${name}" (e.g., "Montserrat"):`,
+            message: `Enter the font family name for "${name}" (e.g., "Montserrat"):`,  
             validate: input => input.trim() !== '' || 'Please enter a font family name'
           }
         ]);
@@ -344,6 +353,7 @@ async function typographyWiz() {
     });
 
     settingsTable.push(
+      ["Token Name", customPropertyName],
       ["Number of Fonts", totalFonts.toString()],
       ["Naming Convention", namingConvention]
     );
@@ -367,7 +377,7 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmFontFamily",
-        message: "Would you like to continue with these font family settings?\n",
+        message: "Would you like to continue with these font family settings?",
         default: true
       }
     ]);
@@ -388,25 +398,39 @@ async function typographyWiz() {
     
     await showAccessibilityNotes('fontSize');
     
+    let scaleInfo = {
+      type: '',
+      method: '',
+      step: 0,
+      base: 0,
+      ratio: 0,
+      unit: '',
+      baseMultiplier: 0
+    };
+    
+    let namingOptions = {};
+    let sizeNames = [];
+    let fontSizes = {};
+    
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName: fontSizePropertyName } = await inquirer.prompt([
+    const { propertyName } = await inquirer.prompt([
       {
         type: 'list',
         name: 'propertyName',
-        message: 'Choose the token category name for font sizes in your design system:',
+        message: 'How would you like to name your font size tokens?',
         choices: [
-          { name: 'fontSize (standard camelCase)', value: 'fontSize' },
-          { name: 'font-size (standard kebab-case)', value: 'font-size' },
-          { name: 'size (simplified)', value: 'size' },
-          { name: 'type-scale', value: 'type-scale' },
+          { name: 'fontSize', value: 'fontSize' },
+          { name: 'font-size', value: 'font-size' },
+          { name: 'size', value: 'size' },
+          { name: 'fs', value: 'fs' },
           { name: 'custom', value: 'custom' }
         ],
         default: 'fontSize'
       }
     ]);
     
-    let customPropertyName = fontSizePropertyName;
-    if (fontSizePropertyName === 'custom') {
+    let customPropertyName = propertyName;
+    if (propertyName === 'custom') {
       const { customName } = await inquirer.prompt([
         {
           type: 'input',
@@ -421,27 +445,24 @@ async function typographyWiz() {
       ]);
       customPropertyName = customName.trim();
     }
-    
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Naming Convention`));
-    
+
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Naming Convention`));
     const { namingConvention } = await inquirer.prompt([
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose the naming convention for your font size tokens:',
+        message: 'Choose a naming strategy for your font size tokens:',
         choices: [
-          { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 'tshirt' },
-          { name: 'Incremental (e.g., 50, 100, 150)', value: 'incremental' },
-          { name: 'Ordinal (e.g., 1, 2, 3)', value: 'ordinal' },
-          { name: 'Alphabetical (e.g., A, B, C)', value: 'alphabetical' }
+          { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
+          { name: 'Incremental (10, 20, 30...)', value: 'incremental' },
+          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
+          { name: 'Alphabetical (a, b, c, d, e)', value: 'alphabetical' }
         ]
       }
     ]);
-    
-    let namingOptions = {};
-    
+
     if (namingConvention === 'ordinal') {
-      const { ordinalFormat } = await inquirer.prompt([
+      const ordinalFormatAnswer = await inquirer.prompt([
         {
           type: 'list',
           name: 'ordinalFormat',
@@ -452,26 +473,38 @@ async function typographyWiz() {
           ]
         }
       ]);
-      namingOptions.format = ordinalFormat;
-      
+      namingOptions.format = ordinalFormatAnswer.ordinalFormat;
     } else if (namingConvention === 'alphabetical') {
-      const { letterCase } = await inquirer.prompt([
+      const alphabeticalCaseAnswer = await inquirer.prompt([
         {
           type: 'list',
-          name: 'letterCase',
+          name: 'alphabeticalCase',
           message: 'For Alphabetical scale, choose the case:',
           choices: [
-            { name: 'Uppercase (e.g., A, B, C)', value: 'uppercase' },
-            { name: 'Lowercase (e.g., a, b, c)', value: 'lowercase' }
+            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
+            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
           ]
         }
       ]);
-      namingOptions.case = letterCase;
+      namingOptions.case = alphabeticalCaseAnswer.alphabeticalCase;
+    } else if (namingConvention === 'incremental') {
+      const incrementalStepAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'incrementalStep',
+          message: 'For Incremental scale, choose the step increment:',
+          choices: [
+            { name: '10 in 10 (e.g., 10, 20, 30, ...)', value: 10 },
+            { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
+            { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
+          ]
+        }
+      ]);
+      namingOptions.increment = incrementalStepAnswer.incrementalStep;
     }
-    
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Scale`));
-    
-    let scaleInfo = {};
+
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Scale`));
+    console.log(chalk.yellow("Select a scale type for your font sizes. ") + chalk.underline("Recommended:") + chalk.yellow(" 4-point or 8-point grid system for consistency."));
     
     const { scaleType } = await inquirer.prompt([
       {
@@ -692,7 +725,7 @@ async function typographyWiz() {
       scaleInfo.baseMultiplier = parseFloat(baseMultiplier);
     }
     
-    console.log(chalk.bold.yellowBright(`🔢 Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Unit`));
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Unit`));
     
     const { sizingUnit } = await inquirer.prompt([
       {
@@ -706,7 +739,7 @@ async function typographyWiz() {
     
     scaleInfo.unit = sizingUnit;
     
-    console.log(chalk.bold.yellowBright(`🔢 Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Number of Values`));
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Number of Values`));
     
     const { totalSizes } = await inquirer.prompt([
       {
@@ -726,33 +759,7 @@ async function typographyWiz() {
     
     const numSizes = parseInt(totalSizes);
     
-    let sizeNames = [];
-    const fontSizes = {};
-    
-    if (namingConvention === 'ordinal') {
-      for (let i = 1; i <= numSizes; i++) {
-        const numberPart = namingOptions.format === 'padded' ? i.toString().padStart(2, '0') : i.toString();
-        sizeNames.push(numberPart);
-      }
-    } else if (namingConvention === 'incremental') {
-      const { increment } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'increment',
-          message: 'For Incremental scale, choose the step increment:',
-          choices: [
-            { name: '10 in 10 (e.g., 10, 20, 30)', value: '10' },
-            { name: '50 in 50 (e.g., 50, 100, 150)', value: '50' },
-            { name: '100 in 100 (e.g., 100, 200, 300)', value: '100' }
-          ]
-        }
-      ]);
-      namingOptions.increment = parseInt(increment);
-    
-      for (let i = 1; i <= numSizes; i++) {
-        sizeNames.push(`${i * namingOptions.increment}`);
-      }
-    } else if (namingConvention === 'tshirt') {
+    if (namingConvention === 'tshirt') {
       if (numSizes === 3) {
         sizeNames = ['sm', 'md', 'lg'];
       } else if (numSizes === 5) {
@@ -762,15 +769,18 @@ async function typographyWiz() {
       } else { 
         sizeNames = ['3xs', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'];
       }
+    } else if (namingConvention === 'ordinal') {
+      for (let i = 1; i <= numSizes; i++) {
+        const numberPart = namingOptions.format === 'padded' ? i.toString().padStart(2, '0') : i.toString();
+        sizeNames.push(numberPart);
+      }
     } else if (namingConvention === 'alphabetical') {
-      for (let i = 0; i < numSizes; i++) {
-        let letter;
-        if (namingOptions.case === 'uppercase') {
-          letter = String.fromCharCode(65 + i); 
-        } else {
-          letter = String.fromCharCode(97 + i); 
-        }
-        sizeNames.push(letter);
+      const alphabets = namingOptions.case === 'uppercase' ? ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'] : 
+                                                           ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'];
+      sizeNames = alphabets.slice(0, numSizes);
+    } else if (namingConvention === 'incremental') {
+      for (let i = 1; i <= numSizes; i++) {
+        sizeNames.push((i * namingOptions.increment).toString());
       }
     }
     
@@ -881,6 +891,7 @@ async function typographyWiz() {
     }
 
     settingsTable.push(
+      ["Token Name", customPropertyName],
       ["Naming Convention", getDescriptiveName('namingConvention', namingConvention)],
       ["Scale Type", getDescriptiveName('scaleType', currentScaleType)],
       ["Number of Font Sizes", numSizes.toString()],
@@ -906,13 +917,13 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmFontSize",
-        message: "\nWould you like to continue with these font sizes?",
+        message: "Would you like to continue with these font size settings?",
         default: true
       }
     ]);
 
     if (!confirmFontSize) {
-      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font sizes..."));
+      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font size settings..."));
       return await setupFontSize();
     }
     
@@ -924,27 +935,28 @@ async function typographyWiz() {
     console.log(chalk.bold.bgRedBright("\n========================================"));
     console.log(chalk.bold(`🔠 STEP ${currentStep}: FONT WEIGHT`));
     console.log(chalk.bold.bgRedBright("========================================\n"));
-
+    
     await showAccessibilityNotes('fontWeight');
-
+    
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName: fontWeightPropertyName } = await inquirer.prompt([
+    const { propertyName } = await inquirer.prompt([
       {
         type: 'list',
         name: 'propertyName',
-        message: 'Choose the token category name for font weights in your design system:',
+        message: 'How would you like to name your font weight tokens?',
         choices: [
-          { name: 'fontWeight (standard camelCase)', value: 'fontWeight' },
-          { name: 'font-weight (standard kebab-case)', value: 'font-weight' },
-          { name: 'weight (simplified)', value: 'weight' },
+          { name: 'fontWeight', value: 'fontWeight' },
+          { name: 'font-weight', value: 'font-weight' },
+          { name: 'weight', value: 'weight' },
+          { name: 'fw', value: 'fw' },
           { name: 'custom', value: 'custom' }
         ],
         default: 'fontWeight'
       }
     ]);
     
-    let customPropertyName = fontWeightPropertyName;
-    if (fontWeightPropertyName === 'custom') {
+    let customPropertyName = propertyName;
+    if (propertyName === 'custom') {
       const { customName } = await inquirer.prompt([
         {
           type: 'input',
@@ -984,10 +996,8 @@ async function typographyWiz() {
     });
 
     console.log(fontWeightTable.toString());
-    console.log('\n');
-    console.log(chalk.yellow("Note: Not all fonts support every weight. Check your font's documentation for available weights."));
+    console.log(chalk.yellow("Note: Not all fonts support every weight. Check your font's ") + chalk.underline("documentation") + chalk.yellow(" for available weights."));
 
-    console.log('\n');
     const { selectedWeights } = await inquirer.prompt([
       {
         type: 'checkbox',
@@ -1006,12 +1016,71 @@ async function typographyWiz() {
       }
     ]);
 
+    const { namingConvention } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'namingConvention',
+        message: 'Choose a naming strategy for your font weight tokens:',
+        choices: [
+          { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
+          { name: 'Semantic (thin, light, regular, medium, bold)', value: 'semantic' },
+          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
+          { name: 'Purpose-based (body, heading, display, compact, expanded)', value: 'purpose' },
+          { name: 'Custom', value: 'custom' }
+        ]
+      }
+    ]);
+
+    let tokenNames = [];
+    if (namingConvention === 'tshirt') {
+      tokenNames = ['xs', 'sm', 'md', 'lg', 'xl'];
+    } else if (namingConvention === 'semantic') {
+      tokenNames = ['thin', 'light', 'regular', 'medium', 'bold'];
+    } else if (namingConvention === 'ordinal') {
+      tokenNames = ['1', '2', '3', '4', '5'];
+    } else if (namingConvention === 'purpose') {
+      tokenNames = ['body', 'heading', 'display', 'compact', 'expanded'];
+    } else if (namingConvention === 'custom') {
+      console.log(chalk.bold.yellowBright("\n📝 Enter custom names for your font weights:"));
+      for (let i = 0; i < selectedWeights.length; i++) {
+        const { customName } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'customName',
+            message: `Enter name for weight ${selectedWeights[i].value}:`,
+            validate: input => {
+              if (input.trim() === '') return 'Please enter a valid name';
+              if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Names must start with a letter and can only contain letters, numbers, and hyphens';
+              return true;
+            }
+          }
+        ]);
+        tokenNames.push(customName.trim());
+      }
+    }
+
     const fontWeight = {};
-    selectedWeights.forEach(weight => {
-      fontWeight[weight.name] = { value: weight.value, type: 'fontWeights' };
+    selectedWeights.forEach((weight, index) => {
+      fontWeight[tokenNames[index]] = { value: weight.value, type: 'fontWeights' };
     });
 
     console.log(chalk.bold.yellowBright("\n📋 Font Weight Settings Summary:"));
+    
+    const settingsTable = new Table({
+      head: [chalk.bold("Setting"), chalk.bold("Option")],
+      style: { head: ["red"], border: ["red"] }
+    });
+
+    settingsTable.push(
+      ["Token Name", customPropertyName],
+      ["Naming Convention", namingConvention],
+      ["Number of Weights", selectedWeights.length.toString()]
+    );
+
+    console.log(settingsTable.toString());
+
+    console.log(chalk.bold.yellowBright("\n📏 Font Weights:"));
+    
     const weightTable = new Table({
       head: [chalk.bold("Token Name"), chalk.bold("Value")],
       style: { head: ["red"], border: ["red"] }
@@ -1023,18 +1092,17 @@ async function typographyWiz() {
 
     console.log(weightTable.toString());
 
-    console.log('\n');
     const { confirmFontWeight } = await inquirer.prompt([
       {
         type: "confirm",
         name: "confirmFontWeight",
-        message: "Would you like to continue with these font weights?",
+        message: "Would you like to continue with these font weight settings?",
         default: true
       }
     ]);
 
     if (!confirmFontWeight) {
-      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font weights..."));
+      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font weight settings..."));
       return await setupFontWeight();
     }
     
@@ -1049,25 +1117,25 @@ async function typographyWiz() {
     
     await showAccessibilityNotes('letterSpacing');
     
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName: letterSpacingPropertyName } = await inquirer.prompt([
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
+    const { propertyName } = await inquirer.prompt([
       {
         type: 'list',
         name: 'propertyName',
-        message: 'Choose the token category name for letter spacing in your design system:',
+        message: 'How would you like to name your letter spacing tokens?',
         choices: [
-          { name: 'letterSpacing (standard camelCase)', value: 'letterSpacing' },
-          { name: 'letter-spacing (standard kebab-case)', value: 'letter-spacing' },
-          { name: 'tracking (design term)', value: 'tracking' },
-          { name: 'spacing (simplified)', value: 'spacing' },
+          { name: 'letterSpacing', value: 'letterSpacing' },
+          { name: 'letter-spacing', value: 'letter-spacing' },
+          { name: 'tracking', value: 'tracking' },
+          { name: 'ls', value: 'ls' },
           { name: 'custom', value: 'custom' }
         ],
         default: 'letterSpacing'
       }
     ]);
     
-    let customPropertyName = letterSpacingPropertyName;
-    if (letterSpacingPropertyName === 'custom') {
+    let customPropertyName = propertyName;
+    if (propertyName === 'custom') {
       const { customName } = await inquirer.prompt([
         {
           type: 'input',
@@ -1083,7 +1151,7 @@ async function typographyWiz() {
       customPropertyName = customName.trim();
     }
 
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose naming convention`));
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose naming convention`));
     const { namingConvention } = await inquirer.prompt([
       {
         type: 'list',
@@ -1099,7 +1167,7 @@ async function typographyWiz() {
       }
     ]);
 
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose scale type`));
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose scale type`));
     const { scaleType } = await inquirer.prompt([
       {
         type: 'list',
@@ -1112,7 +1180,8 @@ async function typographyWiz() {
       }
     ]);
 
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose unit`));
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose unit`));
+    console.log(chalk.yellow("Select the unit for letter spacing values. ") + chalk.underline("Recommended:") + chalk.yellow(" em or rem for better scaling."));
     let { unit } = await inquirer.prompt([
       {
         type: 'list',
@@ -1158,7 +1227,7 @@ async function typographyWiz() {
       }
     }
 
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Number of values`));
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Number of values`));
     const { numValues } = await inquirer.prompt([
       {
         type: 'input',
@@ -1180,10 +1249,10 @@ async function typographyWiz() {
     const totalValues = parseInt(numValues);
 
     if (scaleType === 'predetermined') {
-      const predefinedValues = ['-1.25', '0', '1.25', '2.5'];
+      const predefinedValues = ['-1.25', '0', '1.25', '2.5', '3.75', '5', '10'];
       values = predefinedValues.slice(0, totalValues).map(v => v + (unit === 'px' ? 'px' : unit));
     } else if (scaleType === 'custom') {
-      console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom intervals:`));
+      console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom intervals:`));
       
       for (let i = 0; i < totalValues; i++) {
         const { customValue } = await inquirer.prompt([
@@ -1204,7 +1273,6 @@ async function typographyWiz() {
       }
     }
 
-    // Generate names based on convention
     if (namingConvention === 'tshirt') {
       const tshirtSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'];
       names = tshirtSizes.slice(0, totalValues);
@@ -1246,20 +1314,20 @@ async function typographyWiz() {
       names = semanticNames.slice(0, totalValues);
     }
 
-    // Create letter spacing object
     const letterSpacing = {};
-    names.forEach((name, index) => {
-      letterSpacing[name] = {
-        value: values[index],
-        type: 'letterSpacing'
-      };
-    });
+    for (let i = 0; i < totalValues; i++) {
+      if (values[i] && names[i]) {
+        letterSpacing[names[i]] = {
+          value: values[i],
+          type: 'letterSpacing'
+        };
+      }
+    }
 
-    // Display summary
     console.log(chalk.bold.yellowBright("\n📋 Letter Spacing Settings Summary:"));
     
     const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Value")],
+      head: [chalk.bold("Setting"), chalk.bold("Option")],
       style: { head: ["red"], border: ["red"] }
     });
 
@@ -1290,13 +1358,13 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmLetterSpacing",
-        message: "\nWould you like to continue with these letter spacing settings?",
+        message: "Would you like to continue with these letter spacing settings?",
         default: true
       }
     ]);
 
     if (!confirmLetterSpacing) {
-      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your letter spacing..."));
+      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your letter spacing settings..."));
       return await setupLetterSpacing();
     }
     
@@ -1311,16 +1379,16 @@ async function typographyWiz() {
     
     await showAccessibilityNotes('lineHeight');
 
-    console.log('\n');
     const { propertyName } = await inquirer.prompt([
       {
         type: 'list',
         name: 'propertyName',
-        message: 'Choose the token category name for line heights in your design system:',
+        message: 'How would you like to name your line height tokens?',
         choices: [
-          { name: 'lineHeight (standard camelCase)', value: 'lineHeight' },
-          { name: 'line-height (standard kebab-case)', value: 'line-height' },
-          { name: 'leading (design term)', value: 'leading' },
+          { name: 'lineHeight', value: 'lineHeight' },
+          { name: 'line-height', value: 'line-height' },
+          { name: 'leading', value: 'leading' },
+          { name: 'lh', value: 'lh' },
           { name: 'custom', value: 'custom' }
         ],
         default: 'lineHeight'
@@ -1329,8 +1397,7 @@ async function typographyWiz() {
 
     let customPropertyName = propertyName;
     if (propertyName === 'custom') {
-      console.log('\n');
-      const { customName } = await inquirer.prompt([
+        const { customName } = await inquirer.prompt([
         {
           type: 'input',
           name: 'customName',
@@ -1345,7 +1412,6 @@ async function typographyWiz() {
       customPropertyName = customName.trim();
     }
 
-    console.log('\n');
     const { namingConvention } = await inquirer.prompt([
       {
         type: 'list',
@@ -1354,42 +1420,47 @@ async function typographyWiz() {
         choices: [
           { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
           { name: 'Semantic (tight, normal, loose, relaxed, spacious)', value: 'semantic' },
-          { name: 'Numerical (1, 2, 3, 4, 5)', value: 'numerical' },
+          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
           { name: 'Purpose-based (body, heading, display, compact, expanded)', value: 'purpose' }
         ]
       }
     ]);
 
-    console.log('\n');
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Scale`));
+    console.log(chalk.yellow("Select a scale type for line heights. ") + chalk.underline("Recommended:") + chalk.yellow(" 1.0 to 2.0 for optimal readability."));
+
     const { scaleType } = await inquirer.prompt([
       {
         type: 'list',
         name: 'scaleType',
         message: 'Choose the scale type for line height values:',
         choices: [
-          { name: 'Predetermined (1.2, 1.4, 1.5, 1.6, 1.8)', value: 'predetermined' },
+          { name: 'Scale 1 (1.1, 1.25, 1.5, 1.6, 1.75, 2.0)', value: 'scale1' },
+          { name: 'Scale 2 (1.0, 1.2, 1.5, 1.6, 2.0)', value: 'scale2' },
           { name: 'Custom Intervals', value: 'custom' }
         ]
       }
     ]);
 
     let lineHeightValues = [];
-    if (scaleType === 'predetermined') {
-      lineHeightValues = ['1.2', '1.4', '1.5', '1.6', '1.8'];
+    if (scaleType === 'scale1') {
+      lineHeightValues = ['1.1', '1.25', '1.5', '1.6', '1.75', '2.0'];
+    } else if (scaleType === 'scale2') {
+      lineHeightValues = ['1.0', '1.2', '1.5', '1.6', '2.0'];
     } else {
-      console.log(chalk.yellow("\n⚠️ Note: For optimal readability, line heights should typically be between 1.2 and 2.0"));
+      console.log(chalk.yellow("\n⚠️ Note: For optimal readability, line heights should typically be between 1.0 and 2.0"));
       for (let i = 0; i < 5; i++) {
-        console.log('\n');
-        const { customValue } = await inquirer.prompt([
+            const { customValue } = await inquirer.prompt([
           {
             type: 'input',
             name: 'customValue',
             message: `Enter value ${i + 1} of 5:`,
-            default: String(1.2 + (i * 0.2)),
+            default: i === 2 ? '1.5' : String(1.0 + (i * 0.2)),
             validate: input => {
               if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
               const value = parseFloat(input);
-              if (value < 1) return 'Line height should be greater than 1';
+              if (value < 1) return 'Line height should be greater than or equal to 1';
+              if (i === 2 && value !== 1.5) return 'The third value must be 1.5 for normal line height';
               return true;
             }
           }
@@ -1403,7 +1474,7 @@ async function typographyWiz() {
       tokenNames = ['xs', 'sm', 'md', 'lg', 'xl'];
     } else if (namingConvention === 'semantic') {
       tokenNames = ['tight', 'normal', 'loose', 'relaxed', 'spacious'];
-    } else if (namingConvention === 'numerical') {
+    } else if (namingConvention === 'ordinal') {
       tokenNames = ['1', '2', '3', '4', '5'];
     } else if (namingConvention === 'purpose') {
       tokenNames = ['body', 'heading', 'display', 'compact', 'expanded'];
@@ -1417,16 +1488,16 @@ async function typographyWiz() {
       };
     });
 
-    // Display summary
+    
     console.log(chalk.bold.yellowBright("\n📋 Line Height Settings Summary:"));
     
     const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Value")],
+      head: [chalk.bold("Setting"), chalk.bold("Option")],
       style: { head: ["red"], border: ["red"] }
     });
 
     settingsTable.push(
-      ["Token Category", customPropertyName],
+      ["Token Name", customPropertyName],
       ["Naming Convention", namingConvention],
       ["Scale Type", scaleType]
     );
@@ -1446,7 +1517,6 @@ async function typographyWiz() {
 
     console.log(valuesTable.toString());
 
-    console.log('\n');
     const { confirmLineHeight } = await inquirer.prompt([
       {
         type: "confirm",
@@ -1457,7 +1527,7 @@ async function typographyWiz() {
     ]);
 
     if (!confirmLineHeight) {
-      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your line heights..."));
+      console.log(chalk.bold.yellow("\n↺ Let's reconfigure your line height settings..."));
       return await setupLineHeight();
     }
     
@@ -1588,7 +1658,7 @@ async function typographyWiz() {
   const cssTypographyDir = path.join(outputsDir, "css", "typography");
   const scssTypographyDir = path.join(outputsDir, "scss", "typography");
 
-  // Ensure output directories exist
+  
   [outputsDir, tokensTypographyDir, cssTypographyDir, scssTypographyDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -1638,7 +1708,7 @@ function generateCSSVariables(tokenObj, prefix) {
   
   for (const [key, token] of Object.entries(tokenObj)) {
     if (typeof token === 'object') {
-      // Handle nested objects (like fontFamilies, fontSizes, etc.)
+      
       for (const [subKey, subToken] of Object.entries(token)) {
         if (subToken && typeof subToken === 'object' && subToken.value) {
           css += `  --${key}-${subKey}: ${subToken.value};\n`;
@@ -1656,7 +1726,7 @@ function generateSCSSVariables(tokenObj, prefix) {
   
   for (const [key, token] of Object.entries(tokenObj)) {
     if (typeof token === 'object') {
-      // Handle nested objects (like fontFamilies, fontSizes, etc.)
+      
       for (const [subKey, subToken] of Object.entries(token)) {
         if (subToken && typeof subToken === 'object' && subToken.value) {
           scss += `$${key}-${subKey}: ${subToken.value};\n`;
