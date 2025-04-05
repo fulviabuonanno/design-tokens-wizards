@@ -191,12 +191,30 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
     console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-console.log(
-  chalk.bold("Type: ") + chalk.whiteBright(finalColorType) + 
-  chalk.bold("  Name: ") + chalk.whiteBright(finalConcept) + "\n"
-);
+    console.log(
+      chalk.bold("Type: ") + chalk.whiteBright(finalColorType) + 
+      chalk.bold("  Name: ") + chalk.whiteBright(finalConcept) + "\n"
+    );
 
     console.log(printStopsTable(stops, mode, padded));
+
+    const { showAccessibility } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "showAccessibility",
+        message: "Would you like to see the accessibility analysis for these colors?",
+        default: true
+      }
+    ]);
+
+    if (showAccessibility) {
+      console.log(chalk.black.bgYellowBright("\n======================================="));
+      console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
+      console.log(chalk.black.bgYellowBright("=======================================\n"));
+      
+      console.log(printAccessibilityTable(stops));
+    }
+
     const { confirmColor } = await inquirer.prompt([
       {
         type: "confirm",
@@ -525,6 +543,48 @@ const formatStopsOutput = (stops) => {
     .join(",\n");
 };
 
+const getWCAGCompliance = (backgroundColor, isForeground = false, bgColor = null) => {
+  const color = tinycolor(backgroundColor);
+  
+  let contrast;
+  if (isForeground && bgColor) {
+    contrast = tinycolor.readability(color, bgColor);
+  } else {
+    const whiteContrast = tinycolor.readability(color, "#FFFFFF");
+    const blackContrast = tinycolor.readability(color, "#000000");
+    contrast = Math.max(whiteContrast, blackContrast);
+  }
+  
+  const getLevel = (contrast) => {
+    // For normal text (minimum 4.5:1 for AA, 7:1 for AAA)
+    const normalText = contrast >= 7.0 ? "🟢 AAA" : 
+                      contrast >= 4.5 ? "🟡 AA" : 
+                      contrast >= 3.0 ? "❌ A" : "❌ -";
+    
+    // For large text (minimum 3:1 for AA, 4.5:1 for AAA)
+    const largeText = contrast >= 4.5 ? "🟢 AAA" :
+                     contrast >= 3.0 ? "🟡 AA" :
+                     contrast >= 2.0 ? "❌ A" : "❌ -";
+    
+    return {
+      normalText,
+      largeText
+    };
+  };
+
+  const bestTextColor = isForeground ? null : 
+    tinycolor.readability(color, "#FFFFFF") > tinycolor.readability(color, "#000000") ? "white" : "black";
+  
+  const levels = getLevel(contrast);
+  
+  return {
+    normalText: levels.normalText,
+    largeText: levels.largeText,
+    contrast: contrast.toFixed(2),
+    textColor: bestTextColor
+  };
+};
+
 const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
   let entries = Object.entries(stops);
 
@@ -541,7 +601,6 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
     });
   } else if (mode === "ordinal" || mode === "incremental") {
     if (padded) {
-      
       entries.forEach(([key, value], idx) => {
         if (key !== "base") {
           entries[idx][0] = key.padStart(2, "0");
@@ -557,13 +616,88 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
   }
 
   const table = new Table({
-    head: [chalk.bold.yellowBright("Scale"), chalk.bold.yellowBright("HEX"), chalk.bold.yellowBright("Sample")],
+    head: [
+      chalk.bold.yellowBright("Scale"), 
+      chalk.bold.yellowBright("HEX"), 
+      chalk.bold.yellowBright("Sample")
+    ],
     style: { head: [], border: ["yellow"] }
   });
 
   entries.forEach(([key, value]) => {
-    table.push([key, value, chalk.bgHex(value).white("         ")]);
+    const wcag = getWCAGCompliance(value);
+    const textColor = wcag.textColor === "white" ? chalk.white : chalk.black;
+    table.push([
+      key, 
+      value, 
+      chalk.bgHex(value)(textColor("         "))
+    ]);
   });
+
+  return table.toString();
+};
+
+const printAccessibilityTable = (stops) => {
+  let entries = Object.entries(stops);
+  
+  const table = new Table({
+    head: [
+      chalk.bold.yellowBright("Scale"), 
+      chalk.bold.yellowBright("HEX"), 
+      chalk.bold.yellowBright("Sample"),
+      chalk.bold.yellowBright("Normal Text"),
+      chalk.bold.yellowBright("Large Text"),
+      chalk.bold.yellowBright("Contrast")
+    ],
+    style: { head: [], border: ["yellow"] }
+  });
+
+  entries.forEach(([key, value]) => {
+    // As background color
+    const wcagBg = getWCAGCompliance(value);
+    const textColor = wcagBg.textColor === "white" ? chalk.white : chalk.black;
+    table.push([
+      key, 
+      value, 
+      chalk.bgHex(value)(textColor("         ")),
+      wcagBg.normalText,
+      wcagBg.largeText,
+      wcagBg.contrast
+    ]);
+
+    // As text on white background
+    const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
+    table.push([
+      "└─ on white", 
+      value, 
+      chalk.bgWhite(chalk.hex(value)("         ")),
+      wcagOnWhite.normalText,
+      wcagOnWhite.largeText,
+      wcagOnWhite.contrast
+    ]);
+
+    // As text on black background
+    const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
+    table.push([
+      "└─ on black", 
+      value, 
+      chalk.bgBlack(chalk.hex(value)("         ")),
+      wcagOnBlack.normalText,
+      wcagOnBlack.largeText,
+      wcagOnBlack.contrast
+    ]);
+  });
+
+  console.log(chalk.yellow("\nAccessibility Guide:"));
+  console.log("🟢 Excellent contrast - Meets AAA standards");
+  console.log("🟡 Good contrast - Meets AA standards (minimum for most uses)");
+  console.log("❌ Poor contrast - Does not meet minimum standards");
+  console.log("\nNormal Text: 4.5:1 for AA, 7:1 for AAA");
+  console.log("Large Text: 3:1 for AA, 4.5:1 for AAA");
+  console.log("\nEach color is tested in three contexts:");
+  console.log("1. As a background color (with auto-selected text color)");
+  console.log("2. As a text color on white background");
+  console.log("3. As a text color on black background");
 
   return table.toString();
 };
