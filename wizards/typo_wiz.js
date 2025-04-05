@@ -31,7 +31,6 @@ async function showAccessibilityNotes(propertyType) {
 
   console.log(chalk.bold.bgRedBright("\n========================================\n"));
 
-
   if (showNotes) {
     console.log(''); 
     switch (propertyType) {
@@ -451,7 +450,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming strategy for your font size tokens:',
+        message: 'Choose a naming convention for your font size tokens:',
         choices: [
           { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
           { name: 'Incremental (10, 20, 30...)', value: 'incremental' },
@@ -1020,7 +1019,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming strategy for your font weight tokens:',
+        message: 'Choose a naming convention for your font weight tokens:',
         choices: [
           { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
           { name: 'Semantic (thin, light, regular, medium, bold)', value: 'semantic' },
@@ -1156,7 +1155,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming strategy for your letter spacing tokens:',
+        message: 'Choose a naming convention for your letter spacing tokens:',
         choices: [
           { name: 'T-shirt sizes (xs, sm, md, lg, xl...)', value: 'tshirt' },
           { name: 'Incremental (100, 200, 300...)', value: 'incremental' },
@@ -1416,7 +1415,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming strategy for your line height tokens:',
+        message: 'Choose a naming convention for your line height tokens:',
         choices: [
           { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
           { name: 'Semantic (tight, normal, loose, relaxed, spacious)', value: 'semantic' },
@@ -1488,7 +1487,6 @@ async function typographyWiz() {
       };
     });
 
-    
     console.log(chalk.bold.yellowBright("\n📋 Line Height Settings Summary:"));
     
     const settingsTable = new Table({
@@ -1658,7 +1656,6 @@ async function typographyWiz() {
   const cssTypographyDir = path.join(outputsDir, "css", "typography");
   const scssTypographyDir = path.join(outputsDir, "scss", "typography");
 
-  
   [outputsDir, tokensTypographyDir, cssTypographyDir, scssTypographyDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
