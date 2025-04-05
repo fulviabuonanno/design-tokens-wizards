@@ -1087,24 +1087,25 @@ async function typographyWiz() {
     console.log(chalk.bold.yellow("\n📊 FONT WEIGHT OPTIONS:"));
     
     const fontWeightTable = new Table({
-      head: [chalk.bold("Weight"), chalk.bold("Name"), chalk.bold("Common Usage")],
+      head: [chalk.bold("Weight"), chalk.bold("Name"), chalk.bold("Alternative Names"), chalk.bold("Common Usage")],
       style: { head: ["red"], border: ["red"] }
     });
 
     const weightOptions = [
-      { weight: '100', name: 'Thin', usage: 'Decorative, very large headings' },
-      { weight: '200', name: 'Extra Light', usage: 'Decorative, large headings' },
-      { weight: '300', name: 'Light', usage: 'Secondary headings, subtext' },
-      { weight: '400', name: 'Regular', usage: 'Body text, main content' },
-      { weight: '500', name: 'Medium', usage: 'Emphasized body text' },
-      { weight: '600', name: 'Semi Bold', usage: 'Subheadings, important text' },
-      { weight: '700', name: 'Bold', usage: 'Primary headings, strong emphasis' },
-      { weight: '800', name: 'Extra Bold', usage: 'High-impact headings' },
-      { weight: '900', name: 'Black', usage: 'Ultra-high impact, display text' }
+      { weight: '100', name: 'Thin', altNames: 'hairline', usage: 'Decorative, very large headings' },
+      { weight: '200', name: 'Extra Light', altNames: 'ultra-light', usage: 'Decorative, large headings' },
+      { weight: '300', name: 'Light', altNames: '', usage: 'Secondary headings, subtext' },
+      { weight: '400', name: 'Regular', altNames: 'normal, book', usage: 'Body text, main content' },
+      { weight: '500', name: 'Medium', altNames: '', usage: 'Emphasized body text' },
+      { weight: '600', name: 'Semi Bold', altNames: 'demi-bold', usage: 'Subheadings, important text' },
+      { weight: '700', name: 'Bold', altNames: '', usage: 'Primary headings, strong emphasis' },
+      { weight: '800', name: 'Extra Bold', altNames: 'ultra-bold', usage: 'High-impact headings' },
+      { weight: '900', name: 'Black', altNames: 'heavy', usage: 'Ultra-high impact, display text' },
+      { weight: '950', name: 'Extra Black', altNames: 'ultra-black', usage: 'Maximum impact, display text' }
     ];
 
     weightOptions.forEach(opt => {
-      fontWeightTable.push([opt.weight, opt.name, opt.usage]);
+      fontWeightTable.push([opt.weight, opt.name, opt.altNames || '-', opt.usage]);
     });
 
     console.log(fontWeightTable.toString());
