@@ -2,16 +2,16 @@
 
 Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`** — the enchanting scripts that helps you craft design tokens in just a few simple steps... as if by magic! 🪄✨
 
-With **`design-tokens-wizards`**, you’ll unlock:
+With **`design-tokens-wizards`**, you'll unlock:
 
 - **Enforce Naming Conventions:** Harness the power of our Design System lexicon to imbue each token with a spellbinding, standardized identity.
 - **Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
 - **Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
-- **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.
+- **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project's unique needs.
 - **Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
-- **Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
+- **Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development's testing phase.
 
-Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get started and cast some design magic together!
+Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get started and cast some design magic together!
 
 ---
 
@@ -26,10 +26,10 @@ Select the wizard that will come to your aid by executing the corresponding scri
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.2 🆙 |
+| 🟡 **COLOR WIZ**         | `color_wiz.js` | `npm run color` | Generate and manage color tokens         | 2.3.0 🆙 |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1 🆙 |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1 🆙  |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1   |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1   |
 | **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
 | **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
 | **TYPOGRAPHY WIZ**       | Coming Soon    | –               | Generate and manage typography tokens    | –       |
@@ -38,15 +38,13 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 | Spell                   | Script Name      | Run Command     | Description                                              | Version |
 | ----------------------- | ---------------- | --------------- | -------------------------------------------------------- | ------- |
-| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.1.0  🆙    |
-| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.1.0 🆙  |
-| **ACCESSIBILITY SPELL** | Coming Soon      | –               | Assess and ensure the accessibility of your color tokens | –       |
+| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.2.0      |
+| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.2.0 🆙  |
 
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
-
-Version 2.2.2
+Version 2.4.0
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -74,7 +72,7 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
    - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
 
 5. **Behold the Preview**  
-   The wizard will cast a preview spell showing your color’s preview along with the stops table. You’ll see something like:
+   The wizard will cast a preview spell showing your color's preview along with the stops table. You'll see something like:
 
    ```
    Type: Global  Name: blue
@@ -100,12 +98,23 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
       Stored in: `outputs/tokens/color` as `color_tokens_{format}.json`
    - Conjure CSS and SCSS files with your tokens as variables.
       Stored in `outputs/css/color/` and `outputs/scss/color/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
+   - Generate an accessibility report:
+      Stored in: `/reports/accessibility-report.md`
 
-8. **Expand Your Palette**  
-   Should your creative spirit desire more color magic, simply add “more colors to the same group” and repeat the process. The wizard is always ready to extend your enchanted palette.
+8. **Review Accessibility**
+   The wizard now includes a comprehensive accessibility analysis:
+   - WCAG compliance check for each color
+   - Contrast ratio calculations
+   - Suggestions for improving non-compliant colors
+   - Detailed report with color usage recommendations
+   - Testing colors both as background and text colors
+   - Support for AAA, AA, and A level compliance checks
 
-9. **Finalize the Spell**  
-   Review the output files (listed as updated, saved, or deleted) and relish the magic you’ve created. Your design tokens are now fully prepared for integration into your design system.
+9. **Expand Your Palette**  
+   Should your creative spirit desire more color magic, simply add "more colors to the same group" and repeat the process. The wizard is always ready to extend your enchanted palette.
+
+10. **Finalize the Spell**  
+   Review the output files (listed as updated, saved, or deleted) and relish the magic you've created. Your design tokens are now fully prepared for integration into your design system.
 
 ---
 
@@ -116,10 +125,7 @@ Let the art of token crafting infuse your project with endless creativity—and 
 ---
 
 ### 📏 **Size Tokens Wizard** ✨
-
 Version 1.4.0
-
-## Size Tokens Wizard ✨
 
 Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and let the wizard generate a range of size tokens in various units, ready for integration into your design system and development projects.
 
@@ -193,7 +199,6 @@ If adjustments are needed, simply re-run the wizard until the desired output is 
 ---
 
 ### 🔳 **Space Tokens Wizard** ✨
-
 Version 1.4.1
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
@@ -266,7 +271,6 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 ---
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
-
 Version 1.4.1
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
@@ -337,8 +341,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 ---
 
    ### 🧹 **Clear Spell** ✨
-
-   Version 1.1.0
+   Version 1.2.0
 
    The Clear Spell is a simple yet powerful tool to keep your project directory clean and organized. It removes all generated files, ensuring you can start fresh without any clutter.
 
@@ -353,13 +356,20 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
       - All generated token files in the `outputs/tokens/` directory are deleted.
       - CSS and SCSS files in the `outputs/css/` and `outputs/scss/` directories are removed.
       - Final output files in the `final/` directory, including JSON, CSS, and SCSS files, will also be removed.
+      - Accessibility reports in the `reports/` directory are cleaned up.
       - Your project directory is left clean, free from outdated or unnecessary files.
 
-   ---
+   3. **Interactive Cleanup**
+      The spell now offers:
+      - Selective cleanup options for different folders
+      - Clear confirmation before deletion
+      - Detailed summary of cleaned files
+      - Visual feedback during the cleanup process
 
-   ### 🪄 **Merge Spell** ✨
+---
 
-   Version 1.1.0 🆕
+   ### �� **Merge Spell** ✨
+   Version 1.2.0
 
    The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
 

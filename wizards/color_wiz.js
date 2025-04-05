@@ -640,7 +640,8 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
 const printAccessibilityTable = (stops) => {
   let entries = Object.entries(stops);
   
-  const table = new Table({
+  // Original accessibility table
+  const originalTable = new Table({
     head: [
       chalk.bold.yellowBright("Scale"), 
       chalk.bold.yellowBright("HEX"), 
@@ -656,7 +657,7 @@ const printAccessibilityTable = (stops) => {
     // As background color
     const wcagBg = getWCAGCompliance(value);
     const textColor = wcagBg.textColor === "white" ? chalk.white : chalk.black;
-    table.push([
+    originalTable.push([
       key, 
       value, 
       chalk.bgHex(value)(textColor("         ")),
@@ -667,7 +668,7 @@ const printAccessibilityTable = (stops) => {
 
     // As text on white background
     const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
-    table.push([
+    originalTable.push([
       "└─ on white", 
       value, 
       chalk.bgWhite(chalk.hex(value)("         ")),
@@ -678,7 +679,7 @@ const printAccessibilityTable = (stops) => {
 
     // As text on black background
     const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
-    table.push([
+    originalTable.push([
       "└─ on black", 
       value, 
       chalk.bgBlack(chalk.hex(value)("         ")),
@@ -688,18 +689,91 @@ const printAccessibilityTable = (stops) => {
     ]);
   });
 
-  console.log(chalk.yellow("\nAccessibility Guide:"));
-  console.log("🟢 Excellent contrast - Meets AAA standards");
-  console.log("🟡 Good contrast - Meets AA standards (minimum for most uses)");
-  console.log("❌ Poor contrast - Does not meet minimum standards");
-  console.log("\nNormal Text: 4.5:1 for AA, 7:1 for AAA");
-  console.log("Large Text: 3:1 for AA, 4.5:1 for AAA");
-  console.log("\nEach color is tested in three contexts:");
-  console.log("1. As a background color (with auto-selected text color)");
-  console.log("2. As a text color on white background");
-  console.log("3. As a text color on black background");
+  // Suggestions table for colors that don't meet standards
+  const suggestionsTable = new Table({
+    head: [
+      chalk.bold.yellowBright("Scale"), 
+      chalk.bold.yellowBright("Current HEX"),
+      chalk.bold.yellowBright("Status"),
+      chalk.bold.yellowBright("Suggested Alternatives")
+    ],
+    style: { head: [], border: ["yellow"] },
+    wordWrap: true,
+    colWidths: [15, 12, 15, 50]
+  });
 
-  return table.toString();
+  entries.forEach(([key, value]) => {
+    const wcagBg = getWCAGCompliance(value);
+    const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
+    const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
+    
+    // Check if color meets minimum AA standard in any context
+    const meetsStandards = wcagBg.contrast >= 4.5 || 
+                          wcagOnWhite.contrast >= 4.5 || 
+                          wcagOnBlack.contrast >= 4.5;
+
+    if (!meetsStandards) {
+      // Generate accessible alternatives
+      const color = tinycolor(value);
+      const hsl = color.toHsl();
+      const adjustedColors = [];
+      
+      // Try adjusting lightness to find accessible variants
+      for (let lightness = 0; lightness <= 100; lightness += 10) {
+        const adjusted = tinycolor({ h: hsl.h, s: hsl.s, l: lightness/100 });
+        const adjustedHex = adjusted.toHexString().toUpperCase();
+        const adjustedWcag = getWCAGCompliance(adjustedHex);
+        
+        if (adjustedWcag.contrast >= 4.5) {
+          adjustedColors.push({
+            hex: adjustedHex,
+            contrast: adjustedWcag.contrast
+          });
+        }
+      }
+      
+      // Sort alternatives by contrast and take top 2
+      adjustedColors.sort((a, b) => b.contrast - a.contrast);
+      const suggestions = adjustedColors.length > 0 
+        ? adjustedColors.slice(0, 2).map(c => 
+            `${c.hex} (contrast: ${c.contrast.toFixed(2)})`
+          ).join("\n")
+        : "Try a different base color";
+
+      suggestionsTable.push([
+        key,
+        value,
+        "❌ Below AA",
+        suggestions
+      ]);
+    }
+  });
+
+  // Output both tables with appropriate headers
+  let output = "";
+  output += chalk.yellow("\nDetailed Accessibility Analysis:\n");
+  output += originalTable.toString();
+
+  output += chalk.yellow("\nAccessibility Guide:\n");
+  output += "🟢 Excellent contrast - Meets AAA standards\n";
+  output += "🟡 Good contrast - Meets AA standards (minimum for most uses)\n";
+  output += "❌ Poor contrast - Does not meet minimum standards\n\n";
+  output += "Normal Text: 4.5:1 for AA, 7:1 for AAA\n";
+  output += "Large Text: 3:1 for AA, 4.5:1 for AAA\n\n";
+  output += "Each color is tested in three contexts:\n";
+  output += "1. As a background color (with auto-selected text color)\n";
+  output += "2. As a text color on white background\n";
+  output += "3. As a text color on black background\n";
+
+  // Only show suggestions table if there are non-compliant colors
+  if (suggestionsTable.length > 0) {
+    output += chalk.yellow("\nSuggested Improvements:\n");
+    output += "The following colors don't meet WCAG AA standards (4.5:1 contrast ratio).\n";
+    output += "Consider using these alternatives to improve accessibility:\n";
+    output += suggestionsTable.toString();
+  }
+
+  console.log(output);
 };
 
 const generateOrdinalStops = (start, end) => {
@@ -717,6 +791,134 @@ const generateOrdinalStops = (start, end) => {
 };
 
 const stops = generateOrdinalStops(1, 20);
+
+const generateAccessibilityReport = (tokensData) => {
+  let report = `# Color Tokens Accessibility Report\n\n`;
+  report += `## Overview\n\n`;
+  report += `This report analyzes the accessibility compliance of your color tokens according to WCAG standards:\n\n`;
+  report += `- 🟢 AAA Level: Excellent contrast (7:1+ for normal text, 4.5:1+ for large text)\n`;
+  report += `- 🟡 AA Level: Good contrast (4.5:1+ for normal text, 3:1+ for large text)\n`;
+  report += `- ❌ Below AA: Does not meet minimum standards\n\n`;
+
+  let totalColors = 0;
+  let passesAAA = 0;
+  let passesAA = 0;
+  let failing = 0;
+
+  // Analyze each color concept
+  Object.entries(tokensData).forEach(([concept, variants]) => {
+    report += `## ${concept}\n\n`;
+    
+    Object.entries(variants).forEach(([variant, colors]) => {
+      if (typeof colors === 'object' && colors.value) {
+        // Single color token
+        const color = colors.value;
+        totalColors++;
+        const wcagBg = getWCAGCompliance(color);
+        const wcagOnWhite = getWCAGCompliance(color, true, "#FFFFFF");
+        const wcagOnBlack = getWCAGCompliance(color, true, "#000000");
+        
+        const maxContrast = Math.max(
+          parseFloat(wcagBg.contrast),
+          parseFloat(wcagOnWhite.contrast),
+          parseFloat(wcagOnBlack.contrast)
+        );
+
+        if (maxContrast >= 7.0) passesAAA++;
+        else if (maxContrast >= 4.5) passesAA++;
+        else failing++;
+
+        report += `### ${variant}\n\n`;
+        report += `- Color: ${color}\n`;
+        report += `- As Background: ${wcagBg.normalText} (${wcagBg.contrast}:1)\n`;
+        report += `- On White: ${wcagOnWhite.normalText} (${wcagOnWhite.contrast}:1)\n`;
+        report += `- On Black: ${wcagOnBlack.normalText} (${wcagOnBlack.contrast}:1)\n\n`;
+
+        if (maxContrast < 4.5) {
+          report += `#### Suggestions for Improvement\n\n`;
+          
+          const color = tinycolor(colors.value);
+          const hsl = color.toHsl();
+          const adjustedColors = [];
+          
+          for (let lightness = 0; lightness <= 100; lightness += 10) {
+            const adjusted = tinycolor({ h: hsl.h, s: hsl.s, l: lightness/100 });
+            const adjustedHex = adjusted.toHexString().toUpperCase();
+            const adjustedWcag = getWCAGCompliance(adjustedHex);
+            
+            if (adjustedWcag.contrast >= 4.5) {
+              adjustedColors.push({
+                hex: adjustedHex,
+                contrast: adjustedWcag.contrast
+              });
+            }
+          }
+          
+          if (adjustedColors.length > 0) {
+            report += `Consider these alternative shades that meet WCAG AA standards:\n\n`;
+            adjustedColors.slice(0, 2).forEach(alt => {
+              report += `- ${alt.hex} (contrast: ${alt.contrast.toFixed(2)}:1)\n`;
+            });
+            report += `\n`;
+          } else {
+            report += `Consider using a different base color with higher contrast.\n\n`;
+          }
+        }
+      } else {
+        // Color scale
+        report += `### ${variant} Scale\n\n`;
+        
+        Object.entries(colors).forEach(([key, token]) => {
+          if (token && typeof token === 'object' && token.value) {
+            totalColors++;
+            const color = token.value;
+            const wcagBg = getWCAGCompliance(color);
+            const wcagOnWhite = getWCAGCompliance(color, true, "#FFFFFF");
+            const wcagOnBlack = getWCAGCompliance(color, true, "#000000");
+            
+            const maxContrast = Math.max(
+              parseFloat(wcagBg.contrast),
+              parseFloat(wcagOnWhite.contrast),
+              parseFloat(wcagOnBlack.contrast)
+            );
+
+            if (maxContrast >= 7.0) passesAAA++;
+            else if (maxContrast >= 4.5) passesAA++;
+            else failing++;
+
+            report += `#### ${key}\n`;
+            report += `- Color: ${color}\n`;
+            report += `- As Background: ${wcagBg.normalText} (${wcagBg.contrast}:1)\n`;
+            report += `- On White: ${wcagOnWhite.normalText} (${wcagOnWhite.contrast}:1)\n`;
+            report += `- On Black: ${wcagOnBlack.normalText} (${wcagOnBlack.contrast}:1)\n\n`;
+          }
+        });
+      }
+    });
+  });
+
+  // Add summary statistics
+  const summaryReport = `## Summary Statistics\n\n` +
+    `- Total Colors: ${totalColors}\n` +
+    `- AAA Compliant: ${passesAAA} (${((passesAAA/totalColors)*100).toFixed(1)}%)\n` +
+    `- AA Compliant: ${passesAA} (${((passesAA/totalColors)*100).toFixed(1)}%)\n` +
+    `- Below AA: ${failing} (${((failing/totalColors)*100).toFixed(1)}%)\n\n` +
+    `## Usage Guidelines\n\n` +
+    `1. **For normal text:**\n` +
+    `   - Minimum contrast ratio of 4.5:1 (AA)\n` +
+    `   - Preferred contrast ratio of 7:1 (AAA)\n\n` +
+    `2. **For large text (18pt+ or 14pt+ bold):**\n` +
+    `   - Minimum contrast ratio of 3:1 (AA)\n` +
+    `   - Preferred contrast ratio of 4.5:1 (AAA)\n\n` +
+    `3. **Best Practices:**\n` +
+    `   - Use AAA-compliant colors for primary content\n` +
+    `   - Ensure AA compliance for all text\n` +
+    `   - Test colors in different contexts (backgrounds, text)\n` +
+    `   - Consider color blindness when using color to convey information\n\n` +
+    report;
+
+  return summaryReport;
+};
 
 const main = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -738,6 +940,7 @@ const main = async () => {
   const tokensFolder = path.join(outputsDir, "tokens/colors");
   const cssFolder = path.join(outputsDir, "css/colors");
   const scssFolder = path.join(outputsDir, "scss/colors");
+  const reportsFolder = path.join(__dirname, "..", "reports");
   let namingChoice = null;
   let previousConcept = null;
   let formatChoices = null;
@@ -747,6 +950,7 @@ const main = async () => {
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
+  if (!fs.existsSync(reportsFolder)) fs.mkdirSync(reportsFolder, { recursive: true });
 
   let addMoreColors = true;
 
@@ -974,11 +1178,28 @@ Object.entries(hexExistence).forEach(([key, existed]) => {
   }
 });
 
+// After processing all colors and before the final loader, add:
+console.log(chalk.black.bgYellowBright("\n======================================="));
+console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
+console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+const accessibilityReport = generateAccessibilityReport(tokensData);
+const reportPath = path.join(reportsFolder, "accessibility-report.md");
+fs.writeFileSync(reportPath, accessibilityReport);
+
+savedNewFiles.push(reportPath);
+
 await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
 console.log(chalk.black.bgYellowBright("\n======================================="));
 console.log(chalk.bold("📄 OUTPUT FILES"));
 console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
+console.log(chalk.whiteBright("   -> /outputs/tokens/colors: JSON token files"));
+console.log(chalk.whiteBright("   -> /outputs/css/colors: CSS variables"));
+console.log(chalk.whiteBright("   -> /outputs/scss/colors: SCSS variables"));
+console.log(chalk.whiteBright("   -> /reports: Accessibility report\n"));
 
 if (updatedFiles.length > 0) {
   console.log(chalk.whiteBright("🆕 Updated:"));

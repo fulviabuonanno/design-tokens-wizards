@@ -20,6 +20,7 @@ if (versionArg) {
 
 const outputsDir = path.join(__dirname, '../outputs');
 const finalDir = path.join(__dirname, '../final');
+const reportsDir = path.join(__dirname, '../reports');
 
 async function clearFolder(dirPath) {
   let count = 0;
@@ -55,14 +56,14 @@ function showLoader(message, ms) {
   });
 }
 
-async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal) {
+async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal, clearReports) {
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🧹 STEP 2: PURGING FOLDER CONTENT"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
   await showLoader("🚮 Summoning arcane cleanup... please stand by", 2000);
 
-  let cssCount = 0, scssCount = 0, tokensCount = 0, finalCount = 0;
+  let cssCount = 0, scssCount = 0, tokensCount = 0, finalCount = 0, reportsCount = 0;
   const cssFolder = path.join(outputsDir, "css");
   const scssFolder = path.join(outputsDir, "scss");
   const tokensFolder = path.join(outputsDir, "tokens");
@@ -79,18 +80,22 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal) {
   if (clearFinal) {
     finalCount = await clearFolder(finalDir);
   }
+  if (clearReports) {
+    reportsCount = await clearFolder(reportsDir);
+  }
 
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🎉 FOLDERS CLEARED SUCCESSFULLY!".toUpperCase()));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  if (cssCount === 0 && scssCount === 0 && tokensCount === 0 && finalCount === 0) {
+  if (cssCount === 0 && scssCount === 0 && tokensCount === 0 && finalCount === 0 && reportsCount === 0) {
     console.log(chalk.bold(capitalize("no files were found for deletion – all folders remain pristine.")));
   } else {
     console.log(chalk.bold(`✅ ${chalk.bold('CSS')} files deleted: ${cssCount} 📄`));
     console.log(chalk.bold(`✅ ${chalk.bold('SCSS')} files deleted: ${scssCount} 📄`));
     console.log(chalk.bold(`✅ ${chalk.bold('TOKENS')} files deleted: ${tokensCount} 📄`));
     console.log(chalk.bold(`✅ ${chalk.bold('FINAL')} files deleted: ${finalCount} 📄`));
+    console.log(chalk.bold(`✅ ${chalk.bold('REPORTS')} files deleted: ${reportsCount} 📄`));
   }
 
   console.log(chalk.bold.yellow("\n🧙 The cleanup incantation has been successfully cast! 🎉\n"));
@@ -130,10 +135,16 @@ async function startInterface() {
       name: 'clearFinal',
       message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Final") + " folder? (yes/no)"),
       default: false,
+    },
+    {
+      type: 'confirm',
+      name: 'clearReports',
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Reports") + " folder? (yes/no)"),
+      default: false,
     }
   ]);
 
-  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearTokens, answers.clearFinal);
+  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearTokens, answers.clearFinal, answers.clearReports);
 }
 
 startInterface();
