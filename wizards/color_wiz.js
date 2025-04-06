@@ -5,6 +5,7 @@ import inquirer from "inquirer";
 import { fileURLToPath } from "url";
 import chalk from "chalk";
 import Table from "cli-table3";
+import markdownpdf from 'markdown-pdf';
 
 const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
 if (versionArg) {
@@ -212,7 +213,8 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
       console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       
-      console.log(printAccessibilityTable(stops));
+      const accessibilityTables = printAccessibilityTable(stops);
+      console.log(accessibilityTables);
     }
 
     const { confirmColor } = await inquirer.prompt([
@@ -650,103 +652,56 @@ const printAccessibilityTable = (stops) => {
       chalk.bold.yellowBright("Large Text"),
       chalk.bold.yellowBright("Contrast")
     ],
-    style: { head: [], border: ["yellow"] }
+    style: { head: [], border: ["yellow"] },
+    colWidths: [15, 10, 12, 15, 15, 12]
   });
 
   entries.forEach(([key, value]) => {
     // As background color
     const wcagBg = getWCAGCompliance(value);
     const textColor = wcagBg.textColor === "white" ? chalk.white : chalk.black;
+    const contrastColor = parseFloat(wcagBg.contrast) >= 7.0 ? chalk.green : 
+                         parseFloat(wcagBg.contrast) >= 4.5 ? chalk.yellow :
+                         chalk.red;
+
     originalTable.push([
       key, 
       value, 
       chalk.bgHex(value)(textColor("         ")),
       wcagBg.normalText,
       wcagBg.largeText,
-      wcagBg.contrast
+      contrastColor(wcagBg.contrast)
     ]);
 
     // As text on white background
     const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
+    const contrastColorWhite = parseFloat(wcagOnWhite.contrast) >= 7.0 ? chalk.green : 
+                              parseFloat(wcagOnWhite.contrast) >= 4.5 ? chalk.yellow :
+                              chalk.red;
+
     originalTable.push([
       "└─ on white", 
-      value, 
-      chalk.bgWhite(chalk.hex(value)("         ")),
+      "", 
+      "",
       wcagOnWhite.normalText,
       wcagOnWhite.largeText,
-      wcagOnWhite.contrast
+      contrastColorWhite(wcagOnWhite.contrast)
     ]);
 
     // As text on black background
     const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
+    const contrastColorBlack = parseFloat(wcagOnBlack.contrast) >= 7.0 ? chalk.green : 
+                              parseFloat(wcagOnBlack.contrast) >= 4.5 ? chalk.yellow :
+                              chalk.red;
+
     originalTable.push([
       "└─ on black", 
-      value, 
-      chalk.bgBlack(chalk.hex(value)("         ")),
+      "", 
+      "",
       wcagOnBlack.normalText,
       wcagOnBlack.largeText,
-      wcagOnBlack.contrast
+      contrastColorBlack(wcagOnBlack.contrast)
     ]);
-  });
-
-  // Suggestions table for colors that don't meet standards
-  const suggestionsTable = new Table({
-    head: [
-      chalk.bold.yellowBright("Scale"), 
-      chalk.bold.yellowBright("Current HEX"),
-      chalk.bold.yellowBright("Status"),
-      chalk.bold.yellowBright("Suggested Alternatives")
-    ],
-    style: { head: [], border: ["yellow"] },
-    wordWrap: true,
-    colWidths: [15, 12, 15, 50]
-  });
-
-  entries.forEach(([key, value]) => {
-    const wcagBg = getWCAGCompliance(value);
-    const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
-    const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
-    
-    // Check if color meets minimum AA standard in any context
-    const meetsStandards = wcagBg.contrast >= 4.5 || 
-                          wcagOnWhite.contrast >= 4.5 || 
-                          wcagOnBlack.contrast >= 4.5;
-
-    if (!meetsStandards) {
-      // Generate accessible alternatives
-      const color = tinycolor(value);
-      const hsl = color.toHsl();
-      const adjustedColors = [];
-      
-      // Try adjusting lightness to find accessible variants
-      for (let lightness = 0; lightness <= 100; lightness += 10) {
-        const adjusted = tinycolor({ h: hsl.h, s: hsl.s, l: lightness/100 });
-        const adjustedHex = adjusted.toHexString().toUpperCase();
-        const adjustedWcag = getWCAGCompliance(adjustedHex);
-        
-        if (adjustedWcag.contrast >= 4.5) {
-          adjustedColors.push({
-            hex: adjustedHex,
-            contrast: adjustedWcag.contrast
-          });
-        }
-      }
-      
-      // Sort alternatives by contrast and take top 2
-      adjustedColors.sort((a, b) => b.contrast - a.contrast);
-      const suggestions = adjustedColors.length > 0 
-        ? adjustedColors.slice(0, 2).map(c => 
-            `${c.hex} (contrast: ${c.contrast.toFixed(2)})`
-          ).join("\n")
-        : "Try a different base color";
-
-      suggestionsTable.push([
-        key,
-        value,
-        "❌ Below AA",
-        suggestions
-      ]);
-    }
   });
 
   // Output both tables with appropriate headers
@@ -755,9 +710,9 @@ const printAccessibilityTable = (stops) => {
   output += originalTable.toString();
 
   output += chalk.yellow("\nAccessibility Guide:\n");
-  output += "🟢 Excellent contrast - Meets AAA standards\n";
-  output += "🟡 Good contrast - Meets AA standards (minimum for most uses)\n";
-  output += "❌ Poor contrast - Does not meet minimum standards\n\n";
+  output += chalk.green("🟢 Excellent contrast - Meets AAA standards (7:1+)\n");
+  output += chalk.yellow("🟡 Good contrast - Meets AA standards (4.5:1+)\n");
+  output += chalk.red("❌ Poor contrast - Does not meet minimum standards (<4.5:1)\n\n");
   output += "Normal Text: 4.5:1 for AA, 7:1 for AAA\n";
   output += "Large Text: 3:1 for AA, 4.5:1 for AAA\n\n";
   output += "Each color is tested in three contexts:\n";
@@ -765,15 +720,7 @@ const printAccessibilityTable = (stops) => {
   output += "2. As a text color on white background\n";
   output += "3. As a text color on black background\n";
 
-  // Only show suggestions table if there are non-compliant colors
-  if (suggestionsTable.length > 0) {
-    output += chalk.yellow("\nSuggested Improvements:\n");
-    output += "The following colors don't meet WCAG AA standards (4.5:1 contrast ratio).\n";
-    output += "Consider using these alternatives to improve accessibility:\n";
-    output += suggestionsTable.toString();
-  }
-
-  console.log(output);
+  return output;
 };
 
 const generateOrdinalStops = (start, end) => {
@@ -809,6 +756,10 @@ const generateAccessibilityReport = (tokensData) => {
   Object.entries(tokensData).forEach(([concept, variants]) => {
     report += `## ${concept}\n\n`;
     
+    // Add visual table header for each concept
+    report += `| Color | Sample | Normal Text | Large Text | Contrast |\n`;
+    report += `|-------|---------|-------------|------------|----------|\n`;
+    
     Object.entries(variants).forEach(([variant, colors]) => {
       if (typeof colors === 'object' && colors.value) {
         // Single color token
@@ -829,44 +780,19 @@ const generateAccessibilityReport = (tokensData) => {
         else failing++;
 
         report += `### ${variant}\n\n`;
-        report += `- Color: ${color}\n`;
-        report += `- As Background: ${wcagBg.normalText} (${wcagBg.contrast}:1)\n`;
-        report += `- On White: ${wcagOnWhite.normalText} (${wcagOnWhite.contrast}:1)\n`;
-        report += `- On Black: ${wcagOnBlack.normalText} (${wcagOnBlack.contrast}:1)\n\n`;
+        
+        // Add color row to the table
+        report += `| ${color} | ![](https://via.placeholder.com/50/${color.replace('#', '')}/000000?text=+) | ${wcagBg.normalText} | ${wcagBg.largeText} | ${wcagBg.contrast}:1 |\n`;
+        report += `| On White | - | ${wcagOnWhite.normalText} | ${wcagOnWhite.largeText} | ${wcagOnWhite.contrast}:1 |\n`;
+        report += `| On Black | - | ${wcagOnBlack.normalText} | ${wcagOnBlack.largeText} | ${wcagOnBlack.contrast}:1 |\n\n`;
 
-        if (maxContrast < 4.5) {
-          report += `#### Suggestions for Improvement\n\n`;
-          
-          const color = tinycolor(colors.value);
-          const hsl = color.toHsl();
-          const adjustedColors = [];
-          
-          for (let lightness = 0; lightness <= 100; lightness += 10) {
-            const adjusted = tinycolor({ h: hsl.h, s: hsl.s, l: lightness/100 });
-            const adjustedHex = adjusted.toHexString().toUpperCase();
-            const adjustedWcag = getWCAGCompliance(adjustedHex);
-            
-            if (adjustedWcag.contrast >= 4.5) {
-              adjustedColors.push({
-                hex: adjustedHex,
-                contrast: adjustedWcag.contrast
-              });
-            }
-          }
-          
-          if (adjustedColors.length > 0) {
-            report += `Consider these alternative shades that meet WCAG AA standards:\n\n`;
-            adjustedColors.slice(0, 2).forEach(alt => {
-              report += `- ${alt.hex} (contrast: ${alt.contrast.toFixed(2)}:1)\n`;
-            });
-            report += `\n`;
-          } else {
-            report += `Consider using a different base color with higher contrast.\n\n`;
-          }
-        }
-      } else {
+      } else if (typeof colors === 'object') {
         // Color scale
         report += `### ${variant} Scale\n\n`;
+        
+        // Add visual table header for the scale
+        report += `| Color | Sample | Normal Text | Large Text | Contrast |\n`;
+        report += `|-------|---------|-------------|------------|----------|\n`;
         
         Object.entries(colors).forEach(([key, token]) => {
           if (token && typeof token === 'object' && token.value) {
@@ -886,13 +812,13 @@ const generateAccessibilityReport = (tokensData) => {
             else if (maxContrast >= 4.5) passesAA++;
             else failing++;
 
-            report += `#### ${key}\n`;
-            report += `- Color: ${color}\n`;
-            report += `- As Background: ${wcagBg.normalText} (${wcagBg.contrast}:1)\n`;
-            report += `- On White: ${wcagOnWhite.normalText} (${wcagOnWhite.contrast}:1)\n`;
-            report += `- On Black: ${wcagOnBlack.normalText} (${wcagOnBlack.contrast}:1)\n\n`;
+            // Add color row to the table
+            report += `| ${key}: ${color} | ![](https://via.placeholder.com/50/${color.replace('#', '')}/000000?text=+) | ${wcagBg.normalText} | ${wcagBg.largeText} | ${wcagBg.contrast}:1 |\n`;
+            report += `| └─ on white | - | ${wcagOnWhite.normalText} | ${wcagOnWhite.largeText} | ${wcagOnWhite.contrast}:1 |\n`;
+            report += `| └─ on black | - | ${wcagOnBlack.normalText} | ${wcagOnBlack.largeText} | ${wcagOnBlack.contrast}:1 |\n`;
           }
         });
+        report += '\n';
       }
     });
   });
@@ -1184,10 +1110,28 @@ console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
 console.log(chalk.black.bgYellowBright("=======================================\n"));
 
 const accessibilityReport = generateAccessibilityReport(tokensData);
-const reportPath = path.join(reportsFolder, "accessibility-report.md");
-fs.writeFileSync(reportPath, accessibilityReport);
+const mdReportPath = path.join(reportsFolder, "accessibility-report.md");
+const pdfReportPath = path.join(reportsFolder, "accessibility-report.pdf");
 
-savedNewFiles.push(reportPath);
+// Save markdown report
+fs.writeFileSync(mdReportPath, accessibilityReport);
+
+// Convert to PDF
+await new Promise((resolve, reject) => {
+  markdownpdf()
+    .from(mdReportPath)
+    .to(pdfReportPath, () => {
+      console.log(chalk.green("✅ Generated PDF report"));
+      resolve();
+    })
+    .on('error', err => {
+      console.error(chalk.red("❌ Error generating PDF:"), err);
+      reject(err);
+    });
+});
+
+savedNewFiles.push(mdReportPath);
+savedNewFiles.push(pdfReportPath);
 
 await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
 
