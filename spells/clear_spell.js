@@ -159,7 +159,7 @@ async function startInterface() {
 
   console.log(chalk.whiteBright("🪄Welcome to the ") +
     chalk.bold.gray("Clear Files Incantation") +
-    chalk.whiteBright(" script! \nLet this spell help you keep your outputs folder tidy during script tests. \nUse this spell only for testing purposes to safely clean up generated files.\n")
+    chalk.whiteBright(" script! \nLet this spell help you keep your outputs folder tidy during script tests. \n") + chalk.bold.yellow("⚠️ Use this spell only for testing purposes to safely clean up generated files.\n")
   );
 
   const answers = await inquirer.prompt([
