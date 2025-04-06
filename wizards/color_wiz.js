@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import chalk from "chalk";
 import Table from "cli-table3";
 import markdownpdf from 'markdown-pdf';
+import puppeteer from 'puppeteer';
 
 const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
 if (versionArg) {
@@ -369,7 +370,7 @@ const customStringify = (obj, indent = 2) => {
       return "[\n" + " ".repeat(currentIndent + indent) + items.join(",\n" + " ".repeat(currentIndent + indent)) + "\n" + " ".repeat(currentIndent) + "]";
     }
     let keys = Object.keys(value);
-    // Ordenar alfabéticamente y forzar que "base" sea la primera
+    
     keys.sort((a, b) => a.localeCompare(b));
     if (keys.includes("base")) {
       keys = ["base", ...keys.filter(k => k !== "base")];
@@ -440,7 +441,7 @@ const convertTokensToCSS = (tokens) => {
   const processTokens = (obj, prefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
-      // Aplicar reglas de ordenamiento según contenido:
+      
       if (keys.every(k => semanticOrder.includes(k))) {
         keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
       } else if (keys.every(k => /^\d{2}$/.test(k))) {
@@ -450,7 +451,7 @@ const convertTokensToCSS = (tokens) => {
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
       }
-      // Asegurarse de que "base" quede siempre primero
+      
       if (obj.hasOwnProperty("base")) {
         keys = keys.filter(k => k !== "base");
         keys.unshift("base");
@@ -483,7 +484,7 @@ const convertTokensToSCSS = (tokens) => {
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
       }
-      // Asegurarse de que "base" quede siempre primero
+      
       if (obj.hasOwnProperty("base")) {
         keys = keys.filter(k => k !== "base");
         keys.unshift("base");
@@ -545,6 +546,33 @@ const formatStopsOutput = (stops) => {
     .join(",\n");
 };
 
+const simulateColorBlindness = (color, type = 'deuteranopia') => {
+  const rgb = tinycolor(color).toRgb();
+  let r = rgb.r;
+  let g = rgb.g;
+  let b = rgb.b;
+
+  switch (type) {
+    case 'protanopia':
+      r = r * 0.567 + g * 0.433;
+      g = r * 0.558 + g * 0.442;
+      b = r * 0 + g * 0.242 + b * 0.758;
+      break;
+    case 'deuteranopia':
+      r = r * 0.625 + g * 0.375;
+      g = r * 0.7 + g * 0.3;
+      b = r * 0 + g * 0.3 + b * 0.7;
+      break;
+    case 'tritanopia':
+      r = r * 0.95 + g * 0.05;
+      g = r * 0 + g * 0.433 + b * 0.567;
+      b = r * 0 + g * 0.475 + b * 0.525;
+      break;
+  }
+
+  return tinycolor({ r, g, b }).toHexString();
+};
+
 const getWCAGCompliance = (backgroundColor, isForeground = false, bgColor = null) => {
   const color = tinycolor(backgroundColor);
   
@@ -556,14 +584,18 @@ const getWCAGCompliance = (backgroundColor, isForeground = false, bgColor = null
     const blackContrast = tinycolor.readability(color, "#000000");
     contrast = Math.max(whiteContrast, blackContrast);
   }
+
+  const colorBlindnessTests = {
+    protanopia: simulateColorBlindness(backgroundColor, 'protanopia'),
+    deuteranopia: simulateColorBlindness(backgroundColor, 'deuteranopia'),
+    tritanopia: simulateColorBlindness(backgroundColor, 'tritanopia')
+  };
   
   const getLevel = (contrast) => {
-    // For normal text (minimum 4.5:1 for AA, 7:1 for AAA)
     const normalText = contrast >= 7.0 ? "🟢 AAA" : 
                       contrast >= 4.5 ? "🟡 AA" : 
                       contrast >= 3.0 ? "❌ A" : "❌ -";
     
-    // For large text (minimum 3:1 for AA, 4.5:1 for AAA)
     const largeText = contrast >= 4.5 ? "🟢 AAA" :
                      contrast >= 3.0 ? "🟡 AA" :
                      contrast >= 2.0 ? "❌ A" : "❌ -";
@@ -583,7 +615,8 @@ const getWCAGCompliance = (backgroundColor, isForeground = false, bgColor = null
     normalText: levels.normalText,
     largeText: levels.largeText,
     contrast: contrast.toFixed(2),
-    textColor: bestTextColor
+    textColor: bestTextColor,
+    colorBlindnessTests
   };
 };
 
@@ -642,7 +675,7 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
 const printAccessibilityTable = (stops) => {
   let entries = Object.entries(stops);
   
-  // Original accessibility table
+  
   const originalTable = new Table({
     head: [
       chalk.bold.yellowBright("Scale"), 
@@ -657,7 +690,7 @@ const printAccessibilityTable = (stops) => {
   });
 
   entries.forEach(([key, value]) => {
-    // As background color
+    
     const wcagBg = getWCAGCompliance(value);
     const textColor = wcagBg.textColor === "white" ? chalk.white : chalk.black;
     const contrastColor = parseFloat(wcagBg.contrast) >= 7.0 ? chalk.green : 
@@ -673,7 +706,7 @@ const printAccessibilityTable = (stops) => {
       contrastColor(wcagBg.contrast)
     ]);
 
-    // As text on white background
+    
     const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
     const contrastColorWhite = parseFloat(wcagOnWhite.contrast) >= 7.0 ? chalk.green : 
                               parseFloat(wcagOnWhite.contrast) >= 4.5 ? chalk.yellow :
@@ -688,7 +721,7 @@ const printAccessibilityTable = (stops) => {
       contrastColorWhite(wcagOnWhite.contrast)
     ]);
 
-    // As text on black background
+    
     const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
     const contrastColorBlack = parseFloat(wcagOnBlack.contrast) >= 7.0 ? chalk.green : 
                               parseFloat(wcagOnBlack.contrast) >= 4.5 ? chalk.yellow :
@@ -704,7 +737,7 @@ const printAccessibilityTable = (stops) => {
     ]);
   });
 
-  // Output both tables with appropriate headers
+  
   let output = "";
   output += chalk.yellow("\nDetailed Accessibility Analysis:\n");
   output += originalTable.toString();
@@ -740,110 +773,319 @@ const generateOrdinalStops = (start, end) => {
 const stops = generateOrdinalStops(1, 20);
 
 const generateAccessibilityReport = (tokensData) => {
-  let report = `# Color Tokens Accessibility Report\n\n`;
-  report += `## Overview\n\n`;
-  report += `This report analyzes the accessibility compliance of your color tokens according to WCAG standards:\n\n`;
-  report += `- 🟢 AAA Level: Excellent contrast (7:1+ for normal text, 4.5:1+ for large text)\n`;
-  report += `- 🟡 AA Level: Good contrast (4.5:1+ for normal text, 3:1+ for large text)\n`;
-  report += `- ❌ Below AA: Does not meet minimum standards\n\n`;
+  const styles = `
+    <style>
+      body { 
+        font-family: Arial, sans-serif; 
+        line-height: 1.4; 
+        font-size: 12px; 
+      }
+      h1 { font-size: 20px; margin: 15px 0; }
+      h2 { font-size: 16px; margin: 12px 0; }
+      h3 { font-size: 14px; margin: 10px 0; }
+      .color-sample {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #ddd;
+        display: inline-block;
+        margin-right: 10px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f5f5f5;
+      }
+      .tagline {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+        color: #666;
+        font-style: italic;
+        text-align: center;
+      }
+      .report-meta {
+        color: #666;
+        font-size: 11px;
+        margin: 10px 0;
+      }
+      .report-meta a {
+        color: #666;
+        text-decoration: none;
+      }
+      .report-meta a:hover {
+        text-decoration: underline;
+      }
+      .compliance-aaa {
+        color: #2e7d32;
+        font-weight: bold;
+      }
+      .compliance-aa {
+        color: #ed6c02;
+        font-weight: bold;
+      }
+      .compliance-fail {
+        color: #d32f2f;
+        font-weight: bold;
+      }
+      .bg-sample-container {
+        display: flex;
+        gap: 10px;
+      }
+      .bg-sample {
+        padding: 8px;
+        border-radius: 4px;
+        text-align: center;
+        min-width: 100px;
+      }
+      .bg-white {
+        background: white;
+        border: 1px solid #ddd;
+      }
+      .bg-black {
+        background: black;
+        color: white;
+      }
+      .compliance-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 4px;
+      }
+    </style>
+  `;
 
   let totalColors = 0;
   let passesAAA = 0;
   let passesAA = 0;
   let failing = 0;
 
-  // Analyze each color concept
+  let colorComplianceTable = '';
   Object.entries(tokensData).forEach(([concept, variants]) => {
-    report += `## ${concept}\n\n`;
-    
-    // Add visual table header for each concept
-    report += `| Color | Sample | Normal Text | Large Text | Contrast |\n`;
-    report += `|-------|---------|-------------|------------|----------|\n`;
+    colorComplianceTable += `<h3>${concept}</h3>`;
+    colorComplianceTable += `<table>
+      <tr>
+        <th>Color Name</th>
+        <th>HEX Value</th>
+        <th>Sample</th>
+        <th>On White (#FFFFFF)</th>
+        <th>On Black (#000000)</th>
+      </tr>`;
     
     Object.entries(variants).forEach(([variant, colors]) => {
       if (typeof colors === 'object' && colors.value) {
-        // Single color token
-        const color = colors.value;
         totalColors++;
-        const wcagBg = getWCAGCompliance(color);
-        const wcagOnWhite = getWCAGCompliance(color, true, "#FFFFFF");
-        const wcagOnBlack = getWCAGCompliance(color, true, "#000000");
-        
-        const maxContrast = Math.max(
-          parseFloat(wcagBg.contrast),
-          parseFloat(wcagOnWhite.contrast),
-          parseFloat(wcagOnBlack.contrast)
-        );
+        const wcagWhite = getWCAGCompliance(colors.value, true, '#FFFFFF');
+        const wcagBlack = getWCAGCompliance(colors.value, true, '#000000');
 
-        if (maxContrast >= 7.0) passesAAA++;
-        else if (maxContrast >= 4.5) passesAA++;
+        const whiteComplianceClass = wcagWhite.normalText.includes("AAA") ? "compliance-aaa" : 
+                              wcagWhite.normalText.includes("AA") ? "compliance-aa" : 
+                              "compliance-fail";
+        const blackComplianceClass = wcagBlack.normalText.includes("AAA") ? "compliance-aaa" : 
+                              wcagBlack.normalText.includes("AA") ? "compliance-aa" : 
+                              "compliance-fail";
+
+        if (wcagWhite.normalText.includes("AAA") || wcagBlack.normalText.includes("AAA")) passesAAA++;
+        else if (wcagWhite.normalText.includes("AA") || wcagBlack.normalText.includes("AA")) passesAA++;
         else failing++;
 
-        report += `### ${variant}\n\n`;
-        
-        // Add color row to the table
-        report += `| ${color} | ![](https://via.placeholder.com/50/${color.replace('#', '')}/000000?text=+) | ${wcagBg.normalText} | ${wcagBg.largeText} | ${wcagBg.contrast}:1 |\n`;
-        report += `| On White | - | ${wcagOnWhite.normalText} | ${wcagOnWhite.largeText} | ${wcagOnWhite.contrast}:1 |\n`;
-        report += `| On Black | - | ${wcagOnBlack.normalText} | ${wcagOnBlack.largeText} | ${wcagOnBlack.contrast}:1 |\n\n`;
+        colorComplianceTable += `<tr>
+          <td>${variant}</td>
+          <td>${colors.value}</td>
+          <td>
+            <div class="bg-sample-container">
+              <div class="bg-sample bg-white">
+                <div style="color: ${colors.value}">Sample Text</div>
+              </div>
+              <div class="bg-sample bg-black">
+                <div style="color: ${colors.value}">Sample Text</div>
+              </div>
+            </div>
+          </td>
+          <td class="${whiteComplianceClass}">
+            <div class="compliance-grid">
+              <div>Normal Text: ${wcagWhite.normalText}</div>
+              <div>Large Text: ${wcagWhite.largeText}</div>
+              <div>Contrast: ${wcagWhite.contrast}:1</div>
+            </div>
+          </td>
+          <td class="${blackComplianceClass}">
+            <div class="compliance-grid">
+              <div>Normal Text: ${wcagBlack.normalText}</div>
+              <div>Large Text: ${wcagBlack.largeText}</div>
+              <div>Contrast: ${wcagBlack.contrast}:1</div>
+            </div>
+          </td>
+        </tr>`;
+      }
+    });
+    colorComplianceTable += `</table>`;
+  });
 
-      } else if (typeof colors === 'object') {
-        // Color scale
-        report += `### ${variant} Scale\n\n`;
-        
-        // Add visual table header for the scale
-        report += `| Color | Sample | Normal Text | Large Text | Contrast |\n`;
-        report += `|-------|---------|-------------|------------|----------|\n`;
-        
-        Object.entries(colors).forEach(([key, token]) => {
-          if (token && typeof token === 'object' && token.value) {
-            totalColors++;
-            const color = token.value;
-            const wcagBg = getWCAGCompliance(color);
-            const wcagOnWhite = getWCAGCompliance(color, true, "#FFFFFF");
-            const wcagOnBlack = getWCAGCompliance(color, true, "#000000");
-            
-            const maxContrast = Math.max(
-              parseFloat(wcagBg.contrast),
-              parseFloat(wcagOnWhite.contrast),
-              parseFloat(wcagOnBlack.contrast)
-            );
+  const htmlReport = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  ${styles}
+</head>
+<body>
+  <h1>Color Accessibility Report</h1>
+  <div class="report-meta">
+    Generated on ${new Date().toLocaleString()}<br>
+    Generated by <a href="https://github.com/fbuonanno/design-tokens-wizards" target="_blank">Design Tokens Wizards</a>
+  </div>
 
-            if (maxContrast >= 7.0) passesAAA++;
-            else if (maxContrast >= 4.5) passesAA++;
-            else failing++;
+  <h2>Summary Statistics</h2>
+  <ul>
+    <li>Total Colors: ${totalColors}</li>
+    <li>AAA Compliant: ${((passesAAA / totalColors) * 100).toFixed(1)}%</li>
+    <li>AA Compliant: ${((passesAA / totalColors) * 100).toFixed(1)}%</li>
+    <li>Below AA: ${((failing / totalColors) * 100).toFixed(1)}%</li>
+  </ul>
 
-            // Add color row to the table
-            report += `| ${key}: ${color} | ![](https://via.placeholder.com/50/${color.replace('#', '')}/000000?text=+) | ${wcagBg.normalText} | ${wcagBg.largeText} | ${wcagBg.contrast}:1 |\n`;
-            report += `| └─ on white | - | ${wcagOnWhite.normalText} | ${wcagOnWhite.largeText} | ${wcagOnWhite.contrast}:1 |\n`;
-            report += `| └─ on black | - | ${wcagOnBlack.normalText} | ${wcagOnBlack.largeText} | ${wcagOnBlack.contrast}:1 |\n`;
-          }
-        });
-        report += '\n';
+  <h2>Usage Guidelines</h2>
+  <h3>Normal Text (WCAG 2.2)</h3>
+  <ul>
+    <li>Minimum contrast ratio: 4.5:1 (AA)</li>
+    <li>Preferred contrast ratio: 7:1 (AAA)</li>
+  </ul>
+  <h3>Large Text (WCAG 2.2)</h3>
+  <ul>
+    <li>Minimum contrast ratio: 3:1 (AA)</li>
+    <li>Preferred contrast ratio: 4.5:1 (AAA)</li>
+  </ul>
+  <h3>Best Practices</h3>
+  <ul>
+    <li>Use AAA compliance for critical text and important UI elements</li>
+    <li>Test colors in both light and dark modes</li>
+    <li>Consider color blindness when choosing color combinations</li>
+    <li>Use semantic color names that describe the purpose</li>
+  </ul>
+
+  <h2>Color Compliance Analysis</h2>
+  ${colorComplianceTable}
+
+  <h2>Color Blindness Analysis</h2>
+  <p>This section shows how colors appear to people with different types of color blindness:</p>
+  <ul>
+    <li>Protanopia: Red-green color blindness (red appears darker)</li>
+    <li>Deuteranopia: Red-green color blindness (green appears darker)</li>
+    <li>Tritanopia: Blue-yellow color blindness</li>
+  </ul>`;
+
+  let colorBlindnessSection = '';
+  Object.entries(tokensData).forEach(([concept, variants]) => {
+    colorBlindnessSection += `<h3>${concept}</h3>`;
+    
+    Object.entries(variants).forEach(([variant, colors]) => {
+      if (typeof colors === 'object' && colors.value) {
+        const wcag = getWCAGCompliance(colors.value);
+        colorBlindnessSection += `<table>
+          <tr>
+            <th>Color Name</th>
+            <th>Original</th>
+            <th>Protanopia</th>
+            <th>Deuteranopia</th>
+            <th>Tritanopia</th>
+          </tr>
+          <tr>
+            <td>${variant}</td>
+            <td><div class="color-sample" style="background-color: ${colors.value};"></div></td>
+            <td><div class="color-sample" style="background-color: ${wcag.colorBlindnessTests.protanopia};"></div></td>
+            <td><div class="color-sample" style="background-color: ${wcag.colorBlindnessTests.deuteranopia};"></div></td>
+            <td><div class="color-sample" style="background-color: ${wcag.colorBlindnessTests.tritanopia};"></div></td>
+          </tr>
+        </table>`;
       }
     });
   });
 
-  // Add summary statistics
-  const summaryReport = `## Summary Statistics\n\n` +
-    `- Total Colors: ${totalColors}\n` +
-    `- AAA Compliant: ${passesAAA} (${((passesAAA/totalColors)*100).toFixed(1)}%)\n` +
-    `- AA Compliant: ${passesAA} (${((passesAA/totalColors)*100).toFixed(1)}%)\n` +
-    `- Below AA: ${failing} (${((failing/totalColors)*100).toFixed(1)}%)\n\n` +
-    `## Usage Guidelines\n\n` +
-    `1. **For normal text:**\n` +
-    `   - Minimum contrast ratio of 4.5:1 (AA)\n` +
-    `   - Preferred contrast ratio of 7:1 (AAA)\n\n` +
-    `2. **For large text (18pt+ or 14pt+ bold):**\n` +
-    `   - Minimum contrast ratio of 3:1 (AA)\n` +
-    `   - Preferred contrast ratio of 4.5:1 (AAA)\n\n` +
-    `3. **Best Practices:**\n` +
-    `   - Use AAA-compliant colors for primary content\n` +
-    `   - Ensure AA compliance for all text\n` +
-    `   - Test colors in different contexts (backgrounds, text)\n` +
-    `   - Consider color blindness when using color to convey information\n\n` +
-    report;
+  const markdownReport = `# Color Accessibility Report
 
-  return summaryReport;
+> Generated on ${new Date().toLocaleString()}  
+> Generated by [Design Tokens Wizards](https://github.com/fbuonanno/design-tokens-wizards)
+
+## Summary Statistics
+
+- Total Colors: ${totalColors}
+- AAA Compliant: ${((passesAAA / totalColors) * 100).toFixed(1)}%
+- AA Compliant: ${((passesAA / totalColors) * 100).toFixed(1)}%
+- Below AA: ${((failing / totalColors) * 100).toFixed(1)}%
+
+## Usage Guidelines
+
+### Normal Text (WCAG 2.2)
+- Minimum contrast ratio: 4.5:1 (AA)
+- Preferred contrast ratio: 7:1 (AAA)
+
+### Large Text (WCAG 2.2)
+- Minimum contrast ratio: 3:1 (AA)
+- Preferred contrast ratio: 4.5:1 (AAA)
+
+### Best Practices
+- Use AAA compliance for critical text and important UI elements
+- Test colors in both light and dark modes
+- Consider color blindness when choosing color combinations
+- Use semantic color names that describe the purpose
+
+## Color Compliance Analysis
+
+${Object.entries(tokensData).map(([concept, variants]) => `
+### ${concept}
+
+| Color Name | HEX Value | On White (#FFFFFF) | On Black (#000000) |
+|------------|-----------|-------------------|-------------------|
+${Object.entries(variants).map(([variant, colors]) => {
+  if (typeof colors === 'object' && colors.value) {
+    const wcagWhite = getWCAGCompliance(colors.value, true, '#FFFFFF');
+    const wcagBlack = getWCAGCompliance(colors.value, true, '#000000');
+    return `| ${variant} | ${colors.value} | Normal: ${wcagWhite.normalText}<br>Large: ${wcagWhite.largeText}<br>Contrast: ${wcagWhite.contrast}:1 | Normal: ${wcagBlack.normalText}<br>Large: ${wcagBlack.largeText}<br>Contrast: ${wcagBlack.contrast}:1 |`;
+  }
+  return '';
+}).filter(Boolean).join('\n')}
+`).join('\n')}
+
+## Color Blindness Analysis
+
+This section shows how colors appear to people with different types of color blindness:
+
+- Protanopia: Red-green color blindness (red appears darker)
+- Deuteranopia: Red-green color blindness (green appears darker)
+- Tritanopia: Blue-yellow color blindness
+
+${Object.entries(tokensData).map(([concept, variants]) => `
+### ${concept}
+
+| Color Name | Original | Protanopia | Deuteranopia | Tritanopia |
+|------------|----------|------------|--------------|------------|
+${Object.entries(variants).map(([variant, colors]) => {
+  if (typeof colors === 'object' && colors.value) {
+    const wcag = getWCAGCompliance(colors.value);
+    return `| ${variant} | ![${colors.value}](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==) | ![${wcag.colorBlindnessTests.protanopia}](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==) | ![${wcag.colorBlindnessTests.deuteranopia}](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==) | ![${wcag.colorBlindnessTests.tritanopia}](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==) |`;
+  }
+  return '';
+}).filter(Boolean).join('\n')}
+`).join('\n')}
+
+---
+
+*Generated by Design Tokens Wizards* 🪄
+`;
+
+  return {
+    html: htmlReport + colorBlindnessSection + `
+      <div class="tagline">Generated by Design Tokens Wizards 🪄</div>
+    </body>
+  </html>`,
+    markdown: markdownReport
+  };
 };
 
 const main = async () => {
@@ -863,9 +1105,9 @@ const main = async () => {
 
   let tokensData = {};
   const outputsDir = path.join(__dirname, "..", "outputs");
-  const tokensFolder = path.join(outputsDir, "tokens/colors");
-  const cssFolder = path.join(outputsDir, "css/colors");
-  const scssFolder = path.join(outputsDir, "scss/colors");
+  const tokensFolder = path.join(outputsDir, "tokens/color");
+  const cssFolder = path.join(outputsDir, "css/color");
+  const scssFolder = path.join(outputsDir, "scss/color");
   const reportsFolder = path.join(__dirname, "..", "reports");
   let namingChoice = null;
   let previousConcept = null;
@@ -1104,31 +1346,56 @@ Object.entries(hexExistence).forEach(([key, existed]) => {
   }
 });
 
-// After processing all colors and before the final loader, add:
+
 console.log(chalk.black.bgYellowBright("\n======================================="));
 console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
 console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-const accessibilityReport = generateAccessibilityReport(tokensData);
-const mdReportPath = path.join(reportsFolder, "accessibility-report.md");
-const pdfReportPath = path.join(reportsFolder, "accessibility-report.pdf");
+const reports = generateAccessibilityReport(tokensData);
+const mdReportPath = path.join(reportsFolder, "a11y-color-report.md");
+const pdfReportPath = path.join(reportsFolder, "a11y-color-report.pdf");
+const tempHtmlPath = path.join(reportsFolder, "_temp_report.html");
 
-// Save markdown report
-fs.writeFileSync(mdReportPath, accessibilityReport);
 
-// Convert to PDF
-await new Promise((resolve, reject) => {
-  markdownpdf()
-    .from(mdReportPath)
-    .to(pdfReportPath, () => {
-      console.log(chalk.green("✅ Generated PDF report"));
-      resolve();
-    })
-    .on('error', err => {
-      console.error(chalk.red("❌ Error generating PDF:"), err);
-      reject(err);
-    });
-});
+fs.writeFileSync(mdReportPath, reports.markdown);
+fs.writeFileSync(tempHtmlPath, reports.html);
+
+
+try {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1200, height: 800 });
+  
+  
+  await page.goto(`file://${tempHtmlPath}`, {
+    waitUntil: 'networkidle0'
+  });
+
+  
+  await page.pdf({
+    path: pdfReportPath,
+    format: 'A4',
+    printBackground: true,
+    margin: {
+      top: '20px',
+      right: '20px',
+      bottom: '20px',
+      left: '20px'
+    }
+  });
+
+  await browser.close();
+  console.log(chalk.green("✅ Generated PDF report"));
+
+  
+  try {
+    fs.unlinkSync(tempHtmlPath);
+  } catch (e) {
+    console.error("Error cleaning up temporary file:", e);
+  }
+} catch (err) {
+  console.error(chalk.red("❌ Error generating PDF:"), err);
+}
 
 savedNewFiles.push(mdReportPath);
 savedNewFiles.push(pdfReportPath);
@@ -1140,25 +1407,34 @@ console.log(chalk.bold("📄 OUTPUT FILES"));
 console.log(chalk.black.bgYellowBright("=======================================\n"));
 
 console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
-console.log(chalk.whiteBright("   -> /outputs/tokens/colors: JSON token files"));
-console.log(chalk.whiteBright("   -> /outputs/css/colors: CSS variables"));
-console.log(chalk.whiteBright("   -> /outputs/scss/colors: SCSS variables"));
-console.log(chalk.whiteBright("   -> /reports: Accessibility report\n"));
+console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
+console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
+console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables"));
+console.log(chalk.whiteBright("   -> /reports: Accessibility Report\n"));
 
 if (updatedFiles.length > 0) {
   console.log(chalk.whiteBright("🆕 Updated:"));
-  updatedFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+  updatedFiles.forEach(filePath => {
+    const relativePath = path.relative(process.cwd(), filePath);
+    console.log(chalk.whiteBright("   -> " + relativePath));
+  });
 }
 
 if (savedNewFiles.length > 0) {
   console.log(chalk.whiteBright("\n✅ Saved:"));
-  savedNewFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+  savedNewFiles.forEach(filePath => {
+    const relativePath = path.relative(process.cwd(), filePath);
+    console.log(chalk.whiteBright("   -> " + relativePath));
+  });
 }
 
 if (deletedFiles.length > 0) {
   console.log(""); 
   console.log(chalk.whiteBright("🗑️ Deleted:"));
-  deletedFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+  deletedFiles.forEach(filePath => {
+    const relativePath = path.relative(process.cwd(), filePath);
+    console.log(chalk.whiteBright("   -> " + relativePath));
+  });
 }
 
 console.log(chalk.black.bgYellowBright("\n======================================="));

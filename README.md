@@ -98,17 +98,24 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
       Stored in: `outputs/tokens/color` as `color_tokens_{format}.json`
    - Conjure CSS and SCSS files with your tokens as variables.
       Stored in `outputs/css/color/` and `outputs/scss/color/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
-   - Generate an accessibility report:
-      Stored in: `/reports/accessibility-report.md`
 
 8. **Review Accessibility**
    The wizard now includes a comprehensive accessibility analysis:
    - WCAG compliance check for each color
    - Contrast ratio calculations
-   - Suggestions for improving non-compliant colors
-   - Detailed report with color usage recommendations
    - Testing colors both as background and text colors
    - Support for AAA, AA, and A level compliance checks
+
+   The accessibility report is generated in multiple formats:
+   - Markdown: `/reports/a11y-color-report.md`
+   - PDF: `/reports/a11y-color-report.pdf`
+
+   The report includes:
+   - Summary statistics of compliant/non-compliant colors
+   - Detailed WCAG guidelines and usage recommendations
+   - Color-by-color analysis with contrast ratios
+   - Testing results against white and black backgrounds
+   - Best practices for accessible color usage
 
 9. **Expand Your Palette**  
    Should your creative spirit desire more color magic, simply add "more colors to the same group" and repeat the process. The wizard is always ready to extend your enchanted palette.
@@ -408,6 +415,15 @@ For enhanced command-line table formatting, this project leverages the "clitable
 
 Check out the clitable-3 repository for further details and documentation:
 https://github.com/your-org/clitable-3
+
+For PDF Generation: This script uses the amazing Puppeteer and markdown-pdf libraries to handle PDF report generation.
+
+Checkout Puppeteer's repository here:
+https://github.com/puppeteer/puppeteer
+
+Check out markdown-pdf's repository here:
+https://github.com/alanshaw/markdown-pdf
+
 
 ---
 
