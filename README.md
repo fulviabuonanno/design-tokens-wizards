@@ -2,16 +2,16 @@
 
 Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`** — the enchanting scripts that helps you craft design tokens in just a few simple steps... as if by magic! 🪄✨
 
-With **`design-tokens-wizards`**, you’ll unlock:
+With **`design-tokens-wizards`**, you'll unlock:
 
 - **Enforce Naming Conventions:** Harness the power of our Design System lexicon to imbue each token with a spellbinding, standardized identity.
 - **Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
 - **Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
-- **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project’s unique needs.
+- **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project's unique needs.
 - **Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
-- **Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development’s testing phase.
+- **Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development's testing phase.
 
-Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let’s get started and cast some design magic together!
+Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get started and cast some design magic together!
 
 ---
 
@@ -26,13 +26,14 @@ Select the wizard that will come to your aid by executing the corresponding scri
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.2 🆙 |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.2  |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1 🆙 |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1 🆙  |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1  |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1   |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.0 🔥  |
 | **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
 | **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
-| **TYPOGRAPHY WIZ**       | Coming Soon    | –               | Generate and manage typography tokens    | –       |
+
 
 Below is a curated collection of spells (crafted by our Token's Wizards to come to your aid) to streamline your design tokens workflow:
 
@@ -40,7 +41,7 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 | ----------------------- | ---------------- | --------------- | -------------------------------------------------------- | ------- |
 | **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.1.0  🆙    |
 | **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.1.0 🆙  |
-| **ACCESSIBILITY SPELL** | Coming Soon      | –               | Assess and ensure the accessibility of your color tokens | –       |
+
 
 ---
 
@@ -74,7 +75,7 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
    - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
 
 5. **Behold the Preview**  
-   The wizard will cast a preview spell showing your color’s preview along with the stops table. You’ll see something like:
+   The wizard will cast a preview spell showing your color's preview along with the stops table. You'll see something like:
 
    ```
    Type: Global  Name: blue
@@ -102,10 +103,10 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
       Stored in `outputs/css/color/` and `outputs/scss/color/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
 
 8. **Expand Your Palette**  
-   Should your creative spirit desire more color magic, simply add “more colors to the same group” and repeat the process. The wizard is always ready to extend your enchanted palette.
+   Should your creative spirit desire more color magic, simply add "more colors to the same group" and repeat the process. The wizard is always ready to extend your enchanted palette.
 
 9. **Finalize the Spell**  
-   Review the output files (listed as updated, saved, or deleted) and relish the magic you’ve created. Your design tokens are now fully prepared for integration into your design system.
+   Review the output files (listed as updated, saved, or deleted) and relish the magic you've created. Your design tokens are now fully prepared for integration into your design system.
 
 ---
 
@@ -333,6 +334,99 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
    Automatically create CSS and SCSS files with your border-radius tokens as variables:
    - **CSS:** Stored in `outputs/css/border-radius/border_radius_variables_{unit}.css`
    - **SCSS:** Stored in `outputs/scss/border-radius/border_radius_variables_{unit}.scss`
+
+---
+
+### 🔤 Typography Tokens Wizard ✨
+
+Version 1.0.0 🔥
+
+The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
+
+1. **Invoke the Spell**  
+   Begin your typographic journey by running the Typography Tokens Wizard script:
+
+   ```sh
+   npm run typo
+   ```
+
+2. **Choose Your Properties**  
+   Select which typography properties you wish to configure:
+   - Font Families
+   - Font Sizes 
+   - Font Weights
+   - Letter Spacing
+   - Line Heights
+
+3. **For Each Property:**
+
+   **🔤 Font Family**
+   - Name your property (fontFamily, font-family, fonts, ff, or custom)
+   - Define 1-3 font families with fallbacks
+   - Choose naming convention:
+     - Semantic (primary, secondary, tertiary)
+     - Purpose-based (title, body, details)
+     - Ordinal (1, 2, 3)
+     - Alphabetical (a, b, c)
+
+   **📏 Font Size**
+   - Name your property (fontSize, font-size, size, fs, or custom)
+   - Select scale type:
+     - 4-Point Grid
+     - 8-Point Grid
+     - Modular Scale
+     - Custom Intervals
+     - Fibonacci Scale
+   - Choose unit (px, rem, em)
+   - Define 1-12 sizes with naming convention:
+     - T-shirt (xs, sm, md, lg, xl)
+     - Incremental (10, 20, 30)
+     - Ordinal (1, 2, 3)
+     - Alphabetical (a, b, c...)
+
+   **⚖️ Font Weight**
+   - Name your property (fontWeight, font-weight, weight, fw, or custom)
+   - Select from standard weights (100-900)
+   - Choose naming convention:
+     - T-shirt (xs to xl)
+     - Semantic (thin to bold)
+     - Ordinal (1 to 5)
+     - Purpose-based (body, heading...)
+
+   **↔️ Letter Spacing**
+   - Name your property (letterSpacing, letter-spacing, tracking, ls, or custom)
+   - Choose scale type:
+     - Predetermined (-1.25 to 6.25)
+     - Custom Intervals
+   - Select unit (em, rem, px, %)
+   - Define 1-7 values with naming convention:
+     - T-shirt (xs to xl)
+     - Incremental (100, 200...)
+     - Ordinal (01, 02... or 1, 2...)
+     - Alphabetical (a, b, c...)
+
+   **↕️ Line Height**
+   - Name your property (lineHeight, line-height, leading, lh, or custom)
+   - Choose scale type:
+     - Scale 1: 1.2, 1.35, 1.5, 1.65, 1.8
+     - Scale 2: 1.25, 1.375, 1.5, 1.625, 1.75
+     - Custom Intervals (with WCAG compliance check)
+   - Select naming convention:
+     - T-shirt (xs to xl)
+     - Semantic (tight, normal, loose)
+     - Ordinal (1 to 5)
+     - Purpose-based (body, heading, display)
+
+4. **Review & Confirm**  
+   For each property, you'll see a preview table showing your configured values. Confirm or adjust as needed.
+
+5. **Export Typography Tokens**  
+   The tokens are exported in multiple formats, ready for integration into your design system:
+   - **JSON:** Stored in `outputs/tokens/typography/typography_tokens.json`
+   - **CSS:** Stored in `outputs/css/typography/typography_variables.css`
+   - **SCSS:** Stored in `outputs/scss/typography/typography_variables.scss`
+
+⚠️ **IMPORTANT:** Each step includes accessibility guidelines and recommendations to ensure your typography system is both beautiful and functional. The wizard acts as your trusted advisor, suggesting optimal values while giving you the freedom to customize according to your needs.
 
 ---
 
