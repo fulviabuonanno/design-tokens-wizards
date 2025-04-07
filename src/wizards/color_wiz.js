@@ -205,7 +205,7 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
         type: "confirm",
         name: "showAccessibility",
         message: "Would you like to see the accessibility analysis for these colors?",
-        default: true
+        default: false
       }
     ]);
 
