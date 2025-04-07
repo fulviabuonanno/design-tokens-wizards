@@ -9,7 +9,7 @@
     "radii": "node wizards/radii_wiz.js --version=1.4.1",
     "typo": "node wizards/typo_wiz.js --version=1.0.0",
     "clear": "node spells/clear_spell.js --version=1.1.0",
-    "merge": "node spells/merge_spell.js --version=1.2.0"
+    "merge": "node spells/merge_spell.js --version=1.1.0"
   },
   "scriptVersions": {
     "color": "2.2.2",
@@ -20,7 +20,7 @@
     "clear": "1.1.0",
     "merge": "1.2.0"
     "clear": "1.1.0",
-    "merge": "1.2.0"
+    "merge": "1.1.0"
 
   },
   "author": "Fulvia Buonanno",
