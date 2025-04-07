@@ -1,7 +1,6 @@
 {
   "name": "design-tokens-wizard",
   "description": "Some little script 🧙🦄🧝‍♀️ fellas that will help you generate your design tokens in just a few steps!",
-  "main": "color_wiz.js",
   "type": "module",
   "scripts": {
     "color": "node wizards/color_wiz.js --version=2.2.2",
@@ -20,6 +19,9 @@
     "typo": "1.0.0",
     "clear": "1.1.0",
     "merge": "1.2.0"
+    "clear": "1.1.0",
+    "merge": "1.2.0"
+
   },
   "author": "Fulvia Buonanno",
   "license": "MIT",
