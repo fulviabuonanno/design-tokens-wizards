@@ -94,7 +94,7 @@ async function showAccessibilityNotes(propertyType) {
 }
 
 async function generateAccessibilityReport(selectedProperties, tokens, outputsDir) {
-  const reportsDir = path.join(outputsDir, "..", "reports");
+  const reportsDir = path.join(outputsDir, "reports");
   if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
   }
@@ -218,16 +218,21 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
 async function typographyWiz() {
   
   console.log(chalk.bold.bgRedBright("\n========================================"));
-  console.log(chalk.bold("🪄 STARTING THE MAGIC"));
+  console.log(chalk.bold("🪄 STARTING THE TYPOGRAPHY TOKENS WIZARD'S MAGIC"));
   console.log(chalk.bold.bgRedBright("========================================\n"));
 
-  await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens..."), 1500);
+  await showLoader(chalk.bold.yellowBright("🦄 Casting the magic of tokens..."), 1500);
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the ") +
-        chalk.bold.yellow("Typography Tokens Wizard") +
-        chalk.whiteBright(" script! \nLet this wizard guide you through creating your typography tokens in just a few steps. \nDefine your font families, sizes, weights, and more, and prepare them for import or sync with ") +
+    chalk.whiteBright("\n❤️ Welcome to the \n") +
+        chalk.bold.redBright("Typography Tokens Wizard\n") +
+        chalk.whiteBright(" script! \nLet this wizard guide you through creating your typography tokens in just a few enchanting steps. \n") +
+        chalk.whiteBright("Define your font families, sizes, weights, and more, and prepare them for import or sync with \n") +
         chalk.underline("Tokens Studio") +
-        chalk.whiteBright(" format.\n")
+        chalk.whiteBright(" format.\n✨ As a delightful bonus, you'll receive magical files in ") +
+        chalk.underline("SCSS") +
+        chalk.whiteBright(" and ") +
+        chalk.underline("CSS") +
+        chalk.whiteBright(" to test in your implementation!\n")
   );
 
   const { selectedProperties } = await inquirer.prompt([
@@ -1255,7 +1260,7 @@ async function typographyWiz() {
     
     const totalValues = parseInt(numValues);
 
-    // Generate names based on naming convention BEFORE creating values
+    
     if (namingConvention === 'tshirt') {
       if (totalValues === 3) {
         names = ['sm', 'md', 'lg'];
@@ -1370,7 +1375,7 @@ async function typographyWiz() {
     }
 
     const letterSpacing = {};
-    // Now create tokens using the pre-generated names
+    
     for (let i = 0; i < totalValues; i++) {
       letterSpacing[names[i]] = {
         value: values[i],
@@ -1710,20 +1715,20 @@ async function typographyWiz() {
   
   const finalTokens = tokens.typography; 
   
-  const outputsDir = path.join(__dirname, "..", "outputs");
-  const tokensTypographyDir = path.join(outputsDir, "tokens", "typography");
-  const cssTypographyDir = path.join(outputsDir, "css", "typography");
-  const scssTypographyDir = path.join(outputsDir, "scss", "typography");
+  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const tokensFolder = path.join(outputsDir, "tokens/json/typography");
+  const cssFolder = path.join(outputsDir, "tokens/css/typography");
+  const scssFolder = path.join(outputsDir, "tokens/scss/typography");
 
-  [outputsDir, tokensTypographyDir, cssTypographyDir, scssTypographyDir].forEach(dir => {
+  [outputsDir, tokensFolder, cssFolder, scssFolder].forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
   });
 
-  const jsonFilePath = path.join(tokensTypographyDir, "typography_tokens.json");
-  const cssFilePath = path.join(cssTypographyDir, "typography_variables.css");
-  const scssFilePath = path.join(scssTypographyDir, "typography_variables.scss");
+  const jsonFilePath = path.join(tokensFolder, "typography_tokens.json");
+  const cssFilePath = path.join(cssFolder, "typography_variables.css");
+  const scssFilePath = path.join(scssFolder, "typography_variables.scss");
 
   const jsonFileExists = fs.existsSync(jsonFilePath);
   const cssFileExists = fs.existsSync(cssFilePath);
@@ -1739,7 +1744,7 @@ async function typographyWiz() {
 
   await generateAccessibilityReport(selectedProperties, finalTokens, outputsDir);
 
-  await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell..."), 1500);
+  await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell..."), 1500);
 
   console.log(chalk.black.bgRedBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));

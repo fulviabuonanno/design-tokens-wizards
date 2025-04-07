@@ -599,12 +599,22 @@ const customStringify = (value, indent = 2) => {
 const main = async () => {
   
   console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("🪄 STARTING THE MAGIC"));
+  console.log(chalk.bold("🪄 STARTING THE SPACE TOKENS WIZARD'S MAGIC"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
-  console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.magenta("Spacing Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step. \nGenerate your tokens and prepare them for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
+  console.log(chalk.whiteBright("\n❤️ Welcome to the "));
+  console.log(chalk.bold.magenta("Spacing Tokens Wizard"));
+  console.log(chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step."));
+  console.log(chalk.whiteBright("Generate your tokens and prepare them for using or syncing in "));
+  console.log(chalk.underline("Tokens Studio"));
+  console.log(chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.underline("SCSS") +
+    chalk.whiteBright(" and ") +
+    chalk.underline("CSS") +
+    chalk.whiteBright(" to test in your implementation!\n")
+  );
 
   const input = await askForInput();
   if (!input) return;
@@ -678,10 +688,10 @@ const main = async () => {
     return main(); 
   }
 
-  const outputsDir = path.join(__dirname, "..", "outputs");
-  const tokensFolder = path.join(outputsDir, "tokens", "space");
-  const cssFolder = path.join(outputsDir, "css", "space");
-  const scssFolder = path.join(outputsDir, "scss", "space");
+  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const tokensFolder = path.join(outputsDir, "tokens/json/space");
+  const cssFolder = path.join(outputsDir, "tokens/css/space");
+  const scssFolder = path.join(outputsDir, "tokens/scss/space");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
@@ -741,7 +751,7 @@ const main = async () => {
     if (jsonFileExists || cssFileExists || scssFileExists) {
       console.log(chalk.whiteBright("🆕 Updated:"));
     } else {
-      console.log(chalk.whiteBright("✅ Saved:"));
+      console.log(chalk.whiteBright("🪄 Created:"));
     }
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'space_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'space_variables_px.css'))}`));
@@ -785,7 +795,7 @@ const main = async () => {
     console.log(chalk.bold("📄 OUTPUT FILES"));
     console.log(chalk.black.bgMagentaBright("=======================================\n"));
     
-    console.log(chalk.whiteBright("✅ Saved:"));
+    console.log(chalk.whiteBright("🪄 Created:"));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'space_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'space_variables_px.css'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'space_variables_px.scss'))}`));

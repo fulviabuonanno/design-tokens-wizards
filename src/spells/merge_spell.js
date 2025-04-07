@@ -24,8 +24,12 @@ function capitalize(str) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const outputsDir = path.join(__dirname, '../outputs');
-const finalDir = path.join(__dirname, '../final');
+const outputsDir = path.join(__dirname, "..", "..", "output_files");
+const finalDir = path.join(__dirname, "..", "..", "output_files", "final");
+const tokensFolder = path.join(outputsDir, "tokens/json");
+const cssFolder = path.join(outputsDir, "tokens/css");
+const scssFolder = path.join(outputsDir, "tokens/scss"); 
+const reportsFolder = path.join(outputsDir, "reports");
 
 /**
  * Recursively get all file paths inside a directory.
@@ -133,7 +137,7 @@ async function mergeOutputs() {
         const lowerFile = file.toLowerCase();
         const relativePath = path.relative(outputsDir, file).toLowerCase();
         
-        // Special case for typography which doesn't use suffixes
+        
         if (tokenType === 'Typography') {
           if ((lowerFile.endsWith('.css') || lowerFile.endsWith('.scss')) &&
               relativePath.includes(patternCss)) {
@@ -149,7 +153,7 @@ async function mergeOutputs() {
           return false;
         }
         
-        // Normal case for other token types with suffixes
+        
         if ((lowerFile.endsWith('.css') || lowerFile.endsWith('.scss')) &&
             lowerFile.includes(suffix) &&
             relativePath.includes(patternCss)) {
@@ -338,7 +342,7 @@ async function mergeOutputs() {
   const mergedSpaceJSON         = mergeJSONFilesByToken(outputFiles, 'space_tokens');
   const mergedBorderRadiusJSON  = mergeJSONFilesByToken(outputFiles, 'border_radius_tokens');
   
-  // Only merge typography if the user selected to include it
+  
   let mergedTypographyJSON = {};
   if (answers.includeTypography) {
     mergedTypographyJSON = mergeJSONFilesByToken(outputFiles, 'typography_tokens');

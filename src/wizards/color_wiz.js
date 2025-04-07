@@ -349,7 +349,7 @@ const customStringify = (obj, indent = 2) => {
       return "[\n" + " ".repeat(currentIndent + indent) + items.join(",\n" + " ".repeat(currentIndent + indent)) + "\n" + " ".repeat(currentIndent) + "]";
     }
     let keys = Object.keys(value);
-    // Ordenar alfabéticamente y forzar que "base" sea la primera
+    
     keys.sort((a, b) => a.localeCompare(b));
     if (keys.includes("base")) {
       keys = ["base", ...keys.filter(k => k !== "base")];
@@ -420,7 +420,7 @@ const convertTokensToCSS = (tokens) => {
   const processTokens = (obj, prefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
-      // Aplicar reglas de ordenamiento según contenido:
+      
       if (keys.every(k => semanticOrder.includes(k))) {
         keys = keys.sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
       } else if (keys.every(k => /^\d{2}$/.test(k))) {
@@ -430,7 +430,7 @@ const convertTokensToCSS = (tokens) => {
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
       }
-      // Asegurarse de que "base" quede siempre primero
+      
       if (obj.hasOwnProperty("base")) {
         keys = keys.filter(k => k !== "base");
         keys.unshift("base");
@@ -463,7 +463,7 @@ const convertTokensToSCSS = (tokens) => {
       } else {
         keys = keys.sort((a, b) => a.localeCompare(b));
       }
-      // Asegurarse de que "base" quede siempre primero
+      
       if (obj.hasOwnProperty("base")) {
         keys = keys.filter(k => k !== "base");
         keys.unshift("base");
@@ -586,24 +586,29 @@ const stops = generateOrdinalStops(1, 20);
 
 const main = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🪄 STARTING THE MAGIC"));
+  console.log(chalk.bold("🪄 STARTING THE COLOR WIZARD'S MAGIC"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-  await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens"), 2000);
+  await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens"), 1500);
 
   console.log(
     chalk.whiteBright("\n❤️ Welcome to the ") +
       chalk.bold.yellow("Color Tokens Wizard") +
       chalk.whiteBright(" script! \nLet this wizard guide you through creating your color tokens in just a few steps. \nGenerate your colors, convert them, and prepare them for import or sync with ") +
       chalk.underline("Tokens Studio") +
-      chalk.whiteBright(" format.")
+      chalk.whiteBright(" format.") +
+      chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive magical files in ") +
+      chalk.underline("SCSS") +
+      chalk.whiteBright(" and ") +
+      chalk.underline("CSS") +
+      chalk.whiteBright(" to test in your implementation!\n")
   );
 
   let tokensData = {};
-  const outputsDir = path.join(__dirname, "..", "outputs");
-  const tokensFolder = path.join(outputsDir, "tokens/colors");
-  const cssFolder = path.join(outputsDir, "css/colors");
-  const scssFolder = path.join(outputsDir, "scss/colors");
+  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const tokensFolder = path.join(outputsDir, "tokens/json/color");
+  const cssFolder = path.join(outputsDir, "tokens/css/color");
+  const scssFolder = path.join(outputsDir, "tokens/scss/color");
   let namingChoice = null;
   let previousConcept = null;
   let formatChoices = null;
@@ -840,7 +845,7 @@ Object.entries(hexExistence).forEach(([key, existed]) => {
   }
 });
 
-await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 2000);
+await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 1500);
 
 console.log(chalk.black.bgYellowBright("\n======================================="));
 console.log(chalk.bold("📄 OUTPUT FILES"));
@@ -852,7 +857,7 @@ if (updatedFiles.length > 0) {
 }
 
 if (savedNewFiles.length > 0) {
-  console.log(chalk.whiteBright("\n✅ Saved:"));
+  console.log(chalk.whiteBright("\n🪄 Created:"));
   savedNewFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
 }
 
