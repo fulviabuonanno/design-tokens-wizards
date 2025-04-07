@@ -21,7 +21,8 @@
     "typo": "1.0.1",
     "clear": "1.2.0",
     "merge": "1.2.0",
-    "update": "1.0.0"
+    "update": "1.0.0",
+    "dependencies": "1.0.0"
   },
   "author": "Fulvia Buonanno",
   "license": "MIT",
