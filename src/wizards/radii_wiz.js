@@ -636,17 +636,22 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
 
 const main = async () => {
   console.log(chalk.black.bgGreenBright("\n======================================="));
-  console.log(chalk.bold("🪄 STARTING THE MAGIC"));
+  console.log(chalk.bold("🪄 STARTING THE BORDER RADIUS TOKENS WIZARD'S MAGIC"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
 
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the ") +
-    chalk.bold.greenBright("Border Radius Tokens Wizard") +
-    chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your border radius tokens step by step.\nGenerate your tokens and prepare them for using or syncing in ") +
+    chalk.whiteBright("\n❤️ Welcome to the \n") +
+    chalk.bold.greenBright("Border Radius Tokens Wizard\n") +
+    chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your border radius tokens step by step.\n") +
+    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in \n") +
     chalk.underline("Tokens Studio") +
-    chalk.whiteBright(".")
+    chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.underline("SCSS") +
+    chalk.whiteBright(" and ") +
+    chalk.underline("CSS") +
+    chalk.whiteBright(" to test in your implementation!\n")
   );
   
   const input = await askForInput();
@@ -655,9 +660,10 @@ const main = async () => {
   
   const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, scale, valueScale, multiplier, factor, customIntervals, fibonacciBase);
 
-  const tokensFolder = path.join(outputsDir, "tokens", "border-radius");
-  const cssFolder = path.join(outputsDir, "css", "border-radius");
-  const scssFolder = path.join(outputsDir, "scss", "border-radius");
+  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const tokensFolder = path.join(outputsDir, "tokens/json/border-radius");
+  const cssFolder = path.join(outputsDir, "tokens/css/border-radius");
+  const scssFolder = path.join(outputsDir, "tokens/scss/border-radius");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
@@ -702,8 +708,8 @@ const main = async () => {
       const keyB = b[0].toLowerCase();
       
       const weight = (key) => {
-          if (key === noneKey) return -Infinity;  // Siempre primero
-          if (key === fullKey) return Infinity;     // Siempre al final
+          if (key === noneKey) return -Infinity;  
+          if (key === fullKey) return Infinity;     
           const index = tshirtOrder.indexOf(key);
           return index !== -1 ? index : 0;
       };
@@ -766,7 +772,7 @@ const main = async () => {
     if (jsonFileExists || cssFileExists || scssFileExists) {
       console.log(chalk.whiteBright("🆕 Updated:"));
     } else {
-      console.log(chalk.whiteBright("✅ Saved:"));
+      console.log(chalk.whiteBright("🪄 Created:"));
     }
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
@@ -810,7 +816,7 @@ const main = async () => {
       console.log(chalk.black.bgGreenBright("=======================================\n"));
     }
 
-    console.log(chalk.whiteBright("✅ Saved:"));
+    console.log(chalk.whiteBright("🪄 Created:"));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, 'border_radius_variables_px.css'))}`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, 'border_radius_variables_px.scss'))}`));

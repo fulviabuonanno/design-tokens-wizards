@@ -24,30 +24,28 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get s
 
 Select the wizard that will come to your aid by executing the corresponding script in your terminal. Below is a list of available wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.2.2  |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.4.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.4.1  |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.4.1   |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.0 🔥  |
-| **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –       |
-| **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –       |
-
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.3.0 🆕 |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.5.0 🆕 |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.5.0 🆕 |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.5.0 🆕 |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.1 🔥 |
+| **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –        |
+| **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –        |
 
 Below is a curated collection of spells (crafted by our Token's Wizards to come to your aid) to streamline your design tokens workflow:
 
-| Spell                   | Script Name      | Run Command     | Description                                              | Version |
-| ----------------------- | ---------------- | --------------- | -------------------------------------------------------- | ------- |
-| **MERGE SPELL**         |  `merge_spell.js`     |  `npm run merge`              | Combine all token files into a single unified file       | 1.1.0  🆙    |
-| **CLEAR SPELL**         | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command   | 1.1.0 🆙  |
-
+| Spell           | Script Name      | Run Command     | Description                                            | Version  |
+| --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0 🆙 |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0 🆙 |
 
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.2.2
+Version 2.3.0
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -63,15 +61,15 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
 
 3. **Define Your Color Identity**  
    Name your color token – whether it represents a global hue, a brand element, or a specific UI background.  
-   *Example: `blue`, `yellow`, or `red`.*
+   _Example: `blue`, `yellow`, or `red`._
 
    **Note:** This wizard currently supports the creation of **global colors** only.
 
 4. **Select and Customize the Scale**  
    Choose the scale type that best suits your magical needs:
-   
-   - **Incremental:** Generate stops using an incremental step (e.g., 10, 50, or 100).  
-   - **Ordinal:** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).  
+
+   - **Incremental:** Generate stops using an incremental step (e.g., 10, 50, or 100).
+   - **Ordinal:** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).
    - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
 
 5. **Behold the Preview**  
@@ -96,11 +94,11 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
 
 7. **Generate Your Artifacts**  
    Once confirmed, the wizard will:
-   
-   - Export your tokens in Tokens Studio JSON format: 
-      Stored in: `outputs/tokens/color` as `color_tokens_{format}.json`
+
+   - Export your tokens in Tokens Studio JSON format:
+     Stored in: `output_files/tokens/color` as `color_tokens_{format}.json`
    - Conjure CSS and SCSS files with your tokens as variables.
-      Stored in `outputs/css/color/` and `outputs/scss/color/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
+     Stored in `output_files/tokens/css/` and `output_files/tokens/scss/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
 
 8. **Expand Your Palette**  
    Should your creative spirit desire more color magic, simply add "more colors to the same group" and repeat the process. The wizard is always ready to extend your enchanted palette.
@@ -118,7 +116,7 @@ Let the art of token crafting infuse your project with endless creativity—and 
 
 ### 📏 **Size Tokens Wizard** ✨
 
-Version 1.4.0
+Version 1.5.0
 
 ## Size Tokens Wizard ✨
 
@@ -139,6 +137,7 @@ Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you 
 
 4. **Select a Scale**  
    Choose from the predefined scales:
+
    - **4-Point Grid System**
    - **8-Point Grid System**
    - **Modular Scale** (multiplier based)
@@ -150,12 +149,13 @@ Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you 
 
 6. **Choose Naming Criteria**  
    Select a naming pattern for your size tokens:
+
    - **T-shirt Sizes**: (xs, sm, md, lg, xl)
    - **Incremental Numbers**: (100, 200, 300)
    - **Ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
-7. **Preview the Tokens**  
+7. **Preview the Tokens**
 
    ```
       Name: Size
@@ -169,7 +169,7 @@ Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you 
       └─────────┴─────────┘
    ```
 
-Review the preview and confirm if the size tokens meet your requirements. 
+Review the preview and confirm if the size tokens meet your requirements.
 
 If adjustments are needed, simply re-run the wizard until the desired output is achieved.
 
@@ -178,24 +178,24 @@ If adjustments are needed, simply re-run the wizard until the desired output is 
 
 9. **Convert to Other Units (Optional)**  
    By default, tokens are stored in pixels (px), but you can also convert them to:
+
    - **Rem (rem)**
    - **Em (em)**
 
 10. **Export Size Tokens**  
-   The script exports your size tokens in Tokens Studio JSON format, making them ready for integration into your design system.  
-   Stored in: `outputs/tokens/size/size_tokens_{unit}.json`
+    The script exports your size tokens in Tokens Studio JSON format, making them ready for integration into your design system.  
+    Stored in: `output_files/tokens/size/size_tokens_{unit}.json`
 
 11. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your size tokens as variables:
-    - **CSS**: Stored in `outputs/css/size/size_variables_{unit}.css`
-    - **SCSS**: Stored in `outputs/scss/size/size_variables_{unit}.scss`
-
+    - **CSS**: Stored in `output_files/tokens/css/size/size_variables_{unit}.css`
+    - **SCSS**: Stored in `output_files/tokens/scss/size/size_variables_{unit}.scss`
 
 ---
 
 ### 🔳 **Space Tokens Wizard** ✨
 
-Version 1.4.1
+Version 1.5.0
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
 
@@ -232,7 +232,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
    - **Ordinal Numbers**: (1, 2, 3)
    - **Alphabetical**: (A, B, C or a, b, c)
 
-7. **Preview the Tokens**  
+7. **Preview the Tokens**
 
    ```
       Name: Size
@@ -256,19 +256,19 @@ Creating and managing space tokens can be a daunting task, but with the Space To
    - **Em (em)**
 
 10. **Export Space Tokens**  
-   The script exports your space tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
-   Stored in: `outputs/tokens/space/space_tokens*{unit}.json`
+    The script exports your space tokens in Tokens Studio format as JSON files, making them ready for integration into your design system.
+    Stored in: `output_files/tokens/space/space_tokens*{unit}.json`
 
 11. **Generate CSS & SCSS Files**  
     Automatically create CSS and SCSS files with your space tokens as variables:
-    - **CSS**: Stored in `outputs/css/space/space_variables_{unit}.css`
-    - **SCSS**: Stored in `outputs/scss/space/space_variables_{unit}.scss`
+    - **CSS**: Stored in `output_files/tokens/css/space/space_variables_{unit}.css`
+    - **SCSS**: Stored in `output_files/tokens/scss/space/space_variables_{unit}.scss`
 
 ---
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
 
-Version 1.4.1
+Version 1.5.0
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
 
@@ -303,18 +303,18 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 - **Custom Intervals**
 - **Fibonacci Scale**
 
-6. **Preview the Tokens**  
+6. **Preview the Tokens**
 
 ```
-   Name: border radius  
-   ┌─────────┬────────────────────────┐  
-   │ Scale   │ Value                  │  
-   ├─────────┼────────────────────────┤  
-   │ None    │ 0px                    │  
-   │ 01      │ 4px                    │  
-   │ 02      │ 8px                    │  
-   │ 03      │ 12px                    │  
-   │ Full    │ 9999px                 │  
+   Name: border radius
+   ┌─────────┬────────────────────────┐
+   │ Scale   │ Value                  │
+   ├─────────┼────────────────────────┤
+   │ None    │ 0px                    │
+   │ 01      │ 4px                    │
+   │ 02      │ 8px                    │
+   │ 03      │ 12px                    │
+   │ Full    │ 9999px                 │
    └─────────┴────────────────────────┘
 ```
 
@@ -327,19 +327,20 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
    - **Rem (rem)**
 
 10. **Export Border Radius Tokens**  
-   The tokens are exported in Tokens Studio format as JSON files, ready for integration into your design system.
-   Stored in: `outputs/tokens/border-radius/border_radius_tokens*{unit}.json`
+    The tokens are exported in Tokens Studio format as JSON files, ready for integration into your design system.
+    Stored in: `output_files/tokens/border-radius/border_radius_tokens*{unit}.json`
 
 11. **Generate CSS & SCSS Files**  
-   Automatically create CSS and SCSS files with your border-radius tokens as variables:
-   - **CSS:** Stored in `outputs/css/border-radius/border_radius_variables_{unit}.css`
-   - **SCSS:** Stored in `outputs/scss/border-radius/border_radius_variables_{unit}.scss`
+    Automatically create CSS and SCSS files with your border-radius tokens as variables:
+
+- **CSS:** Stored in `output_files/tokens/css/border-radius/border_radius_variables_{unit}.css`
+- **SCSS:** Stored in `output_files/tokens/scss/border-radius/border_radius_variables_{unit}.scss`
 
 ---
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.0.0 🔥
+Version 1.0.1 🔥 🔥
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
@@ -352,8 +353,9 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
 
 2. **Choose Your Properties**  
    Select which typography properties you wish to configure:
+
    - Font Families
-   - Font Sizes 
+   - Font Sizes
    - Font Weights
    - Letter Spacing
    - Line Heights
@@ -361,6 +363,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
 3. **For Each Property:**
 
    **🔤 Font Family**
+
    - Name your property (fontFamily, font-family, fonts, ff, or custom)
    - Define 1-3 font families with fallbacks
    - Choose naming convention:
@@ -370,6 +373,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
      - Alphabetical (a, b, c)
 
    **📏 Font Size**
+
    - Name your property (fontSize, font-size, size, fs, or custom)
    - Select scale type:
      - 4-Point Grid
@@ -385,6 +389,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
      - Alphabetical (a, b, c...)
 
    **⚖️ Font Weight**
+
    - Name your property (fontWeight, font-weight, weight, fw, or custom)
    - Select from standard weights (100-900)
    - Choose naming convention:
@@ -394,6 +399,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
      - Purpose-based (body, heading...)
 
    **↔️ Letter Spacing**
+
    - Name your property (letterSpacing, letter-spacing, tracking, ls, or custom)
    - Choose scale type:
      - Predetermined (-1.25 to 6.25)
@@ -406,6 +412,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
      - Alphabetical (a, b, c...)
 
    **↕️ Line Height**
+
    - Name your property (lineHeight, line-height, leading, lh, or custom)
    - Choose scale type:
      - Scale 1: 1.2, 1.35, 1.5, 1.65, 1.8
@@ -422,55 +429,56 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
 
 5. **Export Typography Tokens**  
    The tokens are exported in multiple formats, ready for integration into your design system:
-   - **JSON:** Stored in `outputs/tokens/typography/typography_tokens.json`
-   - **CSS:** Stored in `outputs/css/typography/typography_variables.css`
-   - **SCSS:** Stored in `outputs/scss/typography/typography_variables.scss`
+   - **JSON:** Stored in `output_files/tokens/typography/typography_tokens.json`
+   - **CSS:** Stored in `output_files/tokens/css/typography/typography_variables.css`
+   - **SCSS:** Stored in `output_files/tokens/scss/typography/typography_variables.scss`
 
 ⚠️ **IMPORTANT:** Each step includes accessibility guidelines and recommendations to ensure your typography system is both beautiful and functional. The wizard acts as your trusted advisor, suggesting optimal values while giving you the freedom to customize according to your needs.
 
 ---
 
-   ### 🧹 **Clear Spell** ✨
+### 🧹 **Clear Spell** ✨
 
-   Version 1.1.0
+Version 1.2.0
 
-   The Clear Spell is a simple yet powerful tool to keep your project directory clean and organized. It removes all generated files, ensuring you can start fresh without any clutter.
+The Clear Spell is a simple yet powerful tool to keep your project directory clean and organized. It removes all generated files, ensuring you can start fresh without any clutter.
 
-   1. **Run the Clear Spell Script**  
-      Open your terminal and execute the following command:
+1.  **Run the Clear Spell Script**  
+    Open your terminal and execute the following command:
 
-      ```sh
-      npm run clear
-      ```
+    ```sh
+    npm run clear
+    ```
 
-   2. **What Happens Next**  
-      - All generated token files in the `outputs/tokens/` directory are deleted.
-      - CSS and SCSS files in the `outputs/css/` and `outputs/scss/` directories are removed.
-      - Final output files in the `final/` directory, including JSON, CSS, and SCSS files, will also be removed.
-      - Your project directory is left clean, free from outdated or unnecessary files.
+2.  **What Happens Next**
+    - All generated token files in the `output_files/tokens/` directory are deleted.
+    - CSS and SCSS files in the `output_files/tokens/css/` and `output_files/tokens/scss/` directories are removed.
+    - Final output files in the `output_files/final/` directory, including JSON, CSS, and SCSS files, will also be removed.
+    - Your project directory is left clean, free from outdated or unnecessary files.
 
-   ---
+---
 
-   ### 🪄 **Merge Spell** ✨
+### 🪄 **Merge Spell** ✨
 
-   Version 1.1.0 🆕
+Version 1.2.0 🆙 🆙
 
-   The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
+The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
 
-   1. **Run the Merge Spell Script**  
-      Open your terminal and execute the following command:
+1.  **Run the Merge Spell Script**  
+    Open your terminal and execute the following command:
 
-      ```sh
-      npm run merge
-      ```
+    ```sh
+    npm run merge
+    ```
 
-   2. **What Happens Next**  
-      - All token files in the `outputs/tokens/` directory are merged into a single JSON, CSS and SCSS filee.
-      - The resulting file is structured consistently, ensuring seamless integration into your design system or development workflow.
+2.  **What Happens Next**
+    - All token files in the `output_files/tokens/` directory are merged into a single JSON, CSS and SCSS file.
+    - The resulting file is structured consistently, ensuring seamless integration into your design system or development workflow.
 
 ---
 
 ## 🛠️ Dependencies ✨
+
 Every wizard benefits from a little assistance. To empower our enchanting scripts, we rely on a handful of outstanding dependencies that streamline our process and amplify our magic:
 
 For Color Conversion: This script uses the amazing TinyColor library to handle all the color conversions.
@@ -493,10 +501,40 @@ For enhanced command-line table formatting, this project leverages the "clitable
 Check out the clitable-3 repository for further details and documentation:
 https://github.com/your-org/clitable-3
 
+For Color Manipulation: This script also utilizes the Color library, which provides a comprehensive set of tools for color manipulation and conversion, complementing TinyColor's capabilities.
+
+You can check out the Color library's repository here:
+https://github.com/Qix-/color
+
+For File System Operations: This script employs the FS-extra library, which extends the native Node.js file system module with additional methods and functionality, making file operations more convenient.
+
+You can check out FS-extra's repository here:
+https://github.com/jprichardson/node-fs-extra
+
+For Environment Variable Management: This script uses the Dotenv library to load environment variables from a .env file into process.env, allowing for better configuration management.
+
+You can check out Dotenv's repository here:
+https://github.com/motdotla/dotenv
+
 ---
 
+## 📦 Dependencies ✨
+
+Below is a comprehensive list of all dependencies used in this project:
+
+| Dependency       | Version | Description                                                     | Repository                                                        |
+| ---------------- | ------- | --------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **chalk**        | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                     |
+| **cli-table3**   | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)             |
+| **inquirer**     | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js) |
+| **markdown-pdf** | ^11.0.0 | Markdown to PDF converter                                       | [alanshaw/markdown-pdf](https://github.com/alanshaw/markdown-pdf) |
+| **path**         | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                     |
+| **tinycolor2**   | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)           |
+
+---
 
 ## 📝 License ✨
+
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software as long as the original copyright notice and permission notice are included in all copies or substantial portions of the software.
 
 For more details, you can read the full license text in the [LICENSE](./LICENSE) file included in this repository or visit the Open Source Initiative for more information.
@@ -507,4 +545,6 @@ For more details, you can read the full license text in the [LICENSE](./LICENSE)
 
 If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
 
-Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙 
+Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙
+
+---

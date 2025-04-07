@@ -18,69 +18,52 @@ if (versionArg) {
   console.log(chalk.bold.whiteBright.bgGray(capitalize(`Clear Files Incantation - version ${version}`)));
 }
 
-const outputsDir = path.join(__dirname, '../outputs');
-const finalDir = path.join(__dirname, '../final');
-const reportsDir = path.join(__dirname, '../reports');
+const outputsDir = path.join(__dirname, "..", "..", "output_files");
+const finalDir = path.join(outputsDir, "final");
+const jsonFolder = path.join(outputsDir, "tokens/json");
+const cssFolder = path.join(outputsDir, "tokens/css");
+const scssFolder = path.join(outputsDir, "tokens/scss"); 
+const reportsDir = path.join(outputsDir, "reports");
 
 async function clearFolder(dirPath) {
-  let count = 0;
+  let fileCount = 0;
+  let folderCount = 0;
   let errors = [];
   
   try {
-    // Check if directory exists
     if (!fs.existsSync(dirPath)) {
-      const relativePath = path.relative(process.cwd(), dirPath);
-      console.log(chalk.yellow(`⚠️ Directory does not exist: ${relativePath}`));
-      return count;
+      return { fileCount, folderCount };
     }
 
-    const relativePath = path.relative(process.cwd(), dirPath);
-    console.log(chalk.blue(`🔍 Scanning directory: ${relativePath}`));
     const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
     
     if (entries.length === 0) {
-      console.log(chalk.yellow(`ℹ️ Directory is empty: ${relativePath}`));
-      return count;
+      return { fileCount, folderCount };
     }
-
-    console.log(chalk.blue(`📂 Found ${entries.length} items in ${relativePath}`));
     
     for (const entry of entries) {
       const fullPath = path.join(dirPath, entry.name);
-      const relativeEntryPath = path.relative(process.cwd(), fullPath);
       try {
         if (entry.isDirectory()) {
-          console.log(chalk.cyan(`📁 Processing subdirectory: ${path.relative(dirPath, fullPath)}`));
-          count += await clearFolder(fullPath);
-          // Remove empty directory after clearing its contents
+          const subCounts = await clearFolder(fullPath);
+          fileCount += subCounts.fileCount;
+          folderCount += subCounts.folderCount + 1; 
           await fs.promises.rmdir(fullPath);
-          console.log(chalk.green(`✅ Removed directory: ${path.relative(dirPath, fullPath)}`));
         } else {
-          console.log(chalk.cyan(`📄 Processing file: ${path.relative(dirPath, fullPath)}`));
           await fs.promises.unlink(fullPath);
-          count++;
-          console.log(chalk.green(`✅ Deleted file: ${path.relative(dirPath, fullPath)}`));
+          fileCount++;
         }
       } catch (err) {
-        console.log(chalk.red(`❌ Error processing ${path.relative(dirPath, fullPath)}: ${err.message}`));
-        errors.push({ path: relativeEntryPath, error: err.message });
+        errors.push({ path: fullPath, error: err.message });
       }
     }
   } catch (err) {
     if (err.code !== 'ENOENT') {
-      const relativePath = path.relative(process.cwd(), dirPath);
-      console.error(chalk.red(capitalize('❌ Error encountered while attempting to clear folder at ' + relativePath)), err);
+      console.error(chalk.red(`❌ Error clearing folder: ${err.message}`));
     }
   }
   
-  if (errors.length > 0) {
-    console.log(chalk.yellow('\n⚠️ Some files could not be deleted:'));
-    errors.forEach(({ path, error }) => {
-      console.log(chalk.yellow(`  - ${path}: ${error}`));
-    });
-  }
-  
-  return count;
+  return { fileCount, folderCount };
 }
 
 function showLoader(message, ms) {
@@ -103,22 +86,23 @@ function showLoader(message, ms) {
   });
 }
 
-async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal, clearReports) {
+async function processOutputs(clearCSS, clearSCSS, clearJSON, clearFinal, clearReports) {
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🧹 STEP 2: PURGING FOLDER CONTENT"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  await showLoader("🚮 Summoning arcane cleanup... please stand by", 2000);
+  await showLoader(chalk.bold.yellowBright("🚀  Channeling the mystical forces of organization"), 1500);
 
-  let cssCount = 0, scssCount = 0, tokensCount = 0, finalCount = 0, reportsCount = 0;
-  const cssFolder = path.join(outputsDir, "css");
-  const scssFolder = path.join(outputsDir, "scss");
-  const tokensFolder = path.join(outputsDir, "tokens");
+  let cssCount = { fileCount: 0, folderCount: 0 };
+  let scssCount = { fileCount: 0, folderCount: 0 };
+  let jsonCount = { fileCount: 0, folderCount: 0 };
+  let finalCount = { fileCount: 0 };
+  let reportsCount = { fileCount: 0 };
 
   const tasks = [];
   if (clearCSS) tasks.push({ name: 'CSS', folder: cssFolder, count: () => cssCount });
   if (clearSCSS) tasks.push({ name: 'SCSS', folder: scssFolder, count: () => scssCount });
-  if (clearTokens) tasks.push({ name: 'Tokens', folder: tokensFolder, count: () => tokensCount });
+  if (clearJSON) tasks.push({ name: 'JSON', folder: jsonFolder, count: () => jsonCount });
   if (clearFinal) tasks.push({ name: 'Final', folder: finalDir, count: () => finalCount });
   if (clearReports) tasks.push({ name: 'Reports', folder: reportsDir, count: () => reportsCount });
 
@@ -128,25 +112,38 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal, clea
     console.log(chalk.blue(`  - ${task.name}: ${relativePath}`));
   });
 
+  
   for (const task of tasks) {
-    console.log(chalk.bold(`\n🔄 Processing ${task.name} folder...`));
-    task.count = await clearFolder(task.folder);
+    const result = await clearFolder(task.folder);
+    if (task.name === 'CSS') {
+      cssCount = result;
+    } else if (task.name === 'SCSS') {
+      scssCount = result;
+    } else if (task.name === 'JSON') {
+      jsonCount = result;
+    } else if (task.name === 'Final') {
+      finalCount = result;
+    } else if (task.name === 'Reports') {
+      reportsCount = result;
+    }
   }
 
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🎉 FOLDERS CLEARED SUCCESSFULLY!".toUpperCase()));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  const totalFiles = cssCount + scssCount + tokensCount + finalCount + reportsCount;
-  if (totalFiles === 0) {
-    console.log(chalk.bold(capitalize("no files were found for deletion – all folders remain pristine.")));
+  const totalFiles = cssCount.fileCount + scssCount.fileCount + jsonCount.fileCount + finalCount.fileCount + reportsCount.fileCount;
+  const totalFolders = cssCount.folderCount + scssCount.folderCount + jsonCount.folderCount;
+
+  if (totalFiles === 0 && totalFolders === 0) {
+    console.log(chalk.bold(capitalize("no files or folders were found for deletion – all folders remain pristine.")));
   } else {
-    if (clearCSS) console.log(chalk.bold(`✅ ${chalk.bold('CSS')} files deleted: ${cssCount} 📄`));
-    if (clearSCSS) console.log(chalk.bold(`✅ ${chalk.bold('SCSS')} files deleted: ${scssCount} 📄`));
-    if (clearTokens) console.log(chalk.bold(`✅ ${chalk.bold('TOKENS')} files deleted: ${tokensCount} 📄`));
-    if (clearFinal) console.log(chalk.bold(`✅ ${chalk.bold('FINAL')} files deleted: ${finalCount} 📄`));
-    if (clearReports) console.log(chalk.bold(`✅ ${chalk.bold('REPORTS')} files deleted: ${reportsCount} 📄`));
-    console.log(chalk.bold(`\n📊 Total files deleted: ${totalFiles} 📄`));
+    if (clearCSS) console.log(chalk.bold(`✅ ${chalk.bold('CSS')}: ${cssCount.fileCount} files, ${cssCount.folderCount} folders 📄`));
+    if (clearSCSS) console.log(chalk.bold(`✅ ${chalk.bold('SCSS')}: ${scssCount.fileCount} files, ${scssCount.folderCount} folders 📄`));
+    if (clearJSON) console.log(chalk.bold(`✅ ${chalk.bold('JSON')}: ${jsonCount.fileCount} files, ${jsonCount.folderCount} folders 📄`));
+    if (clearFinal) console.log(chalk.bold(`✅ ${chalk.bold('FINAL')}: ${finalCount.fileCount} files`));
+    if (clearReports) console.log(chalk.bold(`✅ ${chalk.bold('REPORTS')}: ${reportsCount.fileCount} files`));
+    console.log(chalk.bold(`\n📊 Total: ${totalFiles} files, ${totalFolders} folders 📄`));
   }
 
   console.log(chalk.bold.yellow("\n🧙 The cleanup incantation has been successfully cast! 🎉\n"));
@@ -154,8 +151,10 @@ async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal, clea
 
 async function startInterface() {
   console.log(chalk.bold.bgGray("\n========================================"));
-  console.log(chalk.bold("📝 STEP 1: CHOOSE THE FOLDERS TO CLEAR"));
+  console.log(chalk.bold("🧹 STARTING THE CLEANUP MAGIC"));
   console.log(chalk.bold.bgGray("========================================\n"));
+
+  await showLoader(chalk.bold.yellowBright("🚀 Preparing to cast the cleanup spell"), 1500);
 
   console.log(chalk.whiteBright("🪄Welcome to the ") +
     chalk.bold.gray("Clear Files Incantation") +
@@ -177,8 +176,8 @@ async function startInterface() {
     },
     {
       type: 'confirm',
-      name: 'clearTokens',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Tokens") + " folder? (yes/no)"),
+      name: 'clearJSON',
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("JSON") + " folder? (yes/no)"),
       default: false,
     },
     {
@@ -214,7 +213,7 @@ async function startInterface() {
     return;
   }
 
-  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearTokens, answers.clearFinal, answers.clearReports);
+  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearJSON, answers.clearFinal, answers.clearReports);
 }
 
 startInterface();

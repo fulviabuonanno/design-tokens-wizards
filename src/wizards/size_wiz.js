@@ -565,13 +565,22 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension, prefix) => 
 
 const main = async () => {
   console.log(chalk.black.bgBlueBright("\n======================================="));
-  console.log(chalk.bold("🪄 STARTING THE MAGIC"));
+  console.log(chalk.bold("🪄 STARTING THE SIZE TOKENS WIZARD'S MAGIC"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   await showLoader(chalk.bold.yellowBright("🧚 Casting the magic of tokens"), 1500);
 
-  console.log(chalk.whiteBright("\n❤️ Welcome to the ") + chalk.bold.blue("Size Tokens Wizard") + chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step. \nGenerate your tokens and prepare them ready for using or syncing in ") + chalk.underline("Tokens Studio") + chalk.whiteBright("."));
-
+  console.log(chalk.whiteBright("\n❤️ Welcome to the "));
+  console.log(chalk.bold.blue("Size Tokens Wizard"));
+  console.log(chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step."));
+  console.log(chalk.whiteBright("Generate your tokens and prepare them ready for using or syncing in "));
+  console.log(chalk.underline("Tokens Studio") + chalk.whiteBright("."));
+  console.log(chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive ma gical files in ") +
+    chalk.underline("SCSS") +
+    chalk.whiteBright(" and ") +
+    chalk.underline("CSS") +
+    chalk.whiteBright(" to test in your implementation!\n")
+  );
   const input = await askForInput();
   if (!input) return;
   const { unit, name, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, factor, customIntervals, fibonacciBase } = input;
@@ -611,7 +620,7 @@ const main = async () => {
   const sortedEntries = Object.entries(tokensData).sort((a, b) => {
     const indexA = tshirtOrder.indexOf(a[0]);
     const indexB = tshirtOrder.indexOf(b[0]);
-    if (indexA !== -1 && indexfB !== -1) {
+    if (indexA !== -1 && indexB !== -1) {
       return indexA - indexB;
     }
     if (indexA !== -1) return -1;
@@ -647,10 +656,10 @@ const main = async () => {
  
   const topKey = (namingChoice === 't-shirt') ? 'size' : name;
 
-  const outputsDir = path.join(__dirname, "..", "outputs");
-  const tokensFolder = path.join(outputsDir, "tokens", "size");
-  const cssFolder = path.join(outputsDir, "css", "size");
-  const scssFolder = path.join(outputsDir, "scss", "size");
+  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const tokensFolder = path.join(outputsDir, "tokens/json/size");
+  const cssFolder = path.join(outputsDir, "tokens/css/size");
+  const scssFolder = path.join(outputsDir, "tokens/scss/size");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
@@ -723,8 +732,8 @@ const main = async () => {
   console.log(chalk.bold("📄 OUTPUT FILES"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
-  let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Saved";
-  const labelIcon = statusLabel === "Saved" ? "✅" : "🆕";
+  let statusLabel = (jsonFileExists || cssFileExists || scssFileExists) ? "Updated" : "Created";
+  const labelIcon = statusLabel === "Created" ? "🪄" : "🆕";
   if (units.length > 0) {
     console.log(chalk.whiteBright(`${labelIcon} ${statusLabel}:`));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'size_tokens_px.json'))}`));
