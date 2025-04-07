@@ -408,14 +408,14 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
    **↕️ Line Height**
    - Name your property (lineHeight, line-height, leading, lh, or custom)
    - Choose scale type:
-     - Scale 1 (1.1 to 2.0)
-     - Scale 2 (1.0 to 2.0)
-     - Custom Intervals
+     - Scale 1: 1.2, 1.35, 1.5, 1.65, 1.8
+     - Scale 2: 1.25, 1.375, 1.5, 1.625, 1.75
+     - Custom Intervals (with WCAG compliance check)
    - Select naming convention:
      - T-shirt (xs to xl)
-     - Semantic (tight to spacious)
+     - Semantic (tight, normal, loose)
      - Ordinal (1 to 5)
-     - Purpose-based (body, heading...)
+     - Purpose-based (body, heading, display)
 
 4. **Review & Confirm**  
    For each property, you'll see a preview table showing your configured values. Confirm or adjust as needed.
