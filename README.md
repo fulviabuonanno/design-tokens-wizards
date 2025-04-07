@@ -49,28 +49,28 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get s
 
 Select the wizard that will come to your aid by executing the corresponding script in your terminal. Below is a list of available wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version     |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | ----------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.4.0 🆕    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.0 🆕    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.0 🆕    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.0 🆕    |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.1 🔥 🔥 |
-| **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –           |
-| **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –           |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version        |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.0 🆕       |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.0 🆕       |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.0 🆕       |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.0 🆕       |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.1 🔥 🔥 🔥 |
+| **SHADOW WIZ**           | Coming Soon    | –               | Generate and manage shadow tokens        | –              |
+| **OPACITY WIZ**          | Coming Soon    | –               | Generate and manage opacity tokens       | –              |
 
 Below is a curated collection of spells (crafted by our Token's Wizards to come to your aid) to streamline your design tokens workflow:
 
-| Spell           | Script Name      | Run Command     | Description                                            | Version     |
-| --------------- | ---------------- | --------------- | ------------------------------------------------------ | ----------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0 🆙 🆙 |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0 🆙 🆙 |
+| Spell           | Script Name      | Run Command     | Description                                            | Version        |
+| --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------------- |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0 🆙 🆙 🆙 |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0 🆙 🆙 🆙 |
 
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.4.0
+Version 2.5.0
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -293,7 +293,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
 
-Version 1.5.0
+Version 1.6.0
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
 
@@ -365,7 +365,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.0.1 🔥 🔥
+Version 1.0.1 🔥 🔥 🔥
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
@@ -485,7 +485,7 @@ The Clear Spell is a simple yet powerful tool to keep your project directory cle
 
 ### 🪄 **Merge Spell** ✨
 
-Version 1.2.0 🆙 🆙
+Version 1.2.0 🆙 🆙 🆙
 
 The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
 
@@ -547,15 +547,14 @@ https://github.com/motdotla/dotenv
 
 Below is a comprehensive list of all dependencies used in this project:
 
-| Dependency       | Version | Description                                                     | Repository                                                        |
-| ---------------- | ------- | --------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **chalk**        | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                     |
-| **cli-table3**   | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)             |
-| **inquirer**     | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js) |
-| **markdown-pdf** | ^11.0.0 | Markdown to PDF converter                                       | [alanshaw/markdown-pdf](https://github.com/alanshaw/markdown-pdf) |
-| **path**         | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                     |
-| **tinycolor2**   | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)           |
-| **puppeteer**    | ^20.0.0 | Headless Chrome Node.js API for automating web interactions     | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)     |
+| Dependency     | Version | Description                                                     | Repository                                                        |
+| -------------- | ------- | --------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **chalk**      | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                     |
+| **cli-table3** | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)             |
+| **inquirer**   | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js) |
+| **path**       | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                     |
+| **tinycolor2** | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)           |
+| **puppeteer**  | ^20.0.0 | Headless Chrome Node.js API for automating web interactions     | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)     |
 
 ---
 

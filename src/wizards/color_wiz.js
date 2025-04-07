@@ -5,7 +5,6 @@ import inquirer from "inquirer";
 import { fileURLToPath } from "url";
 import chalk from "chalk";
 import Table from "cli-table3";
-import markdownpdf from 'markdown-pdf';
 import puppeteer from 'puppeteer';
 
 const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
@@ -96,11 +95,12 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
           choices: [
             { name: "Incremental (e.g., 50, 100, 150, 200)", value: "incremental" },
             { name: "Ordinal (e.g., 1, 2, 3)", value: "ordinal" },
+            { name: 'Alphabetical (e.g., A, B, C)', value: 'alphabetical' },
             { name: "Shades Semantic (e.g. dark, base, light)", value: "shadesSemantic" }
           ]
         }
       ]);
-      let ordinalPadded, incrementalChoice, stopsCount;
+      let ordinalPadded, incrementalChoice, stopsCount, alphabeticalOption;
       if (scaleType === "ordinal") {
         const { ordinalOption } = await inquirer.prompt([
           {
@@ -122,11 +122,25 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
             message: "For Incremental scale, choose the step increment:",
             choices: [
               { name: "10 in 10 (e.g., 10, 20, 30, ...)", value: '10' },
+              { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
               { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
               { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
             ]
           }
         ]);
+      } else if (scaleType === "alphabetical") {
+        const { alphabeticalOption: option } = await inquirer.prompt([
+          {
+            type: "list",
+            name: "alphabeticalOption",
+            message: "For Alphabetical scale, choose the format:",
+            choices: [
+              { name: "Uppercase (e.g., A, B, C)", value: 'uppercase' },
+              { name: "Lowercase (e.g., a, b, c)", value: 'lowercase' }
+            ]
+          }
+        ]);
+        alphabeticalOption = option;
       } else if (scaleType === "shadesSemantic") {
         const { semanticStopsCount } = await inquirer.prompt([
           {
@@ -170,7 +184,9 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
         ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount)
         : (scaleType === "shadesSemantic"
              ? generateStopsSemantic(hex, stopsCount)
-             : generateStopsOrdinal(hex, ordinalPadded, stopsCount));
+             : (scaleType === "alphabetical"
+                  ? generateStopsAlphabetical(hex, alphabeticalOption, stopsCount)
+                  : generateStopsOrdinal(hex, ordinalPadded, stopsCount)));
     }
     
     let mode, padded;
@@ -326,6 +342,16 @@ const generateStopsSemantic = (hex, stopsCount) => {
       break;
   }
   
+  const alphabeticalOption = format === 'uppercase' ? 'uppercase' : 'lowercase';
+  let format = alphabeticalOption;
+  if (format === 'uppercase') {
+    format = 'uppercase';
+    labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+  } else {
+    format = 'lowercase';
+    labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+  }
+
   const stops = {};
   const total = labels.length;
   const baseIndex = Math.floor(total / 2);
@@ -349,6 +375,27 @@ const generateStopsSemantic = (hex, stopsCount) => {
       );
       stops[labels[i]] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
     }
+  }
+  return stops;
+};
+
+const generateStopsAlphabetical = (hex, format = 'uppercase', stopsCount = 10) => {
+  const stops = {};
+  const startCharCode = format === 'uppercase' ? 65 : 97; // ASCII for 'A' or 'a'
+  for (let i = 0; i < stopsCount; i++) {
+    const key = String.fromCharCode(startCharCode + i);
+    const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
+    let mixPercentage;
+    if (ratio < 0.5) {
+      mixPercentage = MIN_MIX + (1 - ratio * 2) * (MAX_MIX - MIN_MIX);
+      stops[key] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
+    } else {
+      mixPercentage = MIN_MIX + ((ratio - 0.5) * 2) * (MAX_MIX - MIN_MIX);
+      stops[key] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
+    }
+  }
+  if (stops.hasOwnProperty('Base')) {
+    delete stops['Base'];
   }
   return stops;
 };
