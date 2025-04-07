@@ -1155,6 +1155,19 @@ async function typographyWiz() {
     return { fontWeight, propertyName: customPropertyName };
   }
 
+  const weightOptions = [
+    { weight: '100', name: 'Thin', usage: 'Lightest weight, used for very light text' },
+    {weight: '200', name: 'Extra Light', usage: 'Slightly heavier than Thin, used for light text' },
+    { weight: '300', name: 'Light', usage: 'Used for light text, often in body copy' },
+    { weight: '400', name: 'Regular', usage: 'Normal weight, used for most text' },
+    { weight: '500', name: 'Medium', usage: 'Slightly heavier than Regular, used for emphasis' },
+    { weight: '600', name: 'Semi Bold', usage: 'Bold but not too heavy, used for headings' },
+    { weight: '700', name: 'Bold', usage: 'Used for strong emphasis and headings' },
+    { weight: '800', name: 'Extra Bold', usage: 'Heavier than Bold, used for strong emphasis' },
+    { weight: '900', name: 'Black', usage: 'Heaviest weight, used for very strong emphasis' }
+  ];
+  const tokenNames = weightOptions.map(opt => opt.name.toLowerCase().replace(' ', ''));
+                                                                                                                                                            
   async function setupLetterSpacing() {
     let substep = 0;
     console.log(chalk.bold.bgRedBright("\n========================================"));
