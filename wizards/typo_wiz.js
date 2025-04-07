@@ -282,9 +282,9 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token category name (e.g., brandFonts, systemFonts):',
+          message: 'Enter your custom token name (e.g., brandFonts, systemFonts):',
           validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token category name';
+            if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
             return true;
           }
@@ -549,9 +549,9 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token category name (e.g., sizeScale, typeScale):',
+          message: 'Enter your custom token name (e.g., sizeScale, typeScale):',
           validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token category name';
+            if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
             return true;
           }
@@ -1076,9 +1076,9 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token category name (e.g., weightScale, weightType):',
+          message: 'Enter your custom token name (e.g., weightScale, weightType):',
           validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token category name';
+            if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
             return true;
           }
@@ -1167,7 +1167,9 @@ async function typographyWiz() {
     { weight: '900', name: 'Black', usage: 'Heaviest weight, used for very strong emphasis' }
   ];
   const tokenNames = weightOptions.map(opt => opt.name.toLowerCase().replace(' ', ''));
-                                                                                                                                                            
+  
+  // LETTER SPACING REVISION
+  
   async function setupLetterSpacing() {
     let substep = 0;
     console.log(chalk.bold.bgRedBright("\n========================================"));
@@ -1200,15 +1202,74 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token category name (e.g., spacingScale, spacingType):',
+          message: 'Enter your custom token name (e.g., spacingScale, spacingType):',
           validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token category name';
+            if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
             return true;
           }
         }
       ]);
       customPropertyName = customName.trim();
+    }
+
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Naming Convention`));
+    const { namingConvention } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'namingConvention',
+        message: 'Choose a naming convention for your letter spacing tokens:',  
+        choices: [
+          { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
+          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
+          { name: 'Incremental (10, 20, 30...)', value: 'incremental' },
+          { name: 'Alphabetical (a, b, c, d, e)', value: 'alphabetical' }
+        ]
+      }
+    ]);
+    let namingOptions = {};
+    let names = [];
+
+    if (namingConvention === 'ordinal') {
+      const ordinalFormatAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'ordinalFormat',
+          message: 'For Ordinal scale, choose the format:',
+          choices: [
+            { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
+            { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+          ]
+        }
+      ]);
+      namingOptions.format = ordinalFormatAnswer.ordinalFormat;
+    } else if (namingConvention === 'alphabetical') {
+      const alphabeticalCaseAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'alphabeticalCase',
+          message: 'For Alphabetical scale, choose the case:',
+          choices: [
+            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
+            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
+          ]
+        }
+      ]);
+      namingOptions.case = alphabeticalCaseAnswer.alphabeticalCase;
+    } else if (namingConvention === 'incremental') {
+      const incrementalStepAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'incrementalStep',
+          message: 'For Incremental scale, choose the step increment:',
+          choices: [
+            { name: '10 in 10 (e.g., 10, 20, 30, ...)', value: 10 },
+            { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
+            { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
+          ]
+        }
+      ]);
+      namingOptions.increment = incrementalStepAnswer.incrementalStep;
     }
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Scale Type`));
@@ -1287,9 +1348,8 @@ async function typographyWiz() {
         }
       }
     ]);
-
+    
     let values = [];
-    let names = [];
     const totalValues = parseInt(numValues);
 
     if (scaleType === 'predetermined') {
@@ -1373,6 +1433,8 @@ async function typographyWiz() {
     return { letterSpacing, propertyName: customPropertyName };
   }
 
+  // LINE HEIGHT REVISION
+
   async function setupLineHeight() {
     let substep = 0;
     console.log(chalk.bold.bgRedBright("\n========================================"));
@@ -1405,9 +1467,9 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token category name (e.g., leadingScale, lineSpacing):',
+          message: 'Enter your custom token name (e.g., leadingScale, lineSpacing):',
           validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token category name';
+            if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
             return true;
           }
