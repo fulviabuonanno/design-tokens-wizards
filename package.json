@@ -3,21 +3,21 @@
   "description": "Some little script 🧙🦄🧝‍♀️ fellas that will help you generate your design tokens in just a few steps!",
   "type": "module",
   "scripts": {
-    "color": "node src/wizards/color_wiz.js --version=2.3.0",
-    "size": "node src/wizards/size_wiz.js --version=1.5.0",
-    "space": "node src/wizards/space_wiz.js --version=1.5.0",
-    "radii": "node src/wizards/radii_wiz.js --version=1.5.0",
+    "color": "node src/wizards/color_wiz.js --version=2.4.0",
+    "size": "node src/wizards/size_wiz.js --version=1.6.0",
+    "space": "node src/wizards/space_wiz.js --version=1.6.0",
+    "radii": "node src/wizards/radii_wiz.js --version=1.6.0",
     "typo": "node src/wizards/typo_wiz.js --version=1.0.1",
     "clear": "node src/spells/clear_spell.js --version=1.2.0",
     "merge": "node src/spells/merge_spell.js --version=1.2.0",
-    "update-versions": "node src/scripts/update_versions.js",
-    "update-dependencies": "node src/config/generate_dependencies.js"
+    "update": "node src/config/update_versions.js",
+    "dependencies": "node src/config/generate_dependencies.js"
   },
   "scriptVersions": {
-    "color": "2.3.0",
-    "size": "1.5.0",
-    "space": "1.5.0",
-    "radii": "1.5.0",
+    "color": "2.4.0",
+    "size": "1.6.0",
+    "space": "1.6.0",
+    "radii": "1.6.0",
     "typo": "1.0.1",
     "clear": "1.2.0",
     "merge": "1.2.0",
@@ -32,6 +32,7 @@
     "inquirer": "^12.4.2",
     "markdown-pdf": "^11.0.0",
     "path": "^0.12.7",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "puppeteer": "^20.0.0"
   }
 }
