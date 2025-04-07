@@ -253,7 +253,7 @@ async function typographyWiz() {
   async function setupFontFamily() {
     let substep = 0;
     console.log(chalk.bold.bgRedBright("\n========================================"));
-    console.log(chalk.bold(`🔠 STEP ${currentStep}: FONT FAMILY SETUP`));
+    console.log(chalk.bold(`🔠 STEP ${currentStep}: FONT FAMILY`));
     console.log(chalk.bold.bgRedBright("========================================\n"));
     
     await showAccessibilityNotes('fontFamily');
@@ -312,10 +312,10 @@ async function typographyWiz() {
         name: 'namingConvention', 
         message: 'Which naming convention for font family tokens would you like to use?',
         choices: [
-          { name: 'Semantic (primary, secondary, tertiary)', value: 'semantic' },
-          { name: 'Purpose-based (title, body, details)', value: 'purpose' },
           { name: 'Ordinal (font-1, font-2, font-3)', value: 'ordinal' },
           { name: 'Alphabetical (font-a, font-b, font-c)', value: 'alphabetical' },
+          { name: 'Semantic (primary, secondary, tertiary)', value: 'semantic' },
+          { name: 'Purpose-based (title, body, details)', value: 'purpose' },
           { name: 'Custom', value: 'custom' }
         ]
       }
@@ -567,10 +567,10 @@ async function typographyWiz() {
         name: 'namingConvention',
         message: 'Choose a naming convention for your font size tokens:',
         choices: [
-          { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
-          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
-          { name: 'Incremental (10, 20, 30...)', value: 'incremental' },
-          { name: 'Alphabetical (a, b, c, d, e)', value: 'alphabetical' }
+          { name: 'T-shirt sizes (e.g. xs, sm, md, lg, xl)', value: 'tshirt' },
+          { name: 'Ordinal (e.g. 1, 2, 3)', value: 'ordinal' },
+          { name: 'Incremental (e.g. 50, 100, 150)', value: 'incremental' },
+          { name: 'Alphabetical (e.g.  A, B, C)', value: 'alphabetical' }
       
         ]
       }
@@ -610,6 +610,7 @@ async function typographyWiz() {
           message: 'For Incremental scale, choose the step increment:',
           choices: [
             { name: '10 in 10 (e.g., 10, 20, 30, ...)', value: 10 },
+            {name: '25 in 25 (e.g., 25, 50, 75, ...)', value: 25},  
             { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
             { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
           ]
@@ -1220,10 +1221,12 @@ async function typographyWiz() {
         name: 'namingConvention',
         message: 'Choose a naming convention for your letter spacing tokens:',  
         choices: [
-          { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
-          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
-          { name: 'Incremental (10, 20, 30...)', value: 'incremental' },
-          { name: 'Alphabetical (a, b, c, d, e)', value: 'alphabetical' }
+          { name: 'T-shirt sizes (e.g., xs, sm, md, lg, xl)', value: 'tshirt' },
+          { name: 'Ordinal (e.g., 1, 2, 3, 4, 5)', value: 'ordinal' },
+          { name: 'Incremental (e.g., 10, 20, 30...)', value: 'incremental' },
+          { name: 'Alphabetical (e.g., a, b, c, d, e)', value: 'alphabetical' },
+          { name: 'Semantic (e.g., tight, normal, loose, relaxed, spacious)', value: 'semantic' },
+          { name: 'Purpose-based (e.g., body, heading, display, caption, label)', value: 'purpose' }
         ]
       }
     ]);
@@ -1264,6 +1267,7 @@ async function typographyWiz() {
           message: 'For Incremental scale, choose the step increment:',
           choices: [
             { name: '10 in 10 (e.g., 10, 20, 30, ...)', value: 10 },
+            {name: '25 in 25 (e.g., 25, 50, 75, ...)', value: 25},  
             { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
             { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
           ]
@@ -1285,51 +1289,45 @@ async function typographyWiz() {
       }
     ]);
 
-    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Unit`));
-    console.log(chalk.yellow("Select the unit for letter spacing values. ") + chalk.underline("Recommended:") + chalk.yellow(" em or rem for better scaling."));
+    if (scaleType === 'predetermined') {
+      console.log(chalk.bold.yellow("\nℹ️  NOTE:"));
+      console.log(chalk.yellow("The predetermined scale values are in percentages."));
+      console.log(chalk.yellow("In the next step, you can convert these values to other units (em, rem, px)"));
+      console.log(chalk.yellow("The conversion will maintain the same relative spacing."));
+      console.log(chalk.yellow("For example: -1.25% → -0.0125em, 0% → 0em, 1.25% → 0.0125em, etc."));
+    }
+
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: ${scaleType === 'predetermined' ? 'Convert to Unit' : 'Choose Unit'}`));
+    console.log(chalk.yellow(scaleType === 'predetermined' ? 
+      "Convert the percentage scale to your preferred unit. Recommended: em for better scaling." : 
+      "Select the unit for letter spacing values. Recommended: em or rem for better scaling."));
+    
     let { unit } = await inquirer.prompt([
       {
         type: 'list',
         name: 'unit',
-        message: 'Choose the unit for letter spacing values:',
+        message: scaleType === 'predetermined' ? 'Convert percentage scale to:' : 'Choose the unit for letter spacing values:',
         choices: [
-          { name: 'em', value: 'em' },
-          { name: 'rem', value: 'rem' },
-          { name: 'px', value: 'px' },
-          { name: '%', value: '%' }
+          { name: scaleType === 'predetermined' ? 'Keep as percentage (%)' : 'Percentage (%)', value: '%' },
+          { name: 'em (recommended for better scaling)', value: 'em' },
         ]
       }
     ]);
 
     if (scaleType === 'predetermined' && unit === '%') {
-      console.log(chalk.bold.yellow("\n⚠️  WARNING:"));
-      console.log(chalk.yellow("The predetermined scale values are optimized for absolute units."));
-      console.log(chalk.yellow("For better typography control, consider using 'em', 'rem', or 'px' instead of '%'."));
-      
-      const { changeUnit } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'changeUnit',
-          message: 'Would you like to select a different unit?',
-          default: true
-        }
-      ]);
-
-      if (changeUnit) {
-        const { newUnit } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'newUnit',
-            message: 'Choose a new unit:',
-            choices: [
-              { name: 'em', value: 'em' },
-              { name: 'rem', value: 'rem' },
-              { name: 'px', value: 'px' }
-            ]
-          }
-        ]);
-        unit = newUnit;
-      }
+      console.log(chalk.bold.yellow("\nℹ️  NOTE:"));
+      console.log(chalk.yellow("Keeping the values as percentages."));
+      console.log(chalk.yellow("The scale will remain: -1.25%, 0%, 1.25%, 2.5%, etc."));
+    } else if (scaleType === 'predetermined' && unit === 'em') {
+      console.log(chalk.bold.yellow("\nℹ️  NOTE:"));
+      console.log(chalk.yellow("Converting percentage values to em units:"));
+      console.log(chalk.yellow("-1.25% → -0.0125em"));
+      console.log(chalk.yellow("0% → 0em"));
+      console.log(chalk.yellow("1.25% → 0.0125em"));
+      console.log(chalk.yellow("2.5% → 0.025em"));
+      console.log(chalk.yellow("3.75% → 0.0375em"));
+      console.log(chalk.yellow("5% → 0.05em"));
+      console.log(chalk.yellow("10% → 0.1em"));
     }
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Values`));
@@ -1354,7 +1352,13 @@ async function typographyWiz() {
 
     if (scaleType === 'predetermined') {
       const predefinedValues = ['-1.25', '0', '1.25', '2.5', '3.75', '5', '10'];
-      values = predefinedValues.slice(0, totalValues).map(v => v + (unit === 'px' ? 'px' : unit));
+      values = predefinedValues.slice(0, totalValues).map(v => {
+        if (unit === 'em') {
+          // Convert percentage to em by dividing by 100
+          return (parseFloat(v) / 100).toString() + unit;
+        }
+        return v + unit;
+      });
     } else if (scaleType === 'custom') {
       console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom intervals:`));
       
@@ -1379,12 +1383,33 @@ async function typographyWiz() {
 
     const letterSpacing = {};
     for (let i = 0; i < totalValues; i++) {
-      if (values[i] && names[i]) {
-        letterSpacing[names[i]] = {
-          value: values[i],
-          type: 'letterSpacing'
-        };
+      let name;
+      if (namingConvention === 'tshirt') {
+        const tshirtSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'];
+        name = tshirtSizes[i];
+      } else if (namingConvention === 'ordinal') {
+        name = namingOptions.format === 'padded' ? 
+          (i + 1).toString().padStart(2, '0') : 
+          (i + 1).toString();
+      } else if (namingConvention === 'alphabetical') {
+        const alphabets = namingOptions.case === 'uppercase' ? 
+          ['A', 'B', 'C', 'D', 'E', 'F', 'G'] : 
+          ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+        name = alphabets[i];
+      } else if (namingConvention === 'incremental') {
+        name = ((i + 1) * namingOptions.increment).toString();
+      } else if (namingConvention === 'semantic') {
+        const semanticNames = ['tight', 'normal', 'loose', 'relaxed', 'spacious', 'very-spacious', 'ultra-spacious'];
+        name = semanticNames[i];
+      } else if (namingConvention === 'purpose') {
+        const purposeNames = ['body', 'heading', 'display', 'caption', 'label', 'button', 'overline'];
+        name = purposeNames[i];
       }
+      
+      letterSpacing[name] = {
+        value: values[i],
+        type: 'letterSpacing'
+      };
     }
 
     console.log(chalk.bold.yellowBright("\n📋 Letter Spacing Settings Summary:"));
@@ -1485,11 +1510,11 @@ async function typographyWiz() {
         name: 'namingConvention',
         message: 'Choose a naming convention for your line height tokens:',
         choices: [
-          { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
-          { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
-          { name: 'Incremental (100, 200, 300, 400, 500)', value: 'incremental' },
-          { name: 'Semantic (tight, normal, loose, relaxed, spacious)', value: 'semantic' },
-          { name: 'Purpose-based (body, heading, display, compact, expanded)', value: 'purpose' }
+          { name: 'T-shirt sizes (e.g., xs, sm, md, lg, xl)', value: 'tshirt' },
+          { name: 'Ordinal (e.g., 1, 2, 3, 4, 5)', value: 'ordinal' },
+          { name: 'Incremental (e.g., 100, 200, 300, 400, 500)', value: 'incremental' },
+          { name: 'Semantic (e.g., tight, normal, loose, relaxed, spacious)', value: 'semantic' },
+          { name: 'Purpose-based (e.g., body, heading, display, compact, expanded)', value: 'purpose' }
         ]
       }
     ]);
@@ -1634,11 +1659,11 @@ async function typographyWiz() {
       fontWeightName = result.propertyName;
     } else if (currentProperty === 'letterSpacing') {
       const result = await setupLetterSpacing();
-      letterSpacing = result.value;
+      letterSpacing = result.letterSpacing;
       letterSpacingName = result.propertyName;
     } else if (currentProperty === 'lineHeight') {
       const result = await setupLineHeight();
-      lineHeight = result.value;
+      lineHeight = result.lineHeight;
       lineHeightName = result.propertyName;
     }
     
@@ -1711,8 +1736,7 @@ async function typographyWiz() {
     tokens.typography[fontWeightName] = fontWeight;
   }
   if(selectedProperties.includes('letterSpacing')){
-    const letterSpacingResult = await setupLetterSpacing();
-    tokens.typography[letterSpacingResult.propertyName] = letterSpacingResult.letterSpacing;
+    tokens.typography[letterSpacingName] = letterSpacing;
   }
   if(selectedProperties.includes('lineHeight')){
     tokens.typography[lineHeightName] = { value: lineHeight, type: "lineHeights" };
