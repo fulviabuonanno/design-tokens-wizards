@@ -201,11 +201,11 @@ const askForInput = async () => {
     {
       type: 'input',
       name: 'numValues',
-      message: '🔢 How many values would you like to define?\n>>>',
+      message: '🔢 How many values would you like to define? (1-20)\n>>>',
       validate: (input) => {
         const num = parseInt(input);
-        if (isNaN(num) || num <= 0) {
-          return `❌ Invalid number of values "${input}". Please provide a valid number.`;
+        if (isNaN(num) || num <= 0 || num > 20) {
+          return `❌ Invalid number of values "${input}". Please provide a number between 1 and 20.`;
         }
         return true;
       }
@@ -260,6 +260,8 @@ const askForInput = async () => {
           name: 'incrementalStep',
           message: 'For Incremental scale, choose the step increment:',
           choices: [
+            { name: '10 in 10 (e.g., 10, 20, 30, 40)', value: 10 },
+            { name: '25 in 25 (e.g., 25, 50, 75, 100)', value: 25 },
             { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
             { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
           ]

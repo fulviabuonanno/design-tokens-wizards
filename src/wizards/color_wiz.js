@@ -1109,10 +1109,11 @@ const main = async () => {
   );
 
   let tokensData = {};
-  const outputsDir = path.join(__dirname, "..", "outputs");
-  const tokensFolder = path.join(outputsDir, "tokens/colors");
-  const cssFolder = path.join(outputsDir, "css/colors");
-  const scssFolder = path.join(outputsDir, "scss/colors");
+  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const tokensFolder = path.join(outputsDir, "tokens/json/color");
+  const cssFolder = path.join(outputsDir, "tokens/css/color");
+  const scssFolder = path.join(outputsDir, "tokens/scss/color");
+  const reportsFolder = path.join(outputsDir, "reports");
   let namingChoice = null;
   let previousConcept = null;
   let formatChoices = null;
