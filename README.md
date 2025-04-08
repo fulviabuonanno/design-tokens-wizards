@@ -1,4 +1,4 @@
-# design-tokens-wizards 🪄🧙🎨
+![Design Tokens Wizards Banner](src/assets/banner.png)
 
 Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`** — the enchanting scripts that helps you craft design tokens in just a few simple steps... as if by magic! 🪄✨
 
@@ -40,7 +40,7 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get s
 
 ---
 
-### ��️ **How to Use:**
+### 🧙 **How to Use:**
 
 1. **Install Node.JS**
    To use the scripts, you need to have **Node.js** installed on your machine. You can download and install it from [Node.js official website](https://nodejs.org/).
@@ -502,47 +502,6 @@ The Merge Spell is designed to simplify your workflow by combining multiple toke
 
 ---
 
-## 🛠️ Dependencies ✨
-
-Every wizard benefits from a little assistance. To empower our enchanting scripts, we rely on a handful of outstanding dependencies that streamline our process and amplify our magic:
-
-For Color Conversion: This script uses the amazing TinyColor library to handle all the color conversions.
-
-You can check out TinyColor's repository here:
-https://github.com/bgrins/TinyColor
-
-For Command Line Interface: This script uses the Inquirer library to create an interactive command line interface (CLI) for user conversations.
-
-You can check out Inquirer's repository here:
-https://github.com/SBoudrias/Inquirer.js
-
-For CLI Styling: This script uses the Chalk library to add colors and styles to the command line interface (CLI), making it more visually appealing.
-
-You can check out Chalk's repository here:
-https://github.com/chalk/chalk
-
-For enhanced command-line table formatting, this project leverages the "clitable-3" library. This dependency allows for dynamic and customizable table outputs when previewing tokens and other CLI interactions.
-
-Check out the clitable-3 repository for further details and documentation:
-https://github.com/your-org/clitable-3
-
-For Color Manipulation: This script also utilizes the Color library, which provides a comprehensive set of tools for color manipulation and conversion, complementing TinyColor's capabilities.
-
-You can check out the Color library's repository here:
-https://github.com/Qix-/color
-
-For File System Operations: This script employs the FS-extra library, which extends the native Node.js file system module with additional methods and functionality, making file operations more convenient.
-
-You can check out FS-extra's repository here:
-https://github.com/jprichardson/node-fs-extra
-
-For Environment Variable Management: This script uses the Dotenv library to load environment variables from a .env file into process.env, allowing for better configuration management.
-
-You can check out Dotenv's repository here:
-https://github.com/motdotla/dotenv
-
----
-
 ## 📦 Dependencies ✨
 
 Below is a comprehensive list of all dependencies used in this project:
@@ -567,6 +526,8 @@ For more details, you can read the full license text in the [LICENSE](./LICENSE)
 ---
 
 ## Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️
+
+![Profile Pic](src/assets/profile_pic.png)
 
 If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
 

@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Table from 'cli-table3';
-import markdownpdf from 'markdown-pdf';
+import puppeteer from 'puppeteer';
 
 async function showLoader(message, duration) {
   console.log(message);
@@ -99,7 +99,7 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
     fs.mkdirSync(reportsDir, { recursive: true });
   }
   
-  const reportPath = path.join(reportsDir, "a11y-typography-guidelines.md");
+  const pdfPath = path.join(reportsDir, "a11y-typography-guidelines.pdf");
   
   let report = `# Typography Accessibility Guidelines 🎨👁️\n\n`;
   report += `This report outlines the accessibility guidelines for your typography system based on your selections.\n\n`;
@@ -208,11 +208,12 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
   const timestamp = new Date().toLocaleString();
   report += `Generated on: ${timestamp}\n\n`;
 
-  fs.writeFileSync(reportPath, report);
-  
-  const pdfPath = path.join(reportsDir, "a11y-typography-guidelines.pdf");
-  markdownpdf().from(reportPath).to(pdfPath, function () {
-  });
+  // Convert report directly to PDF using Puppeteer
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(report);
+  await page.pdf({ path: pdfPath });
+  await browser.close();
 }
 
 async function typographyWiz() {
@@ -1760,7 +1761,6 @@ async function typographyWiz() {
   
   console.log('')
   console.log(chalk.whiteBright(`✅ Generated accessibility report at:`));
-  console.log(chalk.whiteBright(`   -> reports/a11y-typography-guidelines.md`));
   console.log(chalk.whiteBright(`   -> reports/a11y-typography-guidelines.pdf`));
 
   console.log(chalk.black.bgRedBright("\n======================================="));
