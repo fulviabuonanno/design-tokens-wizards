@@ -63,8 +63,8 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version        |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0 🆙 🆙 🆙 |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0 🆙 🆙 🆙 |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0 🆙 |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0 🆙 |
 
 ---
 
