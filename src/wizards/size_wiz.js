@@ -228,21 +228,21 @@ const askForInput = async () => {
     let choices = [];
     if (numValues <= 20) {
       choices = [
-        { name: 'T-shirt size (e.g., xs, sm, md, lg, xl)', value: 't-shirt' },
-        { name: 'Incremental (e.g., 50, 100, 150)', value: 'incremental' },
-        { name: 'Ordinal (e.g., 1, 2, 3)', value: 'ordinal' },
-        { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'alphabetical' }
+        { name: 'T-shirt size (e.g., xs, sm, md, lg)', value: 't-shirt' },
+        { name: 'Incremental (e.g., 100, 200, 300, 400)', value: 'incremental' },
+        { name: 'Ordinal (e.g., 1, 2, 3, 4)', value: 'ordinal' },
+        { name: 'Alphabetical (e.g., A, B, C, D)', value: 'alphabetical' }
       ];
     } else if (numValues < 27) {
       choices = [
-        { name: 'Incremental (e.g., 50, 100, 150)', value: 'incremental' },
-        { name: 'Ordinal (e.g., 1, 2, 3)', value: 'ordinal' },
-        { name: 'Alphabetical (e.g., A, B, C or a, b, c)', value: 'alphabetical' }
+        { name: 'Incremental (e.g., 100, 200, 300, 400)', value: 'incremental' },
+        { name: 'Ordinal (e.g., 1, 2, 3, 4)', value: 'ordinal' },
+        { name: 'Alphabetical (e.g., A, B, C, D)', value: 'alphabetical' }
       ];
     } else { 
       choices = [
-        { name: 'Incremental (e.g., 50, 100, 150)', value: 'incremental' },
-        { name: 'Ordinal (e.g., 1, 2, 3)', value: 'ordinal' }
+        { name: 'Incremental (e.g., 100, 200, 300, 400)', value: 'incremental' },
+        { name: 'Ordinal (e.g., 1, 2, 3, 4 )', value: 'ordinal' }
       ];
     }
     const namingChoiceAnswer = await inquirer.prompt([
@@ -264,8 +264,8 @@ const askForInput = async () => {
         name: 'ordinalFormat',
         message: 'For Ordinal scale, choose the format:',
         choices: [
-          { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
-          { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+          { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
+          { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
         ]
       }
     ]);
@@ -277,8 +277,8 @@ const askForInput = async () => {
         name: 'alphabeticalCase',
         message: 'For Alphabetical scale, choose the case:',
         choices: [
-          { name: 'Uppercase (A, B, C)', value: 'uppercase' },
-          { name: 'Lowercase (a, b, c)', value: 'lowercase' }
+          { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
+          { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
         ]
       }
     ]);

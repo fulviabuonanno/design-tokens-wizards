@@ -195,10 +195,10 @@ const askForInput = async () => {
         name: 'scaleChoice',
         message: "Which border-radius scale naming do you want to use? Choose one:",
         choices: [
-          { name: "T-shirt (e.g., xs, sm, md, lg, xl)", value: 'tshirt' },
-          { name: "Ordinal (e.g., 01, 02, 03... or 1, 2, 3...)", value: 'ordinal' },
+          { name: "T-shirt (e.g., xs, sm, md, lg)", value: 'tshirt' },
+          { name: "Ordinal (e.g., 1, 2, 3, 4)", value: 'ordinal' },
           { name: "Incremental (e.g., 100, 200, 300, 400)", value: 'incremental' },
-          { name: "Alphabetical (e.g., A, B, C... or a, b, c...)", value: 'alphabetical' },
+          { name: "Alphabetical (e.g., A, B, C, D)", value: 'alphabetical' },
           { name: "Semantic (e.g., subtle, moderate, pronounced)", value: 'semantic' },
         ]
       }
@@ -225,8 +225,8 @@ const askForInput = async () => {
           name: 'ordinalOption',
           message: "For Ordinal scale, choose the format:",
           choices: [
-            { name: "Padded (e.g., 01, 02, 03)", value: 'padded' },
-            { name: "Unpadded (e.g., 1, 2, 3)", value: 'unpadded' }
+            { name: "Padded (e.g., 01, 02, 03, 04)", value: 'padded' },
+            { name: "Unpadded (e.g., 1, 2, 3, 4)", value: 'unpadded' }
           ]
         }
       ]);
@@ -239,8 +239,8 @@ const askForInput = async () => {
           name: 'alphabeticalOption',
           message: "For Alphabetical scale, choose the format:",
           choices: [
-            { name: "Uppercase (A, B, C)", value: 'uppercase' },
-            { name: "Lowercase (a, b, c)", value: 'lowercase' }
+            { name: "Uppercase (A, B, C, D)", value: 'uppercase' },
+            { name: "Lowercase (a, b, c, d)", value: 'lowercase' }
           ]
         }
       ]);

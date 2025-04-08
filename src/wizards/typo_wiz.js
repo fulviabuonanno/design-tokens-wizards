@@ -429,7 +429,7 @@ async function typographyWiz() {
   await showLoader(chalk.bold.yellowBright("🦄 Casting the magic of tokens..."), 1500);
   console.log(
     chalk.whiteBright("\n❤️ Welcome to the \n") +
-        chalk.bold.redBright("Typography Tokens Wizard\n") +
+        chalk.bold.redBright("Typography Tokens Wizard") +
         chalk.whiteBright(" script! \nLet this wizard guide you through creating your typography tokens in just a few enchanting steps. \n") +
         chalk.whiteBright("Define your font families, sizes, weights, and more, and prepare them for import or sync with \n") +
         chalk.underline("Tokens Studio") +
@@ -557,8 +557,8 @@ async function typographyWiz() {
           name: 'ordinalFormat',
           message: 'For Ordinal scale, choose the format:',
           choices: [
-            { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
-            { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+            { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
+            { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
           ]
         }
       ]);
@@ -575,8 +575,8 @@ async function typographyWiz() {
           name: 'alphabeticalCase',
           message: 'For Alphabetical scale, choose the case:',
           choices: [
-            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
-            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
+            { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
+            { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
           ]
         }
       ]);
@@ -787,10 +787,10 @@ async function typographyWiz() {
         name: 'namingConvention',
         message: 'Choose a naming convention for your font size tokens:',
         choices: [
-          { name: 'T-shirt sizes (e.g. xs, sm, md', value: 'tshirt' },
-          { name: 'Ordinal (e.g. 1, 2, 3', value: 'ordinal' },
-          { name: 'Incremental (e.g. 100, 200, 300)', value: 'incremental' },
-          { name: 'Alphabetical (e.g. A, B, C)', value: 'alphabetical' }
+          { name: 'T-shirt sizes (e.g. xs, sm, md, lg)', value: 'tshirt' },
+          { name: 'Ordinal (e.g. 1, 2, 3, 4)', value: 'ordinal' },
+          { name: 'Incremental (e.g. 100, 200, 300, 400)', value: 'incremental' },
+          { name: 'Alphabetical (e.g. A, B, C, D)', value: 'alphabetical' }
       
         ]
       }
@@ -803,8 +803,8 @@ async function typographyWiz() {
           name: 'ordinalFormat',
           message: 'For Ordinal scale, choose the format:',
           choices: [
-            { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
-            { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+            { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
+            { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
           ]
         }
       ]);
@@ -816,8 +816,8 @@ async function typographyWiz() {
           name: 'alphabeticalCase',
           message: 'For Alphabetical scale, choose the case:',
           choices: [
-            { name: 'Uppercase (A, B, C)', value: 'uppercase' },
-            { name: 'Lowercase (a, b, c)', value: 'lowercase' }
+            { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
+            { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
           ]
         }
       ]);
@@ -829,7 +829,8 @@ async function typographyWiz() {
           name: 'incrementalStep',
           message: 'For Incremental scale, choose the step increment:',
           choices: [
-            { name: '10 in 10 (e.g., 10, 20, 30, ...)', value: 10 },
+            { name: '10 in 10 (e.g., 10, 20, 30, 40)', value: 10 },
+            { name: '25 in 25 (e.g., 25, 50, 75, 100)', value: 25 },
             { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
             { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
           ]
@@ -1436,10 +1437,10 @@ async function typographyWiz() {
         name: 'namingConvention',
         message: 'Choose a naming convention for your letter spacing tokens:',  
         choices: [
-          { name: 'T-shirt sizes (e.g. xs, sm, md)', value: 'tshirt' },
-          { name: 'Ordinal (e.g. 1, 2, 3)', value: 'ordinal' },
-          { name: 'Incremental (e.g. 100, 200, 300)', value: 'incremental' },
-          { name: 'Alphabetical (e.g. A, B, C)', value: 'alphabetical' }
+          { name: 'T-shirt sizes (e.g. xs, sm, md, lg)', value: 'tshirt' },
+          { name: 'Ordinal (e.g. 1, 2, 3, 4)', value: 'ordinal' },
+          { name: 'Incremental (e.g. 100, 200, 300, 400)', value: 'incremental' },
+          { name: 'Alphabetical (e.g. A, B, C, D)', value: 'alphabetical' }
         ]
       }
     ]);
