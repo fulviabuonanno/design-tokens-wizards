@@ -30,7 +30,7 @@ const showLoader = (message, duration) => {
   });
 };
 
-const askForInput = async (previousConcept = null, formatChoices = null, scaleSettings = null) => {
+const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
   const finalColorType = "Global";
   if (previousConcept) {
     console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -48,8 +48,25 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
       name: "name",
       message: "Enter a name for the color (e.g., blue, yellow, red):\n>>>",
       default: "color",
-      validate: (input) =>
-        /^[a-zA-Z0-9.-]*$/.test(input) ? true : "Name should only contain letters, numbers, hyphens, and dots."
+      validate: (input) => {
+        const trimmedInput = input.trim();
+        if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
+          return "Name should only contain letters, numbers, hyphens, and dots.";
+        }
+        // Check if the color name already exists in tokensData
+        if (tokensData[trimmedInput]) {
+          return `A color with the name "${trimmedInput}" already exists. Please choose a different name.`;
+        }
+        // Check if the color name exists as a variant in any other color
+        for (const colorName in tokensData) {
+          if (tokensData[colorName] && typeof tokensData[colorName] === 'object') {
+            if (Object.keys(tokensData[colorName]).includes(trimmedInput)) {
+              return `A color variant with the name "${trimmedInput}" already exists under "${colorName}". Please choose a different name.`;
+            }
+          }
+        }
+        return true;
+      }
     }
   ]);
   const concept = response.name.trim();
@@ -245,7 +262,7 @@ const askForInput = async (previousConcept = null, formatChoices = null, scaleSe
 
     if (!confirmColor) {
       console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
-      return await askForInput(); 
+      return await askForInput(tokensData); 
     } else {
       break;
     }
@@ -820,16 +837,103 @@ const generateOrdinalStops = (start, end) => {
 const stops = generateOrdinalStops(1, 20);
 
 const generateAccessibilityReport = (tokensData) => {
+  // Read and encode the banner image
+  const bannerPath = path.join(__dirname, '..', 'assets', 'banner.png');
+  const bannerBase64 = fs.readFileSync(bannerPath, { encoding: 'base64' });
+
   const styles = `
     <style>
-      body { 
-        font-family: Arial, sans-serif; 
-        line-height: 1.4; 
-        font-size: 12px; 
+      body {
+        font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        line-height: 1.2;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
       }
-      h1 { font-size: 20px; margin: 15px 0; }
-      h2 { font-size: 16px; margin: 12px 0; }
-      h3 { font-size: 14px; margin: 10px 0; }
+      tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 4px;
+        text-align: left;
+      }
+      th {
+        background-color: #f5f5f5;
+      }
+      h2, h3 {
+        page-break-before: auto;
+        page-break-after: avoid;
+        break-before: auto;
+        break-after: avoid;
+      }
+      .banner {
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 30px;
+        display: block;
+      }
+      h1 {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1a1a1a;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+      }
+      h2 {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        font-size: 20px;
+        font-weight: 500;
+        color: #2c3e50;
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+      h3 {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        font-size: 18px;
+        font-weight: 500;
+        color: #34495e;
+        margin-top: 20px;
+      }
+      .toc {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .toc ul ul {
+        padding-left: 20px;
+      }
+      .toc a {
+        color: #2c3e50;
+        text-decoration: none;
+        line-height: 1.8;
+      }
+      .toc a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+      .introduction {
+        background: #fff;
+        padding: 20px;
+        border-left: 4px solid #2c3e50;
+        margin: 20px 0;
+      }
       .color-sample {
         width: 50px;
         height: 50px;
@@ -837,38 +941,33 @@ const generateAccessibilityReport = (tokensData) => {
         display: inline-block;
         margin-right: 10px;
       }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-bottom: 20px;
-      }
-      th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-      }
-      th {
-        background-color: #f5f5f5;
-      }
-      .tagline {
-        margin-top: 30px;
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        font-size: 0.9em;
         color: #666;
-        font-style: italic;
         text-align: center;
       }
-      .report-meta {
-        color: #666;
-        font-size: 11px;
-        margin: 10px 0;
+      .footer p {
+        margin: 5px 0;
       }
-      .report-meta a {
-        color: #666;
-        text-decoration: none;
+      .support-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        width: 100%;
       }
-      .report-meta a:hover {
-        text-decoration: underline;
+      .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .support-text {
+        margin: 0;
       }
       .compliance-aaa {
         color: #2e7d32;
@@ -907,6 +1006,7 @@ const generateAccessibilityReport = (tokensData) => {
         margin-top: 4px;
       }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   `;
 
   let totalColors = 0;
@@ -983,13 +1083,31 @@ const generateAccessibilityReport = (tokensData) => {
   ${styles}
 </head>
 <body>
-  <h1>Color Accessibility Report</h1>
-  <div class="report-meta">
-    Generated on ${new Date().toLocaleString()}<br>
-    Generated by <a href="https://github.com/fbuonanno/design-tokens-wizards" target="_blank">Design Tokens Wizards</a>
+  <img src="data:image/png;base64,${bannerBase64}" class="banner" alt="Design Tokens Wizards Banner">
+  <h1>Color Accessibility Report 🎨👁️</h1>
+  
+  <div class="introduction">
+    <p>This comprehensive color accessibility report analyzes your design tokens for WCAG 2.2 compliance and provides detailed insights about color contrast, readability, and color blindness considerations. Use this report to ensure your color choices are accessible to all users.</p>
+    <p>The report includes contrast ratio analysis for both normal and large text, color blindness simulations, and specific recommendations for improving accessibility where needed.</p>
   </div>
 
-  <h2>Summary Statistics</h2>
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#summary">Summary Statistics</a></li>
+      <li><a href="#guidelines">Usage Guidelines</a>
+        <ul>
+          <li><a href="#normal-text">Normal Text Requirements</a></li>
+          <li><a href="#large-text">Large Text Requirements</a></li>
+          <li><a href="#best-practices">Best Practices</a></li>
+        </ul>
+      </li>
+      <li><a href="#compliance">Color Compliance Analysis</a></li>
+      <li><a href="#colorblindness">Color Blindness Analysis</a></li>
+    </ul>
+  </div>
+
+  <h2 id="summary">Summary Statistics</h2>
   <ul>
     <li>Total Colors: ${totalColors}</li>
     <li>AAA Compliant: ${((passesAAA / totalColors) * 100).toFixed(1)}%</li>
@@ -997,18 +1115,18 @@ const generateAccessibilityReport = (tokensData) => {
     <li>Below AA: ${((failing / totalColors) * 100).toFixed(1)}%</li>
   </ul>
 
-  <h2>Usage Guidelines</h2>
-  <h3>Normal Text (WCAG 2.2)</h3>
+  <h2 id="guidelines">Usage Guidelines</h2>
+  <h3 id="normal-text">Normal Text (WCAG 2.2)</h3>
   <ul>
     <li>Minimum contrast ratio: 4.5:1 (AA)</li>
     <li>Preferred contrast ratio: 7:1 (AAA)</li>
   </ul>
-  <h3>Large Text (WCAG 2.2)</h3>
+  <h3 id="large-text">Large Text (WCAG 2.2)</h3>
   <ul>
     <li>Minimum contrast ratio: 3:1 (AA)</li>
     <li>Preferred contrast ratio: 4.5:1 (AAA)</li>
   </ul>
-  <h3>Best Practices</h3>
+  <h3 id="best-practices">Best Practices</h3>
   <ul>
     <li>Use AAA compliance for critical text and important UI elements</li>
     <li>Test colors in both light and dark modes</li>
@@ -1016,10 +1134,10 @@ const generateAccessibilityReport = (tokensData) => {
     <li>Use semantic color names that describe the purpose</li>
   </ul>
 
-  <h2>Color Compliance Analysis</h2>
+  <h2 id="compliance">Color Compliance Analysis</h2>
   ${colorComplianceTable}
 
-  <h2>Color Blindness Analysis</h2>
+  <h2 id="colorblindness">Color Blindness Analysis</h2>
   <p>This section shows how colors appear to people with different types of color blindness:</p>
   <ul>
     <li>Protanopia: Red-green color blindness (red appears darker)</li>
@@ -1056,7 +1174,14 @@ const generateAccessibilityReport = (tokensData) => {
 
   return {
     html: htmlReport + colorBlindnessSection + `
-      <div class="tagline">Generated by Design Tokens Wizards 🪄</div>
+      <div class="footer">
+        <p>Generated by Design Tokens Wizards - Color Accessibility Guidelines</p>
+        <p>Generated on: ${new Date().toLocaleString()}</p>
+        <div class="support-section">
+          <img src="data:image/png;base64,${fs.readFileSync(path.join(__dirname, '..', 'assets', 'profile_pic.png'), { encoding: 'base64' })}" alt="Profile Picture" class="profile-pic">
+          <p class="support-text">Do you want to support this project? <a href="https://ko-fi.com/fbuonanno" target="_blank">Invite me a coffee ❤️☕️</a></p>
+        </div>
+      </div>
     </body>
   </html>`
   };
@@ -1104,7 +1229,7 @@ const main = async () => {
   while (addMoreColors) {
     
     const existingVariants = previousConcept && tokensData[previousConcept] ? Object.keys(tokensData[previousConcept]) : [];
-    const input = await askForInput(existingVariants, namingChoice, scaleSettings);
+    const input = await askForInput(tokensData, existingVariants, namingChoice, scaleSettings);
     if (!input) return;
 
     const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings } = input;
@@ -1350,11 +1475,12 @@ try {
     format: 'A4',
     printBackground: true,
     margin: {
-      top: '20px',
-      right: '20px',
-      bottom: '20px',
-      left: '20px'
-    }
+      top: '20mm',
+      right: '20mm',
+      bottom: '20mm',
+      left: '20mm'
+    },
+    preferCSSPageSize: true
   });
 
   await browser.close();
