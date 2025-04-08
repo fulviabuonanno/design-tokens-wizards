@@ -150,8 +150,6 @@ Let the art of token crafting infuse your project with endless creativity—and 
 
 Version 1.6.1
 
-## Size Tokens Wizard ✨
-
 Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and let the wizard generate a range of size tokens in various units, ready for integration into your design system and development projects.
 
 1. **Run the Size Wiz Script**  
