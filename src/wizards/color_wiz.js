@@ -110,9 +110,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           name: "scaleType",
           message: "Select the scale type for your color:",
           choices: [
-            { name: "Incremental (e.g., 50, 100, 150, 200)", value: "incremental" },
-            { name: "Ordinal (e.g., 1, 2, 3)", value: "ordinal" },
-            { name: 'Alphabetical (e.g., A, B, C)', value: 'alphabetical' },
+            { name: "Incremental (e.g., 100, 200, 300, 400)", value: "incremental" },
+            { name: "Ordinal (e.g., 1, 2, 3, 4)", value: "ordinal" },
+            { name: 'Alphabetical (e.g., A, B, C, D)', value: 'alphabetical' },
             { name: "Shades Semantic (e.g. dark, base, light)", value: "shadesSemantic" }
           ]
         }
@@ -125,8 +125,8 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             name: 'ordinalOption',
             message: "For Ordinal scale, choose the format:",
             choices: [
-              { name: "Padded (e.g., 01, 02, 03)", value: 'padded' },
-              { name: "Unpadded (e.g., 1, 2, 3)", value: 'unpadded' }
+              { name: "Padded (e.g., 01, 02, 03, 04)", value: 'padded' },
+              { name: "Unpadded (e.g., 1, 2, 3, 4)", value: 'unpadded' }
             ]
           }
         ]);
@@ -138,7 +138,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             name: 'incrementalOption',
             message: "For Incremental scale, choose the step increment:",
             choices: [
-              { name: "10 in 10 (e.g., 10, 20, 30, ...)", value: '10' },
+              { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' },
               { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
               { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
               { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
@@ -152,8 +152,8 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             name: "alphabeticalOption",
             message: "For Alphabetical scale, choose the format:",
             choices: [
-              { name: "Uppercase (e.g., A, B, C)", value: 'uppercase' },
-              { name: "Lowercase (e.g., a, b, c)", value: 'lowercase' }
+              { name: "Uppercase (e.g., A, B, C, D)", value: 'uppercase' },
+              { name: "Lowercase (e.g., a, b, c, d)", value: 'lowercase' }
             ]
           }
         ]);

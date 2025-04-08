@@ -21,23 +21,27 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get s
    To use the scripts, you need to have **Node.js** installed on your machine. You can download and install it from [Node.js official website](https://nodejs.org/).
 
 2. **Open the Terminal in Your Code Editor**
+
    - **VS Code:** Press `` Ctrl + ` `` (Windows/Linux) or `` Cmd + ` `` (Mac)
    - **WebStorm/IntelliJ:** Click `View > Tool Windows > Terminal`
    - **Atom:** Press `Ctrl + Shift + T` (Windows/Linux) or `Cmd + Shift + T` (Mac)
    - **Sublime Text:** Install a terminal package like "Terminal" from Package Control
 
    Alternatively, you can use your system's terminal:
+
    - **Windows:** Press `Windows + R`, type `cmd`, and press Enter
    - **Mac:** Press `Command + Space`, type `terminal`, and press Enter
    - **Linux:** Press `Ctrl + Alt + T`
 
    Navigate to your project directory using the `cd` command:
+
    ```sh
    cd path/to/your/project
    ```
 
 3. **Install Dependencies**
    Install the required dependencies by running:
+
    ```sh
    npm install
    ```
@@ -51,29 +55,29 @@ Legend:
 
 Select the wizard that will come to your aid by executing the corresponding script in your terminal. Below is a list of available wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version        |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.1 ✅    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.0 🆕       |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.0 🆕       |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.0 🆕       |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.0 ✅ |
-–              |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version     |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | ----------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.2 🆕    |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1 🆕    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1 🆕    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1 🆕    |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.1 🔥 🆕 |
+| –                        |
 
-More design tokens wizards are coming your way to aid! ✨ 
+More design tokens wizards are coming your way to aid! ✨
 
 Below is a curated collection of spells (crafted by our Token's Wizards to come to your aid) to streamline your design tokens workflow:
 
-| Spell           | Script Name      | Run Command     | Description                                            | Version        |
-| --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0  |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0  |
+| Spell           | Script Name      | Run Command     | Description                                            | Version |
+| --------------- | ---------------- | --------------- | ------------------------------------------------------ | ------- |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0   |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0   |
 
 ---
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.5.1
+Version 2.5.2
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -144,7 +148,7 @@ Let the art of token crafting infuse your project with endless creativity—and 
 
 ### 📏 **Size Tokens Wizard** ✨
 
-Version 1.6.0
+Version 1.6.1
 
 ## Size Tokens Wizard ✨
 
@@ -223,7 +227,7 @@ If adjustments are needed, simply re-run the wizard until the desired output is 
 
 ### 🔳 **Space Tokens Wizard** ✨
 
-Version 1.6.0
+Version 1.6.1
 
 Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
 
@@ -296,7 +300,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 ### ⭕️ **Border Radius Tokens Wizard** ✨
 
-Version 1.6.0
+Version 1.6.1
 
 Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
 
@@ -368,7 +372,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.1.0 🔥 🔥 🔥 🔥
+Version 1.1.1 🔥 🔥 🔥 🔥 🔥
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
@@ -488,7 +492,7 @@ The Clear Spell is a simple yet powerful tool to keep your project directory cle
 
 ### 🪄 **Merge Spell** ✨
 
-Version 1.2.0 🆙 🆙 🆙 🆙
+Version 1.2.0 🆙 🆙 🆙 🆙 🆙
 
 The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
 
