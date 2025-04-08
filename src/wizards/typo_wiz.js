@@ -101,118 +101,322 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
   
   const pdfPath = path.join(reportsDir, "a11y-typography-guidelines.pdf");
   
-  let report = `# Typography Accessibility Guidelines 🎨👁️\n\n`;
-  report += `This report outlines the accessibility guidelines for your typography system based on your selections.\n\n`;
+  // Read and encode the banner image
+  const bannerPath = path.join(__dirname, '..', 'assets', 'banner.png');
+  const bannerBase64 = fs.readFileSync(bannerPath, { encoding: 'base64' });
   
-  report += `## Selected Properties\n`;
-  selectedProperties.forEach(prop => {
-    report += `- ${prop}\n`;
-  });
-  report += `\n`;
+  // HTML template with CSS styling
+  let styles = `
+    <style>
+      body {
+        font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        line-height: 1.2;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .banner {
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 30px;
+        display: block;
+      }
+      h1 {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1a1a1a;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+      }
+      h2 {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        font-size: 20px;
+        font-weight: 500;
+        color: #2c3e50;
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+      h3 {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        font-size: 18px;
+        font-weight: 500;
+        color: #34495e;
+        margin-top: 20px;
+      }
+      ul {
+        padding-left: 20px;
+        margin-bottom: 20px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      .token-value {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 2px 5px;
+        border-radius: 3px;
+      }
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .checklist-item::before {
+        content: "☐";
+        margin-right: 10px;
+        font-size: 1.2em;
+      }
+      .footer {
+        font-family: 'Instrument Sans', Arial, sans-serif;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        font-size: 0.9em;
+        color: #666;
+        text-align: center;
+      }
+      .footer p {
+        margin: 5px 0;
+      }
+      .support-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        width: 100%;
+      }
+      .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .support-text {
+        margin: 0;
+      }
+      .toc {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .toc ul ul {
+        padding-left: 20px;
+      }
+      .toc a {
+        color: #2c3e50;
+        text-decoration: none;
+        line-height: 1.8;
+      }
+      .toc a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+      .introduction {
+        background: #fff;
+        padding: 20px;
+        border-left: 4px solid #2c3e50;
+        margin: 20px 0;
+      }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  `;
+
+  let report = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      ${styles}
+    </head>
+    <body>
+      <img src="data:image/png;base64,${bannerBase64}" class="banner" alt="Design Tokens Wizards Banner">
+      <h1>Typography Accessibility Guidelines 🔠👁️</h1>
+      
+      <div class="introduction">
+        <p>This comprehensive typography accessibility report analyzes your design tokens for WCAG 2.2 compliance and provides detailed insights about font choices, sizes, weights, and spacing. Use this report to ensure your typography choices are accessible to all users.</p>
+        <p>The report includes guidelines for font families, sizes, weights, letter spacing, and line heights, along with specific recommendations for improving accessibility where needed.</p>
+      </div>
+
+      <div class="toc">
+        <h2>Table of Contents</h2>
+        <ul>
+          <li><a href="#selected-properties">Selected Properties</a></li>
+          ${selectedProperties.includes('fontFamily') ? '<li><a href="#font-family">Font Family Guidelines</a></li>' : ''}
+          ${selectedProperties.includes('fontSize') ? '<li><a href="#font-size">Font Size Guidelines</a></li>' : ''}
+          ${selectedProperties.includes('fontWeight') ? '<li><a href="#font-weight">Font Weight Guidelines</a></li>' : ''}
+          ${selectedProperties.includes('letterSpacing') ? '<li><a href="#letter-spacing">Letter Spacing Guidelines</a></li>' : ''}
+          ${selectedProperties.includes('lineHeight') ? '<li><a href="#line-height">Line Height Guidelines</a></li>' : ''}
+          <li><a href="#implementation">Implementation Checklist</a></li>
+        </ul>
+      </div>
+
+      <h2 id="selected-properties">Selected Properties</h2>
+      <ul>
+        ${selectedProperties.map(prop => `<li>${prop}</li>`).join('\n')}
+      </ul>`;
 
   if (selectedProperties.includes('fontFamily')) {
-    report += `## Font Family Guidelines\n\n`;
-    report += `### Your Font Choices\n`;
-    Object.entries(tokens.fontFamily || {}).forEach(([name, data]) => {
-      if (data && data.value) {
-        report += `- ${name}: ${data.value}\n`;
-      }
-    });
-    report += `\n### Accessibility Guidelines\n`;
-    report += `- Choose fonts with clear letterforms and good character distinction\n`;
-    report += `- Sans-serif fonts are generally more readable on screens\n`;
-    report += `- Ensure fonts support all required characters and languages\n`;
-    report += `- Always provide at least one system font fallback\n`;
-    report += `- Consider using system font stacks for better performance\n\n`;
+    report += `
+      <h2 id="font-family">Font Family Guidelines</h2>
+      <h3>Your Font Choices</h3>
+      <ul>
+        ${Object.entries(tokens.fontFamily || {}).map(([name, data]) => 
+          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
+        ).join('\n')}
+      </ul>
+      <h3>Accessibility Guidelines</h3>
+      <ul>
+        <li>Choose fonts with clear letterforms and good character distinction</li>
+        <li>Sans-serif fonts are generally more readable on screens</li>
+        <li>Ensure fonts support all required characters and languages</li>
+        <li>Always provide at least one system font fallback</li>
+        <li>Consider using system font stacks for better performance</li>
+      </ul>`;
   }
 
   if (selectedProperties.includes('fontSize')) {
-    report += `## Font Size Guidelines\n\n`;
-    report += `### Your Font Sizes\n`;
-    Object.entries(tokens.fontSize || {}).forEach(([name, data]) => {
-      if (data && data.value) {
-        report += `- ${name}: ${data.value}\n`;
-      }
-    });
-    report += `\n### Accessibility Guidelines\n`;
-    report += `- Body text should be at least 16px\n`;
-    report += `- Minimum text size should be 12px\n`;
-    report += `- Small font sizes should only be used for supplementary content\n`;
-    report += `- Consider users with visual impairments when defining your scale\n\n`;
+    report += `
+      <h2 id="font-size">Font Size Guidelines</h2>
+      <h3>Your Font Sizes</h3>
+      <ul>
+        ${Object.entries(tokens.fontSize || {}).map(([name, data]) => 
+          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
+        ).join('\n')}
+      </ul>
+      <h3>Accessibility Guidelines</h3>
+      <ul>
+        <li>Body text should be at least 16px</li>
+        <li>Minimum text size should be 12px</li>
+        <li>Small font sizes should only be used for supplementary content</li>
+        <li>Consider users with visual impairments when defining your scale</li>
+      </ul>`;
   }
 
   if (selectedProperties.includes('fontWeight')) {
-    report += `## Font Weight Guidelines\n\n`;
-    report += `### Your Font Weights\n`;
-    Object.entries(tokens.fontWeight || {}).forEach(([name, data]) => {
-      if (data && data.value) {
-        report += `- ${name}: ${data.value}\n`;
-      }
-    });
-    report += `\n### Accessibility Guidelines\n`;
-    report += `- Body text should be at least 400 (regular) weight\n`;
-    report += `- Avoid using font weights below 400 for main content\n`;
-    report += `- Headers typically benefit from weights of 600 or higher\n`;
-    report += `- Ensure sufficient contrast between text and background\n\n`;
+    report += `
+      <h2 id="font-weight">Font Weight Guidelines</h2>
+      <h3>Your Font Weights</h3>
+      <ul>
+        ${Object.entries(tokens.fontWeight || {}).map(([name, data]) => 
+          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
+        ).join('\n')}
+      </ul>
+      <h3>Accessibility Guidelines</h3>
+      <ul>
+        <li>Body text should be at least 400 (regular) weight</li>
+        <li>Avoid using font weights below 400 for main content</li>
+        <li>Headers typically benefit from weights of 600 or higher</li>
+        <li>Ensure sufficient contrast between text and background</li>
+      </ul>`;
   }
 
   if (selectedProperties.includes('letterSpacing')) {
-    report += `## Letter Spacing Guidelines\n\n`;
-    report += `### Your Letter Spacing Values\n`;
-    Object.entries(tokens.letterSpacing || {}).forEach(([name, data]) => {
-      if (data && data.value) {
-        report += `- ${name}: ${data.value}\n`;
-      }
-    });
-    report += `\n### Accessibility Guidelines\n`;
-    report += `- Avoid extreme letter spacing values that could harm readability\n`;
-    report += `- Body text should maintain normal letter spacing (0) or very subtle adjustments\n`;
-    report += `- Users with dyslexia may struggle with increased letter spacing\n`;
-    report += `- Ensure sufficient contrast and clear letterforms remain visible\n\n`;
+    report += `
+      <h2 id="letter-spacing">Letter Spacing Guidelines</h2>
+      <h3>Your Letter Spacing Values</h3>
+      <ul>
+        ${Object.entries(tokens.letterSpacing || {}).map(([name, data]) => 
+          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
+        ).join('\n')}
+      </ul>
+      <h3>Accessibility Guidelines</h3>
+      <ul>
+        <li>Avoid extreme letter spacing values that could harm readability</li>
+        <li>Body text should maintain normal letter spacing (0) or very subtle adjustments</li>
+        <li>Users with dyslexia may struggle with increased letter spacing</li>
+        <li>Ensure sufficient contrast and clear letterforms remain visible</li>
+      </ul>`;
   }
 
   if (selectedProperties.includes('lineHeight')) {
-    report += `## Line Height Guidelines\n\n`;
-    report += `### Your Line Heights\n`;
-    Object.entries(tokens.lineHeight || {}).forEach(([name, data]) => {
-      if (data && data.value) {
-        report += `- ${name}: ${data.value}\n`;
-      }
-    });
-    report += `\n### Accessibility Guidelines\n`;
-    report += `- Body text should have a minimum line height of 1.5\n`;
-    report += `- Headings should have a minimum line height of 1.3\n`;
-    report += `- Line height should increase as line length increases\n`;
-    report += `- WCAG 2.2 Success Criterion 1.4.12 requires adjustable line spacing up to 1.5\n\n`;
+    report += `
+      <h2 id="line-height">Line Height Guidelines</h2>
+      <h3>Your Line Heights</h3>
+      <ul>
+        ${Object.entries(tokens.lineHeight || {}).map(([name, data]) => 
+          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
+        ).join('\n')}
+      </ul>
+      <h3>Accessibility Guidelines</h3>
+      <ul>
+        <li>Body text should have a minimum line height of 1.5</li>
+        <li>Headings should have a minimum line height of 1.3</li>
+        <li>Line height should increase as line length increases</li>
+        <li>WCAG 2.2 Success Criterion 1.4.12 requires adjustable line spacing up to 1.5</li>
+      </ul>`;
   }
 
-  report += `## Implementation Checklist\n\n`;
-  selectedProperties.forEach(prop => {
-    const checklistItem = {
-      fontFamily: '[ ] Font families are accessible and have proper fallbacks',
-      fontSize: '[ ] Font sizes meet minimum requirements (16px for body, 12px minimum)',
-      fontWeight: '[ ] Font weights are appropriate for content hierarchy',
-      letterSpacing: '[ ] Letter spacing is optimized for readability',
-      lineHeight: '[ ] Line heights meet WCAG 2.2 requirements'
-    }[prop];
-    if (checklistItem) {
-      report += `${checklistItem}\n`;
-    }
-  });
-  report += `[ ] Typography is tested across different devices and browsers\n`;
-  report += `[ ] Accessibility tools have been used to verify implementation\n`;
-  report += `[ ] User testing has been conducted with diverse user groups\n\n`;
+  report += `
+      <h2 id="implementation">Implementation Checklist</h2>
+      <div class="checklist">
+        ${selectedProperties.map(prop => {
+          const checklistItem = {
+            fontFamily: 'Font families are accessible and have proper fallbacks',
+            fontSize: 'Font sizes meet minimum requirements (16px for body, 12px minimum)',
+            fontWeight: 'Font weights are appropriate for content hierarchy',
+            letterSpacing: 'Letter spacing is optimized for readability',
+            lineHeight: 'Line heights meet WCAG 2.2 requirements'
+          }[prop];
+          return checklistItem ? `<div class="checklist-item">${checklistItem}</div>` : '';
+        }).join('\n')}
+        <div class="checklist-item">Typography is tested across different devices and browsers</div>
+        <div class="checklist-item">Accessibility tools have been used to verify implementation</div>
+        <div class="checklist-item">User testing has been conducted with diverse user groups</div>
+      </div>
 
-  report += `---\n\n`;
-  report += `*Generated by Design Tokens Wizards - Typography Accessibility Guidelines*\n`;
-  const timestamp = new Date().toLocaleString();
-  report += `Generated on: ${timestamp}\n\n`;
+      <div class="footer">
+        <p>Generated by Design Tokens Wizards - Typography Accessibility Guidelines</p>
+        <p>Generated on: ${new Date().toLocaleString()}</p>
+        <div class="support-section">
+          <img src="data:image/png;base64,${fs.readFileSync(path.join(__dirname, '..', 'assets', 'profile_pic.png'), { encoding: 'base64' })}" alt="Profile Picture" class="profile-pic">
+          <p class="support-text">Do you want to support this project? <a href="https://ko-fi.com/fbuonanno" target="_blank">Invite me a coffee ❤️☕️</a></p>
+        </div>
+      </div>
+    </body>
+    </html>`;
 
-  // Convert report directly to PDF using Puppeteer
+  // Configure Puppeteer for better PDF output
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  
+  // Enable loading of Google Fonts
+  await page.setRequestInterception(true);
+  page.on('request', request => {
+    if (request.url().startsWith('https://fonts.googleapis.com') || 
+        request.url().startsWith('https://fonts.gstatic.com')) {
+      request.continue();
+    } else {
+      request.continue();
+    }
+  });
+
   await page.setContent(report);
-  await page.pdf({ path: pdfPath });
+  
+  // Wait for the banner image and Google Font to load
+  await page.waitForSelector('img.banner');
+  await page.evaluate(() => document.fonts.ready);
+  
+  await page.pdf({
+    path: pdfPath,
+    format: 'A4',
+    margin: {
+      top: '40px',
+      right: '40px',
+      bottom: '40px',
+      left: '40px'
+    },
+    printBackground: true,
+    preferCSSPageSize: true
+  });
   await browser.close();
 }
 
