@@ -572,12 +572,11 @@ const main = async () => {
 
   await showLoader(chalk.bold.yellowBright("🧚 Casting the magic of tokens"), 1500);
 
-  console.log(chalk.whiteBright("\n❤️ Welcome to the "));
-  console.log(chalk.bold.blue("Size Tokens Wizard"));
-  console.log(chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your size tokens step by step."));
-  console.log(chalk.whiteBright("Generate your tokens and prepare them ready for using or syncing in "));
-  console.log(chalk.underline("Tokens Studio") + chalk.whiteBright("."));
-  console.log(chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive ma gical files in ") +
+  console.log(
+    chalk.whiteBright("\n❤️ Welcome to the Size Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your size tokens step by step.") +
+    chalk.whiteBright("Generate your tokens and prepare them ready for using or syncing in ") +
+    chalk.underline("Tokens Studio") +
+    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +

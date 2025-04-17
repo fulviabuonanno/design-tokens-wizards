@@ -428,16 +428,14 @@ async function typographyWiz() {
 
   await showLoader(chalk.bold.yellowBright("🦄 Casting the magic of tokens..."), 1500);
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the \n") +
-        chalk.bold.redBright("Typography Tokens Wizard") +
-        chalk.whiteBright(" script! \nLet this wizard guide you through creating your typography tokens in just a few enchanting steps. \n") +
-        chalk.whiteBright("Define your font families, sizes, weights, and more, and prepare them for import or sync with \n") +
-        chalk.underline("Tokens Studio") +
-        chalk.whiteBright(" format.\n✨ As a delightful bonus, you'll receive magical files in ") +
-        chalk.underline("SCSS") +
-        chalk.whiteBright(" and ") +
-        chalk.underline("CSS") +
-        chalk.whiteBright(" to test in your implementation!\n")
+    chalk.whiteBright("\n❤️ Welcome to the Typography Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your typography tokens step by step.") +
+    chalk.whiteBright("Generate your tokens and prepare them ready for using or syncing in ") +
+    chalk.underline("Tokens Studio") +
+    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.underline("SCSS") +
+    chalk.whiteBright(" and ") +
+    chalk.underline("CSS") +
+    chalk.whiteBright(" to test in your implementation!\n")
   );
 
   const { selectedProperties } = await inquirer.prompt([

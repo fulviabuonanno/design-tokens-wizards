@@ -1192,16 +1192,14 @@ const main = async () => {
   await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens"), 1500);
 
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the ") +
-      chalk.bold.yellow("Color Tokens Wizard") +
-      chalk.whiteBright(" script! \nLet this wizard guide you through creating your color tokens in just a few steps. \nGenerate your colors, convert them, and prepare them for import or sync with ") +
-      chalk.underline("Tokens Studio") +
-      chalk.whiteBright(" format.") +
-      chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive magical files in ") +
-      chalk.underline("SCSS") +
-      chalk.whiteBright(" and ") +
-      chalk.underline("CSS") +
-      chalk.whiteBright(" to test in your implementation!\n")
+    chalk.whiteBright("\n❤️ Welcome to the Color Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your color tokens step by step.") +
+    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
+    chalk.underline("Tokens Studio") +
+    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.underline("SCSS") +
+    chalk.whiteBright(" and ") +
+    chalk.underline("CSS") +
+    chalk.whiteBright(" to test in your implementation!\n")
   );
 
   let tokensData = {};

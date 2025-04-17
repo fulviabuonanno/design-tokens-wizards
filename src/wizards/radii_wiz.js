@@ -644,16 +644,14 @@ const main = async () => {
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the \n") +
-    chalk.bold.greenBright("Border Radius Tokens Wizard\n") +
-    chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your border radius tokens step by step.\n") +
-    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in \n") +
+    chalk.whiteBright("\n❤️ Welcome to the Border Radius Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your border radius tokens step by step.") +
+    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
     chalk.underline("Tokens Studio") +
-    chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +
-    chalk.whiteBright(" to test in your implementation!\n")
+    chalk.whiteBright(" to test in your implementation!")
   );
   
   const input = await askForInput();

@@ -33,7 +33,7 @@ const askForInput = async () => {
   console.log(chalk.black.bgMagentaBright("\n======================================="));
   console.log(chalk.bold("⭐️ STEP 1: BASE UNIT"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
-  console.log(chalk.yellowBright("ℹ️ The base unit for spacing tokens is set to 'px'."));
+  console.log(chalk.yellowBright("ℹ️ The base unit for space tokens is set to 'px'."));
   const unit = 'px';
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
@@ -43,8 +43,8 @@ const askForInput = async () => {
     {
       type: 'list',
       name: 'name',
-      message: '📝 What name would you like to assign to your spacing tokens?',
-      choices: ['space', 'spacing', 'sp', 'spc', 'custom']
+      message: '📝 What name would you like to assign to your space tokens?',
+      choices: ['space', 'space', 'sp', 'spc', 'custom']
     }
   ]);
   let name;
@@ -54,7 +54,7 @@ const askForInput = async () => {
       {
         type: 'input',
         name: 'customName',
-        message: '📝 Please provide a name for your spacing tokens:',
+        message: '📝 Please provide a name for your space tokens:',
         validate: (input) => {
           if (!input) {
             return "❌ Name is required. Please provide a valid name.";
@@ -606,12 +606,11 @@ const main = async () => {
 
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
-  console.log(chalk.whiteBright("\n❤️ Welcome to the "));
-  console.log(chalk.bold.magenta("Spacing Tokens Wizard"));
-  console.log(chalk.whiteBright(" script! \nLet this wizard 🧙 guide you through creating your spacing tokens step by step."));
-  console.log(chalk.whiteBright("Generate your tokens and prepare them for using or syncing in "));
-  console.log(chalk.underline("Tokens Studio"));
-  console.log(chalk.whiteBright(".\n✨ As a delightful bonus, you'll receive magical files in ") +
+  console.log(
+    chalk.whiteBright("\n❤️ Welcome to the Space Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your space tokens step by step.") +
+    chalk.whiteBright("Generate your tokens and prepare them ready for using or syncing in ") +
+    chalk.underline("Tokens Studio") +
+    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +
@@ -705,7 +704,7 @@ const main = async () => {
   const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'space_variables_px.scss');
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("🔄 CONVERTING SPACING TOKENS TO OTHER UNITS"));
+  console.log(chalk.bold("🔄 CONVERTING Space TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
   const convertTokensResp = await inquirer.prompt([
     {
@@ -814,7 +813,7 @@ const main = async () => {
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
   
-  console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.magentaBright("Spacing Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
+  console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.magentaBright("Space Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄📏\n"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 };
 
