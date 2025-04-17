@@ -25,7 +25,7 @@ async function showAccessibilityNotes(propertyType) {
     {
       type: 'confirm',
       name: 'showNotes',
-      message: '📝 Would you like to see ' + chalk.underline(' guidelines') + ' for this typography property?',
+      message: '📝 Would you like to see ' + chalk.underline('accessibility guidelines') + ' for this typography property?',
       default: false
     }
   ]);
