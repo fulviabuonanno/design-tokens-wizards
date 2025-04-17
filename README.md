@@ -22,10 +22,7 @@ Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get s
 
 2. **Open the Terminal in Your Code Editor**
 
-   - **VS Code:** Press `` Ctrl + ` `` (Windows/Linux) or `` Cmd + ` `` (Mac)
-   - **WebStorm/IntelliJ:** Click `View > Tool Windows > Terminal`
-   - **Atom:** Press `Ctrl + Shift + T` (Windows/Linux) or `Cmd + Shift + T` (Mac)
-   - **Sublime Text:** Install a terminal package like "Terminal" from Package Control
+   - **VS Code:** Press `` Ctrl + ` `` (Windows/Linux) or `` Cmd + ` `` (Mac) - [Download VS Code](https://code.visualstudio.com/download)
 
    Alternatively, you can use your system's terminal:
 
@@ -55,13 +52,13 @@ Legend:
 
 Select the wizard that will come to your aid by executing the corresponding script in your terminal. Below is a list of available wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version     |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | ----------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.2 🆕    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1 🆕    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1 🆕    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1 🆕    |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.1 🔥 🆕 |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.3 🆕 |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1    |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.1    |
 | –                        |
 
 More design tokens wizards are coming your way to aid! ✨
@@ -77,7 +74,7 @@ Below is a curated collection of spells (crafted by our Token's Wizards to come 
 
 ### 🎨 **Color Tokens Wizard** ✨
 
-Version 2.5.2
+Version 2.5.3
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -370,7 +367,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.1.1 🔥 🔥 🔥 🔥 🔥
+Version 1.1.1 🔥 🔥 🔥 🔥 🔥 🔥
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
@@ -490,7 +487,7 @@ The Clear Spell is a simple yet powerful tool to keep your project directory cle
 
 ### 🪄 **Merge Spell** ✨
 
-Version 1.2.0 🆙 🆙 🆙 🆙 🆙
+Version 1.2.0 🆙 🆙 🆙 🆙 🆙 🆙
 
 The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
 

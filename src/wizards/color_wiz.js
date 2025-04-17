@@ -216,8 +216,10 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     } else if (newScaleSettings.type === "shadesSemantic") {
       mode = "shades semantic";
       padded = true; 
+    } else if (newScaleSettings.type === "alphabetical") {
+      mode = "alphabetical";
+      padded = false;
     } else {
-      
       mode = "stops"; 
       padded = false;
     }
@@ -233,24 +235,6 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 
     console.log(printStopsTable(stops, mode, padded));
 
-    const { showAccessibility } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "showAccessibility",
-        message: "Would you like to see the accessibility analysis for these colors?",
-        default: false
-      }
-    ]);
-
-    if (showAccessibility) {
-      console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
-      console.log(chalk.black.bgYellowBright("=======================================\n"));
-      
-      const accessibilityTables = printAccessibilityTable(stops);
-      console.log(accessibilityTables);
-    }
-
     const { confirmColor } = await inquirer.prompt([
       {
         type: "confirm",
@@ -262,7 +246,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 
     if (!confirmColor) {
       console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm to move forward with the nomenclature."));
-      return await askForInput(tokensData); 
+      return await askForInput(tokensData);
     } else {
       break;
     }
@@ -302,6 +286,11 @@ const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
 
 const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
   const stops = {};
+  
+  // Add base color first
+  stops["base"] = tinycolor(hex).toHexString().toUpperCase();
+  
+  // Generate ordinal stops
   for (let i = 0; i < stopsCount; i++) {
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     const key = padded ? String(i + 1).padStart(2, '0') : String(i + 1);
@@ -311,8 +300,13 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
       : MIN_MIX + ((ratio - 0.5) * 2) * (MAX_MIX - MIN_MIX);
     stops[key] = tinycolor.mix(hex, ratio < 0.5 ? "white" : "black", mixPercentage).toHexString().toUpperCase();
   }
+  
   if (padded) {
-    const sortedEntries = Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]));
+    const sortedEntries = Object.entries(stops).sort((a, b) => {
+      if (a[0] === "base") return -1;
+      if (b[0] === "base") return 1;
+      return Number(a[0]) - Number(b[0]);
+    });
     return Object.fromEntries(sortedEntries);
   }
   return stops;
@@ -359,16 +353,6 @@ const generateStopsSemantic = (hex, stopsCount) => {
       break;
   }
   
-  const alphabeticalOption = format === 'uppercase' ? 'uppercase' : 'lowercase';
-  let format = alphabeticalOption;
-  if (format === 'uppercase') {
-    format = 'uppercase';
-    labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-  } else {
-    format = 'lowercase';
-    labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-  }
-
   const stops = {};
   const total = labels.length;
   const baseIndex = Math.floor(total / 2);
@@ -380,13 +364,11 @@ const generateStopsSemantic = (hex, stopsCount) => {
     if (i === baseIndex) {
       stops[labels[i]] = tinycolor(hex).toHexString().toUpperCase();
     } else if (i < baseIndex) {
-      
       const mixPercentage = Math.round(
         MIN_MIX + ((baseIndex - i) / baseIndex) * (MAX_MIX - MIN_MIX)
       );
       stops[labels[i]] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
     } else {
-      
       const mixPercentage = Math.round(
         MIN_MIX + ((i - baseIndex) / (total - 1 - baseIndex)) * (MAX_MIX - MIN_MIX)
       );
@@ -399,6 +381,11 @@ const generateStopsSemantic = (hex, stopsCount) => {
 const generateStopsAlphabetical = (hex, format = 'uppercase', stopsCount = 10) => {
   const stops = {};
   const startCharCode = format === 'uppercase' ? 65 : 97; // ASCII for 'A' or 'a'
+  
+  // Add base color first
+  stops["base"] = tinycolor(hex).toHexString().toUpperCase();
+  
+  // Generate alphabetical stops
   for (let i = 0; i < stopsCount; i++) {
     const key = String.fromCharCode(startCharCode + i);
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
@@ -410,9 +397,6 @@ const generateStopsAlphabetical = (hex, format = 'uppercase', stopsCount = 10) =
       mixPercentage = MIN_MIX + ((ratio - 0.5) * 2) * (MAX_MIX - MIN_MIX);
       stops[key] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
     }
-  }
-  if (stops.hasOwnProperty('Base')) {
-    delete stops['Base'];
   }
   return stops;
 };
@@ -698,7 +682,7 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
       const bIndex = semanticOrder.indexOf(b[0]);
       return aIndex - bIndex;
     });
-  } else if (mode === "ordinal" || mode === "incremental") {
+  } else if (mode === "ordinal" || mode === "incremental" || mode === "alphabetical") {
     if (padded) {
       entries.forEach(([key, value], idx) => {
         if (key !== "base") {
@@ -708,9 +692,21 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
     }
     
     entries.sort((a, b) => {
-      if (a[0] === "base" && b[0] !== "base") return -1;
-      if (b[0] === "base" && a[0] !== "base") return 1;
-      return parseInt(a[0], 10) - parseInt(b[0], 10);
+      // Always put base first
+      if (a[0] === "base") return -1;
+      if (b[0] === "base") return 1;
+      
+      // Then sort the rest based on mode
+      if (mode === "alphabetical") {
+        return a[0].localeCompare(b[0]);
+      } else if (mode === "ordinal") {
+        // For ordinal, sort numerically but ensure base is first
+        const aNum = parseInt(a[0], 10);
+        const bNum = parseInt(b[0], 10);
+        return aNum - bNum;
+      } else {
+        return parseInt(a[0], 10) - parseInt(b[0], 10);
+      }
     });
   }
 
@@ -726,10 +722,11 @@ const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
   entries.forEach(([key, value]) => {
     const wcag = getWCAGCompliance(value);
     const textColor = wcag.textColor === "white" ? chalk.white : chalk.black;
+    const sampleText = "  Sample  ";
     table.push([
       key, 
       value, 
-      chalk.bgHex(value)(textColor("         "))
+      chalk.bgHex(value)(textColor(sampleText))
     ]);
   });
 
@@ -1455,47 +1452,65 @@ console.log(chalk.black.bgYellowBright("\n======================================
 console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
 console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-const reports = generateAccessibilityReport(tokensData);
-const pdfReportPath = path.join(reportsFolder, "a11y-color-report.pdf");
-const tempHtmlPath = path.join(reportsFolder, "_temp_report.html");
+const { showAccessibility } = await inquirer.prompt([
+  {
+    type: "confirm",
+    name: "showAccessibility",
+    message: "Would you like to see the " + chalk.underline("accessibility analysis") + " for these colors?",
+    default: false
+  }
+]);
 
-fs.writeFileSync(tempHtmlPath, reports.html);
-
-try {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1200, height: 800 });
+if (showAccessibility) {
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
   
-  await page.goto(`file://${tempHtmlPath}`, {
-    waitUntil: 'networkidle0'
-  });
+  const accessibilityTables = printAccessibilityTable(stops);
+  console.log(accessibilityTables);
 
-  await page.pdf({
-    path: pdfReportPath,
-    format: 'A4',
-    printBackground: true,
-    margin: {
-      top: '20mm',
-      right: '20mm',
-      bottom: '20mm',
-      left: '20mm'
-    },
-    preferCSSPageSize: true
-  });
+  const reports = generateAccessibilityReport(tokensData);
+  const pdfReportPath = path.join(reportsFolder, "a11y-color-report.pdf");
+  const tempHtmlPath = path.join(reportsFolder, "_temp_report.html");
 
-  await browser.close();
-  console.log(chalk.green("✅ Generated PDF report"));
+  fs.writeFileSync(tempHtmlPath, reports.html);
 
   try {
-    fs.unlinkSync(tempHtmlPath);
-  } catch (e) {
-    console.error("Error cleaning up temporary file:", e);
-  }
-} catch (err) {
-  console.error(chalk.red("❌ Error generating PDF:"), err);
-}
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1200, height: 800 });
+    
+    await page.goto(`file://${tempHtmlPath}`, {
+      waitUntil: 'networkidle0'
+    });
 
-savedNewFiles.push(pdfReportPath);
+    await page.pdf({
+      path: pdfReportPath,
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '20mm',
+        right: '20mm',
+        bottom: '20mm',
+        left: '20mm'
+      },
+      preferCSSPageSize: true
+    });
+
+    await browser.close();
+    console.log(chalk.green("✅ Generated PDF report!"));
+
+    try {
+      fs.unlinkSync(tempHtmlPath);
+    } catch (e) {
+      console.error("Error cleaning up temporary file:", e);
+    }
+  } catch (err) {
+    console.error(chalk.red("❌ Error generating PDF:"), err);
+  }
+
+  savedNewFiles.push(pdfReportPath);
+}
 
 await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 1500);
 
@@ -1507,7 +1522,11 @@ console.log(chalk.whiteBright("📂 Files are organized in the following folders
 console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
 console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
 console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables"));
-console.log(chalk.whiteBright("   -> /reports: Accessibility Report\n"));
+if (showAccessibility) {
+  console.log(chalk.whiteBright("   -> /reports: Accessibility Report\n"));
+} else {
+  console.log(); // Just add a newline for consistent spacing
+}
 
 if (updatedFiles.length > 0) {
   console.log(chalk.whiteBright("🆕 Updated:"));
