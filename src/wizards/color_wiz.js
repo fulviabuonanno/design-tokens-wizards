@@ -1357,208 +1357,204 @@ const main = async () => {
   }
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
-console.log(chalk.bold("🔄 CONVERTING COLOR TOKENS TO OTHER FORMATS"));
-console.log(chalk.black.bgYellowBright("=======================================\n"));
+  console.log(chalk.bold("🔄 CONVERTING COLOR TOKENS TO OTHER FORMATS"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-const convertAnswer = await inquirer.prompt([
-  {
-    type: 'confirm',
-    name: 'convert',
-    message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
-    default: true
-  }
-]);
-
-let formatsAnswer = { formats: [] };
-if (convertAnswer.convert) {
-  formatsAnswer = await inquirer.prompt([
+  const convertAnswer = await inquirer.prompt([
     {
-      type: 'checkbox',
-      name: 'formats',
-      message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
-      choices: [
-        { name: 'RGB', value: 'rgb' },
-        { name: 'RGBA', value: 'rgba' },
-        { name: 'HSL', value: 'hsl' }
-      ]
+      type: 'confirm',
+      name: 'convert',
+      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
+      default: true
     }
   ]);
-}
 
-let conversionFormats = { generateRGB: false, generateRGBA: false, generateHSL: false };
+  let formatsAnswer = { formats: [] };
+  if (convertAnswer.convert) {
+    formatsAnswer = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'formats',
+        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
+        choices: [
+          { name: 'RGB', value: 'rgb' },
+          { name: 'RGBA', value: 'rgba' },
+          { name: 'HSL', value: 'hsl' }
+        ]
+      }
+    ]);
+  }
 
-let updatedFiles = [];
-let savedNewFiles = [];
+  let conversionFormats = { generateRGB: false, generateRGBA: false, generateHSL: false };
 
-const formatPaths = {};
+  let updatedFiles = [];
+  let savedNewFiles = [];
 
-formatsAnswer.formats.forEach(unit => {
-  const formatKey = unit.toUpperCase();
-  conversionFormats[`generate${formatKey}`] = true;
+  const formatPaths = {};
 
-  formatPaths[unit] = {
-    json: path.join(tokensFolder, `color_tokens_${unit}.json`),
-    css: path.join(cssFolder, `color_variables_${unit}.css`),
-    scss: path.join(scssFolder, `color_variables_${unit}.scss`)
+  formatsAnswer.formats.forEach(unit => {
+    const formatKey = unit.toUpperCase();
+    conversionFormats[`generate${formatKey}`] = true;
+
+    formatPaths[unit] = {
+      json: path.join(tokensFolder, `color_tokens_${unit}.json`),
+      css: path.join(cssFolder, `color_variables_${unit}.css`),
+      scss: path.join(scssFolder, `color_variables_${unit}.scss`)
+    };
+
+    const existedBefore = Object.values(formatPaths[unit]).some(fs.existsSync);
+
+    const tokensConverted = convertTokensToFormat(tokensData, formatKey);
+    saveTokensToFile(tokensConverted, formatKey, tokensFolder, `color_tokens_${unit}.json`);
+    saveCSSTokensToFile(tokensConverted, cssFolder, `color_variables_${unit}.css`);
+    saveSCSSTokensToFile(tokensConverted, scssFolder, `color_variables_${unit}.scss`);
+
+    if (existedBefore) {
+      updatedFiles.push(...Object.values(formatPaths[unit]));
+    } else {
+      savedNewFiles.push(...Object.values(formatPaths[unit]));
+    }
+  });
+
+  const deletedFiles = deleteUnusedFormatFiles(
+    { tokens: tokensFolder, css: cssFolder, scss: scssFolder },
+    conversionFormats
+  );
+
+  const hexPaths = {
+    json: path.join(tokensFolder, 'color_tokens_hex.json'),
+    css: path.join(cssFolder, 'color_variables_hex.css'),
+    scss: path.join(scssFolder, 'color_variables_hex.scss')
   };
 
-  const existedBefore = Object.values(formatPaths[unit]).some(fs.existsSync);
+  const hexExistence = {
+    json: fs.existsSync(hexPaths.json),
+    css: fs.existsSync(hexPaths.css),
+    scss: fs.existsSync(hexPaths.scss)
+  };
 
-  const tokensConverted = convertTokensToFormat(tokensData, formatKey);
-  saveTokensToFile(tokensConverted, formatKey, tokensFolder, `color_tokens_${unit}.json`);
-  saveCSSTokensToFile(tokensConverted, cssFolder, `color_variables_${unit}.css`);
-  saveSCSSTokensToFile(tokensConverted, scssFolder, `color_variables_${unit}.scss`);
+  saveTokensToFile(tokensData, "HEX", tokensFolder, "color_tokens_hex.json");
+  saveCSSTokensToFile(tokensData, cssFolder, "color_variables_hex.css");
+  saveSCSSTokensToFile(tokensData, scssFolder, "color_variables_hex.scss");
 
-  if (existedBefore) {
-    updatedFiles.push(...Object.values(formatPaths[unit]));
-  } else {
-    savedNewFiles.push(...Object.values(formatPaths[unit]));
-  }
-});
+  Object.entries(hexExistence).forEach(([key, existed]) => {
+    if (existed) {
+      updatedFiles.push(hexPaths[key]); 
+    } else {
+      savedNewFiles.push(hexPaths[key]); 
+    }
+  });
 
-const deletedFiles = deleteUnusedFormatFiles(
-  { tokens: tokensFolder, css: cssFolder, scss: scssFolder },
-  conversionFormats
-);
-
-const hexPaths = {
-  json: path.join(tokensFolder, 'color_tokens_hex.json'),
-  css: path.join(cssFolder, 'color_variables_hex.css'),
-  scss: path.join(scssFolder, 'color_variables_hex.scss')
-};
-
-const hexExistence = {
-  json: fs.existsSync(hexPaths.json),
-  css: fs.existsSync(hexPaths.css),
-  scss: fs.existsSync(hexPaths.scss)
-};
-
-saveTokensToFile(tokensData, "HEX", tokensFolder, "color_tokens_hex.json");
-saveCSSTokensToFile(tokensData, cssFolder, "color_variables_hex.css");
-saveSCSSTokensToFile(tokensData, scssFolder, "color_variables_hex.scss");
-
-Object.entries(hexExistence).forEach(([key, existed]) => {
-  if (existed) {
-    updatedFiles.push(hexPaths[key]); 
-  } else {
-    savedNewFiles.push(hexPaths[key]); 
-  }
-});
-
-
-console.log(chalk.black.bgYellowBright("\n======================================="));
-console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
-console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-const { showAccessibility } = await inquirer.prompt([
-  {
-    type: "confirm",
-    name: "showAccessibility",
-    message: "Would you like to see the " + chalk.underline("accessibility analysis") + " for these colors?",
-    default: false
-  }
-]);
-
-if (showAccessibility) {
+  /* Accessibility Report Generation - Temporarily Disabled
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
+  console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
-  
-  const accessibilityTables = printAccessibilityTable(stops);
-  console.log(accessibilityTables);
 
-  const reports = generateAccessibilityReport(tokensData);
-  const pdfReportPath = path.join(reportsFolder, "a11y-color-report.pdf");
-  const tempHtmlPath = path.join(reportsFolder, "_temp_report.html");
+  const { showAccessibility } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "showAccessibility",
+      message: "Would you like to see the " + chalk.underline("accessibility analysis") + " for these colors?",
+      default: false
+    }
+  ]);
 
-  fs.writeFileSync(tempHtmlPath, reports.html);
-
-  try {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1200, height: 800 });
+  if (showAccessibility) {
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
     
-    await page.goto(`file://${tempHtmlPath}`, {
-      waitUntil: 'networkidle0'
-    });
+    const accessibilityTables = printAccessibilityTable(stops);
+    console.log(accessibilityTables);
 
-    await page.pdf({
-      path: pdfReportPath,
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20mm',
-        right: '20mm',
-        bottom: '20mm',
-        left: '20mm'
-      },
-      preferCSSPageSize: true
-    });
+    const reports = generateAccessibilityReport(tokensData);
+    const pdfReportPath = path.join(reportsFolder, "a11y-color-report.pdf");
+    const tempHtmlPath = path.join(reportsFolder, "_temp_report.html");
 
-    await browser.close();
-    console.log(chalk.green("✅ Generated PDF report!"));
+    fs.writeFileSync(tempHtmlPath, reports.html);
 
     try {
-      fs.unlinkSync(tempHtmlPath);
-    } catch (e) {
-      console.error("Error cleaning up temporary file:", e);
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1200, height: 800 });
+      
+      await page.goto(`file://${tempHtmlPath}`, {
+        waitUntil: 'networkidle0'
+      });
+
+      await page.pdf({
+        path: pdfReportPath,
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20mm',
+          right: '20mm',
+          bottom: '20mm',
+          left: '20mm'
+        },
+        preferCSSPageSize: true
+      });
+
+      await browser.close();
+      console.log(chalk.green("✅ Generated PDF report!"));
+
+      try {
+        fs.unlinkSync(tempHtmlPath);
+      } catch (e) {
+        console.error("Error cleaning up temporary file:", e);
+      }
+    } catch (err) {
+      console.error(chalk.red("❌ Error generating PDF:"), err);
     }
-  } catch (err) {
-    console.error(chalk.red("❌ Error generating PDF:"), err);
+
+    savedNewFiles.push(pdfReportPath);
+  }
+  */
+
+  await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 1500);
+
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("📄 OUTPUT FILES"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+  console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
+  console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
+  console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
+  console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables"));
+  // console.log(chalk.whiteBright("   -> /reports: Accessibility Report\n")); // Temporarily disabled
+
+  if (updatedFiles.length > 0) {
+    console.log(chalk.whiteBright("🆕 Updated:"));
+    updatedFiles.forEach(filePath => {
+      const relativePath = path.relative(process.cwd(), filePath);
+      console.log(chalk.whiteBright("   -> " + relativePath));
+    });
   }
 
-  savedNewFiles.push(pdfReportPath);
-}
+  if (savedNewFiles.length > 0) {
+    console.log(chalk.whiteBright("\n✅ Saved:"));
+    savedNewFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
+  }
 
-await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 1500);
+  if (deletedFiles.length > 0) {
+    console.log(""); 
+    console.log(chalk.whiteBright("🗑️ Deleted:"));
+    deletedFiles.forEach(filePath => {
+      const relativePath = path.relative(process.cwd(), filePath);
+      console.log(chalk.whiteBright("   -> " + relativePath));
+    });
+  }
 
-console.log(chalk.black.bgYellowBright("\n======================================="));
-console.log(chalk.bold("📄 OUTPUT FILES"));
-console.log(chalk.black.bgYellowBright("=======================================\n"));
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
 
-console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
-console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
-console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
-console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables"));
-if (showAccessibility) {
-  console.log(chalk.whiteBright("   -> /reports: Accessibility Report\n"));
-} else {
-  console.log(); // Just add a newline for consistent spacing
-}
-
-if (updatedFiles.length > 0) {
-  console.log(chalk.whiteBright("🆕 Updated:"));
-  updatedFiles.forEach(filePath => {
-    const relativePath = path.relative(process.cwd(), filePath);
-    console.log(chalk.whiteBright("   -> " + relativePath));
-  });
-}
-
-if (savedNewFiles.length > 0) {
-  console.log(chalk.whiteBright("\n✅ Saved:"));
-  savedNewFiles.forEach(filePath => console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), filePath)}`)));
-}
-
-if (deletedFiles.length > 0) {
-  console.log(""); 
-  console.log(chalk.whiteBright("🗑️ Deleted:"));
-  deletedFiles.forEach(filePath => {
-    const relativePath = path.relative(process.cwd(), filePath);
-    console.log(chalk.whiteBright("   -> " + relativePath));
-  });
-}
-
-console.log(chalk.black.bgYellowBright("\n======================================="));
-console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
-console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-console.log(
-  chalk.bold.whiteBright("Thank you for summoning the ") +
-  chalk.bold.yellow("Color Tokens Wizard") +
-  chalk.bold.whiteBright("! ❤️🧙🎨\n")
-);
-console.log(chalk.black.bgYellowBright("=======================================\n"));
- 
+  console.log(
+    chalk.bold.whiteBright("Thank you for summoning the ") +
+    chalk.bold.yellow("Color Tokens Wizard") +
+    chalk.bold.whiteBright("! ❤️🧙🎨\n")
+  );
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
 };
 
 main();

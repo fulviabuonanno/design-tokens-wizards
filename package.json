@@ -3,7 +3,7 @@
   "description": "Some little script 🧙🦄🧝‍♀️ fellas that will help you generate your design tokens in just a few steps!",
   "type": "module",
   "scripts": {
-    "color": "node src/wizards/color_wiz.js --version=2.5.3",
+    "color": "node src/wizards/color_wiz.js --version=2.4.0",
     "size": "node src/wizards/size_wiz.js --version=1.6.1",
     "space": "node src/wizards/space_wiz.js --version=1.6.1",
     "radii": "node src/wizards/radii_wiz.js --version=1.6.1",
@@ -14,7 +14,7 @@
     "dependencies": "node src/config/generate_dependencies.js"
   },
   "scriptVersions": {
-    "color": "2.5.3", 
+    "color": "2.4.0", 
     "size": "1.6.1",
     "space": "1.6.1",
     "radii": "1.6.1",
