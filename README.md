@@ -1,77 +1,118 @@
-![Design Tokens Wizards Banner](src/assets/banner.png)
+# 🧙‍♂️ Design Tokens Wizards
 
-Hello, Design System aficionados! 🦄✨ Welcome to **`design-tokens-wizards`** — the enchanting scripts that helps you craft design tokens in just a few simple steps... as if by magic! 🪄✨
+A powerful collection of scripts to generate and manage design tokens for your design system. Each wizard specializes in creating specific types of tokens, ensuring consistency and efficiency across your projects.
 
-With **`design-tokens-wizards`**, you'll unlock:
+## 🎨 Color Tokens Wizard
 
-- **Enforce Naming Conventions:** Harness the power of our Design System lexicon to imbue each token with a spellbinding, standardized identity.
-- **Efficiency:** Conjure up multiple formats for color, size, and spacing tokens automatically — no wand waving needed!
-- **Integration:** Effortlessly blend with Tokens Studio and other design systems, like a flawless unicorn-universe connection.
-- **Flexibility:** Customize your workflow with a sprinkle of pixie dust to fit your project's unique needs.
-- **Ready-to-Test:** Focus on making decisions, not on how to structure your tokens. Let the magic handle the setup!
-- **Ready-to-CSS/SCSS:** Have your tokens instantly converted into variables, ready for development's testing phase.
+Create a comprehensive color system with ease. The Color Tokens Wizard enables you to:
 
-Ready to let your creativity soar on the wings of a unicorn? 🦄✨ Let's get started and cast some design magic together!
+- Generate color scales using multiple methods (incremental, ordinal, semantic)
+- Create accessible color palettes with proper contrast ratios
+- Export in multiple formats (HEX, RGB, RGBA, HSL)
+- Generate tokens in JSON, CSS, and SCSS formats
+
+## 🔤 Typography Tokens Wizard
+
+Craft a complete typography system with precision. The Typography Tokens Wizard helps you:
+
+- Define font families with proper fallbacks
+- Create font size scales using different systems (4pt, 8pt, modular, custom)
+- Set up font weights with semantic naming
+- Configure letter spacing and line height values
+- Export typography tokens in multiple formats
+
+## 🔳 Space Tokens Wizard
+
+Establish a consistent spacing system effortlessly. The Space Tokens Wizard assists you in:
+
+- Generating spacing scales using various methods
+- Creating consistent spacing tokens for margins and padding
+- Supporting different units (px, rem, em)
+- Exporting spacing tokens in multiple formats
+
+## 📏 Size Tokens Wizard
+
+Generate size tokens for UI elements with precision. The Size Tokens Wizard enables you to:
+
+- Create size scales for components and layouts
+- Support different units and conversion between them
+- Generate consistent sizing tokens
+- Export size tokens in multiple formats
+
+## ⭕️ Border Radius Tokens Wizard
+
+Create border radius tokens with ease. The Border Radius Tokens Wizard helps you:
+
+- Generate border radius scales
+- Create consistent corner radius values
+- Support different units
+- Export border radius tokens in multiple formats
+
+## 🪄 Merge Spell
+
+Combine all your token files into a single unified file. The Merge Spell helps you:
+
+- Integrate tokens into your projects seamlessly
+- Maintain a single source of truth
+- Simplify token management
+- Export a complete token set
+
+## 🧹 Clear Spell
+
+Keep your project organized with the Clear Spell. It helps you:
+
+- Remove all generated output files
+- Maintain a clean workspace
+- Manage file cleanup in one command
 
 ---
 
-### 🧙 **How to Use:**
+# 🧙 Getting Started
 
-1. **Install Node.JS**
-   To use the scripts, you need to have **Node.js** installed on your machine. You can download and install it from [Node.js official website](https://nodejs.org/).
+1. **Install Node.js**  
+   Download and install [Node.js](https://nodejs.org/) on your machine.
 
-2. **Open the Terminal in Your Code Editor**
+2. **Install VS Code**  
+   Download and install [Visual Studio Code](https://code.visualstudio.com/) for an enhanced development experience.
 
-   - **VS Code:** Press `` Ctrl + ` `` (Windows/Linux) or `` Cmd + ` `` (Mac) - [Download VS Code](https://code.visualstudio.com/download)
+3. **Open Terminal**
 
-   Alternatively, you can use your system's terminal:
+   - **VS Code:** Press `` Ctrl + ` `` (Windows/Linux) or `` Cmd + ` `` (Mac)
+   - **System Terminal:**
+     - Windows: `Windows + R`, type `cmd`
+     - Mac: `Command + Space`, type `terminal`
+     - Linux: `Ctrl + Alt + T`
 
-   - **Windows:** Press `Windows + R`, type `cmd`, and press Enter
-   - **Mac:** Press `Command + Space`, type `terminal`, and press Enter
-   - **Linux:** Press `Ctrl + Alt + T`
-
-   Navigate to your project directory using the `cd` command:
-
-   ```sh
-   cd path/to/your/project
-   ```
-
-3. **Install Dependencies**
-   Install the required dependencies by running:
+4. **Install Dependencies**
 
    ```sh
    npm install
    ```
 
-4. **Run the Script**
-
-Legend:
-= Recently updated
-🔥 = New feature
-🆙 = Version upgrade
-
-Select the wizard that will come to your aid by executing the corresponding script in your terminal. Below is a list of available wizards:
+5. **Run the Scripts**  
+   Choose from the following wizards:
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color_wiz.js` | `npm run color` | Generate and manage color tokens         | 2.4.0 🆙 |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.1 🔥 |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.4.0 🆙 |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.1 🔥 |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1    |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1    |
 | 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1    |
-
-More design tokens wizards are coming your way to aid! ✨
-
-Below is a curated collection of spells (crafted by our Token's Wizards to come to your aid) to streamline your design tokens workflow:
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | ------- |
 | **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0   |
 | **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0   |
 
+Legend:  
+✅ Recently updated  
+🔥 New feature  
+🆙 Version upgrade
+
 ---
 
-### 🎨 **Color Tokens Wizard** ✨
+## 🎨 **Color Tokens Wizard** ✨
 
 Version 2.4.0
 
@@ -100,7 +141,7 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
    - **Ordinal:** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).
    - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
 
-5. **Behold the Preview**  
+5. **Preview the Tokens**  
    The wizard will cast a preview spell showing your color's preview along with the stops table. You'll see something like:
 
    ```
@@ -368,7 +409,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.1.1 🔥 🔥 🔥 🔥 🔥 🔥 🔥 🔥
+Version 1.0.1 🔥
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
