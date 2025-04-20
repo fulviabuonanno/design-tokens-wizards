@@ -589,7 +589,7 @@ const main = async () => {
   const tokensData = generateTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, customIntervals, factor, fibonacciBase);
 
   console.log(chalk.black.bgBlueBright("\n======================================="));
-  console.log(chalk.bold("🔢 STEP 5.5: SIZE TOKEN PREVIEWS"));
+  console.log(chalk.bold("🔢 STEP 5.5: SIZE TOKENS PREVIEW"));
   console.log(chalk.black.bgBlueBright("=======================================\n"));
 
   const scaleNames = {

@@ -10,6 +10,7 @@ Create a comprehensive color system with ease. The Color Tokens Wizard enables y
 - Create accessible color palettes with proper contrast ratios
 - Export in multiple formats (HEX, RGB, RGBA, HSL)
 - Generate tokens in JSON, CSS, and SCSS formats
+- Customize color mixing ranges for fine-tuned control over color variations
 
 ## 🔤 Typography Tokens Wizard
 
@@ -92,13 +93,13 @@ Keep your project organized with the Clear Spell. It helps you:
 5. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.4.0 🆙 |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.0.1 🔥 |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1    |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.0   |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.0   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1   |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1   |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1   |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | ------- |
@@ -114,7 +115,7 @@ Legend:
 
 ## 🎨 **Color Tokens Wizard** ✨
 
-Version 2.4.0
+Version 2.5.0
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -140,6 +141,14 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
    - **Incremental:** Generate stops using an incremental step (e.g., 10, 50, or 100).
    - **Ordinal:** Create a sequence (e.g., 01, 02, 03… or 1, 2, 3…).
    - **Shades Semantic:** Generate semantic stops with labels like `ultra-dark`, `darkest`, `darker`, `dark`, `semi-dark`, `base`, `semi-light`, `light`, `lighter`, `lightest`, and `ultra-light`.
+
+   Then, customize your color mixing ranges:
+
+   - **Default Range:** 10% to 90% mix with white/black
+   - **Custom Range:** Define your own mix percentages (0-100%)
+     - Lower values create more extreme light/dark variations
+     - Higher values create more subtle variations
+     - Values of 0% or 100% will result in pure white/black colors
 
 5. **Preview the Tokens**  
    The wizard will cast a preview spell showing your color's preview along with the stops table. You'll see something like:
@@ -407,7 +416,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.0.1 🔥
+Version 1.1.0 🔥
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
