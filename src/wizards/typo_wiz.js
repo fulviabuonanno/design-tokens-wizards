@@ -380,6 +380,7 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
           <img src="data:image/png;base64,${fs.readFileSync(path.join(__dirname, '..', 'assets', 'profile_pic.png'), { encoding: 'base64' })}" alt="Profile Picture" class="profile-pic">
           <p class="support-text">Do you want to support this project? <a href="https://ko-fi.com/fbuonanno" target="_blank">Invite me a coffee ❤️☕️</a></p>
         </div>
+        <p class="website-link">Discover more about Design Tokens Wizards at: <a href="https://designtokenswizards.framer.website/" target="_blank">https://designtokenswizards.framer.website/</a></p>
       </div>
     </body>
     </html>`;

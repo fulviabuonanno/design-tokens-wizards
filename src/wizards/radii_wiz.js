@@ -675,7 +675,7 @@ const main = async () => {
   const scssFileExists = saveSCSSTokensToFile(tokensData, tokenName, scssFolder, 'border_radius_variables_px.scss');
 
   console.log(chalk.black.bgGreenBright("\n======================================="));
-  console.log(chalk.bold("🔢 STEP 2.5: BORDER RADIUS TOKEN PREVIEWS"));
+  console.log(chalk.bold("🔢 STEP 2.5: BORDER RADIUS TOKENS PREVIEW"));
   console.log(chalk.black.bgGreenBright("=======================================\n"));
 
   const scaleNames = {

@@ -191,11 +191,16 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         ]);
         stopsCount = response.stopsCount;
       }
+
+      const { minMix, maxMix } = await customizeColorRanges();
+
       newScaleSettings = {
         type: scaleType,
         padded: scaleType === "ordinal" ? ordinalPadded : null,
         incrementalOption: scaleType === "incremental" ? incrementalChoice.incrementalOption : undefined,
-        stopsCount: stopsCount
+        stopsCount: stopsCount,
+        minMix: minMix,
+        maxMix: maxMix
       };
       stops = scaleType === "incremental"
         ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount)
@@ -1182,6 +1187,66 @@ const generateAccessibilityReport = (tokensData) => {
     </body>
   </html>`
   };
+};
+
+const customizeColorRanges = async () => {
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎨 CUSTOMIZE COLOR RANGES"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+  console.log(chalk.whiteBright("Default range is between 10% and 90%:"));
+  console.log(chalk.whiteBright("  • 10% minimum ensures colors never get too close to pure white/black"));
+  console.log(chalk.whiteBright("  • 90% maximum ensures middle steps maintain good contrast with the base color"));
+  console.log(chalk.whiteBright("\nYou can customize these values between 0% and 100%:"));
+  console.log(chalk.whiteBright("  • Lower minimum values will create more extreme light/dark variations"));
+  console.log(chalk.whiteBright("  • Higher maximum values will create more subtle variations\n"));
+
+  const { customizeRanges } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "customizeRanges",
+      message: "Would you like to customize the color mix ranges?",
+      default: false
+    }
+  ]);
+
+  let minMix = MIN_MIX;
+  let maxMix = MAX_MIX;
+
+  if (customizeRanges) {
+    const ranges = await inquirer.prompt([
+      {
+        type: "number",
+        name: "minMix",
+        message: "Enter minimum mix percentage (0-100):",
+        default: MIN_MIX,
+        validate: (input) => {
+          const num = Number(input);
+          if (num === 0) {
+            console.log(chalk.yellow("\n⚠️  Warning: Using 0% will result in pure white/black colors at the extremes."));
+          }
+          return num >= 0 && num <= 100 ? true : "Enter a number between 0 and 100.";
+        }
+      },
+      {
+        type: "number",
+        name: "maxMix",
+        message: "Enter maximum mix percentage (0-100):",
+        default: MAX_MIX,
+        validate: (input) => {
+          const num = Number(input);
+          if (num === 100) {
+            console.log(chalk.yellow("\n⚠️  Warning: Using 100% will result in pure white/black colors at the extremes."));
+          }
+          return num >= 0 && num <= 100 ? true : "Enter a number between 0 and 100.";
+        }
+      }
+    ]);
+    minMix = ranges.minMix;
+    maxMix = ranges.maxMix;
+  }
+
+  return { minMix, maxMix };
 };
 
 const main = async () => {
