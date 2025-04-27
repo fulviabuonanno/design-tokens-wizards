@@ -2,7 +2,6 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Node.js](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)
-![Accessibility: WCAG 2.2](https://img.shields.io/badge/accessibility-WCAG%202.2-blue)
 
 A powerful collection of scripts to generate and manage design tokens for your design system. Each wizard specializes in creating specific types of tokens, ensuring consistency and efficiency across your projects.
 
