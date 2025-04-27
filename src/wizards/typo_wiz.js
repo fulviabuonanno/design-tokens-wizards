@@ -106,6 +106,7 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
   const bannerBase64 = fs.readFileSync(bannerPath, { encoding: 'base64' });
   
   // HTML template with CSS styling
+  /*
   let styles = `
     <style>
       body {
@@ -419,6 +420,7 @@ async function generateAccessibilityReport(selectedProperties, tokens, outputsDi
     preferCSSPageSize: true
   });
   await browser.close();
+  */
 }
 
 async function typographyWiz() {
@@ -1129,73 +1131,129 @@ async function typographyWiz() {
       }
     });
     
+    function convertToUnit(value, unit) {
+      if (unit === 'px') {
+        return value;
+      } else if (unit === 'rem' || unit === 'em') {
+        // Convert px to rem/em (1rem = 16px by default)
+        const converted = (value / 16).toFixed(2);
+        // Remove trailing zeros for whole numbers
+        return converted.replace(/\.?0+$/, '');
+      }
+      return value;
+    }
+
     function calculateSizes(scaleInfo, numSizes) {
       const sizes = [];
-      const MIN_FONT_SIZE = 12; 
+      const MIN_FONT_SIZE = 12;
+      const BASE_FONT_SIZE = 16; // Standard browser default
       
       if (scaleInfo.method === 'grid') {
-        
         const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
         const step = scaleInfo.step;
         
-        for (let i = 0; i < numSizes; i++) {
-          const size = Math.round((baseSize + (i * step)) * 100) / 100;
-          sizes.push(size);
+        // Generate a scale that goes both up and down from the base size
+        const halfSizes = Math.floor(numSizes / 2);
+        const remainingSizes = numSizes - halfSizes;
+        
+        // Generate smaller sizes
+        for (let i = halfSizes; i > 0; i--) {
+          const size = Math.max(baseSize - (i * step), MIN_FONT_SIZE);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
+        }
+        
+        // Add base size
+        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+        
+        // Generate larger sizes
+        for (let i = 1; i < remainingSizes; i++) {
+          const size = baseSize + (i * step);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
         }
       } else if (scaleInfo.method === 'modular') {
-        
         const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
         const ratio = scaleInfo.ratio;
         
-        for (let i = 0; i < numSizes; i++) {
-          const size = Math.round(baseSize * Math.pow(ratio, i) * 100) / 100;
-          sizes.push(size);
+        // Generate a scale that goes both up and down from the base size
+        const halfSizes = Math.floor(numSizes / 2);
+        const remainingSizes = numSizes - halfSizes;
+        
+        // Generate smaller sizes
+        for (let i = halfSizes; i > 0; i--) {
+          const size = Math.max(baseSize / Math.pow(ratio, i), MIN_FONT_SIZE);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
+        }
+        
+        // Add base size
+        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+        
+        // Generate larger sizes
+        for (let i = 1; i < remainingSizes; i++) {
+          const size = baseSize * Math.pow(ratio, i);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
         }
       } else if (scaleInfo.method === 'fibonacci') {
+        const sequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+        const multiplier = Math.max(scaleInfo.baseMultiplier, MIN_FONT_SIZE / sequence[0]);
         
-        const sequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]; 
+        // Generate a scale that goes both up and down from the base size
+        const halfSizes = Math.floor(numSizes / 2);
+        const remainingSizes = numSizes - halfSizes;
         
-        const minMultiplier = MIN_FONT_SIZE / sequence[0];
-        const multiplier = Math.max(scaleInfo.baseMultiplier, minMultiplier);
+        // Generate smaller sizes
+        for (let i = halfSizes; i > 0; i--) {
+          const size = Math.max(sequence[i] * multiplier, MIN_FONT_SIZE);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
+        }
         
-        const calculatedSizes = sequence.slice(0, numSizes).map(num => 
-          Math.round(num * multiplier * 100) / 100
-        );
+        // Add base size
+        sizes.push(convertToUnit(sequence[0] * multiplier, scaleInfo.unit));
         
-        sizes.push(...calculatedSizes);
-        
-        while (sizes.length < numSizes) {
-          const nextFib = sequence[sequence.length - 1] + sequence[sequence.length - 2];
-          sequence.push(nextFib);
-          sizes.push(Math.round(nextFib * multiplier * 100) / 100);
+        // Generate larger sizes
+        for (let i = 1; i < remainingSizes; i++) {
+          const size = sequence[i] * multiplier;
+          sizes.push(convertToUnit(size, scaleInfo.unit));
         }
       } else {
-        
+        // Custom intervals
         const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
-        const step = scaleInfo.step || 4; 
+        const step = scaleInfo.step || 4;
         
-        for (let i = 0; i < numSizes; i++) {
-          const size = Math.round((baseSize + (i * step)) * 100) / 100;
-          sizes.push(size);
+        // Generate a scale that goes both up and down from the base size
+        const halfSizes = Math.floor(numSizes / 2);
+        const remainingSizes = numSizes - halfSizes;
+        
+        // Generate smaller sizes
+        for (let i = halfSizes; i > 0; i--) {
+          const size = Math.max(baseSize - (i * step), MIN_FONT_SIZE);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
+        }
+        
+        // Add base size
+        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+        
+        // Generate larger sizes
+        for (let i = 1; i < remainingSizes; i++) {
+          const size = baseSize + (i * step);
+          sizes.push(convertToUnit(size, scaleInfo.unit));
         }
       }
       
-      const uniqueSizes = [];
-      for (let i = 0; i < sizes.length; i++) {
-        
-        let size = Math.max(sizes[i], MIN_FONT_SIZE);
-        
-        if (uniqueSizes.length > 0 && size <= uniqueSizes[uniqueSizes.length - 1]) {
-          size = uniqueSizes[uniqueSizes.length - 1] + 1;
-        }
-        
-        uniqueSizes.push(size);
+      // Ensure unique values and proper ordering
+      const uniqueSizes = [...new Set(sizes)].sort((a, b) => parseFloat(a) - parseFloat(b));
+      
+      // If we have more values than needed, trim the array
+      if (uniqueSizes.length > numSizes) {
+        return uniqueSizes.slice(0, numSizes);
       }
       
       return uniqueSizes;
     }
     
     console.log(chalk.bold.yellowBright("\n📋 Font Size Settings Summary:"));
+    
+    // Add note about minimum font size
+    console.log(chalk.yellow("\n⚠️  Note: For accessibility, the minimum font size is enforced at 12px (or its rem/em equivalent). \nIf your scale would generate a smaller value, it will be clamped to this minimum.\n"));
     
     const settingsTable = new Table({
       head: [chalk.bold("Setting"), chalk.bold("Option")],
@@ -1947,7 +2005,7 @@ async function typographyWiz() {
   fs.writeFileSync(cssFilePath, cssContent, 'utf-8');
   fs.writeFileSync(scssFilePath, scssContent, 'utf-8');
 
-  await generateAccessibilityReport(selectedProperties, finalTokens, outputsDir);
+  // await generateAccessibilityReport(selectedProperties, finalTokens, outputsDir);
 
   await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell..."), 1500);
 
@@ -1963,9 +2021,9 @@ async function typographyWiz() {
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssFilePath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssFilePath)}`));
   
-  console.log('')
-  console.log(chalk.whiteBright(`✅ Generated accessibility report at:`));
-  console.log(chalk.whiteBright(`   -> reports/a11y-typography-guidelines.pdf`));
+  // console.log('')
+  // console.log(chalk.whiteBright(`✅ Generated accessibility report at:`));
+  // console.log(chalk.whiteBright(`   -> reports/a11y-typography-guidelines.pdf`));
 
   console.log(chalk.black.bgRedBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));

@@ -1,6 +1,41 @@
 # 🧙‍♂️ Design Tokens Wizards
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Node.js](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)
+![Accessibility: WCAG 2.2](https://img.shields.io/badge/accessibility-WCAG%202.2-blue)
+
 A powerful collection of scripts to generate and manage design tokens for your design system. Each wizard specializes in creating specific types of tokens, ensuring consistency and efficiency across your projects.
+
+## 📑 Table of Contents
+
+- [Quickstart](#-quickstart)
+- [Getting Started](#-getting-started)
+- [Color Tokens Wizard](#-color-tokens-wizard-)
+- [Typography Tokens Wizard](#-typography-tokens-wizard-)
+- [Space Tokens Wizard](#-space-tokens-wizard-)
+- [Size Tokens Wizard](#-size-tokens-wizard-)
+- [Border Radius Tokens Wizard](#-border-radius-tokens-wizard-)
+- [Merge Spell](#-merge-spell)
+- [Clear Spell](#-clear-spell)
+- [Project Structure](#-project-structure)
+- [Troubleshooting & FAQ](#-troubleshooting--faq)
+- [Contributing](#-contributing)
+- [Changelog](#-changelog)
+- [Dependencies](#-dependencies-)
+- [License](#-license-)
+- [Contact & Support](#-contact--support)
+- [About](#crafted-with-love-in-barcelona-by-fulvia-buonanno-)
+
+## 🚀 Quickstart
+
+```sh
+git clone https://github.com/yourusername/design-tokens-wizards.git
+cd design-tokens-wizards
+npm install
+npm run color   # or npm run typo, npm run space, etc.
+```
+
+_You'll be guided through the wizard interactively!_
 
 ## 🎨 Color Tokens Wizard
 
@@ -66,9 +101,55 @@ Keep your project organized with the Clear Spell. It helps you:
 - Maintain a clean workspace
 - Manage file cleanup in one command
 
----
+## 🗂 Project Structure
 
-# 🧙 Getting Started
+```
+src/
+  wizards/         # All wizard scripts (color, typo, space, size, radii)
+  spells/          # Utility scripts (merge, clear)
+  config/          # Config and helper scripts
+output_files/      # Where generated tokens are saved
+  tokens/
+    color/
+    typography/
+    space/
+    size/
+    border-radius/
+  css/
+  scss/
+  final/
+```
+
+## ❓ Troubleshooting & FAQ
+
+**Q: I get a permission error or "command not found"?**  
+A: Make sure you have Node.js (v18+) installed and are running commands from the project root.
+
+**Q: Where are my generated files?**  
+A: Check the `output_files/` directory.
+
+**Q: How do I reset/clean all generated files?**  
+A: Run `npm run clear` to remove all generated output.
+
+**Q: Something else isn't working!**  
+A: Please [open an issue](https://github.com/yourusername/design-tokens-wizards/issues) or contact the maintainer.
+
+## 🤝 Contributing
+
+Contributions, issues and feature requests are welcome!  
+Feel free to check the [issues page](https://github.com/yourusername/design-tokens-wizards/issues) or submit a pull request.
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes and version history.
+
+## 📬 Contact & Support
+
+For questions, suggestions, or bug reports, please open an issue or contact [me](mailto:designtokenswizards@gmail.com).
+
+## 🧙 Getting Started
 
 1. **Install Node.js**  
    Download and install [Node.js](https://nodejs.org/) on your machine.
@@ -93,29 +174,27 @@ Keep your project organized with the Clear Spell. It helps you:
 5. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.0   |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1   |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1   |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1   |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.1 ✅ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.1 ✅ |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1    |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1    |
 
-| Spell           | Script Name      | Run Command     | Description                                            | Version |
-| --------------- | ---------------- | --------------- | ------------------------------------------------------ | ------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0   |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.0   |
+| Spell           | Script Name      | Run Command     | Description                                            | Version  |
+| --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0    |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1 ✅ |
 
 Legend:  
 ✅ Recently updated  
 🔥 New feature  
 🆙 Version upgrade
 
----
-
 ## 🎨 **Color Tokens Wizard** ✨
 
-Version 2.5.0
+Version 2.5.1
 
 Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
 
@@ -416,7 +495,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.1.0 🔥
+Version 1.1.1
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 
@@ -515,7 +594,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
 
 ### 🧹 **Clear Spell** ✨
 
-Version 1.2.0
+Version 1.2.1
 
 The Clear Spell is a simple yet powerful tool to keep your project directory clean and organized. It removes all generated files, ensuring you can start fresh without any clutter.
 
@@ -536,7 +615,7 @@ The Clear Spell is a simple yet powerful tool to keep your project directory cle
 
 ### 🪄 **Merge Spell** ✨
 
-Version 1.2.0 🆙 🆙 🆙 🆙 🆙 🆙 🆙 🆙
+Version 1.2.0
 
 The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
 
