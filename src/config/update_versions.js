@@ -99,10 +99,10 @@ readmeContent = readmeContent.replace(
   }
 );
 
-// Update version sections (without emojis)
+// Update version sections with proper formatting
 readmeContent = readmeContent.replace(
-  /## 🎨 Color Tokens Wizard\n\nVersion \d+\.\d+\.\d+/,
-  `## 🎨 Color Tokens Wizard\n\nVersion ${versions.color}`
+  /## 🎨 \*\*Color Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
+  `## 🎨 **Color Tokens Wizard** ✨\n\nVersion ${versions.color}`
 );
 readmeContent = readmeContent.replace(
   /### 📏 \*\*Size Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
@@ -129,7 +129,7 @@ readmeContent = readmeContent.replace(
   `### 🪄 **Merge Spell** ✨\n\nVersion ${versions.merge}`
 );
 
-// Additional check for any remaining version mentions
+// Additional check for any remaining version mentions in the content
 readmeContent = readmeContent.replace(
   /Version \d+\.\d+\.\d+(?!\s*\|)/g,
   (match) => {
