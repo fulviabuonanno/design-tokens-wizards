@@ -14,7 +14,7 @@
     "dependencies": "node src/config/generate_dependencies.js"
   },
   "scriptVersions": {
-    "color": "2.5.1", 
+    "color": "2.5.1",
     "typo": "1.1.1",
     "space": "1.6.1",
     "size": "1.6.1",
@@ -29,6 +29,7 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "cli-table3": "^0.6.5",
+    "debug": "^4.3.4",
     "inquirer": "^12.4.2",
     "path": "^0.12.7",
     "puppeteer": "^24.7.0",
