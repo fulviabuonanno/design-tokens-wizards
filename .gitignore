@@ -1,6 +1,3 @@
-# Dependencies
-node_modules/
-
 # IDE and editor files
 .idea/
 .vscode/
@@ -13,3 +10,6 @@ Thumbs.db
 
 # Config scripts output
 src/config/*.js
+
+# Dependencies
+node_modules/
