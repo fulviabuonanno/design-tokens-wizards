@@ -44,7 +44,7 @@ const askForInput = async () => {
       type: 'list',
       name: 'name',
       message: '📝 What name would you like to assign to your space tokens?',
-      choices: ['space', 'space', 'sp', 'spc', 'custom']
+      choices: ['space', 'spacing', 'sp', 'spc', 'custom']
     }
   ]);
   let name;
@@ -623,7 +623,7 @@ const main = async () => {
   const tokensData = generateSpacingTokens(unit, numValues, namingChoice, scale, ordinalFormat, alphabeticalCase, incrementalStep, multiplier, factor, customIntervals, fibonacciBase);
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("🔢 STEP 5.5: SPACE TOKEN PREVIEWS"));
+  console.log(chalk.bold("🔢 STEP 5.5: SPACE TOKENS PREVIEW"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
 
   const scaleNames = {
@@ -704,7 +704,7 @@ const main = async () => {
   const scssFileExists = saveSCSSTokensToFile(tokensData, name, scssFolder, 'space_variables_px.scss');
 
   console.log(chalk.black.bgMagentaBright("\n======================================="));
-  console.log(chalk.bold("🔄 CONVERTING Space TOKENS TO OTHER UNITS"));
+  console.log(chalk.bold("🔄 CONVERTING SPACE TOKENS TO OTHER UNITS"));
   console.log(chalk.black.bgMagentaBright("=======================================\n"));
   const convertTokensResp = await inquirer.prompt([
     {

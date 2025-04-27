@@ -8,21 +8,26 @@ const __dirname = path.dirname(__filename);
 // Read package.json
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8'));
 
-// Extract versions from npm scripts
-const getVersionFromScript = (script) => {
-  const match = script.match(/--version=(\d+\.\d+\.\d+)/);
-  return match ? match[1] : null;
+// Get versions from scriptVersions
+const versions = {
+  color: packageJson.scriptVersions.color,
+  typo: packageJson.scriptVersions.typo,
+  space: packageJson.scriptVersions.space,
+  size: packageJson.scriptVersions.size,    
+  radii: packageJson.scriptVersions.radii,
+  clear: packageJson.scriptVersions.clear,
+  merge: packageJson.scriptVersions.merge
 };
 
-const versions = {
-  color: getVersionFromScript(packageJson.scripts.color),
-  size: getVersionFromScript(packageJson.scripts.size),
-  space: getVersionFromScript(packageJson.scripts.space),
-  radii: getVersionFromScript(packageJson.scripts.radii),
-  typo: getVersionFromScript(packageJson.scripts.typo),
-  clear: getVersionFromScript(packageJson.scripts.clear),
-  merge: getVersionFromScript(packageJson.scripts.merge)
-};
+// Validate versions
+Object.entries(versions).forEach(([key, version]) => {
+  if (!version) {
+    console.error(`❌ Error: Could not find version for ${key} in scriptVersions`);
+    process.exit(1);
+  }
+});
+
+console.log('📦 Using versions from scriptVersions:', versions);
 
 // Read README.md
 const readmePath = path.join(__dirname, '..', '..', 'README.md');
@@ -96,8 +101,8 @@ readmeContent = readmeContent.replace(
 
 // Update version sections (without emojis)
 readmeContent = readmeContent.replace(
-  /### 🎨 \*\*Color Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-  `### 🎨 **Color Tokens Wizard** ✨\n\nVersion ${versions.color}`
+  /## 🎨 Color Tokens Wizard\n\nVersion \d+\.\d+\.\d+/,
+  `## 🎨 Color Tokens Wizard\n\nVersion ${versions.color}`
 );
 readmeContent = readmeContent.replace(
   /### 📏 \*\*Size Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
@@ -122,6 +127,17 @@ readmeContent = readmeContent.replace(
 readmeContent = readmeContent.replace(
   /### 🪄 \*\*Merge Spell\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
   `### 🪄 **Merge Spell** ✨\n\nVersion ${versions.merge}`
+);
+
+// Additional check for any remaining version mentions
+readmeContent = readmeContent.replace(
+  /Version \d+\.\d+\.\d+(?!\s*\|)/g,
+  (match) => {
+    const version = match.split(' ')[1];
+    const key = Object.entries(versions).find(([_, v]) => v === version)?.[0];
+    if (key) return match;
+    return `Version ${versions.size}`; // Default to size version if no match found
+  }
 );
 
 // Write updated README.md
