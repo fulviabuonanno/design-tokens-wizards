@@ -7,28 +7,40 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 ## 📑 Table of Contents
 
+General Info:
+
 - [Quickstart](#-quickstart)
 - [Getting Started](#-getting-started)
+- [Project Structure](#-project-structure)
+
+Wizards:
+
 - [Color Tokens Wizard](#-color-tokens-wizard-)
 - [Typography Tokens Wizard](#-typography-tokens-wizard-)
 - [Space Tokens Wizard](#-space-tokens-wizard-)
 - [Size Tokens Wizard](#-size-tokens-wizard-)
 - [Border Radius Tokens Wizard](#-border-radius-tokens-wizard-)
-- [Merge Spell](#-merge-spell)
-- [Clear Spell](#-clear-spell)
-- [Project Structure](#-project-structure)
-- [Troubleshooting & FAQ](#-troubleshooting--faq)
-- [Contributing](#-contributing)
-- [Changelog](#-changelog)
+
+Spells:
+
+- [Merge Spell](#-merge-spell-)
+- [Clear Spell](#-clear-spell-)
+
+About:
+
+- [About](#crafted-with-love-in-barcelona-by-fulvia-buonanno-)
 - [Dependencies](#-dependencies-)
 - [License](#-license-)
+- [Troubleshooting & FAQ](#-troubleshooting--faq)
 - [Contact & Support](#-contact--support)
-- [About](#crafted-with-love-in-barcelona-by-fulvia-buonanno-)
+- [Contributing](#-contributing)
+
+---
 
 ## 🚀 Quickstart
 
 ```sh
-git clone https://github.com/yourusername/design-tokens-wizards.git
+git clone https://github.com/fulviabuonanno/design-tokens-wizards.git
 cd design-tokens-wizards
 npm install
 npm run color   # or npm run typo, npm run space, etc.
@@ -36,117 +48,7 @@ npm run color   # or npm run typo, npm run space, etc.
 
 _You'll be guided through the wizard interactively!_
 
-## 🎨 Color Tokens Wizard
-
-Create a comprehensive color system with ease. The Color Tokens Wizard enables you to:
-
-- Generate color scales using multiple methods (incremental, ordinal, semantic)
-- Create accessible color palettes with proper contrast ratios
-- Export in multiple formats (HEX, RGB, RGBA, HSL)
-- Generate tokens in JSON, CSS, and SCSS formats
-- Customize color mixing ranges for fine-tuned control over color variations
-
-## 🔤 Typography Tokens Wizard
-
-Craft a complete typography system with precision. The Typography Tokens Wizard helps you:
-
-- Define font families with proper fallbacks
-- Create font size scales using different systems (4pt, 8pt, modular, custom)
-- Set up font weights with semantic naming
-- Configure letter spacing and line height values
-- Export typography tokens in multiple formats
-
-## 🔳 Space Tokens Wizard
-
-Establish a consistent spacing system effortlessly. The Space Tokens Wizard assists you in:
-
-- Generating spacing scales using various methods
-- Creating consistent spacing tokens for margins and padding
-- Supporting different units (px, rem, em)
-- Exporting spacing tokens in multiple formats
-
-## 📏 Size Tokens Wizard
-
-Generate size tokens for UI elements with precision. The Size Tokens Wizard enables you to:
-
-- Create size scales for components and layouts
-- Support different units and conversion between them
-- Generate consistent sizing tokens
-- Export size tokens in multiple formats
-
-## ⭕️ Border Radius Tokens Wizard
-
-Create border radius tokens with ease. The Border Radius Tokens Wizard helps you:
-
-- Generate border radius scales
-- Create consistent corner radius values
-- Support different units
-- Export border radius tokens in multiple formats
-
-## 🪄 Merge Spell
-
-Combine all your token files into a single unified file. The Merge Spell helps you:
-
-- Integrate tokens into your projects seamlessly
-- Maintain a single source of truth
-- Simplify token management
-- Export a complete token set
-
-## 🧹 Clear Spell
-
-Keep your project organized with the Clear Spell. It helps you:
-
-- Remove all generated output files
-- Maintain a clean workspace
-- Manage file cleanup in one command
-
-## 🗂 Project Structure
-
-```
-src/
-  wizards/         # All wizard scripts (color, typo, space, size, radii)
-  spells/          # Utility scripts (merge, clear)
-  config/          # Config and helper scripts
-output_files/      # Where generated tokens are saved
-  tokens/
-    color/
-    typography/
-    space/
-    size/
-    border-radius/
-  css/
-  scss/
-  final/
-```
-
-## ❓ Troubleshooting & FAQ
-
-**Q: I get a permission error or "command not found"?**  
-A: Make sure you have Node.js (v18+) installed and are running commands from the project root.
-
-**Q: Where are my generated files?**  
-A: Check the `output_files/` directory.
-
-**Q: How do I reset/clean all generated files?**  
-A: Run `npm run clear` to remove all generated output.
-
-**Q: Something else isn't working!**  
-A: Please [open an issue](https://github.com/yourusername/design-tokens-wizards/issues) or contact the maintainer.
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome!  
-Feel free to check the [issues page](https://github.com/yourusername/design-tokens-wizards/issues) or submit a pull request.
-
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## 📝 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for release notes and version history.
-
-## 📬 Contact & Support
-
-For questions, suggestions, or bug reports, please open an issue or contact [me](mailto:designtokenswizards@gmail.com).
+---
 
 ## 🧙 Getting Started
 
@@ -190,6 +92,27 @@ Legend:
 ✅ Recently updated  
 🔥 New feature  
 🆙 Version upgrade
+
+---
+
+## 🗂 Project Structure
+
+```
+src/
+  wizards/         # All wizard scripts (color, typo, space, size, radii)
+  spells/          # Utility scripts (merge, clear)
+  config/          # Config and helper scripts
+output_files/      # Where generated tokens are saved
+  tokens/
+    color/
+    typography/
+    space/
+    size/
+    border-radius/
+  css/
+  scss/
+  final/
+```
 
 ## 🎨 **Color Tokens Wizard** ✨
 
@@ -626,8 +549,21 @@ The Merge Spell is designed to simplify your workflow by combining multiple toke
     ```
 
 2.  **What Happens Next**
-    - All token files in the `output_files/tokens/` directory are merged into a single JSON, CSS and SCSS file.
+    - All token files in the `output_files/final/` directory are merged into a single JSON, CSS and SCSS file.
     - The resulting file is structured consistently, ensuring seamless integration into your design system or development workflow.
+    - You can select which formats and options from your generated tokens you want to include in the final merged file.
+
+---
+
+## Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️
+
+![Profile Pic](src/assets/profile_pic.png)
+
+Find out more about our wizards at: [Design Tokens Wizards Website](https://designtokenswizards.framer.website/)
+
+If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
+
+Crafted with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙
 
 ---
 
@@ -654,14 +590,72 @@ For more details, you can read the full license text in the [LICENSE](./LICENSE)
 
 ---
 
-## Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️
+## ❓ Troubleshooting & FAQ
 
-![Profile Pic](src/assets/profile_pic.png)
+**Q: I get a permission error or "command not found"?**  
+A: Make sure you have Node.js (v18+) installed and are running commands from the project root.
 
-Find out more about our wizards at: [Design Tokens Wizards Website](https://designtokenswizards.framer.website/)
+**Q: Where are my generated files?**  
+A: Check the `output_files/` directory.
 
-If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
+**Q: How do I reset/clean all generated files?**  
+A: Run `npm run clear` to remove all generated output.
 
-Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙
+**Q: Can I use these tokens with my design tool?**  
+A: Yes! The tokens are exported in multiple formats (JSON, CSS, SCSS) that can be used with most design tools and development environments.
+
+**Q: How do I update the tokens after making changes?**  
+A: Simply run the wizard again with your new values. The files will be updated automatically.
+
+**Q: Can I customize the naming convention for my tokens?**  
+A: Yes! Each wizard allows you to choose from different naming conventions (T-shirt sizes, incremental numbers, ordinal numbers, etc.).
+
+**Q: What's the difference between the Merge Spell and Clear Spell?**  
+A: The Merge Spell combines all your token files into a single unified file, while the Clear Spell removes all generated files to start fresh.
+
+**Q: How do I contribute to the project?**  
+A: Check out our [Contributing](#-contributing) section for guidelines. We welcome all contributions!
+
+**Q: Can I use these tokens in my commercial project?**  
+A: Yes! This project is licensed under MIT, which means you can use it freely in any project, including commercial ones.
+
+**Q: What color formats are supported?**  
+A: The Color Tokens Wizard supports HEX, RGB, RGBA, and HSL formats. You can choose your preferred format during the generation process.
+
+**Q: Can I use custom fonts in the Typography Wizard?**  
+A: Yes! You can specify any font family, including custom fonts. Just make sure to include proper fallbacks for better cross-platform compatibility.
+
+**Q: What units are supported for spacing and sizing?**  
+A: The Space and Size Wizards support px, rem, and em units. You can choose your preferred unit during the generation process.
+
+**Q: How do I maintain consistency across different projects?**  
+A: Use the Merge Spell to combine tokens from different projects, and consider creating a token library for shared components.
+
+**Q: What's the best way to organize my token files?**  
+A: We recommend organizing tokens by category (color, typography, spacing, etc.) and using the Merge Spell to combine them when needed.
+
+**Q: Can I automate token generation in my CI/CD pipeline?**  
+A: Yes! The wizards can be run from the command line, making them perfect for automation in your development workflow.
+
+**Q: Can I use these tokens with my CSS framework?**  
+A: Yes! The tokens are exported in standard formats (CSS, SCSS) that can be used with any CSS framework or vanilla CSS.
+
+**Q: Something else isn't working!**  
+A: Please [open an issue](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or contact me :)
+
+---
+
+## 📬 Contact & Support
+
+---
+
+For questions, suggestions, or bug reports, please open an issue or contact [me](mailto:designtokenswizards@gmail.com).
+
+## 🤝 Contributing
+
+Contributions, issues and feature requests are welcome!  
+Feel free to check the [issues page](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or submit a pull request.
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
