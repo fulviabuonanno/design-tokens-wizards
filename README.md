@@ -78,7 +78,7 @@ _You'll be guided through the wizard interactively!_
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
 | 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.5.1 ✅ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.1.1 ✅ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.0 ✅ |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.6.1    |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.6.1    |
 | 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.6.1    |
@@ -417,7 +417,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ### 🔤 Typography Tokens Wizard ✨
 
-Version 1.1.1
+Version 1.2.0
 
 The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
 

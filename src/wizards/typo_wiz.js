@@ -1557,11 +1557,24 @@ async function typographyWiz() {
         name: 'scaleType',
         message: 'Choose the scale type for letter spacing values:',
         choices: [
-          { name: 'Predetermined (-1.25%, 0%, 1.25%, 2.5%)', value: 'predetermined' },
-          { name: 'Custom Intervals', value: 'custom' }
+          { name: 'Predetermined Scale (-1.25%, 0%, 1.25%, 2.5%)', value: 'predetermined' },
+          { name: 'Custom Values', value: 'custom' }
         ]
       }
     ]);
+
+    if (scaleType === 'predetermined') {
+      console.log(chalk.bold.yellow("\n📝 Predetermined Scale Information:"));
+      console.log(chalk.yellow("The predetermined scale uses percentage values:"));
+      console.log(chalk.yellow("• -1.25% - Tight spacing"));
+      console.log(chalk.yellow("• 0% - Normal spacing"));
+      console.log(chalk.yellow("• 1.25% - Slightly loose spacing"));
+      console.log(chalk.yellow("• 2.5% - Loose spacing"));
+      console.log(chalk.yellow("• 3.75% - Very loose spacing"));
+      console.log(chalk.yellow("• 5% - Extra loose spacing"));
+      console.log(chalk.yellow("• 10% - Maximum spacing"));
+      console.log(chalk.yellow("\nYou can keep these values in percentages or convert them to em/rem units."));
+    }
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Unit`));
     console.log(chalk.yellow("Select the unit for letter spacing values. ") + chalk.underline("Recommended:") + chalk.yellow(" em or rem for better scaling."));
@@ -1573,40 +1586,20 @@ async function typographyWiz() {
         choices: [
           { name: 'em', value: 'em' },
           { name: 'rem', value: 'rem' },
-          { name: 'px', value: 'px' },
           { name: '%', value: '%' }
         ]
       }
     ]);
 
-    if (scaleType === 'predetermined' && unit === '%') {
-      console.log(chalk.bold.yellow("\n⚠️  WARNING:"));
-      console.log(chalk.yellow("The predetermined scale values are optimized for absolute units."));
-      console.log(chalk.yellow("For better typography control, consider using 'em', 'rem', or 'px' instead of '%'."));
-      
-      const { changeUnit } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'changeUnit',
-          message: 'Would you like to select a different unit?',
-          default: true
-        }
-      ]);
-
-      if (changeUnit) {
-        const { newUnit } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'newUnit',
-            message: 'Choose a new unit:',
-            choices: [
-              { name: 'em', value: 'em' },
-              { name: 'rem', value: 'rem' },
-              { name: 'px', value: 'px' }
-            ]
-          }
-        ]);
-        unit = newUnit;
+    if (scaleType === 'predetermined') {
+      if (unit === '%') {
+        console.log(chalk.bold.yellow("\nℹ️  Note:"));
+        console.log(chalk.yellow("You've chosen to keep the predetermined values in percentages."));
+        console.log(chalk.yellow("This is fine, but consider that em/rem units might be more flexible for responsive design."));
+      } else {
+        console.log(chalk.bold.yellow("\nℹ️  Note:"));
+        console.log(chalk.yellow(`The predetermined percentage values will be converted to ${unit} units.`));
+        console.log(chalk.yellow("This conversion maintains the same visual spacing while using relative units."));
       }
     }
 
@@ -1614,9 +1607,24 @@ async function typographyWiz() {
     let values = [];
     if (scaleType === 'predetermined') {
       const predefinedValues = ['-1.25', '0', '1.25', '2.5', '3.75', '5', '10'];
-      values = predefinedValues.slice(0, totalValues).map(v => v + (unit === 'px' ? 'px' : unit));
+      // Convert each predefined value to the selected unit
+      values = predefinedValues.slice(0, totalValues).map(v => {
+        if (unit === '%') {
+          // Keep original percentage values
+          return v + '%';
+        } else {
+          const convertedValue = convertLetterSpacing(v, '%', unit);
+          return convertedValue + unit;
+        }
+      });
     } else if (scaleType === 'custom') {
-      console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom intervals:`));
+      console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom values:`));
+      console.log(chalk.yellow("\n📝 Letter Spacing Guidelines:"));
+      console.log(chalk.yellow("• Negative values (-0.05 to -0.02) for tight spacing"));
+      console.log(chalk.yellow("• Zero (0) for normal spacing"));
+      console.log(chalk.yellow("• Positive values (0.02 to 0.1) for loose spacing"));
+      console.log(chalk.yellow("• Values above 0.1 are rarely needed"));
+      console.log(chalk.yellow("• Consider your font's natural spacing"));
       
       for (let i = 0; i < totalValues; i++) {
         const { customValue } = await inquirer.prompt([
@@ -1624,16 +1632,23 @@ async function typographyWiz() {
             type: 'input',
             name: 'customValue',
             message: `Enter value ${i + 1} of ${totalValues}:\n`,
-            default: '0',
+            default: i === 0 ? '-0.02' : i === 1 ? '0' : '0.02',
             validate: input => {
               if (!/^-?\d*\.?\d+$/.test(input)) {
                 return 'Please enter a valid number (can be negative or decimal)';
+              }
+              const value = parseFloat(input);
+              if (value < -0.1) {
+                return 'Values below -0.1 are rarely needed for letter spacing';
+              }
+              if (value > 0.1) {
+                return 'Values above 0.1 are rarely needed for letter spacing';
               }
               return true;
             }
           }
         ]);
-        values.push(customValue + (unit === 'px' ? 'px' : unit));
+        values.push(customValue + unit);
       }
     }
 
@@ -1655,7 +1670,7 @@ async function typographyWiz() {
 
     settingsTable.push(
       ["Token Name", customPropertyName],
-      ["Scale Type", scaleType],
+      ["Scale Type", scaleType === 'predetermined' ? 'Predetermined Scale' : 'Custom Values'],
       ["Unit", unit],
       ["Number of Values", totalValues.toString()]
     );
@@ -1690,6 +1705,32 @@ async function typographyWiz() {
     }
     
     return { letterSpacing, propertyName: customPropertyName };
+  }
+
+  function convertLetterSpacing(value, fromUnit, toUnit) {
+    // Convert to px first (base unit)
+    let pxValue;
+    if (fromUnit === 'rem') {
+      // 1rem = 16px (standard browser default)
+      pxValue = parseFloat(value) * 16;
+    } else if (fromUnit === 'em') {
+      // 1em = current font size (default 16px)
+      pxValue = parseFloat(value) * 16;
+    } else if (fromUnit === '%') {
+      // For letter spacing, percentage is relative to font size
+      // Assuming base font size of 16px
+      pxValue = (parseFloat(value) / 100) * 16;
+    }
+
+    // Convert from px to target unit
+    if (toUnit === 'rem' || toUnit === 'em') {
+      // Convert to rem/em (1rem/em = 16px)
+      const convertedValue = (pxValue / 16).toFixed(2);
+      // Remove trailing zeros for whole numbers
+      return convertedValue.replace(/\.?0+$/, '');
+    } else if (toUnit === '%') {
+      return ((pxValue / 16) * 100).toFixed(2);
+    }
   }
 
   async function setupLineHeight() {
@@ -1760,32 +1801,52 @@ async function typographyWiz() {
         name: 'scaleType',
         message: 'Choose the scale type for line height values:',
         choices: [
-          { name: 'Scale 1 (1.1, 1.25, 1.5, 1.6, 1.75, 2.0)', value: 'scale 1' },
-          { name: 'Scale 2 (1.0, 1.2, 1.5, 1.6, 2.0)', value: 'scale 2' },
-          { name: 'Custom Intervals', value: 'custom' }
+          { name: 'Predetermined Scale 1 (1.1, 1.25, 1.5, 1.6, 1.75, 2.0)', value: 'scale1' },
+          { name: 'Predetermined Scale 2 (1.0, 1.2, 1.5, 1.6, 2.0)', value: 'scale2' },
+          { name: 'Custom Values', value: 'custom' }
         ]
       }
     ]);
 
     let lineHeightValues = [];
     if (scaleType === 'scale1') {
+      console.log(chalk.yellow("\n📝 Scale 1 Values:"));
+      console.log(chalk.yellow("• 1.1 - Tight spacing, good for headings"));
+      console.log(chalk.yellow("• 1.25 - Slightly tight, good for subheadings"));
+      console.log(chalk.yellow("• 1.5 - Standard body text"));
+      console.log(chalk.yellow("• 1.6 - Slightly loose, good for long text"));
+      console.log(chalk.yellow("• 1.75 - Loose spacing, good for readability"));
+      console.log(chalk.yellow("• 2.0 - Very loose, good for maximum readability"));
       lineHeightValues = ['1.1', '1.25', '1.5', '1.6', '1.75', '2.0'];
     } else if (scaleType === 'scale2') {
+      console.log(chalk.yellow("\n📝 Scale 2 Values:"));
+      console.log(chalk.yellow("• 1.0 - Very tight, good for display text"));
+      console.log(chalk.yellow("• 1.2 - Tight, good for headings"));
+      console.log(chalk.yellow("• 1.5 - Standard body text"));
+      console.log(chalk.yellow("• 1.6 - Slightly loose, good for long text"));
+      console.log(chalk.yellow("• 2.0 - Very loose, good for maximum readability"));
       lineHeightValues = ['1.0', '1.2', '1.5', '1.6', '2.0'];
     } else {
-      console.log(chalk.yellow("\n⚠️ Note: For optimal readability, line heights should typically be between 1.0 and 2.0"));
+      console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom values:`));
+      console.log(chalk.yellow("\n📝 Line Height Guidelines:"));
+      console.log(chalk.yellow("• Values below 1.0 are rarely used"));
+      console.log(chalk.yellow("• 1.0-1.2 for tight spacing (headings)"));
+      console.log(chalk.yellow("• 1.2-1.5 for normal spacing (body text)"));
+      console.log(chalk.yellow("• 1.5-2.0 for loose spacing (long text)"));
+      console.log(chalk.yellow("• Values above 2.0 are rarely needed"));
+      
       for (let i = 0; i < 5; i++) {
-            const { customValue } = await inquirer.prompt([
+        const { customValue } = await inquirer.prompt([
           {
             type: 'input',
             name: 'customValue',
             message: `Enter value ${i + 1} of 5:`,
-            default: i === 2 ? '1.5' : String(1.0 + (i * 0.2)),
+            default: i === 0 ? '1.0' : i === 1 ? '1.2' : i === 2 ? '1.5' : i === 3 ? '1.6' : '2.0',
             validate: input => {
               if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
               const value = parseFloat(input);
-              if (value < 1) return 'Line height should be greater than or equal to 1';
-              if (i === 2 && value !== 1.5) return 'The third value must be 1.5 for normal line height';
+              if (value < 1.0) return 'Line height should be greater than or equal to 1.0';
+              if (value > 2.0) return 'Values above 2.0 are rarely needed';
               return true;
             }
           }
@@ -1822,8 +1883,10 @@ async function typographyWiz() {
 
     settingsTable.push(
       ["Token Name", customPropertyName],
-      ["Naming Convention", namingConvention],
-      ["Scale Type", scaleType]
+      ["Scale Type", scaleType === 'scale1' ? 'Predetermined Scale 1' : 
+                     scaleType === 'scale2' ? 'Predetermined Scale 2' : 
+                     'Custom Values'],
+      ["Number of Values", lineHeightValues.length.toString()]
     );
 
     console.log(settingsTable.toString());
@@ -2065,7 +2128,6 @@ function generateSCSSVariables(tokenObj, prefix) {
     } else if (typeof token === 'string') {
       scss += `$${key}: ${token};\n`;
     }
-    scss += "\n";
   }
   
   return scss;
