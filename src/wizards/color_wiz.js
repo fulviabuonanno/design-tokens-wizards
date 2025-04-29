@@ -30,26 +30,276 @@ const showLoader = (message, duration) => {
   });
 };
 
-const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
-  const finalColorType = "Global";
-  if (previousConcept) {
-    console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("☝️ STEP 1: COLOR TOKEN TYPE"));
-    console.log(chalk.black.bgYellowBright("=======================================\n"));
-    console.log("You're currently creating " + chalk.bold(finalColorType + " color tokens."));
+const formatStopsOutput = (stops) => {
+  return Object.entries(stops)
+    .map(([key, value]) => {
+      const sample = chalk.bgHex(value).white("     "); 
+      return `${key}: ${value} ${sample}`;
+    })
+    .join(",\n");
+};
+
+const printStopsTable = (stops, mode = "semantic stops", padded = false) => {
+  let entries = Object.entries(stops);
+
+  if (mode === "semantic stops") {
+    const semanticOrder = [
+      "ultra-light", "lightest", "lighter", "light",
+      "semi-light", "base", "semi-dark", "dark",
+      "darker", "darkest", "ultra-dark"
+    ];
+    entries.sort((a, b) => {
+      const aIndex = semanticOrder.indexOf(a[0]);
+      const bIndex = semanticOrder.indexOf(b[0]);
+      return aIndex - bIndex;
+    });
+  } else if (mode === "ordinal" || mode === "incremental" || mode === "alphabetical") {
+    if (padded) {
+      entries.forEach(([key, value], idx) => {
+        if (key !== "base") {
+          entries[idx][0] = key.padStart(2, "0");
+        }
+      });
+    }
+    
+    entries.sort((a, b) => {
+      // Always put base first
+      if (a[0] === "base") return -1;
+      if (b[0] === "base") return 1;
+      
+      // Then sort the rest based on mode
+      if (mode === "alphabetical") {
+        return a[0].localeCompare(b[0]);
+      } else if (mode === "ordinal") {
+        // For ordinal, sort numerically but ensure base is first
+        const aNum = parseInt(a[0], 10);
+        const bNum = parseInt(b[0], 10);
+        return aNum - bNum;
+      } else {
+        return parseInt(a[0], 10) - parseInt(b[0], 10);
+      }
+    });
   }
-  
+
+  const table = new Table({
+    head: [
+      chalk.bold.yellowBright("Scale"), 
+      chalk.bold.yellowBright("HEX"), 
+      chalk.bold.yellowBright("Sample")
+    ],
+    style: { head: [], border: ["yellow"] }
+  });
+
+  entries.forEach(([key, value]) => {
+    const sampleText = "  Sample  ";
+    table.push([
+      key, 
+      value, 
+      chalk.bgHex(value)(chalk.white(sampleText))
+    ]);
+  });
+
+  return table.toString();
+};
+
+const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
+  console.log(chalk.bold("🎨 STEP 1: TOKEN TYPE"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+  let { tokenType } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'tokenType',
+      message: 'Select the type of color tokens you want to create:',
+      choices: [
+        { name: 'Global Colors', value: 'global' },
+        { name: 'Semantic Colors', value: 'semantic' }
+      ]
+    }
+  ]);
+
+  if (tokenType === 'semantic') {
+    console.log(chalk.yellow("\n⚠️  Semantic color tokens are coming soon!"));
+    console.log(chalk.yellow("This feature will allow you to create color tokens based on their meaning and purpose in your design system."));
+    console.log(chalk.yellow("For now, we recommend using Global Colors to create your color tokens."));
+    console.log(chalk.yellow("Global Colors provide a solid foundation for your design system and can be used to build semantic tokens later.\n"));
+    
+    const { continueWithGlobal } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'continueWithGlobal',
+        message: 'Would you like to continue with Global Colors instead?',
+        default: true
+      }
+    ]);
+
+    if (!continueWithGlobal) {
+      console.log(chalk.bold.red("\n🚫 Exiting the wizard. Please check back later for semantic color support."));
+      process.exit(0);
+    }
+    
+    // Reset tokenType to 'global' and continue with the flow
+    tokenType = 'global';
+  }
+
+  let category = null;
+  if (tokenType === 'global') {
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("📁 STEP 2: GLOBAL CATEGORY"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+    console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));
+    console.log(chalk.whiteBright("Examples: primitives, foundation, core, basics, essentials\n"));
+
+    const { includeCategory } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'includeCategory',
+        message: 'Would you like to include a category in your color naming?',
+        default: true
+      }
+    ]);
+
+    if (includeCategory) {
+      const { globalCategory } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'globalCategory',
+          message: 'Select a category for your global colors:',
+          choices: [
+            { name: 'primitives', value: 'primitives' },
+            { name: 'foundation', value: 'foundation' },
+            { name: 'core', value: 'core' },
+            { name: 'basics', value: 'basics' },
+            { name: 'essentials', value: 'essentials' },
+            { name: 'global', value: 'global' },
+            { name: 'roots', value: 'roots' },
+            { name: 'custom', value: 'custom' }
+          ]
+        }
+      ]);
+
+      if (globalCategory === 'custom') {
+        const { customCategory } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'customCategory',
+            message: 'Enter your custom category name:',
+            validate: (input) => {
+              const trimmedInput = input.trim();
+              if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
+                return "Category name should only contain letters, numbers, hyphens, and dots.";
+              }
+              return true;
+            }
+          }
+        ]);
+        category = customCategory.trim();
+      } else {
+        category = globalCategory;
+      }
+
+      const { confirmCategory } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirmCategory',
+          message: `Do you want to continue with the category "${category}"?`,
+          default: true
+        }
+      ]);
+
+      if (!confirmCategory) {
+        console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm the category."));
+        return await askForInput(tokensData);
+      }
+    }
+  }
+
+  let namingLevel = null;
+  if (tokenType === 'global') {
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("📝 STEP 3: NAMING LEVEL"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+    console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));
+    console.log(chalk.whiteBright("Examples: color (single color), palette (group of colors), scheme (color combinations)\n"));
+
+    const { includeNamingLevel } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'includeNamingLevel',
+        message: 'Would you like to include a naming level in your color naming?',
+        default: true
+      }
+    ]);
+
+    if (includeNamingLevel) {
+      const { level } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'level',
+          message: 'Select a naming level for your colors:',
+          choices: [
+            { name: 'color', value: 'color' },
+            { name: 'colour', value: 'colour' },
+            { name: 'palette', value: 'palette' },
+            { name: 'scheme', value: 'scheme' },
+            { name: 'custom', value: 'custom' }
+          ]
+        }
+      ]);
+
+      if (level === 'custom') {
+        const { customLevel } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'customLevel',
+            message: 'Enter your custom naming level:',
+            validate: (input) => {
+              const trimmedInput = input.trim();
+              if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
+                return "Naming level should only contain letters, numbers, hyphens, and dots.";
+              }
+              return true;
+            }
+          }
+        ]);
+        namingLevel = customLevel.trim();
+      } else {
+        namingLevel = level;
+      }
+
+      const { confirmLevel } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirmLevel',
+          message: `Do you want to continue with the naming level "${namingLevel}"?`,
+          default: true
+        }
+      ]);
+
+      if (!confirmLevel) {
+        console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm the naming level."));
+        return await askForInput(tokensData);
+      }
+    }
+  }
+
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("✏️ STEP 4: COLOR NAME"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+  
   let response = await inquirer.prompt([
     {
       type: "input",
       name: "name",
-      message: "Enter a name for the color (e.g., blue, yellow, red):\n>>>",
-      default: "color",
+      message: `Enter a name for the ${namingLevel || 'color'} (e.g., blue, yellow, red):\n>>>`,
       validate: (input) => {
         const trimmedInput = input.trim();
+        if (!trimmedInput || trimmedInput.length === 0) {
+          return "Please provide a name for your color. This field cannot be empty.";
+        }
         if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
           return "Name should only contain letters, numbers, hyphens, and dots.";
         }
@@ -72,7 +322,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   const concept = response.name.trim();
   const finalConcept = concept || "color";
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🚧 STEP 3: SELECT BASE COLOR"));
+  console.log(chalk.bold("🚧 STEP 5: SELECT BASE COLOR"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
   let hexResponse = await inquirer.prompt([
     {
@@ -91,18 +341,18 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("➡️ STEP 4: CURRENT SCALE"));
+      console.log(chalk.bold("➡️ STEP 5: CURRENT SCALE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       console.log(`Current scale type: ${scaleSettings.type}` + 
         (scaleSettings.type === "ordinal" ? ` (padded: ${scaleSettings.padded})` : ""));
       stops = newScaleSettings.type === "incremental" 
         ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, newScaleSettings.stopsCount)
-        : (newScaleSettings.type === "shadesSemantic"
+        : (newScaleSettings.type === "semanticStops" 
              ? generateStopsSemantic(hex, newScaleSettings.stopsCount)
              : generateStopsOrdinal(hex, newScaleSettings.padded, newScaleSettings.stopsCount));
     } else {
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("🔢 STEP 4: SELECT SCALE TYPE"));
+      console.log(chalk.bold("🔢 STEP 5: SELECT SCALE TYPE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       const { scaleType } = await inquirer.prompt([
         {
@@ -113,7 +363,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             { name: "Incremental (e.g., 100, 200, 300, 400)", value: "incremental" },
             { name: "Ordinal (e.g., 1, 2, 3, 4)", value: "ordinal" },
             { name: 'Alphabetical (e.g., A, B, C, D)', value: 'alphabetical' },
-            { name: "Shades Semantic (e.g. dark, base, light)", value: "shadesSemantic" }
+            { name: "Semantic Stops (e.g. dark, base, light)", value: "semanticStops" }
           ]
         }
       ]);
@@ -158,7 +408,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           }
         ]);
         alphabeticalOption = option;
-      } else if (scaleType === "shadesSemantic") {
+      } else if (scaleType === "semanticStops") {
         const { semanticStopsCount } = await inquirer.prompt([
           {
             type: "list",
@@ -176,7 +426,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         ]);
         stopsCount = semanticStopsCount;
       }
-      if (scaleType !== "shadesSemantic") {
+      if (scaleType !== "semanticStops") {
         const response = await inquirer.prompt([
           {
             type: "number",
@@ -204,7 +454,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       };
       stops = scaleType === "incremental"
         ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount)
-        : (scaleType === "shadesSemantic"
+        : (scaleType === "semanticStops"
              ? generateStopsSemantic(hex, stopsCount)
              : (scaleType === "alphabetical"
                   ? generateStopsAlphabetical(hex, alphabeticalOption, stopsCount)
@@ -218,8 +468,8 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     } else if (newScaleSettings.type === "incremental") {
       mode = "incremental";
       padded = false;
-    } else if (newScaleSettings.type === "shadesSemantic") {
-      mode = "shades semantic";
+    } else if (newScaleSettings.type === "semanticStops") {
+      mode = "semantic stops";
       padded = true; 
     } else if (newScaleSettings.type === "alphabetical") {
       mode = "alphabetical";
@@ -230,13 +480,23 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     }
 
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("STEP 4.5: 🔍 EXAMPLE COLOR PREVIEW"));
+    console.log(chalk.bold("STEP 5.5: 🔍 EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(
-      chalk.bold("Type: ") + chalk.whiteBright(finalColorType) + 
+      chalk.bold("Type: ") + chalk.whiteBright(tokenType === 'global' ? 'Global' : 'Semantic') + 
+      (category ? chalk.bold("  Category: ") + chalk.whiteBright(category) : "") +
+      (namingLevel ? chalk.bold("  Level: ") + chalk.whiteBright(namingLevel) : "") +
       chalk.bold("  Name: ") + chalk.whiteBright(finalConcept) + "\n"
     );
+
+    // Add naming example
+    if (tokenType === 'global') {
+      const namingExample = `${category}.${namingLevel}.${finalConcept}`;
+      console.log(chalk.bold("📝 Naming Example:"));
+      console.log(chalk.whiteBright(`   ${namingExample}`));
+      console.log(chalk.gray("   This is how your color will be referenced in the tokens\n"));
+    }
 
     console.log(printStopsTable(stops, mode, padded));
 
@@ -260,7 +520,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     hex: hex.trim(),
     concept,
     stops,
-    colorType: finalColorType,
+    colorType: tokenType === 'global' ? 'Global' : 'Semantic',
+    category: category,
+    namingLevel: namingLevel,
     formatChoices,
     scaleSettings: newScaleSettings
   };
@@ -424,7 +686,15 @@ const customStringify = (obj, indent = 2) => {
     }
     let keys = Object.keys(value);
     
-    keys.sort((a, b) => a.localeCompare(b));
+    // Sort keys to ensure "value" appears before "type"
+    keys.sort((a, b) => {
+      if (a === "value") return -1;
+      if (b === "value") return 1;
+      if (a === "type") return -1;
+      if (b === "type") return 1;
+      return a.localeCompare(b);
+    });
+
     if (keys.includes("base")) {
       keys = ["base", ...keys.filter(k => k !== "base")];
     }
@@ -572,13 +842,14 @@ const convertTokensToFormat = (tokens, format) => {
   const convertRecursive = (obj) => {
     for (const key in obj) {
       if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+        const { value, type, ...rest } = obj[key];
         if (format === "RGB") {
-          obj[key].value = tinycolor(obj[key].value).toRgbString();
+          obj[key] = { value: tinycolor(value).toRgbString(), type, ...rest };
         } else if (format === "RGBA") {
-          const rgba = tinycolor(obj[key].value).toRgb();
-          obj[key].value = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
+          const rgba = tinycolor(value).toRgb();
+          obj[key] = { value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, type, ...rest };
         } else if (format === "HSL") {
-          obj[key].value = tinycolor(obj[key].value).toHslString();
+          obj[key] = { value: tinycolor(value).toHslString(), type, ...rest };
         }
       } else if (obj[key] && typeof obj[key] === "object") {
         convertRecursive(obj[key]);
@@ -587,606 +858,6 @@ const convertTokensToFormat = (tokens, format) => {
   };
   convertRecursive(converted);
   return converted;
-};
-
-const formatStopsOutput = (stops) => {
-  return Object.entries(stops)
-    .map(([key, value]) => {
-      
-      const sample = chalk.bgHex(value).white("     "); 
-      return `${key}: ${value} ${sample}`;
-    })
-    .join(",\n");
-};
-
-const simulateColorBlindness = (color, type = 'deuteranopia') => {
-  const rgb = tinycolor(color).toRgb();
-  let r = rgb.r;
-  let g = rgb.g;
-  let b = rgb.b;
-
-  switch (type) {
-    case 'protanopia':
-      r = r * 0.567 + g * 0.433;
-      g = r * 0.558 + g * 0.442;
-      b = r * 0 + g * 0.242 + b * 0.758;
-      break;
-    case 'deuteranopia':
-      r = r * 0.625 + g * 0.375;
-      g = r * 0.7 + g * 0.3;
-      b = r * 0 + g * 0.3 + b * 0.7;
-      break;
-    case 'tritanopia':
-      r = r * 0.95 + g * 0.05;
-      g = r * 0 + g * 0.433 + b * 0.567;
-      b = r * 0 + g * 0.475 + b * 0.525;
-      break;
-  }
-
-  return tinycolor({ r, g, b }).toHexString();
-};
-
-const getWCAGCompliance = (backgroundColor, isForeground = false, bgColor = null) => {
-  const color = tinycolor(backgroundColor);
-  
-  let contrast;
-  if (isForeground && bgColor) {
-    contrast = tinycolor.readability(color, bgColor);
-  } else {
-    const whiteContrast = tinycolor.readability(color, "#FFFFFF");
-    const blackContrast = tinycolor.readability(color, "#000000");
-    contrast = Math.max(whiteContrast, blackContrast);
-  }
-
-  const colorBlindnessTests = {
-    protanopia: simulateColorBlindness(backgroundColor, 'protanopia'),
-    deuteranopia: simulateColorBlindness(backgroundColor, 'deuteranopia'),
-    tritanopia: simulateColorBlindness(backgroundColor, 'tritanopia')
-  };
-  
-  const getLevel = (contrast) => {
-    const normalText = contrast >= 7.0 ? "🟢 AAA" : 
-                      contrast >= 4.5 ? "🟡 AA" : 
-                      contrast >= 3.0 ? "❌ A" : "❌ -";
-    
-    const largeText = contrast >= 4.5 ? "🟢 AAA" :
-                     contrast >= 3.0 ? "🟡 AA" :
-                     contrast >= 2.0 ? "❌ A" : "❌ -";
-    
-    return {
-      normalText,
-      largeText
-    };
-  };
-
-  const bestTextColor = isForeground ? null : 
-    tinycolor.readability(color, "#FFFFFF") > tinycolor.readability(color, "#000000") ? "white" : "black";
-  
-  const levels = getLevel(contrast);
-  
-  return {
-    normalText: levels.normalText,
-    largeText: levels.largeText,
-    contrast: contrast.toFixed(2),
-    textColor: bestTextColor,
-    colorBlindnessTests
-  };
-};
-
-const printStopsTable = (stops, mode = "shades semantic", padded = false) => {
-  let entries = Object.entries(stops);
-
-  if (mode === "shades semantic") {
-    const semanticOrder = [
-      "ultra-light", "lightest", "lighter", "light",
-      "semi-light", "base", "semi-dark", "dark",
-      "darker", "darkest", "ultra-dark"
-    ];
-    entries.sort((a, b) => {
-      const aIndex = semanticOrder.indexOf(a[0]);
-      const bIndex = semanticOrder.indexOf(b[0]);
-      return aIndex - bIndex;
-    });
-  } else if (mode === "ordinal" || mode === "incremental" || mode === "alphabetical") {
-    if (padded) {
-      entries.forEach(([key, value], idx) => {
-        if (key !== "base") {
-          entries[idx][0] = key.padStart(2, "0");
-        }
-      });
-    }
-    
-    entries.sort((a, b) => {
-      // Always put base first
-      if (a[0] === "base") return -1;
-      if (b[0] === "base") return 1;
-      
-      // Then sort the rest based on mode
-      if (mode === "alphabetical") {
-        return a[0].localeCompare(b[0]);
-      } else if (mode === "ordinal") {
-        // For ordinal, sort numerically but ensure base is first
-        const aNum = parseInt(a[0], 10);
-        const bNum = parseInt(b[0], 10);
-        return aNum - bNum;
-      } else {
-        return parseInt(a[0], 10) - parseInt(b[0], 10);
-      }
-    });
-  }
-
-  const table = new Table({
-    head: [
-      chalk.bold.yellowBright("Scale"), 
-      chalk.bold.yellowBright("HEX"), 
-      chalk.bold.yellowBright("Sample")
-    ],
-    style: { head: [], border: ["yellow"] }
-  });
-
-  entries.forEach(([key, value]) => {
-    const wcag = getWCAGCompliance(value);
-    const textColor = wcag.textColor === "white" ? chalk.white : chalk.black;
-    const sampleText = "  Sample  ";
-    table.push([
-      key, 
-      value, 
-      chalk.bgHex(value)(textColor(sampleText))
-    ]);
-  });
-
-  return table.toString();
-};
-
-const printAccessibilityTable = (stops) => {
-  let entries = Object.entries(stops);
-  
-  
-  const originalTable = new Table({
-    head: [
-      chalk.bold.yellowBright("Scale"), 
-      chalk.bold.yellowBright("HEX"), 
-      chalk.bold.yellowBright("Sample"),
-      chalk.bold.yellowBright("Normal Text"),
-      chalk.bold.yellowBright("Large Text"),
-      chalk.bold.yellowBright("Contrast")
-    ],
-    style: { head: [], border: ["yellow"] },
-    colWidths: [15, 10, 12, 15, 15, 12]
-  });
-
-  entries.forEach(([key, value]) => {
-    
-    const wcagBg = getWCAGCompliance(value);
-    const textColor = wcagBg.textColor === "white" ? chalk.white : chalk.black;
-    const contrastColor = parseFloat(wcagBg.contrast) >= 7.0 ? chalk.green : 
-                         parseFloat(wcagBg.contrast) >= 4.5 ? chalk.yellow :
-                         chalk.red;
-
-    originalTable.push([
-      key, 
-      value, 
-      chalk.bgHex(value)(textColor("         ")),
-      wcagBg.normalText,
-      wcagBg.largeText,
-      contrastColor(wcagBg.contrast)
-    ]);
-
-    
-    const wcagOnWhite = getWCAGCompliance(value, true, "#FFFFFF");
-    const contrastColorWhite = parseFloat(wcagOnWhite.contrast) >= 7.0 ? chalk.green : 
-                              parseFloat(wcagOnWhite.contrast) >= 4.5 ? chalk.yellow :
-                              chalk.red;
-
-    originalTable.push([
-      "└─ on white", 
-      "", 
-      "",
-      wcagOnWhite.normalText,
-      wcagOnWhite.largeText,
-      contrastColorWhite(wcagOnWhite.contrast)
-    ]);
-
-    
-    const wcagOnBlack = getWCAGCompliance(value, true, "#000000");
-    const contrastColorBlack = parseFloat(wcagOnBlack.contrast) >= 7.0 ? chalk.green : 
-                              parseFloat(wcagOnBlack.contrast) >= 4.5 ? chalk.yellow :
-                              chalk.red;
-
-    originalTable.push([
-      "└─ on black", 
-      "", 
-      "",
-      wcagOnBlack.normalText,
-      wcagOnBlack.largeText,
-      contrastColorBlack(wcagOnBlack.contrast)
-    ]);
-  });
-
-  
-  let output = "";
-  output += chalk.yellow("\nDetailed Accessibility Analysis:\n");
-  output += originalTable.toString();
-
-  output += chalk.yellow("\nAccessibility Guide:\n");
-  output += chalk.green("🟢 Excellent contrast - Meets AAA standards (7:1+)\n");
-  output += chalk.yellow("🟡 Good contrast - Meets AA standards (4.5:1+)\n");
-  output += chalk.red("❌ Poor contrast - Does not meet minimum standards (<4.5:1)\n\n");
-  output += "Normal Text: 4.5:1 for AA, 7:1 for AAA\n";
-  output += "Large Text: 3:1 for AA, 4.5:1 for AAA\n\n";
-  output += "Each color is tested in three contexts:\n";
-  output += "1. As a background color (with auto-selected text color)\n";
-  output += "2. As a text color on white background\n";
-  output += "3. As a text color on black background\n";
-
-  return output;
-};
-
-const generateOrdinalStops = (start, end) => {
-  const stops = {};
-  for (let i = start; i <= end; i++) {
-    
-    const key = i.toString().padStart(2, "00");
-    
-    const intensity = Math.floor(255 - ((i - start) * (255 / (end - start))));
-    const hexChannel = intensity.toString(16).padStart(2, "0");
-    const hex = `#${hexChannel}${hexChannel}${hexChannel}`;
-    stops[key] = hex;
-  }
-  return stops;
-};
-
-const stops = generateOrdinalStops(1, 20);
-
-const generateAccessibilityReport = (tokensData) => {
-  // Read and encode the banner image
-  const bannerPath = path.join(__dirname, '..', 'assets', 'banner.png');
-  const bannerBase64 = fs.readFileSync(bannerPath, { encoding: 'base64' });
-
-  const styles = `
-    <style>
-      body {
-        font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-        line-height: 1.2;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      tr {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-bottom: 20px;
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-      th, td {
-        border: 1px solid #ddd;
-        padding: 4px;
-        text-align: left;
-      }
-      th {
-        background-color: #f5f5f5;
-      }
-      h2, h3 {
-        page-break-before: auto;
-        page-break-after: avoid;
-        break-before: auto;
-        break-after: avoid;
-      }
-      .banner {
-        width: 100%;
-        max-width: 800px;
-        margin-bottom: 30px;
-        display: block;
-      }
-      h1 {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        font-size: 24px;
-        font-weight: 600;
-        color: #1a1a1a;
-        border-bottom: 2px solid #e0e0e0;
-        padding-bottom: 10px;
-        margin-bottom: 30px;
-      }
-      h2 {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        font-size: 20px;
-        font-weight: 500;
-        color: #2c3e50;
-        margin-top: 30px;
-        margin-bottom: 15px;
-      }
-      h3 {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        font-size: 18px;
-        font-weight: 500;
-        color: #34495e;
-        margin-top: 20px;
-      }
-      .toc {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        margin: 20px 0;
-      }
-      .toc ul {
-        list-style-type: none;
-        padding-left: 0;
-      }
-      .toc ul ul {
-        padding-left: 20px;
-      }
-      .toc a {
-        color: #2c3e50;
-        text-decoration: none;
-        line-height: 1.8;
-      }
-      .toc a:hover {
-        color: #0056b3;
-        text-decoration: underline;
-      }
-      .introduction {
-        background: #fff;
-        padding: 20px;
-        border-left: 4px solid #2c3e50;
-        margin: 20px 0;
-      }
-      .color-sample {
-        width: 50px;
-        height: 50px;
-        border: 1px solid #ddd;
-        display: inline-block;
-        margin-right: 10px;
-      }
-      .footer {
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #e0e0e0;
-        font-size: 0.9em;
-        color: #666;
-        text-align: center;
-      }
-      .footer p {
-        margin: 5px 0;
-      }
-      .support-section {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-        width: 100%;
-      }
-      .profile-pic {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-      .support-text {
-        margin: 0;
-      }
-      .compliance-aaa {
-        color: #2e7d32;
-        font-weight: bold;
-      }
-      .compliance-aa {
-        color: #ed6c02;
-        font-weight: bold;
-      }
-      .compliance-fail {
-        color: #d32f2f;
-        font-weight: bold;
-      }
-      .bg-sample-container {
-        display: flex;
-        gap: 10px;
-      }
-      .bg-sample {
-        padding: 8px;
-        border-radius: 4px;
-        text-align: center;
-        min-width: 100px;
-      }
-      .bg-white {
-        background: white;
-        border: 1px solid #ddd;
-      }
-      .bg-black {
-        background: black;
-        color: white;
-      }
-      .compliance-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        margin-top: 4px;
-      }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  `;
-
-  let totalColors = 0;
-  let passesAAA = 0;
-  let passesAA = 0;
-  let failing = 0;
-
-  let colorComplianceTable = '';
-  Object.entries(tokensData).forEach(([concept, variants]) => {
-    colorComplianceTable += `<h3>${concept}</h3>`;
-    colorComplianceTable += `<table>
-      <tr>
-        <th>Color Name</th>
-        <th>HEX Value</th>
-        <th>Sample</th>
-        <th>On White (#FFFFFF)</th>
-        <th>On Black (#000000)</th>
-      </tr>`;
-    
-    Object.entries(variants).forEach(([variant, colors]) => {
-      if (typeof colors === 'object' && colors.value) {
-        totalColors++;
-        const wcagWhite = getWCAGCompliance(colors.value, true, '#FFFFFF');
-        const wcagBlack = getWCAGCompliance(colors.value, true, '#000000');
-
-        const whiteComplianceClass = wcagWhite.normalText.includes("AAA") ? "compliance-aaa" : 
-                              wcagWhite.normalText.includes("AA") ? "compliance-aa" : 
-                              "compliance-fail";
-        const blackComplianceClass = wcagBlack.normalText.includes("AAA") ? "compliance-aaa" : 
-                              wcagBlack.normalText.includes("AA") ? "compliance-aa" : 
-                              "compliance-fail";
-
-        if (wcagWhite.normalText.includes("AAA") || wcagBlack.normalText.includes("AAA")) passesAAA++;
-        else if (wcagWhite.normalText.includes("AA") || wcagBlack.normalText.includes("AA")) passesAA++;
-        else failing++;
-
-        colorComplianceTable += `<tr>
-          <td>${variant}</td>
-          <td>${colors.value}</td>
-          <td>
-            <div class="bg-sample-container">
-              <div class="bg-sample bg-white">
-                <div style="color: ${colors.value}">Sample Text</div>
-              </div>
-              <div class="bg-sample bg-black">
-                <div style="color: ${colors.value}">Sample Text</div>
-              </div>
-            </div>
-          </td>
-          <td class="${whiteComplianceClass}">
-            <div class="compliance-grid">
-              <div>Normal Text: ${wcagWhite.normalText}</div>
-              <div>Large Text: ${wcagWhite.largeText}</div>
-              <div>Contrast: ${wcagWhite.contrast}:1</div>
-            </div>
-          </td>
-          <td class="${blackComplianceClass}">
-            <div class="compliance-grid">
-              <div>Normal Text: ${wcagBlack.normalText}</div>
-              <div>Large Text: ${wcagBlack.largeText}</div>
-              <div>Contrast: ${wcagBlack.contrast}:1</div>
-            </div>
-          </td>
-        </tr>`;
-      }
-    });
-    colorComplianceTable += `</table>`;
-  });
-
-  const htmlReport = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  ${styles}
-</head>
-<body>
-  <img src="data:image/png;base64,${bannerBase64}" class="banner" alt="Design Tokens Wizards Banner">
-  <h1>Color Accessibility Report 🎨👁️</h1>
-  
-  <div class="introduction">
-    <p>This comprehensive color accessibility report analyzes your design tokens for WCAG 2.2 compliance and provides detailed insights about color contrast, readability, and color blindness considerations. Use this report to ensure your color choices are accessible to all users.</p>
-    <p>The report includes contrast ratio analysis for both normal and large text, color blindness simulations, and specific recommendations for improving accessibility where needed.</p>
-  </div>
-
-  <div class="toc">
-    <h2>Table of Contents</h2>
-    <ul>
-      <li><a href="#summary">Summary Statistics</a></li>
-      <li><a href="#guidelines">Usage Guidelines</a>
-        <ul>
-          <li><a href="#normal-text">Normal Text Requirements</a></li>
-          <li><a href="#large-text">Large Text Requirements</a></li>
-          <li><a href="#best-practices">Best Practices</a></li>
-        </ul>
-      </li>
-      <li><a href="#compliance">Color Compliance Analysis</a></li>
-      <li><a href="#colorblindness">Color Blindness Analysis</a></li>
-    </ul>
-  </div>
-
-  <h2 id="summary">Summary Statistics</h2>
-  <ul>
-    <li>Total Colors: ${totalColors}</li>
-    <li>AAA Compliant: ${((passesAAA / totalColors) * 100).toFixed(1)}%</li>
-    <li>AA Compliant: ${((passesAA / totalColors) * 100).toFixed(1)}%</li>
-    <li>Below AA: ${((failing / totalColors) * 100).toFixed(1)}%</li>
-  </ul>
-
-  <h2 id="guidelines">Usage Guidelines</h2>
-  <h3 id="normal-text">Normal Text (WCAG 2.2)</h3>
-  <ul>
-    <li>Minimum contrast ratio: 4.5:1 (AA)</li>
-    <li>Preferred contrast ratio: 7:1 (AAA)</li>
-  </ul>
-  <h3 id="large-text">Large Text (WCAG 2.2)</h3>
-  <ul>
-    <li>Minimum contrast ratio: 3:1 (AA)</li>
-    <li>Preferred contrast ratio: 4.5:1 (AAA)</li>
-  </ul>
-  <h3 id="best-practices">Best Practices</h3>
-  <ul>
-    <li>Use AAA compliance for critical text and important UI elements</li>
-    <li>Test colors in both light and dark modes</li>
-    <li>Consider color blindness when choosing color combinations</li>
-    <li>Use semantic color names that describe the purpose</li>
-  </ul>
-
-  <h2 id="compliance">Color Compliance Analysis</h2>
-  ${colorComplianceTable}
-
-  <h2 id="colorblindness">Color Blindness Analysis</h2>
-  <p>This section shows how colors appear to people with different types of color blindness:</p>
-  <ul>
-    <li>Protanopia: Red-green color blindness (red appears darker)</li>
-    <li>Deuteranopia: Red-green color blindness (green appears darker)</li>
-    <li>Tritanopia: Blue-yellow color blindness</li>
-  </ul>`;
-
-  let colorBlindnessSection = '';
-  Object.entries(tokensData).forEach(([concept, variants]) => {
-    colorBlindnessSection += `<h3>${concept}</h3>`;
-    
-    Object.entries(variants).forEach(([variant, colors]) => {
-      if (typeof colors === 'object' && colors.value) {
-        const wcag = getWCAGCompliance(colors.value);
-        colorBlindnessSection += `<table>
-          <tr>
-            <th>Color Name</th>
-            <th>Original</th>
-            <th>Protanopia</th>
-            <th>Deuteranopia</th>
-            <th>Tritanopia</th>
-          </tr>
-          <tr>
-            <td>${variant}</td>
-            <td><div class="color-sample" style="background-color: ${colors.value};"></div></td>
-            <td><div class="color-sample" style="background-color: ${wcag.colorBlindnessTests.protanopia};"></div></td>
-            <td><div class="color-sample" style="background-color: ${wcag.colorBlindnessTests.deuteranopia};"></div></td>
-            <td><div class="color-sample" style="background-color: ${wcag.colorBlindnessTests.tritanopia};"></div></td>
-          </tr>
-        </table>`;
-      }
-    });
-  });
-
-  return {
-    html: htmlReport + colorBlindnessSection + `
-      <div class="footer">
-        <p>Generated by Design Tokens Wizards - Color Accessibility Guidelines</p>
-        <p>Generated on: ${new Date().toLocaleString()}</p>
-        <div class="support-section">
-          <img src="data:image/png;base64,${fs.readFileSync(path.join(__dirname, '..', 'assets', 'profile_pic.png'), { encoding: 'base64' })}" alt="Profile Picture" class="profile-pic">
-          <p class="support-text">Do you want to support this project? <a href="https://ko-fi.com/fbuonanno" target="_blank">Invite me a coffee ❤️☕️</a></p>
-        </div>
-      </div>
-    </body>
-  </html>`
-  };
 };
 
 const customizeColorRanges = async () => {
@@ -1301,29 +972,89 @@ const main = async () => {
     const color = tinycolor(hex);
     
     const finalConcept = concept || "color";
-    if (!tokensData[finalConcept]) {
-      tokensData[finalConcept] = {};
-    }
+    
+    // Create the token structure with proper hierarchy
+    const { colorType, category, namingLevel } = input;
+    
+    if (colorType === 'Global') {
+      // Initialize the root object if it doesn't exist
+      if (!tokensData) {
+        tokensData = {};
+      }
 
-    if (variant) {
-      const sortedEntries = Object.keys(stops).every(key => /^\d{2}$/.test(key))
-        ? Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]))
-        : Object.entries(stops);
-      tokensData[finalConcept][variant] = {
+      // If both category and naming level are included
+      if (category && namingLevel) {
+        if (!tokensData[category]) {
+          tokensData[category] = {};
+        }
+        if (!tokensData[category][namingLevel]) {
+          tokensData[category][namingLevel] = {};
+        }
+        tokensData[category][namingLevel][finalConcept] = {
+          base: { value: hex, type: "color" },
+          ...Object.fromEntries(
+            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          )
+        };
+      }
+      // If only category is included
+      else if (category) {
+        if (!tokensData[category]) {
+          tokensData[category] = {};
+        }
+        tokensData[category][finalConcept] = {
+          base: { value: hex, type: "color" },
+          ...Object.fromEntries(
+            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          )
+        };
+      }
+      // If only naming level is included
+      else if (namingLevel) {
+        if (!tokensData[namingLevel]) {
+          tokensData[namingLevel] = {};
+        }
+        tokensData[namingLevel][finalConcept] = {
+          base: { value: hex, type: "color" },
+          ...Object.fromEntries(
+            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          )
+        };
+      }
+      // If neither is included
+      else {
+        tokensData[finalConcept] = {
+          base: { value: hex, type: "color" },
+          ...Object.fromEntries(
+            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          )
+        };
+      }
+    } else {
+      // For semantic colors (when implemented)
+      tokensData[finalConcept] = {
         base: { value: hex, type: "color" },
         ...Object.fromEntries(
-          sortedEntries.map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
         )
       };
-    } else {
-      tokensData[finalConcept].base = { value: hex, type: "color" };
-      const sortedEntries = Object.keys(stops).every(key => /^\d{2}$/.test(key))
-        ? Object.entries(stops).sort((a, b) => Number(a[0]) - Number(b[0]))
-        : Object.entries(stops);
-      sortedEntries.forEach(([k, v]) => {
-        tokensData[finalConcept][k] = { value: tinycolor(v).toHexString().toUpperCase(), type: "color" };
-      });
     }
+
+    // Ensure "value" appears before "type" in all token objects
+    const ensureValueBeforeType = (obj) => {
+      if (obj && typeof obj === 'object') {
+        if ('value' in obj && 'type' in obj) {
+          const { value, type, ...rest } = obj;
+          return { value, type, ...rest };
+        }
+        return Object.fromEntries(
+          Object.entries(obj).map(([k, v]) => [k, ensureValueBeforeType(v)])
+        );
+      }
+      return obj;
+    };
+
+    tokensData = ensureValueBeforeType(tokensData);
 
     const hexJsonExisted = fs.existsSync(path.join(tokensFolder, 'color_tokens_hex.json'));
     const hexCssExisted  = fs.existsSync(path.join(cssFolder, 'color_variables_hex.css'));
@@ -1510,72 +1241,6 @@ const main = async () => {
     }
   });
 
-  /* Accessibility Report Generation - Temporarily Disabled
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("📊 GENERATING ACCESSIBILITY REPORT"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  const { showAccessibility } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "showAccessibility",
-      message: "Would you like to see the " + chalk.underline("accessibility analysis") + " for these colors?",
-      default: false
-    }
-  ]);
-
-  if (showAccessibility) {
-    console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("STEP 4.6: ♿ ACCESSIBILITY ANALYSIS"));
-    console.log(chalk.black.bgYellowBright("=======================================\n"));
-    
-    const accessibilityTables = printAccessibilityTable(stops);
-    console.log(accessibilityTables);
-
-    const reports = generateAccessibilityReport(tokensData);
-    const pdfReportPath = path.join(reportsFolder, "a11y-color-report.pdf");
-    const tempHtmlPath = path.join(reportsFolder, "_temp_report.html");
-
-    fs.writeFileSync(tempHtmlPath, reports.html);
-
-    try {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.setViewport({ width: 1200, height: 800 });
-      
-      await page.goto(`file://${tempHtmlPath}`, {
-        waitUntil: 'networkidle0'
-      });
-
-      await page.pdf({
-        path: pdfReportPath,
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '20mm',
-          right: '20mm',
-          bottom: '20mm',
-          left: '20mm'
-        },
-        preferCSSPageSize: true
-      });
-
-      await browser.close();
-      console.log(chalk.green("✅ Generated PDF report!"));
-
-      try {
-        fs.unlinkSync(tempHtmlPath);
-      } catch (e) {
-        console.error("Error cleaning up temporary file:", e);
-      }
-    } catch (err) {
-      console.error(chalk.red("❌ Error generating PDF:"), err);
-    }
-
-    savedNewFiles.push(pdfReportPath);
-  }
-  */
-
   await showLoader(chalk.bold.magenta("\n🌈Finalizing your spell"), 1500);
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -1585,8 +1250,7 @@ const main = async () => {
   console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
   console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
   console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
-  console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables"));
-  // console.log(chalk.whiteBright("   -> /reports: Accessibility Report\n")); // Temporarily disabled
+  console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables\n"));
 
   if (updatedFiles.length > 0) {
     console.log(chalk.whiteBright("🆕 Updated:"));

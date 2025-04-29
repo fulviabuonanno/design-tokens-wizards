@@ -101,17 +101,48 @@ const askForInput = async () => {
     console.log(chalk.black.bgBlueBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
     console.log(chalk.black.bgBlueBright("=======================================\n"));
-    console.log(`
-  ===============================================================================================
-  Scale Name               | Description                                           | Examples
-  ===============================================================================================
-  4-Point Grid System      | Increments by 4 units to maintain consistency.        | 4, 8, 12, 16, ...
-  8-Point Grid System      | Increments by 8 units for more spacious designs.      | 8, 16, 24, 32, ...
-  Modular Scale            | Uses a multiplier and factor for a harmonious flow.   | e.g., 4, 6.4, 10.24, ...
-  Custom Intervals         | User-defined intervals for complete customization.    | e.g., 4, 10, 16, 22, ...
-  Fibonacci Scale          | Multiplies the previous value by ≈1.618.              | e.g., 4, 6.47, 10.47, ...
-  ===============================================================================================
-    `);
+
+    const scaleInfoTable = new Table({
+      head: [
+        chalk.bold("Scale Name"),
+        chalk.bold("Description"),
+        chalk.bold("Examples")
+      ],
+      wordWrap: true,
+      wrapOnWordBoundary: true,
+      style: { head: ["blue"], border: ["blue"] },
+      colWidths: [25, 50, 30]
+    });
+
+    scaleInfoTable.push(
+      [
+        "4-Point Grid System",
+        "Increments by 4 units to maintain consistency. Perfect for maintaining visual rhythm and alignment.",
+        "4, 8, 12, 16, ...\nGreat for UI components."
+      ],
+      [
+        "8-Point Grid System",
+        "Increments by 8 units for more spacious designs. Ideal for larger components and breathing room.",
+        "8, 16, 24, 32, ...\nCommon in modern web design."
+      ],
+      [
+        "Modular Scale",
+        "Uses a multiplier for a harmonious flow. Creates a musical, proportional relationship between values using a constant ratio.",
+        "4, 6.4, 10.24, ...\nBased on musical intervals."
+      ],
+      [
+        "Custom Intervals",
+        "User-defined intervals for complete customization. Complete control over the progression of values.",
+        "4, 10, 16, 22, ...\nGreat for specific needs."
+      ],
+      [
+        "Fibonacci Scale",
+        "Uses Golden Ratio (≈1.618) for natural progression. Creates an organic sequence found in nature and art. Each value is 1.618 times the previous one.",
+        "4, 6.47, 10.47, ...\nPerfect for organic UIs."
+      ]
+    );
+
+    console.log(scaleInfoTable.toString());
     console.log(chalk.black.bgBlueBright("\n=======================================\n"));
     const newScaleAnswer = await inquirer.prompt([
       {
@@ -131,7 +162,29 @@ const askForInput = async () => {
   }
 
   if (scaleAnswer.scale === 'modular') {
-    
+    const { scaleRatio } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'scaleRatio',
+        message: 'Choose a ratio for the modular scale:',
+        choices: [
+          { name: 'Minor Second (1.067)', value: '1.067' },
+          { name: 'Major Second (1.125)', value: '1.125' },
+          { name: 'Minor Third (1.2)', value: '1.2' },
+          { name: 'Major Third (1.25)', value: '1.25' },
+          { name: 'Perfect Fourth (1.333)', value: '1.333' },
+          { name: 'Augmented Fourth (1.414)', value: '1.414' },
+          { name: 'Perfect Fifth (1.5)', value: '1.5' },
+          { name: 'Minor Sixth (1.6)', value: '1.6' },
+          { name: 'Major Sixth (1.667)', value: '1.667' },
+          { name: 'Minor Seventh (1.778)', value: '1.778' },
+          { name: 'Major Seventh (1.875)', value: '1.875' },
+          { name: 'Octave (2.0)', value: '2.0' },
+          { name: 'Custom Ratio', value: 'custom' }
+        ]
+      }
+    ]);
+
     const modularBaseAnswer = await inquirer.prompt([
       {
         type: 'input',
@@ -144,19 +197,26 @@ const askForInput = async () => {
       }
     ]);
     
-    const modularFactorAnswer = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'factor',
-        message: 'Enter the multiplication factor (e.g. 1.5):',
-        validate: (input) => {
-          const num = parseFloat(input);
-          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+    let factor;
+    if (scaleRatio === 'custom') {
+      const customFactorAnswer = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'factor',
+          message: 'Enter the multiplication factor (e.g. 1.5):',
+          validate: (input) => {
+            const num = parseFloat(input);
+            return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+          }
         }
-      }
-    ]);
+      ]);
+      factor = parseFloat(customFactorAnswer.factor);
+    } else {
+      factor = parseFloat(scaleRatio);
+    }
+
     scaleAnswer.multiplier = parseFloat(modularBaseAnswer.multiplier);
-    scaleAnswer.factor = parseFloat(modularFactorAnswer.factor);
+    scaleAnswer.factor = factor;
   } else if (scaleAnswer.scale === 'custom') {
     const customBaseAnswer = await inquirer.prompt([
       {
