@@ -1,39 +1,9 @@
-# 🧙‍♂️ Design Tokens Wizards
+![Design Tokens Wizards Banner](src/assets/banner.png)
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Node.js](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)
 
 A powerful collection of scripts to generate and manage design tokens for your design system. Each wizard specializes in creating specific types of tokens, ensuring consistency and efficiency across your projects.
-
-## 📑 Table of Contents
-
-General Info:
-
-- [Quickstart](#-quickstart)
-- [Getting Started](#-getting-started)
-- [Project Structure](#-project-structure)
-
-Wizards:
-
-- [Color Tokens Wizard](#-color-tokens-wizard-)
-- [Typography Tokens Wizard](#-typography-tokens-wizard-)
-- [Space Tokens Wizard](#-space-tokens-wizard-)
-- [Size Tokens Wizard](#-size-tokens-wizard-)
-- [Border Radius Tokens Wizard](#-border-radius-tokens-wizard-)
-
-Spells:
-
-- [Merge Spell](#-merge-spell-)
-- [Clear Spell](#-clear-spell-)
-
-About:
-
-- [About](#crafted-with-love-in-barcelona-by-fulvia-buonanno-)
-- [Dependencies](#-dependencies-)
-- [License](#-license-)
-- [Troubleshooting & FAQ](#-troubleshooting--faq)
-- [Contact & Support](#-contact--support)
-- [Contributing](#-contributing)
 
 ---
 
@@ -77,11 +47,11 @@ _You'll be guided through the wizard interactively!_
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.6.0 |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.6.0    |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1 ✅ |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0 🔥    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0 🔥    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0 🔥    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0 🔥 |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0 🔥 |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0 🔥 |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |

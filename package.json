@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "color": "node src/wizards/color_wiz.js --version=2.6.0",
-    "typo": "node src/wizards/typo_wiz.js --version=1.2.1", 
+    "typo": "node src/wizards/typo_wiz.js --version=1.2.1",
     "space": "node src/wizards/space_wiz.js --version=1.7.0",
     "size": "node src/wizards/size_wiz.js --version=1.7.0",
     "radii": "node src/wizards/radii_wiz.js --version=1.7.0",
@@ -34,5 +34,8 @@
     "path": "^0.12.7",
     "puppeteer": "^24.7.0",
     "tinycolor2": "^1.6.0"
+  },
+  "devDependencies": {
+    "md-to-pdf": "^5.2.4"
   }
 }
