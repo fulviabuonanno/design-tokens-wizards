@@ -5,21 +5,6 @@
 
 A powerful collection of scripts to generate and manage design tokens for your design system. Each wizard specializes in creating specific types of tokens, ensuring consistency and efficiency across your projects.
 
----
-
-## 🚀 Quickstart
-
-```sh
-git clone https://github.com/fulviabuonanno/design-tokens-wizards.git
-cd design-tokens-wizards
-npm install
-npm run color   # or npm run typo, npm run space, etc.
-```
-
-_You'll be guided through the wizard interactively!_
-
----
-
 ## 🧙 Getting Started
 
 1. **Install Node.js**  
@@ -36,18 +21,28 @@ _You'll be guided through the wizard interactively!_
      - Mac: `Command + Space`, type `terminal`
      - Linux: `Ctrl + Alt + T`
 
-4. **Install Dependencies**
+4. **Download/Clone the Repository**
+
+   [Download ZIP](https://github.com/fulviabuonanno/design-tokens-wizards/archive/refs/heads/main.zip)
+
+   or
+
+   Clone Repo
+   git clone https://github.com/fulviabuonanno/design-tokens-wizards.git
+   cd design-tokens-wizards
+
+5. **Install Dependencies**
 
    ```sh
    npm install
    ```
 
-5. **Run the Scripts**  
+6. **Run the Scripts**  
    Choose from the following wizards:
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.6.0    |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.6.0 🔥 |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1 ✅ |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0 🔥 |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0 🔥 |
@@ -59,11 +54,7 @@ _You'll be guided through the wizard interactively!_
 | **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1 ✅ |
 
 Legend:  
-✅ Recently updated  
-🔥 New feature  
-🆙 Version upgrade
-
----
+✅ Patch // 🔥 Minor Change // 🆙 Major Change
 
 ## 🗂 Project Structure
 
@@ -84,7 +75,7 @@ output_files/      # Where generated tokens are saved
   final/
 ```
 
-## 🎨 **Color Tokens Wizard** ✨
+## 🎨 **Color Tokens Wizard**
 
 Version 2.6.0
 
@@ -210,7 +201,7 @@ Managing color tokens can sometimes feel as magical as mastering alchemy, but wi
 
 Let the art of token crafting infuse your project with endless creativity—and may your colors forever dazzle!
 
-## 🔤 **Typography Tokens Wizard** ✨
+## 🔤 **Typography Tokens Wizard**
 
 Version 1.2.0
 
@@ -329,7 +320,7 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
 
 ---
 
-## 🔳 **Space Tokens Wizard** ✨
+## 🔳 **Space Tokens Wizard**
 
 Version 1.7.0
 
@@ -396,7 +387,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 ---
 
-## 📏 **Size Tokens Wizard** ✨
+## 📏 **Size Tokens Wizard**
 
 Version 1.7.0
 
@@ -463,7 +454,7 @@ Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you 
 
 ---
 
-## ⭕️ **Border Radius Tokens Wizard** ✨
+## ⭕️ **Border Radius Tokens Wizard**
 
 Version 1.7.0
 
@@ -529,7 +520,7 @@ Creating border-radius tokens is simplified with the Border Radius Tokens Wizard
 
 ---
 
-### 🧹 **Clear Spell** ✨
+### 🧹 **Clear Spell**
 
 Version 1.2.1
 
@@ -550,7 +541,7 @@ The Clear Spell is a simple yet powerful tool to keep your project directory cle
 
 ---
 
-### 🪄 **Merge Spell** ✨
+### 🪄 **Merge Spell**
 
 Version 1.2.0
 
@@ -570,19 +561,17 @@ The Merge Spell is designed to simplify your workflow by combining multiple toke
 
 ---
 
-## Crafted with Love in Barcelona by Fulvia Buonanno 🪄❤️
+## Created with Love in Barcelona by Fulvia Buonanno 🪄❤️
 
-![Profile Pic](src/assets/profile_pic.png)
+![Profile Picture](src/assets/profile_pic.png)
 
-Find out more about our wizards at: [Design Tokens Wizards Website](https://designtokenswizards.framer.website/)
+Discover more about our wizards at: [Design Tokens Wizards Website](https://designtokenswizards.framer.website/)
 
-If you're passionate about design systems and tokens, this tool is your perfect companion, enabling you to create tokens effortlessly. For fans of RPGs or JRPGs, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
+If you're passionate about design systems and tokens, this tool is your perfect companion, allowing you to create tokens effortlessly. For RPG or JRPG fans, this tool will evoke a sense of nostalgia, blending classic gaming vibes with your design workflow. 🧩
 
-Crafted with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making Tokens Studio more accessible, especially for newcomers. 🧙
+Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelona, this tool aims to bridge the gap between design and development, making tokens more accessible, especially for newcomers to this magical world. 🧙
 
----
-
-## 📦 Dependencies ✨
+## 📦 Dependencies
 
 Below is a comprehensive list of all dependencies used in this project:
 
@@ -597,7 +586,7 @@ Below is a comprehensive list of all dependencies used in this project:
 
 ---
 
-## 📝 License ✨
+## 📝 License
 
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software as long as the original copyright notice and permission notice are included in all copies or substantial portions of the software.
 
@@ -605,7 +594,21 @@ For more details, you can read the full license text in the [LICENSE](./LICENSE)
 
 ---
 
-## ❓ Troubleshooting & FAQ
+## ❓ Troubleshooting and FAQ
+
+**Q: How can I provide feedback or report issues?**  
+A: We welcome your feedback! You can:
+
+- Reach out to us on our [website](https://designtokenswizards.framer.website/)
+- Fill out this [form](https://tally.so/r/m6V6Po/)
+
+Your feedback helps us improve the tool and make it better for everyone. We're particularly interested in:
+
+- Bug reports
+- Feature requests
+- Documentation improvements
+- User experience feedback
+- Performance issues
 
 **Q: I get a permission error or "command not found"?**  
 A: Make sure you have Node.js (v18+) installed and are running commands from the project root.
@@ -656,19 +659,19 @@ A: Yes! The wizards can be run from the command line, making them perfect for au
 A: Yes! The tokens are exported in standard formats (CSS, SCSS) that can be used with any CSS framework or vanilla CSS.
 
 **Q: Something else isn't working!**  
-A: Please [open an issue](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or contact me :)
+A: Please [open an issue](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or contact [me](mailto:designtokenswizards@gmail.com).
 
 ---
 
-## 📬 Contact & Support
+## 📬 Contact and Support
+
+For questions, suggestions, or bug reports, please open an issue or [contact me](mailto:designtokenswizards@gmail.com).
 
 ---
-
-For questions, suggestions, or bug reports, please open an issue or contact [me](mailto:designtokenswizards@gmail.com).
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!  
+Contributions, issues, and feature requests are welcome!  
 Feel free to check the [issues page](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or submit a pull request.
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
