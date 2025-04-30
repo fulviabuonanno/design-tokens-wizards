@@ -676,4 +676,19 @@ Feel free to check the [issues page](https://github.com/fulviabuonanno/design-to
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
+### ☕️ Support the Project
+
+If you find this tool helpful and want to show your appreciation, consider buying me a coffee! Your support helps me maintain and improve the Design Tokens Wizards, making it even more magical for everyone.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/fbuonanno)
+
+Every coffee helps me:
+
+- Add new features and improvements
+- Fix bugs and maintain the codebase
+- Create more documentation and examples
+- Keep the magic alive! ✨
+
+Even a small contribution makes a big difference in keeping this project thriving. Thank you for being part of our magical community! 🧙‍♀️
+
 ---

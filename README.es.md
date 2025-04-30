@@ -692,4 +692,19 @@ No dudes en revisar la [página de issues](https://github.com/fulviabuonanno/des
 
 Por favor, consulta [CONTRIBUTING.md](CONTRIBUTING.md) para las directrices.
 
+### ☕️ Apoya el Proyecto
+
+Si encuentras esta herramienta útil y quieres mostrar tu agradecimiento, ¡considera invitarme a un café! Tu apoyo me ayuda a mantener y mejorar los Maguitos de Design Tokens, haciéndolo aún más mágico para todos.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/fbuonanno)
+
+Cada café me ayuda a:
+
+- Añadir nuevas características y mejoras
+- Corregir errores y mantener el código
+- Crear más documentación y ejemplos
+- ¡Mantener la magia viva! ✨
+
+Incluso una pequeña contribución hace una gran diferencia para mantener este proyecto en crecimiento. ¡Gracias por ser parte de nuestra comunidad mágica! 🧙‍♀️
+
 ---
