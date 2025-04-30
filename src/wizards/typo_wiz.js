@@ -93,336 +93,6 @@ async function showAccessibilityNotes(propertyType) {
   }
 }
 
-async function generateAccessibilityReport(selectedProperties, tokens, outputsDir) {
-  const reportsDir = path.join(outputsDir, "reports");
-  if (!fs.existsSync(reportsDir)) {
-    fs.mkdirSync(reportsDir, { recursive: true });
-  }
-  
-  const pdfPath = path.join(reportsDir, "a11y-typography-guidelines.pdf");
-  
-  // Read and encode the banner image
-  const bannerPath = path.join(__dirname, '..', 'assets', 'banner.png');
-  const bannerBase64 = fs.readFileSync(bannerPath, { encoding: 'base64' });
-  
-  // HTML template with CSS styling
-  /*
-  let styles = `
-    <style>
-      body {
-        font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-        line-height: 1.2;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .banner {
-        width: 100%;
-        max-width: 800px;
-        margin-bottom: 30px;
-        display: block;
-      }
-      h1 {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        font-size: 24px;
-        font-weight: 600;
-        color: #1a1a1a;
-        border-bottom: 2px solid #e0e0e0;
-        padding-bottom: 10px;
-        margin-bottom: 30px;
-      }
-      h2 {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        font-size: 20px;
-        font-weight: 500;
-        color: #2c3e50;
-        margin-top: 30px;
-        margin-bottom: 15px;
-      }
-      h3 {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        font-size: 18px;
-        font-weight: 500;
-        color: #34495e;
-        margin-top: 20px;
-      }
-      ul {
-        padding-left: 20px;
-        margin-bottom: 20px;
-      }
-      li {
-        margin-bottom: 8px;
-      }
-      .token-value {
-        font-family: monospace;
-        background-color: #f5f5f5;
-        padding: 2px 5px;
-        border-radius: 3px;
-      }
-      .checklist-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-      }
-      .checklist-item::before {
-        content: "☐";
-        margin-right: 10px;
-        font-size: 1.2em;
-      }
-      .footer {
-        font-family: 'Instrument Sans', Arial, sans-serif;
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #e0e0e0;
-        font-size: 0.9em;
-        color: #666;
-        text-align: center;
-      }
-      .footer p {
-        margin: 5px 0;
-      }
-      .support-section {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-        width: 100%;
-      }
-      .profile-pic {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-      .support-text {
-        margin: 0;
-      }
-      .toc {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        margin: 20px 0;
-      }
-      .toc ul {
-        list-style-type: none;
-        padding-left: 0;
-      }
-      .toc ul ul {
-        padding-left: 20px;
-      }
-      .toc a {
-        color: #2c3e50;
-        text-decoration: none;
-        line-height: 1.8;
-      }
-      .toc a:hover {
-        color: #0056b3;
-        text-decoration: underline;
-      }
-      .introduction {
-        background: #fff;
-        padding: 20px;
-        border-left: 4px solid #2c3e50;
-        margin: 20px 0;
-      }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  `;
-
-  let report = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      ${styles}
-    </head>
-    <body>
-      <img src="data:image/png;base64,${bannerBase64}" class="banner" alt="Design Tokens Wizards Banner">
-      <h1>Typography Accessibility Guidelines 🔠👁️</h1>
-      
-      <div class="introduction">
-        <p>This comprehensive typography accessibility report analyzes your design tokens for WCAG 2.2 compliance and provides detailed insights about font choices, sizes, weights, and spacing. Use this report to ensure your typography choices are accessible to all users.</p>
-        <p>The report includes guidelines for font families, sizes, weights, letter spacing, and line heights, along with specific recommendations for improving accessibility where needed.</p>
-      </div>
-
-      <div class="toc">
-        <h2>Table of Contents</h2>
-        <ul>
-          <li><a href="#selected-properties">Selected Properties</a></li>
-          ${selectedProperties.includes('fontFamily') ? '<li><a href="#font-family">Font Family Guidelines</a></li>' : ''}
-          ${selectedProperties.includes('fontSize') ? '<li><a href="#font-size">Font Size Guidelines</a></li>' : ''}
-          ${selectedProperties.includes('fontWeight') ? '<li><a href="#font-weight">Font Weight Guidelines</a></li>' : ''}
-          ${selectedProperties.includes('letterSpacing') ? '<li><a href="#letter-spacing">Letter Spacing Guidelines</a></li>' : ''}
-          ${selectedProperties.includes('lineHeight') ? '<li><a href="#line-height">Line Height Guidelines</a></li>' : ''}
-          <li><a href="#implementation">Implementation Checklist</a></li>
-        </ul>
-      </div>
-
-      <h2 id="selected-properties">Selected Properties</h2>
-      <ul>
-        ${selectedProperties.map(prop => `<li>${prop}</li>`).join('\n')}
-      </ul>`;
-
-  if (selectedProperties.includes('fontFamily')) {
-    report += `
-      <h2 id="font-family">Font Family Guidelines</h2>
-      <h3>Your Font Choices</h3>
-      <ul>
-        ${Object.entries(tokens.fontFamily || {}).map(([name, data]) => 
-          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
-        ).join('\n')}
-      </ul>
-      <h3>Accessibility Guidelines</h3>
-      <ul>
-        <li>Choose fonts with clear letterforms and good character distinction</li>
-        <li>Sans-serif fonts are generally more readable on screens</li>
-        <li>Ensure fonts support all required characters and languages</li>
-        <li>Always provide at least one system font fallback</li>
-        <li>Consider using system font stacks for better performance</li>
-      </ul>`;
-  }
-
-  if (selectedProperties.includes('fontSize')) {
-    report += `
-      <h2 id="font-size">Font Size Guidelines</h2>
-      <h3>Your Font Sizes</h3>
-      <ul>
-        ${Object.entries(tokens.fontSize || {}).map(([name, data]) => 
-          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
-        ).join('\n')}
-      </ul>
-      <h3>Accessibility Guidelines</h3>
-      <ul>
-        <li>Body text should be at least 16px</li>
-        <li>Minimum text size should be 12px</li>
-        <li>Small font sizes should only be used for supplementary content</li>
-        <li>Consider users with visual impairments when defining your scale</li>
-      </ul>`;
-  }
-
-  if (selectedProperties.includes('fontWeight')) {
-    report += `
-      <h2 id="font-weight">Font Weight Guidelines</h2>
-      <h3>Your Font Weights</h3>
-      <ul>
-        ${Object.entries(tokens.fontWeight || {}).map(([name, data]) => 
-          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
-        ).join('\n')}
-      </ul>
-      <h3>Accessibility Guidelines</h3>
-      <ul>
-        <li>Body text should be at least 400 (regular) weight</li>
-        <li>Avoid using font weights below 400 for main content</li>
-        <li>Headers typically benefit from weights of 600 or higher</li>
-        <li>Ensure sufficient contrast between text and background</li>
-      </ul>`;
-  }
-
-  if (selectedProperties.includes('letterSpacing')) {
-    report += `
-      <h2 id="letter-spacing">Letter Spacing Guidelines</h2>
-      <h3>Your Letter Spacing Values</h3>
-      <ul>
-        ${Object.entries(tokens.letterSpacing || {}).map(([name, data]) => 
-          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
-        ).join('\n')}
-      </ul>
-      <h3>Accessibility Guidelines</h3>
-      <ul>
-        <li>Avoid extreme letter spacing values that could harm readability</li>
-        <li>Body text should maintain normal letter spacing (0) or very subtle adjustments</li>
-        <li>Users with dyslexia may struggle with increased letter spacing</li>
-        <li>Ensure sufficient contrast and clear letterforms remain visible</li>
-      </ul>`;
-  }
-
-  if (selectedProperties.includes('lineHeight')) {
-    report += `
-      <h2 id="line-height">Line Height Guidelines</h2>
-      <h3>Your Line Heights</h3>
-      <ul>
-        ${Object.entries(tokens.lineHeight || {}).map(([name, data]) => 
-          data && data.value ? `<li><strong>${name}:</strong> <span class="token-value">${data.value}</span></li>` : ''
-        ).join('\n')}
-      </ul>
-      <h3>Accessibility Guidelines</h3>
-      <ul>
-        <li>Body text should have a minimum line height of 1.5</li>
-        <li>Headings should have a minimum line height of 1.3</li>
-        <li>Line height should increase as line length increases</li>
-        <li>WCAG 2.2 Success Criterion 1.4.12 requires adjustable line spacing up to 1.5</li>
-      </ul>`;
-  }
-
-  report += `
-      <h2 id="implementation">Implementation Checklist</h2>
-      <div class="checklist">
-        ${selectedProperties.map(prop => {
-          const checklistItem = {
-            fontFamily: 'Font families are accessible and have proper fallbacks',
-            fontSize: 'Font sizes meet minimum requirements (16px for body, 12px minimum)',
-            fontWeight: 'Font weights are appropriate for content hierarchy',
-            letterSpacing: 'Letter spacing is optimized for readability',
-            lineHeight: 'Line heights meet WCAG 2.2 requirements'
-          }[prop];
-          return checklistItem ? `<div class="checklist-item">${checklistItem}</div>` : '';
-        }).join('\n')}
-        <div class="checklist-item">Typography is tested across different devices and browsers</div>
-        <div class="checklist-item">Accessibility tools have been used to verify implementation</div>
-        <div class="checklist-item">User testing has been conducted with diverse user groups</div>
-      </div>
-
-      <div class="footer">
-        <p>Generated by Design Tokens Wizards - Typography Accessibility Guidelines</p>
-        <p>Generated on: ${new Date().toLocaleString()}</p>
-        <div class="support-section">
-          <img src="data:image/png;base64,${fs.readFileSync(path.join(__dirname, '..', 'assets', 'profile_pic.png'), { encoding: 'base64' })}" alt="Profile Picture" class="profile-pic">
-          <p class="support-text">Do you want to support this project? <a href="https://ko-fi.com/fbuonanno" target="_blank">Invite me a coffee ❤️☕️</a></p>
-        </div>
-        <p class="website-link">Discover more about Design Tokens Wizards at: <a href="https://designtokenswizards.framer.website/" target="_blank">https://designtokenswizards.framer.website/</a></p>
-      </div>
-    </body>
-    </html>`;
-
-  // Configure Puppeteer for better PDF output
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  
-  // Enable loading of Google Fonts
-  await page.setRequestInterception(true);
-  page.on('request', request => {
-    if (request.url().startsWith('https://fonts.googleapis.com') || 
-        request.url().startsWith('https://fonts.gstatic.com')) {
-      request.continue();
-    } else {
-      request.continue();
-    }
-  });
-
-  await page.setContent(report);
-  
-  // Wait for the banner image and Google Font to load
-  await page.waitForSelector('img.banner');
-  await page.evaluate(() => document.fonts.ready);
-  
-  await page.pdf({
-    path: pdfPath,
-    format: 'A4',
-    margin: {
-      top: '40px',
-      right: '40px',
-      bottom: '40px',
-      left: '40px'
-    },
-    printBackground: true,
-    preferCSSPageSize: true
-  });
-  await browser.close();
-  */
-}
-
 async function typographyWiz() {
   
   console.log(chalk.bold.bgRedBright("\n========================================"));
@@ -732,19 +402,7 @@ async function typographyWiz() {
     
     await showAccessibilityNotes('fontSize');
     
-    let scaleInfo = {
-      type: '',
-      method: '',
-      step: 0,
-      base: 0,
-      ratio: 0,
-      unit: '',
-      baseMultiplier: 0
-    };
-    
-    let namingOptions = {};
-    let sizeNames = [];
-    let fontSizes = {};
+    let fontSizes = {}; // Initialize fontSizes object
     
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
     const { propertyName } = await inquirer.prompt([
@@ -763,14 +421,14 @@ async function typographyWiz() {
         default: 'fontSize'
       }
     ]);
-    
+
     let customPropertyName = propertyName;
     if (propertyName === 'custom') {
       const { customName } = await inquirer.prompt([
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., sizeScale, typeScale):',
+          message: 'Enter your custom token name (e.g., sizeScale, fontSizeScale):',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -790,15 +448,17 @@ async function typographyWiz() {
         choices: [
           { name: 'T-shirt sizes (e.g. xs, sm, md, lg)', value: 'tshirt' },
           { name: 'Ordinal (e.g. 1, 2, 3, 4)', value: 'ordinal' },
-          { name: 'Incremental (e.g. 100, 200, 300, 400)', value: 'incremental' },
+          { name: 'Incremental (e.g. 100, 200, 300)', value: 'incremental' },
           { name: 'Alphabetical (e.g. A, B, C, D)', value: 'alphabetical' }
-      
         ]
       }
     ]);
 
+    let namingOptions = {};
+    let sizeNames = [];
+
     if (namingConvention === 'ordinal') {
-      const ordinalFormatAnswer = await inquirer.prompt([
+      const { ordinalFormat } = await inquirer.prompt([
         {
           type: 'list',
           name: 'ordinalFormat',
@@ -809,9 +469,23 @@ async function typographyWiz() {
           ]
         }
       ]);
-      namingOptions.format = ordinalFormatAnswer.ordinalFormat;
+      namingOptions.format = ordinalFormat;
+    } else if (namingConvention === 'incremental') {
+      const { increment } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'increment',
+          message: 'Choose the increment step:',
+          choices: [
+            { name: '100 (100, 200, 300...)', value: 100 },
+            { name: '200 (200, 400, 600...)', value: 200 },
+            { name: '50 (50, 100, 150...)', value: 50 }
+          ]
+        }
+      ]);
+      namingOptions.increment = increment;
     } else if (namingConvention === 'alphabetical') {
-      const alphabeticalCaseAnswer = await inquirer.prompt([
+      const { alphabeticalCase } = await inquirer.prompt([
         {
           type: 'list',
           name: 'alphabeticalCase',
@@ -822,85 +496,104 @@ async function typographyWiz() {
           ]
         }
       ]);
-      namingOptions.case = alphabeticalCaseAnswer.alphabeticalCase;
-    } else if (namingConvention === 'incremental') {
-      const incrementalStepAnswer = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'incrementalStep',
-          message: 'For Incremental scale, choose the step increment:',
-          choices: [
-            { name: '10 in 10 (e.g., 10, 20, 30, 40)', value: 10 },
-            { name: '25 in 25 (e.g., 25, 50, 75, 100)', value: 25 },
-            { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
-            { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 }
-          ]
-        }
-      ]);
-      namingOptions.increment = incrementalStepAnswer.incrementalStep;
+      namingOptions.case = alphabeticalCase;
     }
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Scale Type`));
-    console.log(chalk.yellow("Select a scale type for your font sizes. ") + chalk.underline("Recommended:") + chalk.yellow(" 4-point or 8-point grid system for consistency."));
-    
-    const { scaleType } = await inquirer.prompt([
+    let { scaleType } = await inquirer.prompt([
       {
         type: 'list',
         name: 'scaleType',
-        message: '🔢 Select the scale to use for your font sizes:',
+        message: 'Choose the scale type for font sizes:',
         choices: [
-          { name: '4-Point Grid System', value: '4' },
-          { name: '8-Point Grid System', value: '8' },
-          { name: 'Modular Scale (multiplier based)', value: 'modular' },
+          { name: '4-Point Grid System', value: 'grid4' },
+          { name: '8-Point Grid System', value: 'grid8' },
+          { name: 'Modular Scale', value: 'modular' },
           { name: 'Custom Intervals', value: 'custom' },
           { name: 'Fibonacci Scale', value: 'fibonacci' },
           { name: 'More Info', value: 'info' }
-        ],
-        filter: (input) => input.toLowerCase()
+        ]
       }
     ]);
-    
-    let currentScaleType = scaleType;
+
     if (scaleType === 'info') {
-      console.log(chalk.cyan("\n📚 INFORMATION ABOUT DIFFERENT SCALES:"));
-      console.log(chalk.cyan("• 4-Point Grid System: Values increase in multiples of 4 (4, 8, 12, 16, 20...)"));
-      console.log(chalk.cyan("• 8-Point Grid System: Values increase in multiples of 8 (8, 16, 24, 32, 40...)"));
-      console.log(chalk.cyan("• Modular Scale: Values increase by multiplying by a ratio (e.g., 16, 20, 25, 31.25...)"));
-      console.log(chalk.cyan("• Custom Intervals: You define your own progression"));
-      console.log(chalk.cyan("• Fibonacci Scale: Based on the Fibonacci sequence (0, 1, 1, 2, 3, 5, 8, 13, 21...)\n"));
+      console.log(chalk.black.bgRedBright("\n========================================"));
+      console.log(chalk.bold("📚 SCALE INFORMATION"));
+      console.log(chalk.black.bgRedBright("========================================\n"));
+
+      const scaleInfoTable = new Table({
+        head: [
+          chalk.bold("Scale Name"),
+          chalk.bold("Description"),
+          chalk.bold("Examples")
+        ],
+        wordWrap: true,
+        wrapOnWordBoundary: true,
+        style: { head: ["red"], border: ["red"] },
+        colWidths: [25, 50, 30]
+      });
+
+      scaleInfoTable.push(
+        [
+          "4-Point Grid System",
+          "Increments by 4 units to maintain consistency. Perfect for maintaining visual rhythm and alignment.",
+          "4, 8, 12, 16, ...\nGreat for UI components."
+        ],
+        [
+          "8-Point Grid System",
+          "Increments by 8 units for more spacious designs. Ideal for larger components and breathing room.",
+          "8, 16, 24, 32, ...\nCommon in modern web design."
+        ],
+        [
+          "Modular Scale",
+          "Uses a multiplier for a harmonious flow. Creates a musical, proportional relationship between values using a constant ratio.",
+          "4, 6.4, 10.24, ...\nBased on musical intervals."
+        ],
+        [
+          "Custom Intervals",
+          "User-defined intervals for complete customization. Complete control over the progression of values.",
+          "4, 10, 16, 22, ...\nGreat for specific needs."
+        ],
+        [
+          "Fibonacci Scale",
+          "Uses Golden Ratio (≈1.618) for natural progression. Creates an organic sequence found in nature and art. Each value is 1.618 times the previous one.",
+          "4, 6.47, 10.47, ...\nPerfect for organic UIs."
+        ]
+      );
+
+      console.log(scaleInfoTable.toString());
+      console.log(chalk.black.bgRedBright("\n========================================\n"));
       
-      const { scaleTypeRetry } = await inquirer.prompt([
+      const newScaleAnswer = await inquirer.prompt([
         {
           type: 'list',
-          name: 'scaleTypeRetry',
-          message: '🔢 Now, select the scale to use:',
+          name: 'scaleType',
+          message: 'Choose the scale type for font sizes:',
           choices: [
-            { name: '4-Point Grid System', value: '4' },
-            { name: '8-Point Grid System', value: '8' },
-            { name: 'Modular Scale (multiplier based)', value: 'modular' },
+            { name: '4-Point Grid System', value: 'grid4' },
+            { name: '8-Point Grid System', value: 'grid8' },
+            { name: 'Modular Scale', value: 'modular' },
             { name: 'Custom Intervals', value: 'custom' },
             { name: 'Fibonacci Scale', value: 'fibonacci' }
-          ],
-          filter: (input) => input.toLowerCase()
+          ]
         }
       ]);
-      
-      currentScaleType = scaleTypeRetry;
+      scaleType = newScaleAnswer.scaleType;
     }
-    
-    scaleInfo.type = currentScaleType;
-    
-    if (currentScaleType === '4') {
-      
-      scaleInfo.method = 'grid';
-      scaleInfo.step = 4;
-      scaleInfo.base = 16; 
+
+    let scaleInfo = {
+      method: scaleType,
+      unit: 'px'
+    };
+
+    if (scaleType === 'grid4' || scaleType === 'grid8') {
+      scaleInfo.step = scaleType === 'grid4' ? 4 : 8;
       
       const { baseValue } = await inquirer.prompt([
         {
           type: 'input',
           name: 'baseValue',
-          message: 'Enter the base size (default is 16):',
+          message: 'Enter the base size (middle value):',
           default: '16',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -914,34 +607,7 @@ async function typographyWiz() {
       ]);
       
       scaleInfo.base = parseFloat(baseValue);
-      
-    } else if (currentScaleType === '8') {
-      
-      scaleInfo.method = 'grid';
-      scaleInfo.step = 8;
-      scaleInfo.base = 16; 
-      
-      const { baseValue } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'baseValue',
-          message: 'Enter the base size (default is 16):',
-          default: '16',
-          validate: input => {
-            if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
-            const value = parseFloat(input);
-            if (value < 12) {
-              return chalk.yellow('⚠️ Note: The minimum value for font size will be 12px for accessibility reasons.');
-            }
-            return true;
-          }
-        }
-      ]);
-      
-      scaleInfo.base = parseFloat(baseValue);
-      
-    } else if (currentScaleType === 'modular') {
-      
+    } else if (scaleType === 'modular') {
       scaleInfo.method = 'modular';
       
       const { baseValue } = await inquirer.prompt([
@@ -974,7 +640,11 @@ async function typographyWiz() {
             { name: 'Perfect Fourth (1.333)', value: '1.333' },
             { name: 'Augmented Fourth (1.414)', value: '1.414' },
             { name: 'Perfect Fifth (1.5)', value: '1.5' },
-            { name: 'Golden Ratio (1.618)', value: '1.618' },
+            { name: 'Minor Sixth (1.6)', value: '1.6' },
+            { name: 'Major Sixth (1.667)', value: '1.667' },
+            { name: 'Minor Seventh (1.778)', value: '1.778' },
+            { name: 'Major Seventh (1.875)', value: '1.875' },
+            { name: 'Octave (2.0)', value: '2.0' },
             { name: 'Custom Ratio', value: 'custom' }
           ]
         }
@@ -1001,9 +671,37 @@ async function typographyWiz() {
       }
       
       scaleInfo.base = parseFloat(baseValue);
+    } else if (scaleType === 'fibonacci') {
+      scaleInfo.method = 'fibonacci';
       
-    } else if (currentScaleType === 'custom') {
+      console.log(chalk.bold.yellow("\n📝 Fibonacci Scale Information:"));
+      console.log(chalk.yellow("The Fibonacci scale uses the Golden Ratio (1.618) to generate a harmonious sequence."));
+      console.log(chalk.yellow("Each value is approximately 1.618 times the previous value."));
+      console.log(chalk.yellow("This creates a natural, pleasing progression that follows the Fibonacci sequence."));
+      console.log(chalk.yellow("Example: Starting with 16px, the sequence would be:"));
+      console.log(chalk.yellow("• 16px (base)"));
+      console.log(chalk.yellow("• 26px (16 × 1.618)"));
+      console.log(chalk.yellow("• 42px (26 × 1.618)"));
+      const { baseValue } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'baseValue',
+          message: 'Enter the base size (starting value):',
+          default: '16',
+          validate: input => {
+            if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
+            const value = parseFloat(input);
+            if (value < 12) {
+              return chalk.yellow('⚠️ Note: The minimum value for font size will be 12px for accessibility reasons.');
+            }
+            return true;
+          }
+        }
+      ]);
       
+      scaleInfo.base = parseFloat(baseValue);
+      scaleInfo.ratio = 1.618; // Golden Ratio
+    } else if (scaleType === 'custom') {
       scaleInfo.method = 'custom';
       
       const { baseValue } = await inquirer.prompt([
@@ -1039,29 +737,8 @@ async function typographyWiz() {
       
       scaleInfo.base = parseFloat(baseValue);
       scaleInfo.step = parseFloat(step);
-      
-    } else if (currentScaleType === 'fibonacci') {
-      
-      scaleInfo.method = 'fibonacci';
-      scaleInfo.sequence = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55];
-      
-      const { baseMultiplier } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'baseMultiplier',
-          message: 'Enter the base multiplier (will multiply the Fibonacci sequence):',
-          default: '1',
-          validate: input => {
-            if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
-            if (parseFloat(input) <= 0) return 'Multiplier must be greater than 0';
-            return true;
-          }
-        }
-      ]);
-      
-      scaleInfo.baseMultiplier = parseFloat(baseMultiplier);
     }
-    
+
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Unit`));
     
     const { sizingUnit } = await inquirer.prompt([
@@ -1133,14 +810,15 @@ async function typographyWiz() {
     
     function convertToUnit(value, unit) {
       if (unit === 'px') {
-        return value;
+        // Remove trailing zeros after decimal point
+        return parseFloat(value.toFixed(2)).toString();
       } else if (unit === 'rem' || unit === 'em') {
         // Convert px to rem/em (1rem = 16px by default)
         const converted = (value / 16).toFixed(2);
         // Remove trailing zeros for whole numbers
-        return converted.replace(/\.?0+$/, '');
+        return parseFloat(converted).toString();
       }
-      return value;
+      return parseFloat(value.toFixed(2)).toString();
     }
 
     function calculateSizes(scaleInfo, numSizes) {
@@ -1148,7 +826,7 @@ async function typographyWiz() {
       const MIN_FONT_SIZE = 12;
       const BASE_FONT_SIZE = 16; // Standard browser default
       
-      if (scaleInfo.method === 'grid') {
+      if (scaleInfo.method === 'grid4' || scaleInfo.method === 'grid8') {
         const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
         const step = scaleInfo.step;
         
@@ -1193,31 +871,26 @@ async function typographyWiz() {
           sizes.push(convertToUnit(size, scaleInfo.unit));
         }
       } else if (scaleInfo.method === 'fibonacci') {
-        const sequence = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
-        const multiplier = Math.max(scaleInfo.baseMultiplier, MIN_FONT_SIZE / sequence[0]);
+        const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
+        const ratio = scaleInfo.ratio; // Golden Ratio (1.618)
         
-        // Generate a scale that goes both up and down from the base size
-        const halfSizes = Math.floor(numSizes / 2);
-        const remainingSizes = numSizes - halfSizes;
-        
-        // Generate smaller sizes
-        for (let i = halfSizes; i > 0; i--) {
-          const size = Math.max(sequence[i] * multiplier, MIN_FONT_SIZE);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
+        // Generate Fibonacci sequence
+        let prev = baseSize;
+        let current = baseSize;
         
         // Add base size
-        sizes.push(convertToUnit(sequence[0] * multiplier, scaleInfo.unit));
+        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
         
-        // Generate larger sizes
-        for (let i = 1; i < remainingSizes; i++) {
-          const size = sequence[i] * multiplier;
-          sizes.push(convertToUnit(size, scaleInfo.unit));
+        // Generate remaining sizes
+        for (let i = 1; i < numSizes; i++) {
+          const next = (current * ratio).toFixed(2);
+          sizes.push(convertToUnit(parseFloat(next), scaleInfo.unit));
+          prev = current;
+          current = parseFloat(next);
         }
-      } else {
-        // Custom intervals
+      } else if (scaleInfo.method === 'custom') {
         const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
-        const step = scaleInfo.step || 4;
+        const step = scaleInfo.step;
         
         // Generate a scale that goes both up and down from the base size
         const halfSizes = Math.floor(numSizes / 2);
@@ -1239,15 +912,7 @@ async function typographyWiz() {
         }
       }
       
-      // Ensure unique values and proper ordering
-      const uniqueSizes = [...new Set(sizes)].sort((a, b) => parseFloat(a) - parseFloat(b));
-      
-      // If we have more values than needed, trim the array
-      if (uniqueSizes.length > numSizes) {
-        return uniqueSizes.slice(0, numSizes);
-      }
-      
-      return uniqueSizes;
+      return sizes;
     }
     
     console.log(chalk.bold.yellowBright("\n📋 Font Size Settings Summary:"));
@@ -1284,7 +949,7 @@ async function typographyWiz() {
     settingsTable.push(
       ["Token Name", customPropertyName],
       ["Naming Convention", getDescriptiveName('namingConvention', namingConvention)],
-      ["Scale Type", getDescriptiveName('scaleType', currentScaleType)],
+      ["Scale Type", getDescriptiveName('scaleType', scaleType)],
       ["Number of Font Sizes", numSizes.toString()],
       ["Unit", scaleInfo.unit]
     );
@@ -1740,7 +1405,7 @@ async function typographyWiz() {
     console.log(chalk.bold.bgRedBright("========================================\n"));
     
     await showAccessibilityNotes('lineHeight');
-
+    
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
     const { propertyName } = await inquirer.prompt([
       {
@@ -2068,8 +1733,6 @@ async function typographyWiz() {
   fs.writeFileSync(cssFilePath, cssContent, 'utf-8');
   fs.writeFileSync(scssFilePath, scssContent, 'utf-8');
 
-  // await generateAccessibilityReport(selectedProperties, finalTokens, outputsDir);
-
   await showLoader(chalk.bold.yellowBright("\n🪄 Finalizing your spell..."), 1500);
 
   console.log(chalk.black.bgRedBright("\n======================================="));
@@ -2084,10 +1747,6 @@ async function typographyWiz() {
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), cssFilePath)}`));
   console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), scssFilePath)}`));
   
-  // console.log('')
-  // console.log(chalk.whiteBright(`✅ Generated accessibility report at:`));
-  // console.log(chalk.whiteBright(`   -> reports/a11y-typography-guidelines.pdf`));
-
   console.log(chalk.black.bgRedBright("\n======================================="));
   console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
   console.log(chalk.black.bgRedBright("=======================================\n"));

@@ -293,17 +293,48 @@ const askForInput = async () => {
     console.log(chalk.black.bgGreenBright("\n======================================="));
     console.log(chalk.bold("📚 SCALE INFORMATION"));
     console.log(chalk.black.bgGreenBright("=======================================\n"));
-    console.log(`
-  ===============================================================================================
-  Scale Name               | Description                                           | Examples
-  ===============================================================================================
-  4-Point Grid System      | Increments by 4 units to maintain consistency.        | 4, 8, 12, 16, ...
-  8-Point Grid System      | Increments by 8 units for more spacious designs.      | 8, 16, 24, 32, ...
-  Modular Scale            | Uses a multiplier and factor for a harmonious flow.   | e.g., 4, 6.4, 10.24, ...
-  Custom Intervals         | User-defined intervals for complete customization.    | e.g., 4, 10, 16, 22, ...
-  Fibonacci Scale          | Multiplies the previous value by ≈1.618.              | e.g., 4, 6.47, 10.47, ...
-  ===============================================================================================
-    `);
+
+    const scaleInfoTable = new Table({
+      head: [
+        chalk.bold("Scale Name"),
+        chalk.bold("Description"),
+        chalk.bold("Examples")
+      ],
+      wordWrap: true,
+      wrapOnWordBoundary: true,
+      style: { head: ["green"], border: ["green"] },
+      colWidths: [25, 50, 30]
+    });
+
+    scaleInfoTable.push(
+      [
+        "4-Point Grid System",
+        "Increments by 4 units to maintain consistency. Perfect for maintaining visual rhythm and alignment.",
+        "4, 8, 12, 16, ...\nGreat for UI components."
+      ],
+      [
+        "8-Point Grid System",
+        "Increments by 8 units for more spacious designs. Ideal for larger components and breathing room.",
+        "8, 16, 24, 32, ...\nCommon in modern web design."
+      ],
+      [
+        "Modular Scale",
+        "Uses a multiplier for a harmonious flow. Creates a musical, proportional relationship between values using a constant ratio.",
+        "4, 6.4, 10.24, ...\nBased on musical intervals."
+      ],
+      [
+        "Custom Intervals",
+        "User-defined intervals for complete customization. Complete control over the progression of values.",
+        "4, 10, 16, 22, ...\nGreat for specific needs."
+      ],
+      [
+        "Fibonacci Scale",
+        "Uses Golden Ratio (≈1.618) for natural progression. Creates an organic sequence found in nature and art. Each value is 1.618 times the previous one.",
+        "4, 6.47, 10.47, ...\nPerfect for organic UIs."
+      ]
+    );
+
+    console.log(scaleInfoTable.toString());
     console.log(chalk.black.bgGreenBright("\n=======================================\n"));
     
     const newScaleAnswer = await inquirer.prompt([
@@ -324,11 +355,41 @@ const askForInput = async () => {
   }
 
   if (scaleAnswer.scale === 'modular') {
+    console.log(chalk.yellowBright("\nℹ️ The modular scale creates a harmonious progression of values using a consistent ratio."));
+    console.log(chalk.yellowBright("Each value is multiplied by the chosen ratio to create the next value in the sequence."));
+    console.log(chalk.yellowBright("This creates a musical, proportional relationship between values, similar to musical intervals."));
+    
+    const { scaleRatio } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'scaleRatio',
+        message: 'Choose a ratio for the modular scale:',
+        choices: [
+          { name: 'Minor Second (1.067) - Subtle, gentle progression', value: '1.067' },
+          { name: 'Major Second (1.125) - Balanced, natural progression', value: '1.125' },
+          { name: 'Minor Third (1.2) - Moderate, comfortable steps', value: '1.2' },
+          { name: 'Major Third (1.25) - Strong, noticeable progression', value: '1.25' },
+          { name: 'Perfect Fourth (1.333) - Classic, musical harmony', value: '1.333' },
+          { name: 'Augmented Fourth (1.414) - Dynamic, energetic steps', value: '1.414' },
+          { name: 'Perfect Fifth (1.5) - Bold, dramatic progression', value: '1.5' },
+          { name: 'Minor Sixth (1.6) - Expressive, wide steps', value: '1.6' },
+          { name: 'Major Sixth (1.667) - Powerful, impactful progression', value: '1.667' },
+          { name: 'Minor Seventh (1.778) - Dramatic, large steps', value: '1.778' },
+          { name: 'Major Seventh (1.875) - Bold, significant progression', value: '1.875' },
+          { name: 'Octave (2.0) - Doubling, dramatic contrast', value: '2.0' },
+
+        ]
+      }
+    ]);
+
+    console.log(chalk.yellowBright("\nℹ️ The base value determines where your scale begins."));
+    console.log(chalk.yellowBright("This will be the first value in your sequence, and all subsequent values will be calculated from it."));
+    
     const modularBaseAnswer = await inquirer.prompt([
       {
         type: 'input',
         name: 'multiplier',
-        message: 'Enter the starting value for your modular scale (e.g. 4):',
+        message: 'Enter the starting value to build your modular scale (e.g. 4):',
         validate: (input) => {
           const num = parseFloat(input);
           return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -336,22 +397,34 @@ const askForInput = async () => {
       }
     ]);
     
-    const modularFactorAnswer = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'factor',
-        message: 'Enter the multiplication factor (e.g. 1.5):',
-        validate: (input) => {
-          const num = parseFloat(input);
-          return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+    let factor;
+    if (scaleRatio === 'custom') {
+      console.log(chalk.yellowBright("\nℹ️ The multiplication factor determines how quickly your values increase."));
+      console.log(chalk.yellowBright("A larger factor creates bigger jumps between values, while a smaller factor creates more subtle progression."));
+      
+      const customFactorAnswer = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'factor',
+          message: 'Enter the multiplication factor (e.g. 1.5):',
+          validate: (input) => {
+            const num = parseFloat(input);
+            return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
+          }
         }
-      }
-    ]);
-    
+      ]);
+      factor = parseFloat(customFactorAnswer.factor);
+    } else {
+      factor = parseFloat(scaleRatio);
+    }
+
     scaleAnswer.multiplier = parseFloat(modularBaseAnswer.multiplier);
-    scaleAnswer.factor = parseFloat(modularFactorAnswer.factor);
-    
+    scaleAnswer.factor = factor;
   } else if (scaleAnswer.scale === 'custom') {
+    console.log(chalk.yellowBright("\nℹ️ Custom intervals allow you to define your own progression of values."));
+    console.log(chalk.yellowBright("You'll set a starting value and a step interval to create your unique scale."));
+    console.log(chalk.yellowBright("This gives you complete control over the spacing between values."));
+    
     const customBaseAnswer = await inquirer.prompt([
       {
         type: 'input',
@@ -382,6 +455,11 @@ const askForInput = async () => {
     };
     
   } else if (scaleAnswer.scale === 'fibonacci') {
+    console.log(chalk.yellowBright("\nℹ️ The Fibonacci scale uses the Golden Ratio (≈1.618) to create a natural progression."));
+    console.log(chalk.yellowBright("This ratio is found throughout nature and is considered aesthetically pleasing."));
+    console.log(chalk.yellowBright("Each value is approximately 1.618 times the previous value, creating a harmonious sequence."));
+    console.log(chalk.yellowBright("This scale is perfect for creating organic, natural-feeling designs."));
+    
     const fibonacciBaseAnswer = await inquirer.prompt([
       {
         type: 'input',
@@ -555,9 +633,10 @@ const generateBorderRadiusTokens = (
 
 const convertPxToOtherUnits = (tokens, unit) => {
   const conversions = {
-    rem: (value) => `${value / 16}rem`
+    rem: (value) => `${value / 16}rem`,
+    em: (value) => `${value / 16}em`
   };
-
+  
   const convertedTokens = {};
   for (const [key, token] of Object.entries(tokens)) {
     const numericValue = parseFloat(token.value);
@@ -613,15 +692,18 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
   let unitFiles = {};
   if (folder.includes('tokens')) {
     unitFiles = {
-      rem: `border_radius_tokens_rem.${fileExtension}`
+      rem: `border_radius_tokens_rem.${fileExtension}`,
+      em: `border_radius_tokens_em.${fileExtension}`
     };
   } else if (folder.includes('css')) {
     unitFiles = {
-      rem: `border_radius_variables_rem.${fileExtension}`
+      rem: `border_radius_variables_rem.${fileExtension}`,
+      em: `border_radius_variables_em.${fileExtension}`
     };
   } else if (folder.includes('scss')) {
     unitFiles = {
-      rem: `border_radius_variables_rem.${fileExtension}`
+      rem: `border_radius_variables_rem.${fileExtension}`,
+      em: `border_radius_variables_em.${fileExtension}`
     };
   }
   for (const [unit, fileName] of Object.entries(unitFiles)) {
@@ -629,8 +711,8 @@ const deleteUnusedUnitFiles = (folder, selectedUnits, fileExtension) => {
       const filePath = path.join(folder, fileName);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        const relativePath = path.relative(outputsDir, filePath);
-        console.log(chalk.whiteBright(`🗑️ Deleted: /outputs/${relativePath}`));
+        const relativePath = path.relative(process.cwd(), filePath);
+        console.log(chalk.whiteBright(`🗑️ Deleted: ${relativePath}`));
       }
     }
   }
@@ -698,24 +780,24 @@ const main = async () => {
     chalk.bold.green("Nº of Values: ") + chalk.whiteBright(totalTokens.toString()) + "\n" +
     chalk.bold.green("Scale: ") + chalk.whiteBright(scaleNames[scale] || scale) + "\n" 
   );
- 
-   const noneKey = noneLabel ? noneLabel.toLowerCase() : null;
+  
+  const noneKey = noneLabel ? noneLabel.toLowerCase() : null;
   const fullKey = fullLabel ? fullLabel.toLowerCase() : null;
   const tshirtOrder = ["xs", "sm", "md", "lg", "xl", "2xl"];
     
   const sortedEntries = Object.entries(tokensData).sort((a, b) => {
-      const keyA = a[0].toLowerCase();
-      const keyB = b[0].toLowerCase();
+    const keyA = a[0].toLowerCase();
+    const keyB = b[0].toLowerCase();
       
-      const weight = (key) => {
-          if (key === noneKey) return -Infinity;  
-          if (key === fullKey) return Infinity;     
-          const index = tshirtOrder.indexOf(key);
-          return index !== -1 ? index : 0;
-      };
+    const weight = (key) => {
+      if (key === noneKey) return -Infinity;  
+      if (key === fullKey) return Infinity;     
+      const index = tshirtOrder.indexOf(key);
+      return index !== -1 ? index : 0;
+    };
       
-      const diff = weight(keyA) - weight(keyB);
-      return diff !== 0 ? diff : keyA.localeCompare(keyB, undefined, { numeric: true });
+    const diff = weight(keyA) - weight(keyB);
+    return diff !== 0 ? diff : keyA.localeCompare(keyB, undefined, { numeric: true });
   });
 
   const table = new Table({
@@ -750,18 +832,20 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the tokens to other units (rem)?',
+      message: 'Would you like to convert the tokens to other units (rem, em)?',
       default: false
     }
   ]);
 
-  const units = convertAnswer.convert ? ['rem'] : [];
+  const units = convertAnswer.convert ? ['rem', 'em'] : [];
 
   if (convertAnswer.convert) {
-    const convertedTokens = convertPxToOtherUnits(tokensData, 'rem');
-    const unitFileExists = saveTokensToFile({ [tokenName]: convertedTokens }, tokensFolder, `border_radius_tokens_rem.json`);
-    const unitCssFileExists = saveCSSTokensToFile(convertedTokens, tokenName, cssFolder, `border_radius_variables_rem.css`);
-    const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, tokenName, scssFolder, `border_radius_variables_rem.scss`);
+    for (const unit of units) {
+      const convertedTokens = convertPxToOtherUnits(tokensData, unit);
+      const unitFileExists = saveTokensToFile({ [tokenName]: convertedTokens }, tokensFolder, `border_radius_tokens_${unit}.json`);
+      const unitCssFileExists = saveCSSTokensToFile(convertedTokens, tokenName, cssFolder, `border_radius_variables_${unit}.css`);
+      const unitScssFileExists = saveSCSSTokensToFile(convertedTokens, tokenName, scssFolder, `border_radius_variables_${unit}.scss`);
+    }
 
     await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 1500);
 
@@ -780,10 +864,9 @@ const main = async () => {
 
     if (units.length > 0) {
       for (const unit of units) {
-        const unitSuffix = `_${unit}`;
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `${tokenName}_tokens${unitSuffix}.json`))}`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `${tokenName}_variables${unitSuffix}.css`))}`));
-        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `${tokenName}_variables${unitSuffix}.scss`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, `border_radius_tokens_${unit}.json`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(cssFolder, `border_radius_variables_${unit}.css`))}`));
+        console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(scssFolder, `border_radius_variables_${unit}.scss`))}`));
       }
     }
 
@@ -792,7 +875,6 @@ const main = async () => {
     deleteUnusedUnitFiles(scssFolder, units, 'scss');
 
   } else {
-    
     const deletedFiles = [];
     const deleteFileIfExists = (folder, fileName) => {
       const filePath = path.join(folder, fileName);
@@ -803,18 +885,15 @@ const main = async () => {
     };
 
     deleteFileIfExists(tokensFolder, 'border_radius_tokens_rem.json');
+    deleteFileIfExists(tokensFolder, 'border_radius_tokens_em.json');
     deleteFileIfExists(cssFolder, 'border_radius_variables_rem.css');
+    deleteFileIfExists(cssFolder, 'border_radius_variables_em.css');
     deleteFileIfExists(scssFolder, 'border_radius_variables_rem.scss');
+    deleteFileIfExists(scssFolder, 'border_radius_variables_em.scss');
 
-    if (deletedFiles.length > 0) {
-      console.log(chalk.black.bgGreenBright("\n======================================="));
-      console.log(chalk.bold("📄 OUTPUT FILES"));
-      console.log(chalk.black.bgGreenBright("=======================================\n"));
-    } else {
-      console.log(chalk.black.bgGreenBright("\n======================================="));
-      console.log(chalk.bold("📄 OUTPUT FILES"));
-      console.log(chalk.black.bgGreenBright("=======================================\n"));
-    }
+    console.log(chalk.black.bgGreenBright("\n======================================="));
+    console.log(chalk.bold("📄 OUTPUT FILES"));
+    console.log(chalk.black.bgGreenBright("=======================================\n"));
 
     console.log(chalk.whiteBright("🪄 Created:"));
     console.log(chalk.whiteBright(`   -> ${path.relative(process.cwd(), path.join(tokensFolder, 'border_radius_tokens_px.json'))}`));
