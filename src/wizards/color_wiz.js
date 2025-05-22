@@ -499,16 +499,6 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
               { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
               { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
             ]
-          },
-          {
-            type: 'number',
-            name: 'startValue',
-            message: "What number should the scale start with?",
-            default: 100,
-            validate: (input) => {
-              const num = Number(input);
-              return num > 0 ? true : "Please enter a positive number.";
-            }
           }
         ]);
       } else if (scaleType === "alphabetical") {
@@ -616,89 +606,72 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 
     console.log(printStopsTable(stops, mode, padded));
     
-    // Find the appropriate middle tone based on scale type
-    let middleTone = null;
-    
-    if (newScaleSettings.type === "incremental") {
-      // For incremental scales, always calculate the true middle value
-      const availableKeys = Object.keys(stops).filter(key => key !== "base");
-      const numericKeys = availableKeys
-        .map(key => parseInt(key))
-        .sort((a, b) => a - b);
-        
-      if (numericKeys.length > 0) {
-        const middleIndex = Math.floor(numericKeys.length / 2);
-        middleTone = String(numericKeys[middleIndex]);
-      }
-    } else if (newScaleSettings.type === "ordinal") {
-      // For ordinal scales, find the middle number
-      const numericKeys = Object.keys(stops)
-        .filter(key => key !== "base" && !isNaN(parseInt(key)))
-        .map(key => parseInt(key))
-        .sort((a, b) => a - b);
-        
-      if (numericKeys.length > 0) {
-        const middleIndex = Math.floor(numericKeys.length / 2);
-        middleTone = String(numericKeys[middleIndex]);
-      }
-    } else if (newScaleSettings.type === "alphabetical") {
-      // For alphabetical scales, find the middle letter
-      const alphaKeys = Object.keys(stops)
-        .filter(key => key !== "base")
-        .sort();
-        
-      if (alphaKeys.length > 0) {
-        middleTone = alphaKeys[Math.floor(alphaKeys.length / 2)];
-      }
-    } else if (newScaleSettings.type === "semanticStops") {
-      // For semantic scales, find "base" or the middle semantic value
-      const semanticKeys = Object.keys(stops).filter(key => key !== "base");
-      
-      if (semanticKeys.includes("base")) {
-        middleTone = "base";
-      } else if (semanticKeys.length > 0) {
-        // Sort by semantic order if possible
-        const sortedKeys = semanticKeys.sort((a, b) => {
-          const aIndex = semanticOrder.indexOf(a);
-          const bIndex = semanticOrder.indexOf(b);
-          if (aIndex !== -1 && bIndex !== -1) {
-            return aIndex - bIndex;
-          }
-          return a.localeCompare(b);
-        });
-        
-        middleTone = sortedKeys[Math.floor(sortedKeys.length / 2)];
-      }
-    } else {
-      // Fallback: just find the middle of any keys
-      const allKeys = Object.keys(stops).filter(key => key !== "base");
-      if (allKeys.length > 0) {
-        middleTone = allKeys[Math.floor(allKeys.length / 2)];
+    // Find the middle key(s) depending on the scale type
+    let stopKeys = Object.keys(stops).filter(k => k !== "base");
+    let middleKeys = [];
+    if (stopKeys.length > 0) {
+      if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
+        let numericKeys = stopKeys.map(Number).sort((a, b) => a - b);
+        if (numericKeys.length % 2 === 1) {
+          middleKeys = [String(numericKeys[Math.floor(numericKeys.length / 2)])];
+        } else {
+          middleKeys = [
+            String(numericKeys[numericKeys.length / 2 - 1]),
+            String(numericKeys[numericKeys.length / 2])
+          ];
+        }
+      } else if (newScaleSettings.type === "alphabetical") {
+        let alphaKeys = stopKeys.sort();
+        if (alphaKeys.length % 2 === 1) {
+          middleKeys = [alphaKeys[Math.floor(alphaKeys.length / 2)]];
+        } else {
+          middleKeys = [
+            alphaKeys[alphaKeys.length / 2 - 1],
+            alphaKeys[alphaKeys.length / 2]
+          ];
+        }
+      } else if (newScaleSettings.type === "semanticStops") {
+        let ordered = stopKeys.slice().sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
+        if (ordered.length % 2 === 1) {
+          middleKeys = [ordered[Math.floor(ordered.length / 2)]];
+        } else {
+          middleKeys = [
+            ordered[ordered.length / 2 - 1],
+            ordered[ordered.length / 2]
+          ];
+        }
       }
     }
-    
-    if (middleTone) {
-      const originalBaseColor = stops["base"];
-      
-      // Instead of a yes/no prompt, offer three middle tone options to replace the "base" entry.
-      const middleToneOptions = [
-        { name: `400 (${stops["400"]})`, value: "400" },
-        { name: `500 (${stops["500"]})`, value: "500" },
-        { name: `600 (${stops["600"]})`, value: "600" }
-      ];
-      const { chosenMiddleTone } = await inquirer.prompt([
+    // Ask user if they want 'base' to be one of the middle tones
+    if (middleKeys.length > 0) {
+      const { useMiddleToneAsBase } = await inquirer.prompt([
         {
-          type: "list",
-          name: "chosenMiddleTone",
-          message: 'Select which tone should replace the "base" entry:',
-          choices: middleToneOptions,
-          default: "500"
+          type: "confirm",
+          name: "useMiddleToneAsBase",
+          message: `Do you want the value 'base' to be one of the middle tones (${middleKeys.map(k => k).join(', ')})?`,
+          default: false
         }
       ]);
-      
-      // Replace the middle tone with the original base color and remove the "base" token.
-      stops[chosenMiddleTone] = originalBaseColor;
-      delete stops["base"];
+      if (useMiddleToneAsBase) {
+        let chosenMiddleTone = middleKeys[0];
+        if (middleKeys.length > 1) {
+          const { selectedMiddleTone } = await inquirer.prompt([
+            {
+              type: "list",
+              name: "selectedMiddleTone",
+              message: "Which of the middle tones do you want to use as 'base'?",
+              choices: middleKeys.map(k => ({
+                name: `${k} (${stops[k]})`,
+                value: k
+              })),
+              default: middleKeys[1]
+            }
+          ]);
+          chosenMiddleTone = selectedMiddleTone;
+        }
+        // Replace the value of base with the chosen middle tone
+        stops["base"] = stops[chosenMiddleTone];
+      }
     }
     
     const { confirmColor } = await inquirer.prompt([
