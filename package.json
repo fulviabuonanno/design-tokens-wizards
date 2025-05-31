@@ -10,6 +10,8 @@
     "radii": "node src/wizards/radii_wiz.js --version=1.7.0",
     "merge": "node src/spells/merge_spell.js --version=1.2.0",
     "clear": "node src/spells/clear_spell.js --version=1.2.1",
+    "grad": "node src/wizards/gradient_wiz.js --version=1.0.0",
+    "shadow": "node src/wizards/shadow_wiz.js --version=1.0.0",
     "update": "node src/config/update_versions.js",
     "dependencies": "node src/config/generate_dependencies.js"
   },
@@ -21,6 +23,8 @@
     "radii": "1.7.0",
     "merge": "1.2.0",
     "clear": "1.2.1",
+    "grad": "1.0.0",
+    "shadow": "1.0.0",
     "update": "1.0.0",
     "dependencies": "1.0.0"
   },
@@ -31,6 +35,7 @@
     "cli-table3": "^0.6.5",
     "debug": "^4.3.4",
     "inquirer": "^12.4.2",
+    "ora": "^8.2.0",
     "path": "^0.12.7",
     "puppeteer": "^24.7.0",
     "tinycolor2": "^1.6.0"
