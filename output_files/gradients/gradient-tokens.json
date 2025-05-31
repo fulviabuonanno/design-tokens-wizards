@@ -1,0 +1,10 @@
+{
+  "gradient1": {
+    "value": "linear-gradient(to right, #112233, #fabada)",
+    "type": "linear",
+    "colors": [
+      "#112233",
+      "#fabada"
+    ]
+  }
+}
