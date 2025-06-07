@@ -413,156 +413,11 @@ const askForInput = async () => {
     }
   ]);
 
-  const shadows = {};
-  const namingOptions = namingApproach === 'custom' ? [] : getNamingOptions(namingApproach);
-
-  // Ask for color preferences once for all shadows
-  const { useCustomColor } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'useCustomColor',
-      message: 'Would you like to use a custom color for your shadows?',
-      default: false
-    }
-  ]);
-
-  let colorPreferences;
-  if (!useCustomColor) {
-    colorPreferences = {
-      color: 'rgba(0, 0, 0, 0.15)',
-      opacity: 0.15
-    };
-  } else {
-    colorPreferences = await askForColor();
-  }
-
-  console.log(chalk.black.bgCyan("\n======================================="));
-  console.log(chalk.bold("🎨 SHADOW CONFIGURATION"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
-
-  const { useDefaults } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'useDefaults',
-      message: 'Would you like to use default values for all shadows?',
-      default: true
-    }
-  ]);
-
-  for (let i = 0; i < shadowCount; i++) {
-    let shadowName;
-    if (namingApproach === 'custom') {
-      const { customShadowName } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customShadowName',
-          message: `Enter name for shadow ${i + 1}:`,
-          validate: (input) => {
-            if (!input.trim()) return 'Name is required';
-            if (!/^[a-zA-Z0-9-]+$/.test(input)) {
-              return 'Name should only contain letters, numbers, and hyphens';
-            }
-            return true;
-          }
-        }
-      ]);
-      shadowName = customShadowName;
-    } else {
-      shadowName = namingOptions[i];
-    }
-
-    let shadowProperties;
-    if (useDefaults) {
-      const defaultValues = getDefaultValues(shadowType, shadowName);
-      shadowProperties = {
-        ...defaultValues,
-        color: colorPreferences.color,
-        opacity: colorPreferences.opacity
-      };
-    } else {
-      const { x } = await inquirer.prompt([
-        {
-          type: 'number',
-          name: 'x',
-          message: `Enter horizontal offset for ${shadowName} (in pixels):`,
-          default: 0
-        }
-      ]);
-
-      const { y } = await inquirer.prompt([
-        {
-          type: 'number',
-          name: 'y',
-          message: `Enter vertical offset for ${shadowName} (in pixels):`,
-          default: 4
-        }
-      ]);
-
-      const { blur } = await inquirer.prompt([
-        {
-          type: 'number',
-          name: 'blur',
-          message: `Enter blur radius for ${shadowName} (in pixels):`,
-          default: shadowType === 'outer' ? 24 : 40,
-          validate: (input) => {
-            const num = Number(input);
-            return num >= 0 && num <= 100 ? true : 'Blur radius must be between 0 and 100 pixels';
-          }
-        }
-      ]);
-
-      const { spread } = await inquirer.prompt([
-        {
-          type: 'number',
-          name: 'spread',
-          message: `Enter spread radius for ${shadowName} (in pixels):`,
-          default: 0,
-          validate: (input) => {
-            const num = Number(input);
-            return num >= -50 && num <= 50 ? true : 'Spread radius must be between -50 and 50 pixels';
-          }
-        }
-      ]);
-
-      shadowProperties = {
-        x,
-        y,
-        blur,
-        spread,
-        color: colorPreferences.color,
-        opacity: colorPreferences.opacity
-      };
-
-      const errors = validateShadowValues(shadowProperties);
-      if (errors.length > 0) {
-        console.log(chalk.red('\n⚠️ Validation errors:'));
-        errors.forEach(error => console.log(chalk.red(`   - ${error}`)));
-        const { retry } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'retry',
-            message: 'Would you like to retry with different values?',
-            default: true
-          }
-        ]);
-        if (retry) {
-          i--; // Retry this shadow
-          continue;
-        }
-      }
-    }
-
-    shadows[shadowName] = {
-      $type: customTokenName,
-      $value: {
-        ...shadowProperties
-      }
-    };
-  }
-
   return {
     tokenName: customTokenName,
-    shadows
+    shadowType,
+    namingApproach,
+    shadowCount
   };
 };
 
@@ -647,6 +502,14 @@ const main = async () => {
 
     await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
+    // Show existing shadows if any
+    if (Object.keys(allShadows).length > 0) {
+      console.log(chalk.black.bgCyan("\n======================================="));
+      console.log(chalk.bold("📋 EXISTING SHADOWS"));
+      console.log(chalk.black.bgCyan("=======================================\n"));
+      printShadowTable(allShadows);
+    }
+
     console.log(
       chalk.whiteBright("\n❤️ Welcome to the Shadow Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your shadow tokens step by step.") +
       chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
@@ -658,7 +521,200 @@ const main = async () => {
       chalk.whiteBright(" to test in your implementation!\n")
     );
 
-    const { tokenName, shadows } = await askForInput();
+    const { tokenName, shadowType, namingApproach, shadowCount } = await askForInput();
+
+    const shadows = {};
+    const namingOptions = namingApproach === 'custom' ? [] : getNamingOptions(namingApproach);
+
+    console.log(chalk.black.bgCyan("\n======================================="));
+    console.log(chalk.bold("🎨 COLOR CONFIGURATION"));
+    console.log(chalk.black.bgCyan("=======================================\n"));
+
+    // Ask for color preferences once for all shadows
+    const { useCustomColor } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'useCustomColor',
+        message: 'Would you like to use a custom color for your shadows?',
+        default: false
+      }
+    ]);
+
+    let colorPreferences;
+    if (!useCustomColor) {
+      colorPreferences = {
+        color: 'rgba(0, 0, 0, 0.15)',
+        opacity: 0.15
+      };
+    } else {
+      colorPreferences = await askForColor();
+    }
+
+    console.log(chalk.black.bgCyan("\n======================================="));
+    console.log(chalk.bold("🎨 SHADOW CONFIGURATION"));
+    console.log(chalk.black.bgCyan("=======================================\n"));
+
+    const { configType } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'configType',
+        message: 'Select configuration type:',
+        choices: [
+          { name: 'Prefilled Standard Values', value: 'standard' },
+          { name: 'Custom Values', value: 'custom' }
+        ]
+      }
+    ]);
+
+    if (configType === 'standard') {
+      console.log(chalk.black.bgCyan("\n======================================="));
+      console.log(chalk.bold("📋 STANDARD VALUES PREVIEW"));
+      console.log(chalk.black.bgCyan("=======================================\n"));
+
+      const previewShadows = {};
+      for (let i = 0; i < shadowCount; i++) {
+        const shadowName = namingApproach === 'custom' ? `shadow-${i + 1}` : namingOptions[i];
+        const defaultValues = getDefaultValues(shadowType, shadowName);
+        previewShadows[shadowName] = {
+          $type: customTokenName,
+          $value: {
+            ...defaultValues,
+            color: colorPreferences.color,
+            opacity: colorPreferences.opacity
+          }
+        };
+      }
+      printShadowTable(previewShadows);
+
+      const { confirmStandard } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirmStandard',
+          message: 'Would you like to proceed with these standard values?',
+          default: true
+        }
+      ]);
+
+      if (!confirmStandard) {
+        console.log(chalk.yellow("\nSwitching to custom values configuration..."));
+        configType = 'custom';
+      }
+    }
+
+    for (let i = 0; i < shadowCount; i++) {
+      let shadowName;
+      if (namingApproach === 'custom') {
+        const { customShadowName } = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'customShadowName',
+            message: `Enter name for shadow ${i + 1}:`,
+            validate: (input) => {
+              if (!input.trim()) return 'Name is required';
+              if (!/^[a-zA-Z0-9-]+$/.test(input)) {
+                return 'Name should only contain letters, numbers, and hyphens';
+              }
+              return true;
+            }
+          }
+        ]);
+        shadowName = customShadowName;
+      } else {
+        shadowName = namingOptions[i];
+      }
+
+      let shadowProperties;
+      if (configType === 'standard') {
+        const defaultValues = getDefaultValues(shadowType, shadowName);
+        shadowProperties = {
+          ...defaultValues,
+          color: colorPreferences.color,
+          opacity: colorPreferences.opacity
+        };
+      } else {
+        console.log(chalk.black.bgCyan("\n======================================="));
+        console.log(chalk.bold(`🎨 CUSTOM VALUES FOR SHADOW ${i + 1}`));
+        console.log(chalk.black.bgCyan("=======================================\n"));
+
+        const { x } = await inquirer.prompt([
+          {
+            type: 'number',
+            name: 'x',
+            message: `Enter horizontal offset (in pixels):`,
+            default: 0
+          }
+        ]);
+
+        const { y } = await inquirer.prompt([
+          {
+            type: 'number',
+            name: 'y',
+            message: `Enter vertical offset (in pixels):`,
+            default: 4
+          }
+        ]);
+
+        const { blur } = await inquirer.prompt([
+          {
+            type: 'number',
+            name: 'blur',
+            message: `Enter blur radius (in pixels):`,
+            default: shadowType === 'outer' ? 24 : 40,
+            validate: (input) => {
+              const num = Number(input);
+              return num >= 0 && num <= 100 ? true : 'Blur radius must be between 0 and 100 pixels';
+            }
+          }
+        ]);
+
+        const { spread } = await inquirer.prompt([
+          {
+            type: 'number',
+            name: 'spread',
+            message: `Enter spread radius (in pixels):`,
+            default: 0,
+            validate: (input) => {
+              const num = Number(input);
+              return num >= -50 && num <= 50 ? true : 'Spread radius must be between -50 and 50 pixels';
+            }
+          }
+        ]);
+
+        shadowProperties = {
+          x,
+          y,
+          blur,
+          spread,
+          color: colorPreferences.color,
+          opacity: colorPreferences.opacity
+        };
+
+        const errors = validateShadowValues(shadowProperties);
+        if (errors.length > 0) {
+          console.log(chalk.red('\n⚠️ Validation errors:'));
+          errors.forEach(error => console.log(chalk.red(`   - ${error}`)));
+          const { retry } = await inquirer.prompt([
+            {
+              type: 'confirm',
+              name: 'retry',
+              message: 'Would you like to retry with different values?',
+              default: true
+            }
+          ]);
+          if (retry) {
+            i--; // Retry this shadow
+            continue;
+          }
+        }
+      }
+
+      shadows[shadowName] = {
+        $type: customTokenName,
+        $value: {
+          ...shadowProperties
+        }
+      };
+    }
 
     // Add new shadows to the collection with a prefix to distinguish sets
     const setPrefix = Object.keys(allShadows).length > 0 ? `set${Object.keys(allShadows).length + 1}_` : '';
@@ -764,47 +820,38 @@ const main = async () => {
         deletedFiles.forEach(file => console.log(chalk.white(`   - ${file}`)));
       }
 
-      printSummary(allShadows);
-
       console.log(chalk.black.bgCyan("\n======================================="));
-      console.log(chalk.bold("🎉 COMPLETED"));
+      console.log(chalk.bold("🔄 GENERATE ANOTHER SET"));
       console.log(chalk.black.bgCyan("=======================================\n"));
 
-      console.log(chalk.green("✨ Shadow tokens have been successfully created!"));
-      console.log(chalk.green("Thank you for using the Shadow Token Wizard! 🎨✨"));
+      const { generateMore } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'generateMore',
+          message: 'Would you like to generate another set of shadow tokens?',
+          default: false
+        }
+      ]);
+
+      if (!generateMore) {
+        console.log(chalk.black.bgCyan("\n======================================="));
+        console.log(chalk.bold("👋 GOODBYE"));
+        console.log(chalk.black.bgCyan("=======================================\n"));
+        console.log(chalk.yellow("Thank you for using the Shadow Token Wizard!"));
+        console.log(chalk.yellow("Your shadow tokens are ready to use in your design system! 🎨✨\n"));
+        return false;
+      }
+      return true;
     } else {
       console.log(chalk.yellow("\nNo changes were saved. Feel free to run the wizard again!"));
+      return false;
     }
   };
 
   // Initial shadow generation
-  await generateShadows();
-
-  // Ask if user wants to generate another set
-  while (true) {
-    console.log(chalk.black.bgCyan("\n======================================="));
-    console.log(chalk.bold("🔄 GENERATE ANOTHER SET"));
-    console.log(chalk.black.bgCyan("=======================================\n"));
-
-    const { generateMore } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'generateMore',
-        message: 'Would you like to generate another set of shadow tokens?',
-        default: false
-      }
-    ]);
-
-    if (!generateMore) {
-      console.log(chalk.black.bgCyan("\n======================================="));
-      console.log(chalk.bold("👋 GOODBYE"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
-      console.log(chalk.yellow("Thank you for using the Shadow Token Wizard!"));
-      console.log(chalk.yellow("Your shadow tokens are ready to use in your design system! 🎨✨\n"));
-      break;
-    }
-
-    await generateShadows();
+  let continueGenerating = true;
+  while (continueGenerating) {
+    continueGenerating = await generateShadows();
   }
 };
 
