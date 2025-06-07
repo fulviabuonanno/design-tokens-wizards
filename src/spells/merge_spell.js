@@ -95,6 +95,52 @@ function mergeJSONFilesByToken(files, tokenSubstring) {
   return mergeJSONFiles(matchedFiles);
 }
 
+// Add helper functions for transforming key naming conventions:
+function transformKey(key, caseStyle) {
+  const words = key.split(/[\s\-_]+/);
+  switch (caseStyle) {
+    case "camelCase":
+      return words.map((w, i) => i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    case "kebab-case":
+      return words.map(w => w.toLowerCase()).join('-');
+    case "snake_case":
+      return words.map(w => w.toLowerCase()).join('_');
+    case "PascalCase":
+      return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    default:
+      return key;
+  }
+}
+
+function convertKeysNamingCase(obj, caseStyle) {
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertKeysNamingCase(item, caseStyle));
+  } else if (obj !== null && typeof obj === "object") {
+    const newObj = {};
+    Object.keys(obj).forEach(key => {
+      const newKey = transformKey(key, caseStyle);
+      newObj[newKey] = convertKeysNamingCase(obj[key], caseStyle);
+    });
+    return newObj;
+  }
+  return obj;
+}
+
+// Add helper functions to transform CSS/SCSS variable names
+function transformScssVariables(text, namingConvention) {
+  // Match variable declarations such as "$foundation-color-fabada-100:"
+  return text.replace(/\$([a-z0-9\-\_]+):/gi, (match, p1) => {
+    return '$' + transformKey(p1, namingConvention) + ':';
+  });
+}
+
+function transformCssVariables(text, namingConvention) {
+  // Match CSS variable declarations such as "--foundation-color-fabada-100:"
+  return text.replace(/--([a-z0-9\-\_]+):/gi, (match, p1) => {
+    return '--' + transformKey(p1, namingConvention) + ':';
+  });
+}
+
 async function mergeOutputs() {
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🪄 STARTING THE MERGING MAGIC"));
@@ -137,7 +183,6 @@ async function mergeOutputs() {
         const lowerFile = file.toLowerCase();
         const relativePath = path.relative(outputsDir, file).toLowerCase();
         
-        
         if (tokenType === 'Typography') {
           if ((lowerFile.endsWith('.css') || lowerFile.endsWith('.scss')) &&
               relativePath.includes(patternCss)) {
@@ -152,7 +197,6 @@ async function mergeOutputs() {
           
           return false;
         }
-        
         
         if ((lowerFile.endsWith('.css') || lowerFile.endsWith('.scss')) &&
             lowerFile.includes(suffix) &&
@@ -281,8 +325,6 @@ async function mergeOutputs() {
     expectedSuffixes.push("typography");
   }
 
-  await showLoader(chalk.bold.yellowBright("\n🚀 Merging your design tokens..."), 1500);
-  
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
   console.log(chalk.bold.bgGray("========================================\n"));
@@ -312,36 +354,104 @@ async function mergeOutputs() {
     const lowerName = path.basename(file).toLowerCase();
     return lowerName.endsWith('.json') && expectedSuffixes.some(suffix => lowerName.includes(suffix));
   });
+  
+  // Add file summary section
+  console.log(chalk.bold.bgGray("\n========================================"));
+  console.log(chalk.bold("📋 FILES TO MERGE"));
+  console.log(chalk.bold.bgGray("========================================\n"));
 
-  if (cssFiles.length === 0 && scssFiles.length === 0 && jsonFiles.length === 0) {
-    console.warn(chalk.bold.black.bgYellow("\n⚠️ Warning: No files found matching the selected formats. Nothing to merge.\n"));
-    return;
-  }
-
-  if (!fs.existsSync(finalDir)) {
-    fs.mkdirSync(finalDir, { recursive: true });
-  }
-
-  let mergedCSS = mergeTextFiles(cssFiles);
-  const cssLines = mergedCSS.split('\n').filter(line => {
-    const trimmed = line.trim();
-    return trimmed && !trimmed.startsWith(':root {') && trimmed !== '}';
+  const fileSummaryTable = new Table({
+    head: [chalk.bold.yellow('Type'), chalk.bold.yellow('Count'), chalk.bold.yellow('Status')],
+    colWidths: [15, 10, 20]
   });
-  const indentedLines = cssLines.map(line => '  ' + line.trim());
-  mergedCSS = ':root {\n' + indentedLines.join('\n') + '}';
-  fs.writeFileSync(path.join(finalDir, 'tokens.css'), mergedCSS, 'utf-8');
 
-  const mergedSCSS = mergeTextFiles(scssFiles);
-  fs.writeFileSync(path.join(finalDir, 'tokens.scss'), mergedSCSS, 'utf-8');
+  fileSummaryTable.push(
+    ['CSS', cssFiles.length, cssFiles.length > 0 ? chalk.green('Ready') : chalk.yellow('Skipped')],
+    ['SCSS', scssFiles.length, scssFiles.length > 0 ? chalk.green('Ready') : chalk.yellow('Skipped')],
+    ['JSON', jsonFiles.length, jsonFiles.length > 0 ? chalk.green('Ready') : chalk.yellow('Skipped')]
+  );
 
-  const mergedJSONObj = mergeJSONFiles(jsonFiles);
-  fs.writeFileSync(path.join(finalDir, 'tokens.json'), JSON.stringify(mergedJSONObj, null, 2), 'utf-8');
+  console.log(fileSummaryTable.toString());
+  
+  // Prompt user for naming case convention only if there are token files to merge
+  console.log(chalk.bold.bgGray("\n========================================"));
+  console.log(chalk.bold("📝 NAMING CONVENTION"));
+  console.log(chalk.bold.bgGray("========================================\n"));
 
+  if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
+    console.log(chalk.whiteBright("Select how you want your tokens to be named in the merged file:\n"));
+    const namingCaseAnswer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'namingCase',
+        message: "Select the naming case convention for your tokens:",
+        choices: [
+          { name: "No change", value: "none" },
+          { name: "camelCase", value: "camelCase" },
+          { name: "kebab-case", value: "kebab-case" },
+          { name: "snake_case", value: "snake_case" },
+          { name: "PascalCase", value: "PascalCase" }
+        ],
+        default: "none"
+      }
+    ]);
+    var namingConvention = namingCaseAnswer.namingCase;
+  } else {
+    console.log(chalk.yellow("⚠️ No token files found to merge:"));
+    if (cssFiles.length === 0) console.log(chalk.yellow("   • No CSS tokens to merge"));
+    if (scssFiles.length === 0) console.log(chalk.yellow("   • No SCSS tokens to merge"));
+    if (jsonFiles.length === 0) console.log(chalk.yellow("   • No JSON tokens to merge"));
+    console.log(chalk.yellow("\nSkipping naming convention selection."));
+    var namingConvention = "none";
+  }
+  
+  let mergedJSONObj = mergeJSONFiles(jsonFiles);
+  
+  // Write CSS output: transform CSS variables if needed
+  if (cssFiles.length > 0) {
+    console.log(chalk.bold.bgGray("\n========================================"));
+    console.log(chalk.bold("🔄 MERGING FILES"));
+    console.log(chalk.bold.bgGray("========================================\n"));
+    
+    console.log(chalk.whiteBright("Processing CSS files..."));
+    let mergedCSS = mergeTextFiles(cssFiles);
+    if (namingConvention !== "none") {
+      mergedCSS = transformCssVariables(mergedCSS, namingConvention);
+    }
+    fs.writeFileSync(path.join(finalDir, 'tokens.css'), mergedCSS, 'utf-8');
+    console.log(chalk.green("✅ CSS files merged successfully"));
+  }
+  
+  // Write SCSS output: transform SCSS variable names if needed
+  if (scssFiles.length > 0) {
+    console.log(chalk.whiteBright("\nProcessing SCSS files..."));
+    let mergedSCSS = mergeTextFiles(scssFiles);
+    if (namingConvention !== "none") {
+      mergedSCSS = transformScssVariables(mergedSCSS, namingConvention);
+    }
+    fs.writeFileSync(path.join(finalDir, 'tokens.scss'), mergedSCSS, 'utf-8');
+    console.log(chalk.green("✅ SCSS files merged successfully"));
+  }
+  
+  // Write JSON output: use convertKeysNamingCase
+  if (jsonFiles.length > 0) {
+    console.log(chalk.whiteBright("\nProcessing JSON files..."));
+    let finalJSONObj = (namingConvention !== "none")
+      ? convertKeysNamingCase(mergedJSONObj, namingConvention)
+      : mergedJSONObj;
+    fs.writeFileSync(path.join(finalDir, 'tokens.json'), JSON.stringify(finalJSONObj, null, 2), 'utf-8');
+    console.log(chalk.green("✅ JSON files merged successfully"));
+  }
+  
+  // Call loader only if at least one token file was created
+  if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
+    await showLoader(chalk.bold.yellowBright("\n🚀 Finalizing merge process..."), 1500);
+  }
+  
   const mergedColorsJSON        = mergeJSONFilesByToken(outputFiles, 'color_tokens');
   const mergedSizeJSON          = mergeJSONFilesByToken(outputFiles, 'size_tokens');
   const mergedSpaceJSON         = mergeJSONFilesByToken(outputFiles, 'space_tokens');
   const mergedBorderRadiusJSON  = mergeJSONFilesByToken(outputFiles, 'border_radius_tokens');
-  
   
   let mergedTypographyJSON = {};
   if (answers.includeTypography) {
@@ -349,7 +459,7 @@ async function mergeOutputs() {
   }
 
   console.log(chalk.bold.bgGray("\n========================================"));
-  console.log(chalk.bold("✅ FINAL OUTPUT FILES"));
+  console.log(chalk.bold("✅ FINAL OUTPUT"));
   console.log(chalk.bold.bgGray("========================================\n"));
 
   const cssPath = path.join(finalDir, 'tokens.css');
@@ -361,15 +471,40 @@ async function mergeOutputs() {
   }
 
   function getStatus(filePath) {
+    if (!fs.existsSync(filePath)) {
+      return chalk.red("🚫 Not Created");
+    }
     const stats = fs.statSync(filePath);
-    return stats.birthtime.getTime() === stats.mtime.getTime() ? "✅ Saved" : "🆕 Updated";
+    return stats.birthtime.getTime() === stats.mtime.getTime() ? chalk.green("✅ Saved") : chalk.blue("🆕 Updated");
   }
 
-  console.log(chalk.whiteBright("CSS:  " + getRelative(cssPath) + " " + getStatus(cssPath)));
-  console.log(chalk.whiteBright("SCSS: " + getRelative(scssPath) + " " + getStatus(scssPath)));
-  console.log(chalk.whiteBright("JSON: " + getRelative(jsonPath) + " " + getStatus(jsonPath)));
+  function getFileSize(filePath) {
+    if (!fs.existsSync(filePath)) return "N/A";
+    const stats = fs.statSync(filePath);
+    const sizeInBytes = stats.size;
+    if (sizeInBytes < 1024) return `${sizeInBytes} B`;
+    if (sizeInBytes < 1024 * 1024) return `${(sizeInBytes / 1024).toFixed(1)} KB`;
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
 
-  console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'final' folder!\n"));
+  const outputTable = new Table({
+    head: [chalk.bold.yellow('File'), chalk.bold.yellow('Status'), chalk.bold.yellow('Size'), chalk.bold.yellow('Path')],
+    colWidths: [10, 15, 10, 40]
+  });
+
+  outputTable.push(
+    ['CSS', getStatus(cssPath), getFileSize(cssPath), getRelative(cssPath)],
+    ['SCSS', getStatus(scssPath), getFileSize(scssPath), getRelative(scssPath)],
+    ['JSON', getStatus(jsonPath), getFileSize(jsonPath), getRelative(jsonPath)]
+  );
+
+  console.log(outputTable.toString());
+  
+  if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
+    console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'final' folder!\n"));
+  } else {
+    console.log(chalk.bold.bgYellow("\n⚠️ No files were merged. Please generate some tokens first!\n"));
+  }
 }
 
 mergeOutputs();
