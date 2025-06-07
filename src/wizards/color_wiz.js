@@ -1389,9 +1389,9 @@ const main = async () => {
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
-  console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
-  console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
-  console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables\n"));
+  console.log(chalk.whiteBright("   -> /outputs_files/tokens/color: JSON Token Files"));
+  console.log(chalk.whiteBright("   -> /outputs_files/css/color: CSS variables"));
+  console.log(chalk.whiteBright("   -> /outputs_files/scss/color: SCSS variables\n"));
 
   if (updatedFiles.length > 0) {
     console.log(chalk.whiteBright("🆕 Updated:"));
