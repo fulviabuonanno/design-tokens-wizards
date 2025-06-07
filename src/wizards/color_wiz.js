@@ -63,15 +63,14 @@ const printStopsTable = (stops, mode = "semantic stops", padded = false) => {
     }
     
     entries.sort((a, b) => {
-      // Always put base first
+      
       if (a[0] === "base") return -1;
       if (b[0] === "base") return 1;
       
-      // Then sort the rest based on mode
       if (mode === "alphabetical") {
         return a[0].localeCompare(b[0]);
       } else if (mode === "ordinal") {
-        // For ordinal, sort numerically but ensure base is first
+        
         const aNum = parseInt(a[0], 10);
         const bNum = parseInt(b[0], 10);
         return aNum - bNum;
@@ -102,192 +101,294 @@ const printStopsTable = (stops, mode = "semantic stops", padded = false) => {
   return table.toString();
 };
 
-const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
+const displayExistingColors = (tokensData) => {
+  if (Object.keys(tokensData).length === 0) {
+    return;
+  }
+  
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 1: TOKEN TYPE"));
+  console.log(chalk.bold("🎨 EXISTING COLORS"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
+  
+  let colorCount = 0;
+  
+  const processTokens = (obj, path = []) => {
+    for (const key in obj) {
+      if (obj[key] && typeof obj[key] === 'object') {
+        if ('value' in obj[key] && 'type' in obj[key] && obj[key].type === 'color') {
+          
+          const colorValue = obj[key].value;
+          const colorPath = [...path, key].join('.');
+          console.log(`${chalk.bold(colorPath)}: ${colorValue} ${chalk.bgHex(colorValue).white("     ")}`);
+          colorCount++;
+        } else {
+          
+          processTokens(obj[key], [...path, key]);
+        }
+      }
+    }
+  };
+  
+  processTokens(tokensData);
+  console.log(chalk.gray(`\nTotal colors: ${colorCount}\n`));
+};
 
-  let { tokenType } = await inquirer.prompt([
+const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
+  
+  if (Object.keys(tokensData).length > 0) {
+    displayExistingColors(tokensData);
+  }
+  
+  let tokenType = 'global';
+  let category = null;
+  let namingLevel = null;
+  
+  if (Object.keys(tokensData).length > 0) {
+    
+    const findSettings = (obj, path = []) => {
+      for (const key in obj) {
+        if (obj[key] && typeof obj[key] === 'object') {
+          if ('value' in obj[key] && 'type' in obj[key] && obj[key].type === 'color') {
+            
+            return path;
+          } else {
+            const result = findSettings(obj[key], [...path, key]);
+            if (result) return result;
+          }
+        }
+      }
+      return null;
+    };
+    
+    const colorPath = findSettings(tokensData);
+    if (colorPath && colorPath.length > 0) {
+      
+      if (colorPath.length >= 1) {
+        category = colorPath[0];
+      }
+      if (colorPath.length >= 2) {
+        
+        const potentialNamingLevel = colorPath[1];
+        const isNamingLevel = ['color', 'colour', 'palette', 'scheme'].includes(potentialNamingLevel);
+        if (isNamingLevel) {
+          namingLevel = potentialNamingLevel;
+        }
+      }
+    }
+    
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("ℹ️ USING EXISTING SETTINGS"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
+    
+    console.log(chalk.whiteBright(`Type: Global`));
+    if (category) console.log(chalk.whiteBright(`Category: ${category}`));
+    if (namingLevel) console.log(chalk.whiteBright(`Naming Level: ${namingLevel}`));
+    console.log();
+  } else {
+    
+    console.log(chalk.black.bgYellowBright("\n======================================="));
+    console.log(chalk.bold("🎨 STEP 1: TOKEN TYPE"));
+    console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+    let { tokenType: selectedTokenType } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'tokenType',
+        message: 'Select the type of color tokens you want to create:',
+        choices: [
+          { name: 'Global Colors', value: 'global' },
+          { name: 'Semantic Colors', value: 'semantic' }
+        ]
+      }
+    ]);
+    
+    tokenType = selectedTokenType;
+
+    if (tokenType === 'semantic') {
+      console.log(chalk.yellow("\n⚠️  Semantic color tokens are coming soon!"));
+      console.log(chalk.yellow("This feature will allow you to create color tokens based on their meaning and purpose in your design system."));
+      console.log(chalk.yellow("For now, we recommend using Global Colors to create your color tokens."));
+      console.log(chalk.yellow("Global Colors provide a solid foundation for your design system and can be used to build semantic tokens later.\n"));
+      
+      const { continueWithGlobal } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'continueWithGlobal',
+          message: 'Would you like to continue with Global Colors instead?',
+          default: true
+        }
+      ]);
+
+      if (!continueWithGlobal) {
+        console.log(chalk.bold.red("\n🚫 Exiting the wizard. Please check back later for semantic color support."));
+        process.exit(0);
+      }
+      
+      tokenType = 'global';
+    }
+
+    if (tokenType === 'global') {
+      console.log(chalk.black.bgYellowBright("\n======================================="));
+      console.log(chalk.bold("📁 STEP 2: GLOBAL CATEGORY"));
+      console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+      console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));
+      console.log(chalk.whiteBright("Examples: primitives, foundation, core, basics, essentials\n"));
+
+      const { includeCategory } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'includeCategory',
+          message: 'Would you like to include a category in your color naming?',
+          default: true
+        }
+      ]);
+
+      if (includeCategory) {
+        const { globalCategory } = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'globalCategory',
+            message: 'Select a category for your global colors:',
+            choices: [
+              { name: 'primitives', value: 'primitives' },
+              { name: 'foundation', value: 'foundation' },
+              { name: 'core', value: 'core' },
+              { name: 'basics', value: 'basics' },
+              { name: 'essentials', value: 'essentials' },
+              { name: 'global', value: 'global' },
+              { name: 'roots', value: 'roots' },
+              { name: 'custom', value: 'custom' }
+            ]
+          }
+        ]);
+
+        if (globalCategory === 'custom') {
+          const { customCategory } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'customCategory',
+              message: 'Enter your custom category name:',
+              validate: (input) => {
+                const trimmedInput = input.trim();
+                if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
+                  return "Category name should only contain letters, numbers, hyphens, and dots.";
+                }
+                return true;
+              }
+            }
+          ]);
+          category = customCategory.trim();
+        } else {
+          category = globalCategory;
+        }
+
+        const { confirmCategory } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirmCategory',
+            message: `Do you want to continue with the category "${category}"?`,
+            default: true
+          }
+        ]);
+
+        if (!confirmCategory) {
+          console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm the category."));
+          return await askForInput(tokensData);
+        }
+      }
+      
+      console.log(chalk.black.bgYellowBright("\n======================================="));
+      console.log(chalk.bold("📝 STEP 3: NAMING LEVEL"));
+      console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+      console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));
+      console.log(chalk.whiteBright("Examples: color (single color), palette (group of colors), scheme (color combinations)\n"));
+
+      const { includeNamingLevel } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'includeNamingLevel',
+          message: 'Would you like to include a naming level in your color naming?',
+          default: true
+        }
+      ]);
+
+      if (includeNamingLevel) {
+        const { level } = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'level',
+            message: 'Select a naming level for your colors:',
+            choices: [
+              { name: 'color', value: 'color' },
+              { name: 'colour', value: 'colour' },
+              { name: 'palette', value: 'palette' },
+              { name: 'scheme', value: 'scheme' },
+              { name: 'custom', value: 'custom' }
+            ]
+          }
+        ]);
+
+        if (level === 'custom') {
+          const { customLevel } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'customLevel',
+              message: 'Enter your custom naming level:',
+              validate: (input) => {
+                const trimmedInput = input.trim();
+                if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
+                  return "Naming level should only contain letters, numbers, hyphens, and dots.";
+                }
+                return true;
+              }
+            }
+          ]);
+          namingLevel = customLevel.trim();
+        } else {
+          namingLevel = level;
+        }
+
+        const { confirmLevel } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirmLevel',
+            message: `Do you want to continue with the naming level "${namingLevel}"?`,
+            default: true
+          }
+        ]);
+
+        if (!confirmLevel) {
+          console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm the naming level."));
+          return await askForInput(tokensData);
+        }
+      }
+    }
+  }
+
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎨 STEP 1: SELECT BASE COLOR"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+  
+  let hexResponse = await inquirer.prompt([
     {
-      type: 'list',
-      name: 'tokenType',
-      message: 'Select the type of color tokens you want to create:',
-      choices: [
-        { name: 'Global Colors', value: 'global' },
-        { name: 'Semantic Colors', value: 'semantic' }
-      ]
+      type: "input",
+      name: "hex",
+      message: "Enter a HEX value to use as base color (e.g., #FABADA):\n>>>",
+      validate: (input) =>
+        tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
     }
   ]);
-
-  if (tokenType === 'semantic') {
-    console.log(chalk.yellow("\n⚠️  Semantic color tokens are coming soon!"));
-    console.log(chalk.yellow("This feature will allow you to create color tokens based on their meaning and purpose in your design system."));
-    console.log(chalk.yellow("For now, we recommend using Global Colors to create your color tokens."));
-    console.log(chalk.yellow("Global Colors provide a solid foundation for your design system and can be used to build semantic tokens later.\n"));
-    
-    const { continueWithGlobal } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'continueWithGlobal',
-        message: 'Would you like to continue with Global Colors instead?',
-        default: true
-      }
-    ]);
-
-    if (!continueWithGlobal) {
-      console.log(chalk.bold.red("\n🚫 Exiting the wizard. Please check back later for semantic color support."));
-      process.exit(0);
-    }
-    
-    // Reset tokenType to 'global' and continue with the flow
-    tokenType = 'global';
-  }
-
-  let category = null;
-  if (tokenType === 'global') {
-    console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("📁 STEP 2: GLOBAL CATEGORY"));
-    console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-    console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));
-    console.log(chalk.whiteBright("Examples: primitives, foundation, core, basics, essentials\n"));
-
-    const { includeCategory } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'includeCategory',
-        message: 'Would you like to include a category in your color naming?',
-        default: true
-      }
-    ]);
-
-    if (includeCategory) {
-      const { globalCategory } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'globalCategory',
-          message: 'Select a category for your global colors:',
-          choices: [
-            { name: 'primitives', value: 'primitives' },
-            { name: 'foundation', value: 'foundation' },
-            { name: 'core', value: 'core' },
-            { name: 'basics', value: 'basics' },
-            { name: 'essentials', value: 'essentials' },
-            { name: 'global', value: 'global' },
-            { name: 'roots', value: 'roots' },
-            { name: 'custom', value: 'custom' }
-          ]
-        }
-      ]);
-
-      if (globalCategory === 'custom') {
-        const { customCategory } = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'customCategory',
-            message: 'Enter your custom category name:',
-            validate: (input) => {
-              const trimmedInput = input.trim();
-              if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
-                return "Category name should only contain letters, numbers, hyphens, and dots.";
-              }
-              return true;
-            }
-          }
-        ]);
-        category = customCategory.trim();
-      } else {
-        category = globalCategory;
-      }
-
-      const { confirmCategory } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'confirmCategory',
-          message: `Do you want to continue with the category "${category}"?`,
-          default: true
-        }
-      ]);
-
-      if (!confirmCategory) {
-        console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm the category."));
-        return await askForInput(tokensData);
-      }
-    }
-  }
-
-  let namingLevel = null;
-  if (tokenType === 'global') {
-    console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("📝 STEP 3: NAMING LEVEL"));
-    console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-    console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));
-    console.log(chalk.whiteBright("Examples: color (single color), palette (group of colors), scheme (color combinations)\n"));
-
-    const { includeNamingLevel } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'includeNamingLevel',
-        message: 'Would you like to include a naming level in your color naming?',
-        default: true
-      }
-    ]);
-
-    if (includeNamingLevel) {
-      const { level } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'level',
-          message: 'Select a naming level for your colors:',
-          choices: [
-            { name: 'color', value: 'color' },
-            { name: 'colour', value: 'colour' },
-            { name: 'palette', value: 'palette' },
-            { name: 'scheme', value: 'scheme' },
-            { name: 'custom', value: 'custom' }
-          ]
-        }
-      ]);
-
-      if (level === 'custom') {
-        const { customLevel } = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'customLevel',
-            message: 'Enter your custom naming level:',
-            validate: (input) => {
-              const trimmedInput = input.trim();
-              if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
-                return "Naming level should only contain letters, numbers, hyphens, and dots.";
-              }
-              return true;
-            }
-          }
-        ]);
-        namingLevel = customLevel.trim();
-      } else {
-        namingLevel = level;
-      }
-
-      const { confirmLevel } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'confirmLevel',
-          message: `Do you want to continue with the naming level "${namingLevel}"?`,
-          default: true
-        }
-      ]);
-
-      if (!confirmLevel) {
-        console.log(chalk.bold.greenBright("\nNo problem! Let's start over 🧩 since you didn't confirm the naming level."));
-        return await askForInput(tokensData);
-      }
-    }
-  }
-
+  const hex = hexResponse.hex.toUpperCase();
+  
+  const baseColorPreview = chalk.bgHex(hex).white("  Sample  ");
+  console.log(`\n${chalk.bold("Selected color:")}`);
+  console.log(`   HEX: ${chalk.whiteBright(hex)}`);
+  console.log(`   Preview: ${baseColorPreview}`);
+  
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("✏️ STEP 4: COLOR NAME"));
+  console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
   
   let response = await inquirer.prompt([
@@ -303,37 +404,27 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
           return "Name should only contain letters, numbers, hyphens, and dots.";
         }
-        // Check if the color name already exists in tokensData
-        if (tokensData[trimmedInput]) {
+        
+        const checkPath = [];
+        if (category) checkPath.push(category);
+        if (namingLevel) checkPath.push(namingLevel);
+        
+        let currentObj = tokensData;
+        for (const segment of checkPath) {
+          if (!currentObj[segment]) break;
+          currentObj = currentObj[segment];
+        }
+        
+        if (currentObj && currentObj[trimmedInput]) {
           return `A color with the name "${trimmedInput}" already exists. Please choose a different name.`;
         }
-        // Check if the color name exists as a variant in any other color
-        for (const colorName in tokensData) {
-          if (tokensData[colorName] && typeof tokensData[colorName] === 'object') {
-            if (Object.keys(tokensData[colorName]).includes(trimmedInput)) {
-              return `A color variant with the name "${trimmedInput}" already exists under "${colorName}". Please choose a different name.`;
-            }
-          }
-        }
+        
         return true;
       }
     }
   ]);
   const concept = response.name.trim();
   const finalConcept = concept || "color";
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🚧 STEP 5: SELECT BASE COLOR"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-  let hexResponse = await inquirer.prompt([
-    {
-      type: "input",
-      name: "hex",
-      message: "Enter a HEX value to use as base color (e.g., #FABADA):\n>>>",
-      validate: (input) =>
-        tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
-    }
-  ]);
-  const hex = hexResponse.hex.toUpperCase();
 
   let stops, newScaleSettings;
   
@@ -341,18 +432,33 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("➡️ STEP 5: CURRENT SCALE"));
+      console.log(chalk.bold("➡️ STEP 3: CURRENT SCALE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
-      console.log(`Current scale type: ${scaleSettings.type}` + 
-        (scaleSettings.type === "ordinal" ? ` (padded: ${scaleSettings.padded})` : ""));
+      
+      // Display scale information in a more visually appealing way
+      console.log(chalk.bold("📊 Scale Information:"));
+      console.log(`  ${chalk.bold("Type:")} ${chalk.whiteBright(scaleSettings.type)}`);
+      
+      // Add additional details based on scale type
+      if (scaleSettings.type === "ordinal") {
+        console.log(`  ${chalk.bold("Format:")} ${chalk.whiteBright(scaleSettings.padded ? 'Padded (01, 02...)' : 'Unpadded (1, 2...)')}`);
+      } else if (scaleSettings.type === "incremental") {
+        console.log(`  ${chalk.bold("Step size:")} ${chalk.whiteBright(scaleSettings.incrementalOption)}`);
+        console.log(`  ${chalk.bold("Start value:")} ${chalk.whiteBright(scaleSettings.startValue || 100)}`);
+      } else if (scaleSettings.type === "alphabetical") {
+        // No additional details needed for alphabetical
+      }
+      
+      console.log(`  ${chalk.bold("Number of stops:")} ${chalk.whiteBright(scaleSettings.stopsCount)}`);
+      console.log();
       stops = newScaleSettings.type === "incremental" 
-        ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, newScaleSettings.stopsCount)
+        ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, newScaleSettings.stopsCount, newScaleSettings.startValue)
         : (newScaleSettings.type === "semanticStops" 
              ? generateStopsSemantic(hex, newScaleSettings.stopsCount)
              : generateStopsOrdinal(hex, newScaleSettings.padded, newScaleSettings.stopsCount));
     } else {
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("🔢 STEP 5: SELECT SCALE TYPE"));
+      console.log(chalk.bold("🔢 STEP 3: SELECT SCALE TYPE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       const { scaleType } = await inquirer.prompt([
         {
@@ -448,12 +554,13 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         type: scaleType,
         padded: scaleType === "ordinal" ? ordinalPadded : null,
         incrementalOption: scaleType === "incremental" ? incrementalChoice.incrementalOption : undefined,
+        startValue: scaleType === "incremental" ? incrementalChoice.startValue : undefined,
         stopsCount: stopsCount,
         minMix: minMix,
         maxMix: maxMix
       };
       stops = scaleType === "incremental"
-        ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount)
+        ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount, incrementalChoice.startValue)
         : (scaleType === "semanticStops"
              ? generateStopsSemantic(hex, stopsCount)
              : (scaleType === "alphabetical"
@@ -480,7 +587,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     }
 
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("STEP 5.5: 🔍 EXAMPLE COLOR PREVIEW"));
+    console.log(chalk.bold("STEP 3.5: 🔍 EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(
@@ -490,7 +597,6 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       chalk.bold("  Name: ") + chalk.whiteBright(finalConcept) + "\n"
     );
 
-    // Add naming example
     if (tokenType === 'global') {
       const namingExample = `${category}.${namingLevel}.${finalConcept}`;
       console.log(chalk.bold("📝 Naming Example:"));
@@ -499,7 +605,75 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     }
 
     console.log(printStopsTable(stops, mode, padded));
-
+    
+    // Find the middle key(s) depending on the scale type
+    let stopKeys = Object.keys(stops).filter(k => k !== "base");
+    let middleKeys = [];
+    if (stopKeys.length > 0) {
+      if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
+        let numericKeys = stopKeys.map(Number).sort((a, b) => a - b);
+        if (numericKeys.length % 2 === 1) {
+          middleKeys = [String(numericKeys[Math.floor(numericKeys.length / 2)])];
+        } else {
+          middleKeys = [
+            String(numericKeys[numericKeys.length / 2 - 1]),
+            String(numericKeys[numericKeys.length / 2])
+          ];
+        }
+      } else if (newScaleSettings.type === "alphabetical") {
+        let alphaKeys = stopKeys.sort();
+        if (alphaKeys.length % 2 === 1) {
+          middleKeys = [alphaKeys[Math.floor(alphaKeys.length / 2)]];
+        } else {
+          middleKeys = [
+            alphaKeys[alphaKeys.length / 2 - 1],
+            alphaKeys[alphaKeys.length / 2]
+          ];
+        }
+      } else if (newScaleSettings.type === "semanticStops") {
+        let ordered = stopKeys.slice().sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
+        if (ordered.length % 2 === 1) {
+          middleKeys = [ordered[Math.floor(ordered.length / 2)]];
+        } else {
+          middleKeys = [
+            ordered[ordered.length / 2 - 1],
+            ordered[ordered.length / 2]
+          ];
+        }
+      }
+    }
+    // Ask user if they want 'base' to be one of the middle tones
+    if (middleKeys.length > 0) {
+      const { useMiddleToneAsBase } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "useMiddleToneAsBase",
+          message: `Do you want the value 'base' to be one of the middle tones (${middleKeys.map(k => k).join(', ')})?`,
+          default: false
+        }
+      ]);
+      if (useMiddleToneAsBase) {
+        let chosenMiddleTone = middleKeys[0];
+        if (middleKeys.length > 1) {
+          const { selectedMiddleTone } = await inquirer.prompt([
+            {
+              type: "list",
+              name: "selectedMiddleTone",
+              message: "Which of the middle tones do you want to use as 'base'?",
+              choices: middleKeys.map(k => ({
+                name: `${k} (${stops[k]})`,
+                value: k
+              })),
+              default: middleKeys[1]
+            }
+          ]);
+          chosenMiddleTone = selectedMiddleTone;
+        }
+        // Replace the value of base with the chosen middle tone
+        stops["base"] = stops[chosenMiddleTone];
+      }
+    }
+    
     const { confirmColor } = await inquirer.prompt([
       {
         type: "confirm",
@@ -531,12 +705,13 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 const MIN_MIX = 10;  
 const MAX_MIX = 90;  
 
-const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
+const generateStopsIncremental = (hex, step = '50', stopsCount = 10, startValue = 100) => {
   const stops = {};
   const stepNum = parseInt(step);
+  const startNum = parseInt(startValue) || 100; // Default to 100 if not provided or invalid
   
   for (let i = 0; i < stopsCount; i++) {
-    const key = (i + 1) * stepNum; 
+    const key = startNum + (i * stepNum); 
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     let mixPercentage;
     if (ratio < 0.5) {
@@ -554,10 +729,8 @@ const generateStopsIncremental = (hex, step = '50', stopsCount = 10) => {
 const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
   const stops = {};
   
-  // Add base color first
   stops["base"] = tinycolor(hex).toHexString().toUpperCase();
   
-  // Generate ordinal stops
   for (let i = 0; i < stopsCount; i++) {
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     const key = padded ? String(i + 1).padStart(2, '0') : String(i + 1);
@@ -647,12 +820,10 @@ const generateStopsSemantic = (hex, stopsCount) => {
 
 const generateStopsAlphabetical = (hex, format = 'uppercase', stopsCount = 10) => {
   const stops = {};
-  const startCharCode = format === 'uppercase' ? 65 : 97; // ASCII for 'A' or 'a'
+  const startCharCode = format === 'uppercase' ? 65 : 97; 
   
-  // Add base color first
   stops["base"] = tinycolor(hex).toHexString().toUpperCase();
   
-  // Generate alphabetical stops
   for (let i = 0; i < stopsCount; i++) {
     const key = String.fromCharCode(startCharCode + i);
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
@@ -686,7 +857,6 @@ const customStringify = (obj, indent = 2) => {
     }
     let keys = Object.keys(value);
     
-    // Sort keys to ensure "value" appears before "type"
     keys.sort((a, b) => {
       if (a === "value") return -1;
       if (b === "value") return 1;
@@ -960,7 +1130,7 @@ const main = async () => {
   while (addMoreColors) {
     
     const existingVariants = previousConcept && tokensData[previousConcept] ? Object.keys(tokensData[previousConcept]) : [];
-    const input = await askForInput(tokensData, existingVariants, namingChoice, scaleSettings);
+    const input = await askForInput(tokensData, existingVariants, formatChoices, scaleSettings);
     if (!input) return;
 
     const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings } = input;
@@ -973,16 +1143,9 @@ const main = async () => {
     
     const finalConcept = concept || "color";
     
-    // Create the token structure with proper hierarchy
     const { colorType, category, namingLevel } = input;
     
     if (colorType === 'Global') {
-      // Initialize the root object if it doesn't exist
-      if (!tokensData) {
-        tokensData = {};
-      }
-
-      // If both category and naming level are included
       if (category && namingLevel) {
         if (!tokensData[category]) {
           tokensData[category] = {};
@@ -990,57 +1153,35 @@ const main = async () => {
         if (!tokensData[category][namingLevel]) {
           tokensData[category][namingLevel] = {};
         }
-        tokensData[category][namingLevel][finalConcept] = {
-          base: { value: hex, type: "color" },
-          ...Object.fromEntries(
-            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
-          )
-        };
-      }
-      // If only category is included
-      else if (category) {
+        tokensData[category][namingLevel][finalConcept] = Object.fromEntries(
+          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        );
+      } else if (category) {
         if (!tokensData[category]) {
           tokensData[category] = {};
         }
-        tokensData[category][finalConcept] = {
-          base: { value: hex, type: "color" },
-          ...Object.fromEntries(
-            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
-          )
-        };
-      }
-      // If only naming level is included
-      else if (namingLevel) {
+        tokensData[category][finalConcept] = Object.fromEntries(
+          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        );
+      } else if (namingLevel) {
         if (!tokensData[namingLevel]) {
           tokensData[namingLevel] = {};
         }
-        tokensData[namingLevel][finalConcept] = {
-          base: { value: hex, type: "color" },
-          ...Object.fromEntries(
-            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
-          )
-        };
-      }
-      // If neither is included
-      else {
-        tokensData[finalConcept] = {
-          base: { value: hex, type: "color" },
-          ...Object.fromEntries(
-            Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
-          )
-        };
+        tokensData[namingLevel][finalConcept] = Object.fromEntries(
+          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        );
+      } else {
+        tokensData[finalConcept] = Object.fromEntries(
+          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        );
       }
     } else {
-      // For semantic colors (when implemented)
-      tokensData[finalConcept] = {
-        base: { value: hex, type: "color" },
-        ...Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
-        )
-      };
+      
+      tokensData[finalConcept] = Object.fromEntries(
+        Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+      );
     }
 
-    // Ensure "value" appears before "type" in all token objects
     const ensureValueBeforeType = (obj) => {
       if (obj && typeof obj === 'object') {
         if ('value' in obj && 'type' in obj) {

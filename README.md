@@ -42,16 +42,16 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.6.0 🔥 |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1 ✅ |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0 🔥 |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0 🔥 |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0 🔥 |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.0 ✅ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0    |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0    |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.2.0    |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1 ✅ |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.1 ✅ |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1    |
 
 Legend:  
 ✅ Patch // 🔥 Minor Change // 🆙 Major Change
@@ -77,138 +77,93 @@ output_files/      # Where generated tokens are saved
 
 ## 🎨 **Color Tokens Wizard**
 
-Version 2.6.0
+Version 2.8.0
 
-Managing color tokens can sometimes feel as magical as mastering alchemy, but with the Color Tokens Wizard 🧙, your journey to conjuring a luminous palette is a breeze. Begin with a base hue that will set the spellbinding tone, and the wizard will guide you through creating a dazzling spectrum of tokens. Whether you're defining a signature brand shade or curating an entire color system, let this wizard transform your creative vision into vibrant reality.
+Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
 
-1. **Invoke the Spell**  
-   Begin your journey by running the Color Tokens Wizard script. Open your terminal and cast the spell with:
+1. **Invoke the Wizard**  
+   Cast the color spell in your terminal:
 
    ```sh
    npm run color
    ```
 
-2. **Select Token Type**  
-   Choose between global and semantic colors:
+2. **Choose Token Type**  
+   Select your color token foundation:
 
-   - **Global Colors:** Base colors that form the foundation of your design system
-   - **Semantic Colors:** (Coming soon) Colors based on their meaning and purpose
+   - **Global Colors**
+   - **Semantic Colors** (coming soon; currently redirects to Global)
 
-   **Note:** The wizard currently supports **global colors**. Semantic colors are under development and will be available in a future update.
+3. **Set Category**  
+   (Optional) Organize your tokens by category (e.g., primitives, foundation, core, basics, essentials, global, roots, or custom). Enter your own if you wish.
 
-3. **Define Global Category** (Optional)  
-   Organize your colors into logical groups:
+4. **Set Naming Level**  
+   (Optional) Add a naming level for extra clarity (e.g., color, colour, palette, scheme, or custom).
 
-   - primitives
-   - foundation
-   - core
-   - basics
-   - essentials
-   - global
-   - roots
-   - custom
+5. **Enter Base Color**  
+   Provide a HEX color code (e.g., `#FABADA`). Preview your magical hue.
 
-4. **Set Naming Level** (Optional)  
-   Provide context about how the color should be used:
+6. **Name Your Color**  
+   Give your color a unique name (e.g., `blue`, `yellow`, `red`). The wizard ensures no duplicates in your chosen structure.
 
-   - color
-   - colour
-   - palette
-   - scheme
-   - custom
+7. **Select Scale Type**  
+   Decide how your color stops will be generated:
 
-5. **Name Your Color**  
-   Enter a name for your color (e.g., `blue`, `yellow`, `red`).
-
-6. **Select Base Color**  
-   Provide a HEX color code (e.g., `#FABADA`) to use as your base color.
-
-7. **Choose Scale Type**  
-   Select how you want to generate your color stops:
-
-   - **Incremental:** Generate stops using an incremental step
-
-     - 10 in 10 (e.g., 10, 20, 30, 40)
-     - 25 in 25 (e.g., 25, 50, 75, 100)
-     - 50 in 50 (e.g., 50, 100, 150, 200)
-     - 100 in 100 (e.g., 100, 200, 300, 400)
-
-   - **Ordinal:** Create a sequence
-
-     - Padded (e.g., 01, 02, 03, 04)
-     - Unpadded (e.g., 1, 2, 3, 4)
-
-   - **Alphabetical:** Use letters
-
-     - Uppercase (e.g., A, B, C, D)
-     - Lowercase (e.g., a, b, c, d)
-
-   - **Semantic Stops:** Generate semantic stops
-     - 1 stop: base
-     - 2 stops: dark, base, light
-     - 4 stops: darker, dark, base, light, lighter
-     - 6 stops: darkest, darker, dark, base, light, lighter, lightest
-     - 8 stops: ultra-dark, darkest, darker, dark, base, light, lighter, lightest, ultra-light
-     - 10 stops: ultra-dark, darkest, darker, dark, semi-dark, base, semi-light, light, lighter, lightest, ultra-light
+   - **Incremental:** 100, 200, 300, 400 (choose step size: 10, 25, 50, 100)
+   - **Ordinal:** 01, 02, 03, 04 or 1, 2, 3, 4 (choose padded or unpadded)
+   - **Alphabetical:** A, B, C, D or a, b, c, d
+   - **Semantic Stops:** dark, base, light, etc. (choose number of stops: 1, 2, 4, 6, 8, 10)
 
 8. **Set Number of Stops**  
-   Specify how many color stops you want to generate (1-20).
+   Choose how many stops (shades) to generate (1–20, depending on scale type).
 
-9. **Customize Color Ranges**  
-   Define how your colors mix with white and black:
+9. **Customize Color Mix Range**  
+   (Optional) Set the minimum and maximum mix percentages
+   (default: 10%–90%) to control how your base color blends with white and black for the lightest and darkest stops.
 
-   - **Default Range:** 10% to 90% mix
-   - **Custom Range:** Define your own mix percentages (0-100%)
-     - Lower values create more extreme light/dark variations
-     - Higher values create more subtle variations
-     - Values of 0% or 100% will result in pure white/black colors
+10. **Preview and Confirm**  
+    Review your color scale in a table, complete with token names and HEX values.
+    You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
 
-10. **Preview the Tokens**  
-    The wizard will show your color's preview along with the stops table. The token name will be constructed based on your selections:
+11. **Expand Your Palette**  
+    Add more colors and repeat the process as many times as you like.
 
-    ```
-    Type: Global
-    Category: primitives (optional)
-    Level: color (optional)
-    Name: blue
-    ┌─────────┬───────────┬─────────┐
-    │ Scale   │ HEX       │ Sample  │
-    ├─────────┼───────────┼─────────┤
-    │ base    │ #FABADA   │ [🪄]    │
-    │ 01      │ #F0E3D2   │ [🪄]    │
-    │ 02      │ #E6D6BF   │ [🪄]    │
-    │ ...     │ ...       │ ...     │
-    └─────────┴───────────┴─────────┘
-    ```
+12. **Export and Convert**  
+    When you're done, the wizard:
 
-11. **Generate Your Artifacts**  
-    Once confirmed, the wizard will:
+    - Exports tokens in Tokens Studio JSON format (HEX by default)
+    - Offers to convert tokens to RGB, RGBA, and/or HSL
+    - Generates CSS and SCSS files for each format
+    - Cleans up unused files
 
-    - Export your tokens in Tokens Studio JSON format
-      Stored in: `output_files/tokens/color` as `color_tokens_{format}.json`
-    - Create CSS and SCSS files with your tokens as variables
-      Stored in `output_files/tokens/css/` and `output_files/tokens/scss/` respectively as: `color_variables_{format}.css` and `color_variables_{format}.scss`
+    Your magical artifacts will appear in:
 
-12. **Expand Your Palette**  
-    Add more colors to your palette by repeating the process.
+    - JSON: `output_files/tokens/json/color/color_tokens_{format}.json`
+    - CSS: `output_files/tokens/css/color/color_variables_{format}.css`
+    - SCSS: `output_files/tokens/scss/color/color_variables_{format}.scss`
 
-13. **Finalize the Spell**  
-    Review the output files and integrate your design tokens into your system.
+13. **Review Your Spellwork**  
+    The wizard lists all updated, new, and deleted files for your review.
 
 ---
 
-**Note:** The wizard currently supports global colors only. Semantic colors, categories, and naming levels are under development and will be available in a future update.
+**Note:**
 
-Let the art of token crafting infuse your project with endless creativity—and may your colors forever dazzle!
+- Semantic color support is planned but not yet available.
+- All steps allow for custom input and confirmation before proceeding.
+- The wizard ensures no duplicate color names in your chosen structure.
+- You can always restart a step to adjust your input.
+
+---
 
 ## 🔤 **Typography Tokens Wizard**
 
-Version 1.2.0
+Version 1.7.0
 
-The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a comprehensive typography system. Like a skilled alchemist mixing potent ingredients, this wizard helps you blend font families, sizes, weights, spacing and heights into a harmonious typographic elixir for your design system.
+Craft a harmonious typographic elixir for your design system with the Typography Tokens Wizard 🧙! This wizard helps you blend font families, sizes, weights, spacing, and heights into a cohesive typography system.
 
-1. **Invoke the Spell**  
-   Begin your typographic journey by running the Typography Tokens Wizard script:
+1. **Invoke the Wizard**  
+   Cast the typography spell in your terminal:
 
    ```sh
    npm run typo
@@ -223,19 +178,17 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
    - Letter Spacing
    - Line Heights
 
-3. **For Each Property:**
-
-   **🔤 Font Family**
+3. **Configure Font Family**
 
    - Name your property (fontFamily, font-family, fonts, ff, or custom)
-   - Define 1-3 font families with fallbacks
+   - Define 1–3 font families with fallbacks
    - Choose naming convention:
      - Semantic (primary, secondary, tertiary)
      - Purpose-based (title, body, details)
      - Ordinal (1, 2, 3)
      - Alphabetical (a, b, c)
 
-   **📏 Font Size**
+4. **Configure Font Size**
 
    - Name your property (fontSize, font-size, size, fs, or custom)
    - Select scale type:
@@ -245,42 +198,42 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
      - Custom Intervals
      - Fibonacci Scale
    - Choose unit (px, rem, em)
-   - Define 1-12 sizes with naming convention:
+   - Define 1–12 sizes with naming convention:
      - T-shirt (xs, sm, md, lg, xl)
      - Incremental (10, 20, 30)
      - Ordinal (1, 2, 3)
      - Alphabetical (a, b, c...)
 
-   **⚖️ Font Weight**
+5. **Configure Font Weight**
 
    - Name your property (fontWeight, font-weight, weight, fw, or custom)
-   - Select from standard weights (100-900)
+   - Select from standard weights (100–900)
    - Choose naming convention:
      - T-shirt (xs to xl)
      - Semantic (thin to bold)
      - Ordinal (1 to 5)
      - Purpose-based (body, heading...)
 
-   **↔️ Letter Spacing**
+6. **Configure Letter Spacing**
 
    - Name your property (letterSpacing, letter-spacing, tracking, ls, or custom)
    - Choose scale type:
-     - **Predetermined Scale:** (-1.25 to 6.25)
-     - **Custom Values:** Define your own values
+     - Predetermined Scale (-1.25 to 6.25)
+     - Custom Values
    - Select unit (em, rem, %)
-   - Define 1-7 values with naming convention:
+   - Define 1–7 values with naming convention:
      - T-shirt (xs to xl)
      - Incremental (100, 200...)
      - Ordinal (01, 02... or 1, 2...)
      - Alphabetical (a, b, c...)
 
-   **↕️ Line Height**
+7. **Configure Line Height**
 
    - Name your property (lineHeight, line-height, leading, lh, or custom)
    - Choose scale type:
-     - **Predetermined Scale 1:** (1.1, 1.25, 1.5, 1.6, 1.75, 2.0)
-     - **Predetermined Scale 2:** (1.0, 1.2, 1.5, 1.6, 2.0)
-     - **Custom Values:** Define your own values
+     - Predetermined Scale 1 (1.1, 1.25, 1.5, 1.6, 1.75, 2.0)
+     - Predetermined Scale 2 (1.0, 1.2, 1.5, 1.6, 2.0)
+     - Custom Values
    - Choose naming convention:
      - T-shirt (xs to xl)
      - Semantic (tight, normal, loose, relaxed, spacious)
@@ -289,23 +242,10 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
      - Incremental (100, 200...)
      - Alphabetical (a, b, c...)
 
-4. **Preview the Tokens**  
-   For each property, you'll see a preview table showing your configured values:
+8. **Preview Your Tokens**  
+   For each property, you'll see a preview table showing your configured values.
 
-   ```
-   Property: Font Size
-   ┌─────────┬─────────┐
-   │ Scale   │ Value   │
-   ├─────────┼─────────┤
-   │ xs      │ 12px    │
-   │ sm      │ 14px    │
-   │ md      │ 16px    │
-   │ lg      │ 18px    │
-   │ xl      │ 20px    │
-   └─────────┴─────────┘
-   ```
-
-5. **Generate Your Artifacts**  
+9. **Generate Your Artifacts**  
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
@@ -313,10 +253,16 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
    - Create CSS and SCSS files with your tokens as variables
      Stored in `output_files/tokens/css/typography/typography_variables.css` and `output_files/tokens/scss/typography/typography_variables.scss`
 
-6. **Finalize the Spell**  
-   Review the output files and integrate your typography tokens into your system.
+10. **Finalize Your Spell**  
+    Review the output files and integrate your typography tokens into your system.
 
-⚠️ **IMPORTANT:** Each step includes accessibility guidelines and recommendations to ensure your typography system is both beautiful and functional. The wizard acts as your trusted advisor, suggesting optimal values while giving you the freedom to customize according to your needs.
+---
+
+**Note:**
+
+- Each step includes accessibility guidelines and recommendations.
+- The wizard suggests optimal values while allowing customization.
+- You can always restart a step to adjust your input.
 
 ---
 
@@ -324,42 +270,42 @@ The Typography Tokens Wizard 🧙 is your enchanted companion for crafting a com
 
 Version 1.7.0
 
-Creating and managing space tokens can be a daunting task, but with the Space Tokens Wizard 🧙, you can streamline the process and save precious time. Begin with a base space value, and the wizard will generate a variety of space tokens in different units, ready for integration into your design system and development projects.
+Conjure the perfect spacing system for your design with the Space Tokens Wizard 🧙! This wizard helps you create a harmonious set of spacing tokens that will bring balance and rhythm to your layouts.
 
-1. **Invoke the Spell**  
-   Begin your journey by running the Space Tokens Wizard script:
+1. **Invoke the Wizard**  
+   Cast the space spell in your terminal:
 
    ```sh
    npm run space
    ```
 
-2. **Define the Base Unit**  
+2. **Define Base Unit**  
    The default base unit for space tokens is pixels (px).
 
 3. **Name Your Space Tokens**  
    Provide a name for your space tokens (e.g., space, spc).
 
-4. **Select a Scale**  
+4. **Select Scale Type**  
    Choose a predefined scale for your tokens:
 
-   - **4-Point Grid System**
-   - **8-Point Grid System**
-   - **Modular Scale** (multiplier based)
-   - **Custom Intervals**
-   - **Fibonacci Scale**
+   - 4-Point Grid System
+   - 8-Point Grid System
+   - Modular Scale (multiplier based)
+   - Custom Intervals
+   - Fibonacci Scale
 
-5. **Define the Number of Values**  
+5. **Set Number of Values**  
    Specify how many space values you want to generate (e.g., 6 values for a small-to-large scale).
 
-6. **Choose Naming Criteria**  
+6. **Choose Naming Convention**  
    Select a naming pattern for your space tokens:
 
-   - **T-shirt Sizes**: (xs, sm, md, lg, xl)
-   - **Incremental Numbers**: (100, 200, 300)
-   - **Ordinal Numbers**: (1, 2, 3)
-   - **Alphabetical**: (A, B, C or a, b, c)
+   - T-shirt Sizes (xs, sm, md, lg, xl)
+   - Incremental (100, 200, 300)
+   - Ordinal (1, 2, 3)
+   - Alphabetical (A, B, C or a, b, c)
 
-7. **Preview the Tokens**  
+7. **Preview Your Tokens**  
    The wizard will show your space tokens preview:
 
    ```
@@ -382,7 +328,7 @@ Creating and managing space tokens can be a daunting task, but with the Space To
    - Create CSS and SCSS files with your tokens as variables
      Stored in `output_files/tokens/css/space/space_variables_{unit}.css` and `output_files/tokens/scss/space/space_variables_{unit}.scss`
 
-9. **Finalize the Spell**  
+9. **Finalize Your Spell**  
    Review the output files and integrate your space tokens into your system.
 
 ---
@@ -391,42 +337,42 @@ Creating and managing space tokens can be a daunting task, but with the Space To
 
 Version 1.7.0
 
-Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you can streamline the process and save valuable time. Start with a base size, and let the wizard generate a range of size tokens in various units, ready for integration into your design system and development projects.
+Conjure the perfect sizing system for your design with the Size Tokens Wizard 🧙! This wizard helps you create a harmonious set of size tokens that will bring consistency and precision to your layouts.
 
-1. **Invoke the Spell**  
-   Begin your journey by running the Size Tokens Wizard script:
+1. **Invoke the Wizard**  
+   Cast the size spell in your terminal:
 
    ```sh
    npm run size
    ```
 
-2. **Define the Base Unit**  
+2. **Define Base Unit**  
    The default base unit for size tokens is pixels (px).
 
 3. **Name Your Size Tokens**  
-   Provide a name for your size tokens (e.g., size, dimension).
+   Provide a name for your size tokens (e.g., size, sz).
 
-4. **Select a Scale**  
-   Choose from the predefined scales:
+4. **Select Scale Type**  
+   Choose a predefined scale for your tokens:
 
-   - **4-Point Grid System**
-   - **8-Point Grid System**
-   - **Modular Scale** (multiplier based)
-   - **Custom Intervals**
-   - **Fibonacci Scale**
+   - 4-Point Grid System
+   - 8-Point Grid System
+   - Modular Scale (multiplier based)
+   - Custom Intervals
+   - Fibonacci Scale
 
-5. **Define the Number of Values**  
+5. **Set Number of Values**  
    Specify how many size values you want to generate (e.g., 6 values for a small-to-large scale).
 
-6. **Choose Naming Criteria**  
+6. **Choose Naming Convention**  
    Select a naming pattern for your size tokens:
 
-   - **T-shirt Sizes**: (xs, sm, md, lg, xl)
-   - **Incremental Numbers**: (100, 200, 300)
-   - **Ordinal Numbers**: (1, 2, 3)
-   - **Alphabetical**: (A, B, C or a, b, c)
+   - T-shirt Sizes (xs, sm, md, lg, xl)
+   - Incremental (100, 200, 300)
+   - Ordinal (1, 2, 3)
+   - Alphabetical (A, B, C or a, b, c)
 
-7. **Preview the Tokens**  
+7. **Preview Your Tokens**  
    The wizard will show your size tokens preview:
 
    ```
@@ -449,115 +395,183 @@ Managing size tokens can be daunting, but with the Size Tokens Wizard 🧙, you 
    - Create CSS and SCSS files with your tokens as variables
      Stored in `output_files/tokens/css/size/size_variables_{unit}.css` and `output_files/tokens/scss/size/size_variables_{unit}.scss`
 
-9. **Finalize the Spell**  
+9. **Finalize Your Spell**  
    Review the output files and integrate your size tokens into your system.
 
 ---
 
-## ⭕️ **Border Radius Tokens Wizard**
+## 🔲 **Border Radius Tokens Wizard**
 
 Version 1.7.0
 
-Creating border-radius tokens is simplified with the Border Radius Tokens Wizard 🧙. This wizard guides you through defining and generating border-radius tokens for your design system, ready to be used in various formats including JSON, CSS, and SCSS.
+Conjure the perfect border radius system for your design with the Border Radius Tokens Wizard 🧙! This wizard helps you create a harmonious set of border radius tokens that will bring elegance and consistency to your UI elements.
 
-1. **Invoke the Spell**  
-   Begin your journey by running the Border Radius Tokens Wizard script:
+1. **Invoke the Wizard**  
+   Cast the border radius spell in your terminal:
 
    ```sh
-   npm run radii
+   npm run radius
    ```
 
-2. **Define the Token Name**  
-   Choose a name for your border-radius tokens (e.g., `border-radius`, `corner-radius`, `radius`).
+2. **Define Base Unit**  
+   The default base unit for border radius tokens is pixels (px).
 
-3. **Select Scale Structure**  
-   Decide whether to include 'none' and 'full' values for the border radius.
+3. **Name Your Border Radius Tokens**  
+   Provide a name for your border radius tokens (e.g., radius, rad).
 
-4. **Define Intermediate Steps**  
-   Optionally, add intermediate steps for a more granular scale:
+4. **Select Scale Type**  
+   Choose a predefined scale for your tokens:
 
-   - **T-shirt Sizes:** (xs, sm, md, lg, xl)
-   - **Incremental Numbers:** (100, 200, 300, 400)
-   - **Ordinal Numbers:** (01, 02, 03, 04 or 1, 2, 3, 4)
-   - **Alphabetical:** (A, B, C, D or a, b, c, d)
-   - **Semantic:** (subtle, soft, moderate, bold)
+   - 4-Point Grid System
+   - 8-Point Grid System
+   - Modular Scale (multiplier based)
+   - Custom Intervals
+   - Fibonacci Scale
 
-5. **Define Value Scale**  
-   Select a value scale based on either minimal or expressive bases:
+5. **Set Number of Values**  
+   Specify how many border radius values you want to generate (e.g., 6 values for a small-to-large scale).
 
-   - **4-Point Grid System**
-   - **8-Point Grid System**
-   - **Modular Scale** (multiplier based)
-   - **Custom Intervals**
-   - **Fibonacci Scale**
+6. **Choose Naming Convention**  
+   Select a naming pattern for your border radius tokens:
 
-6. **Preview the Tokens**  
-   The wizard will show your border-radius tokens preview:
+   - T-shirt Sizes (xs, sm, md, lg, xl)
+   - Incremental Numbers (100, 200, 300)
+   - Ordinal Numbers (1, 2, 3)
+   - Alphabetical (A, B, C or a, b, c)
+
+7. **Preview Your Tokens**  
+   The wizard will show your border radius tokens preview:
 
    ```
-   Name: Border Radius
+   Name: Radius
    ┌─────────┬─────────┐
    │ Scale   │ Value   │
    ├─────────┼─────────┤
-   │ None    │ 0px     │
    │ 01      │ 4px     │
    │ 02      │ 8px     │
    │ 03      │ 12px    │
-   │ Full    │ 9999px  │
+   │ 04      │ 16px    │
    └─────────┴─────────┘
    ```
 
-7. **Generate Your Artifacts**  
+8. **Generate Your Artifacts**  
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
-     Stored in: `output_files/tokens/border-radius/border_radius_tokens_{unit}.json`
+     Stored in: `output_files/tokens/radius/radius_tokens_{unit}.json`
    - Create CSS and SCSS files with your tokens as variables
-     Stored in `output_files/tokens/css/border-radius/border_radius_variables_{unit}.css` and `output_files/tokens/scss/border-radius/border_radius_variables_{unit}.scss`
+     Stored in `output_files/tokens/css/radius/radius_variables_{unit}.css` and `output_files/tokens/scss/radius/radius_variables_{unit}.scss`
 
-8. **Finalize the Spell**  
-   Review the output files and integrate your border-radius tokens into your system.
-
----
-
-### 🧹 **Clear Spell**
-
-Version 1.2.1
-
-The Clear Spell is a simple yet powerful tool to keep your project directory clean and organized. It removes all generated files, ensuring you can start fresh without any clutter.
-
-1.  **Run the Clear Spell Script**  
-    Open your terminal and execute the following command:
-
-    ```sh
-    npm run clear
-    ```
-
-2.  **What Happens Next**
-    - All generated token files in the `output_files/tokens/` directory are deleted.
-    - CSS and SCSS files in the `output_files/tokens/css/` and `output_files/tokens/scss/` directories are removed.
-    - Final output files in the `output_files/final/` directory, including JSON, CSS, and SCSS files, will also be removed.
-    - Your project directory is left clean, free from outdated or unnecessary files.
+9. **Finalize Your Spell**  
+   Review the output files and integrate your border radius tokens into your system.
 
 ---
 
-### 🪄 **Merge Spell**
+## 🧹 **Clear Tokens Spell**
 
-Version 1.2.0
+Version 1.7.0
 
-The Merge Spell is designed to simplify your workflow by combining multiple token files into a single, unified file. This makes managing and integrating design tokens across categories (e.g., color, size, spacing) much easier.
+Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you remove all generated token files, giving you a fresh start for your design system.
 
-1.  **Run the Merge Spell Script**  
-    Open your terminal and execute the following command:
+1. **Invoke the Spell**  
+   Cast the clear spell in your terminal:
 
-    ```sh
-    npm run merge
-    ```
+   ```sh
+   npm run clear
+   ```
 
-2.  **What Happens Next**
-    - All token files in the `output_files/final/` directory are merged into a single JSON, CSS and SCSS file.
-    - The resulting file is structured consistently, ensuring seamless integration into your design system or development workflow.
-    - You can select which formats and options from your generated tokens you want to include in the final merged file.
+2. **Preview Your Cleanup**  
+   The spell will show a preview of the files to be removed:
+
+   ```
+   Files to remove:
+   - output_files/tokens/color/
+   - output_files/tokens/typography/
+   - output_files/tokens/space/
+   - output_files/tokens/size/
+   - output_files/tokens/border-radius/
+   - output_files/tokens/final/
+   ```
+
+3. **Confirm Your Cleanup**  
+   Once confirmed, the spell will:
+
+   - Remove all generated token files
+   - Clear all output directories
+   - Reset the workspace for a fresh start
+
+4. **Finalize Your Spell**  
+   Your workspace is now clean and ready for new token generation.
+
+---
+
+**Note:**
+
+- The spell ensures a complete cleanup of all generated files.
+- You can always restart a step to adjust your selection.
+- Make sure to backup any important files before running this spell.
+
+---
+
+### 🔄 **Merge Tokens Spell**
+
+Version 1.7.0
+
+Conjure a unified design system by merging your token files with the Merge Tokens Spell 🧙! This spell combines multiple token files into a single, cohesive design system file, ensuring consistent naming conventions across your tokens.
+
+1. **Invoke the Spell**  
+   Cast the merge spell in your terminal:
+
+   ```sh
+   npm run merge
+   ```
+
+2. **Select Token Files**  
+   Choose the token files you want to merge:
+
+   - Color tokens
+   - Typography tokens
+   - Space tokens
+   - Size tokens
+   - Border radius tokens
+
+3. **Configure Token Formats**  
+   The spell will automatically review which files are available in your `output/tokens` folder. For each token type found, select your preferred format:
+
+   - Colors: Choose between HEX, RGB, RGBA, or HSL
+   - Typography: Select units (px, rem, em)
+   - Space: Choose units (px, rem, em)
+   - Size: Select units (px, rem, em)
+   - Border Radius: Choose units (px, rem, em)
+
+4. **Choose Naming Convention**  
+    Select how you want your tokens to be named in the merged file:
+
+   - camelCase (e.g., primaryColor, fontSize)
+   - kebab-case (e.g., primary-color, font-size)
+   - snake_case (e.g., primary_color, font_size)
+   - PascalCase (e.g., PrimaryColor, FontSize)
+
+5. **Generate Your Artifacts**  
+   Once confirmed, the spell will:
+
+   - Create a merged tokens file in Tokens Studio JSON format
+     Stored in: `output_files/final/tokens.json`
+   - Create CSS and SCSS files with all your tokens as variables
+     Stored in `output_files/final/tokens.css` and `output_files/final/tokens.scss`
+
+6. **Finalize Your Spell**  
+   Review the merged files and integrate them into your design system.
+
+---
+
+**Note:**
+
+- The spell ensures all your tokens are properly combined.
+- You can always restart a step to adjust your selection.
+- The merged files are ready to use in your development workflow.
+- All token names will be transformed to match your chosen naming convention.
+- All values will be converted to your selected formats.
 
 ---
 
