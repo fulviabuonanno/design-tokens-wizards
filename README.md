@@ -43,7 +43,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
 | 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.0 ✅ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1 ✅ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1    |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0    |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0    |
 | 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0    |
@@ -51,7 +51,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
 | **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.1 ✅ |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1 ✅ |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1    |
 
 Legend:  
 ✅ Patch // 🔥 Minor Change // 🆙 Major Change
@@ -118,11 +118,11 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
    Choose how many stops (shades) to generate (1–20, depending on scale type).
 
 9. **Customize Color Mix Range**  
-   (Optional) Set the minimum and maximum mix percentages 
+   (Optional) Set the minimum and maximum mix percentages
    (default: 10%–90%) to control how your base color blends with white and black for the lightest and darkest stops.
 
 10. **Preview and Confirm**  
-    Review your color scale in a table, complete with token names and HEX values. 
+    Review your color scale in a table, complete with token names and HEX values.
     You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
 
 11. **Expand Your Palette**  
@@ -137,6 +137,7 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
     - Cleans up unused files
 
     Your magical artifacts will appear in:
+
     - JSON: `output_files/tokens/json/color/color_tokens_{format}.json`
     - CSS: `output_files/tokens/css/color/color_variables_{format}.css`
     - SCSS: `output_files/tokens/scss/color/color_variables_{format}.scss`
@@ -300,7 +301,7 @@ Conjure the perfect spacing system for your design with the Space Tokens Wizard 
    Select a naming pattern for your space tokens:
 
    - T-shirt Sizes (xs, sm, md, lg, xl)
-   - Incremental  (100, 200, 300)
+   - Incremental (100, 200, 300)
    - Ordinal (1, 2, 3)
    - Alphabetical (A, B, C or a, b, c)
 
@@ -396,7 +397,6 @@ Conjure the perfect sizing system for your design with the Size Tokens Wizard �
 
 9. **Finalize Your Spell**  
    Review the output files and integrate your size tokens into your system.
-
 
 ---
 
