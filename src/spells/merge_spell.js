@@ -67,6 +67,17 @@ function mergeTextFiles(filePaths) {
     }
   });
   
+  // For CSS files, combine all :root blocks into one
+  if (filePaths[0].toLowerCase().endsWith('.css')) {
+    const allVariables = contents.map(content => {
+      // Extract content between :root { and }
+      const match = content.match(/:root\s*{([^}]*)}/);
+      return match ? match[1].trim() : '';
+    }).filter(Boolean);
+    
+    return `:root {\n${allVariables.join('\n')}\n}`;
+  }
+  
   return contents.join('\n');
 }
 
