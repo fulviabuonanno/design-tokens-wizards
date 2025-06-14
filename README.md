@@ -40,17 +40,17 @@ A powerful collection of scripts to generate and manage design tokens for your d
 6. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.0 ✅ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0    |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.0   |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0   |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0   |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0   |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.1 ✅ |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.2 ✅ |
 | **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1    |
 
 Legend:  
@@ -63,16 +63,14 @@ src/
   wizards/         # All wizard scripts (color, typo, space, size, radii)
   spells/          # Utility scripts (merge, clear)
   config/          # Config and helper scripts
+  assets/          # Images and other static assets
 output_files/      # Where generated tokens are saved
   tokens/
-    color/
-    typography/
-    space/
-    size/
-    border-radius/
-  css/
-  scss/
-  final/
+    json/          # JSON token files
+    css/           # CSS token files
+    scss/          # SCSS token files
+  final/           # Final merged token files
+info/              # Additional project information
 ```
 
 ## 🎨 **Color Tokens Wizard**

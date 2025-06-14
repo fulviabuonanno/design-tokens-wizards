@@ -1113,7 +1113,6 @@ const main = async () => {
   const tokensFolder = path.join(outputsDir, "tokens/json/color");
   const cssFolder = path.join(outputsDir, "tokens/css/color");
   const scssFolder = path.join(outputsDir, "tokens/scss/color");
-  const reportsFolder = path.join(outputsDir, "reports");
   let namingChoice = null;
   let previousConcept = null;
   let formatChoices = null;
@@ -1123,7 +1122,6 @@ const main = async () => {
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
-  if (!fs.existsSync(reportsFolder)) fs.mkdirSync(reportsFolder, { recursive: true });
 
   let addMoreColors = true;
 

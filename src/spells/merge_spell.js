@@ -29,7 +29,7 @@ const finalDir = path.join(__dirname, "..", "..", "output_files", "final");
 const tokensFolder = path.join(outputsDir, "tokens/json");
 const cssFolder = path.join(outputsDir, "tokens/css");
 const scssFolder = path.join(outputsDir, "tokens/scss"); 
-const reportsFolder = path.join(outputsDir, "reports");
+// const reportsFolder = path.join(outputsDir, "reports");
 
 /**
  * Recursively get all file paths inside a directory.
