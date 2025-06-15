@@ -349,11 +349,11 @@ const askForInput = async () => {
         type: 'list',
         name: 'increment',
         message: 'For Incremental scale, choose the step increment:',
-        choices: [
-          { name: '10 in 10 (e.g., 10, 20, 30, 40)', value: '10' },
-          { name: '25 in 25 (e.g., 25, 50, 75, 100)', value: '25' },
+        choices: [                
+          { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: '100' },
           { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: '50' },
-          { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: '100' }
+          { name: '25 in 25 (e.g., 25, 50, 75, 100)', value: '25' },
+          { name: '10 in 10 (e.g., 10, 20, 30, 40)', value: '10' }
         ]
       }
     ]);
@@ -444,8 +444,8 @@ const generateTokens = (unit, numValues, namingChoice, scale, ordinalFormat, alp
     value = Math.round(value * 100) / 100;
     
     tokens[tokenName] = {
-      value: `${value}${unit}`,
-      type: "sizing"
+      $value: `${value}${unit}`,
+      $type: "sizing"
     };
   }
   
@@ -459,10 +459,10 @@ const convertTokens = (tokens, unit) => {
   };
   const convertedTokens = {};
   for (const [key, token] of Object.entries(tokens)) {
-    const numericValue = parseFloat(token.value);
+    const numericValue = parseFloat(token.$value);
     convertedTokens[key] = {
-      value: conversions[unit](numericValue),
-      type: "sizing"
+      $value: conversions[unit](numericValue),
+      $type: "sizing"
     };
   }
   return convertedTokens;
@@ -486,43 +486,35 @@ const sortObjectRecursively = (obj) => {
   return sortedObj;
 };
 
-const customStringify = (value, indent = 2) => {
-  const spacer = ' '.repeat(indent);
-  if (value === null || typeof value !== 'object') {
+const customStringify = (obj, indent = 2) => {
+  const spacer = " ".repeat(indent);
+  const stringify = (value, currentIndent) => {
+    if (value === null || typeof value !== "object") {
       return JSON.stringify(value);
-  }
-  if (Array.isArray(value)) {
-      const items = value.map(item => customStringify(item, indent + 2));
-      return "[\n" + spacer + items.join(",\n" + spacer) + "\n" + ' '.repeat(indent - 2) + "]";
-  }
-  const tshirtOrder = ["3xs", "2xs", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"];
-  const customComparator = (a, b) => {
-      const indexA = tshirtOrder.indexOf(a);
-      const indexB = tshirtOrder.indexOf(b);
-      if (indexA !== -1 && indexB !== -1) {
-          return indexA - indexB;
-      }
-      if (indexA !== -1) return -1;
-      if (indexB !== -1) return 1;
-      const numA = Number(a);
-      const numB = Number(b);
-      if (!isNaN(numA) && !isNaN(numB)) {
-          return numA - numB;
-      }
-      if (a === 'value' && b === 'type') return -1;
-      if (a === 'type' && b === 'value') return 1;
+    }
+    if (Array.isArray(value)) {
+      const items = value.map(item => stringify(item, currentIndent + indent));
+      return "[\n" + " ".repeat(currentIndent + indent) + items.join(",\n" + " ".repeat(currentIndent + indent)) + "\n" + " ".repeat(currentIndent) + "]";
+    }
+    let keys = Object.keys(value);
+    
+    keys.sort((a, b) => {
+      if (a === "$value") return -1;
+      if (b === "$value") return 1;
+      if (a === "$type") return -1;
+      if (b === "$type") return 1;
       return a.localeCompare(b);
+    });
+
+    let result = "{\n";
+    keys.forEach((key, idx) => {
+      result += " ".repeat(currentIndent + indent) + JSON.stringify(key) + ": " + stringify(value[key], currentIndent + indent);
+      if (idx < keys.length - 1) result += ",\n";
+    });
+    result += "\n" + " ".repeat(currentIndent) + "}";
+    return result;
   };
-  const keys = Object.keys(value).sort(customComparator);
-  let result = "{\n";
-  keys.forEach((key, idx) => {
-      result += spacer + JSON.stringify(key) + ": " + customStringify(value[key], indent + 2);
-      if (idx < keys.length - 1) {
-          result += ",\n";
-      }
-  });
-  result += "\n" + ' '.repeat(indent - 2) + "}";
-  return result;
+  return stringify(obj, 0);
 };
 
 const saveTokensToFile = (tokensObject, folder, fileName) => {
@@ -536,8 +528,8 @@ const saveTokensToFile = (tokensObject, folder, fileName) => {
     const sortedTokens = {};
     sortedKeys.forEach(key => {
       sortedTokens[key] = {
-        value: tokens[key].value,
-        type: tokens[key].type
+        $value: tokens[key].$value,
+        $type: tokens[key].$type
       };
     });
     
@@ -547,38 +539,51 @@ const saveTokensToFile = (tokensObject, folder, fileName) => {
   return fs.existsSync(filePath);
 };
 
-const convertTokensToCSS = (tokens, name) => {
-  const tshirtOrder = [
-    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
-    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
-    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
-  ];
-  const customSort = (a, b) => {
-    const aInList = tshirtOrder.includes(a);
-    const bInList = tshirtOrder.includes(b);
-    if (aInList && bInList) return tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b);
-    else if (aInList) return -1;
-    else if (bInList) return 1;
-    const numA = Number(a);
-    const numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-    return a.localeCompare(b);
+const convertTokensToCSS = (tokens) => {
+  let cssVariables = ":root {\n";
+  const processTokens = (obj, prefix = "") => {
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      keys = keys.sort((a, b) => a.localeCompare(b));
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
+        } else {
+          processTokens(obj[key], `${prefix}${key}-`);
+        }
+      }
+    }
   };
-  const sortedKeys = Object.keys(tokens).sort(customSort);
-  let cssVariables = ':root {\n';
-  sortedKeys.forEach(key => {
-    cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
-  });
-  cssVariables += '}';
+  processTokens(tokens);
+  cssVariables += "}";
   return cssVariables;
 };
 
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
-  const cssContent = convertTokensToCSS(tokens, name);
+  const cssContent = convertTokensToCSS(tokens);
   fs.writeFileSync(filePath, cssContent);
   return fileExists;
+};
+
+const convertTokensToSCSS = (tokens) => {
+  let scssVariables = "";
+  const processTokens = (obj, prefix = "") => {
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      keys = keys.sort((a, b) => a.localeCompare(b));
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
+        } else {
+          processTokens(obj[key], `${prefix}${key}-`);
+        }
+      }
+    }
+  };
+  processTokens(tokens);
+  return scssVariables;
 };
 
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
@@ -602,7 +607,7 @@ const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const sortedKeys = Object.keys(tokens).sort(customSort);
   let scssVariables = '';
   sortedKeys.forEach(key => {
-    scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
+    scssVariables += `$${name}-${key}: ${tokens[key].$value};\n`;
   });
   fs.writeFileSync(filePath, scssVariables);
   return fs.existsSync(filePath);
@@ -695,7 +700,7 @@ const main = async () => {
   });
 
   sortedEntries.forEach(([tokenName, token]) => {
-    table.push([tokenName, token.value]);
+    table.push([tokenName, token.$value]);
   });
 
   console.log(table.toString());

@@ -253,10 +253,10 @@ const askForInput = async () => {
           name: 'incrementalOption',
           message: "For Incremental scale, choose the step increment:",
           choices: [
-            { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' },
-            { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
+            { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
             { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
-            { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' }
+            { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
+            { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' }
           ]
         }
       ]);
@@ -655,35 +655,88 @@ const saveTokensToFile = (tokensData, folder, fileName) => {
   return fileExists;
 };
 
-const convertTokensToCSS = (tokens, name) => {
-  let cssVariables = ':root {\n';
-  for (const key in tokens) {
-    cssVariables += `  --${name}-${key}: ${tokens[key].value};\n`;
-  }
-  cssVariables += '}';
+const customStringify = (obj, indent = 2) => {
+  const spacer = " ".repeat(indent);
+  const stringify = (value, currentIndent) => {
+    if (value === null || typeof value !== "object") {
+      return JSON.stringify(value);
+    }
+    if (Array.isArray(value)) {
+      const items = value.map(item => stringify(item, currentIndent + indent));
+      return "[\n" + " ".repeat(currentIndent + indent) + items.join(",\n" + " ".repeat(currentIndent + indent)) + "\n" + " ".repeat(currentIndent) + "]";
+    }
+    let keys = Object.keys(value);
+    
+    keys.sort((a, b) => {
+      if (a === "$value") return -1;
+      if (b === "$value") return 1;
+      if (a === "$type") return -1;
+      if (b === "$type") return 1;
+      return a.localeCompare(b);
+    });
+
+    let result = "{\n";
+    keys.forEach((key, idx) => {
+      result += " ".repeat(currentIndent + indent) + JSON.stringify(key) + ": " + stringify(value[key], currentIndent + indent);
+      if (idx < keys.length - 1) result += ",\n";
+    });
+    result += "\n" + " ".repeat(currentIndent) + "}";
+    return result;
+  };
+  return stringify(obj, 0);
+};
+
+const convertTokensToCSS = (tokens) => {
+  let cssVariables = ":root {\n";
+  const processTokens = (obj, prefix = "") => {
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      keys = keys.sort((a, b) => a.localeCompare(b));
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
+        } else {
+          processTokens(obj[key], `${prefix}${key}-`);
+        }
+      }
+    }
+  };
+  processTokens(tokens);
+  cssVariables += "}";
   return cssVariables;
 };
 
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
-  const cssContent = convertTokensToCSS(tokens, name);
+  const cssContent = convertTokensToCSS(tokens);
   fs.writeFileSync(filePath, cssContent);
   return fileExists;
 };
 
-const convertTokensToSCSS = (tokens, name) => {
-  let scssVariables = '';
-  for (const key in tokens) {
-    scssVariables += `$${name}-${key}: ${tokens[key].value};\n`;
-  }
+const convertTokensToSCSS = (tokens) => {
+  let scssVariables = "";
+  const processTokens = (obj, prefix = "") => {
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      keys = keys.sort((a, b) => a.localeCompare(b));
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
+        } else {
+          processTokens(obj[key], `${prefix}${key}-`);
+        }
+      }
+    }
+  };
+  processTokens(tokens);
   return scssVariables;
 };
 
 const saveSCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
-  const scssContent = convertTokensToSCSS(tokens, name);
+  const scssContent = convertTokensToSCSS(tokens);
   fs.writeFileSync(filePath, scssContent);
   return fileExists;
 };

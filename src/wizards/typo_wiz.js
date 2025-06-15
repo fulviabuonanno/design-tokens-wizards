@@ -108,7 +108,7 @@ async function typographyWiz() {
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +
-    chalk.whiteBright(" files to bring your typography tokens to life! ✨")
+    chalk.whiteBright(" files to bring your typography tokens to life! ✨\n")
   );
 
   const { selectedProperties } = await inquirer.prompt([
@@ -346,7 +346,10 @@ async function typographyWiz() {
         ]);
         fontValue = multipleFonts;
       }
-      fontFamilies[name] = { value: fontValue, type: 'fontFamilies' };
+      fontFamilies[name] = {
+        $value: fontValue,
+        $type: "fontFamily"
+      };
     }
 
     console.log(chalk.bold.yellowBright("\n📋 Font Family Settings Summary:"));
@@ -372,7 +375,7 @@ async function typographyWiz() {
     });
 
     Object.entries(fontFamilies).forEach(([name, data]) => {
-      fontTable.push([name, data.value]);
+      fontTable.push([name, data.$value]);
     });
 
     console.log(fontTable.toString());
@@ -448,7 +451,7 @@ async function typographyWiz() {
         choices: [
           { name: 'T-shirt sizes (e.g. xs, sm, md, lg)', value: 'tshirt' },
           { name: 'Ordinal (e.g. 1, 2, 3, 4)', value: 'ordinal' },
-          { name: 'Incremental (e.g. 100, 200, 300)', value: 'incremental' },
+          { name: 'Incremental (e.g. 100, 200, 300, 400)', value: 'incremental' },
           { name: 'Alphabetical (e.g. A, B, C, D)', value: 'alphabetical' }
         ]
       }
@@ -475,11 +478,12 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'increment',
-          message: 'Choose the increment step:',
+          message: 'For Incremental scale, choose the step increment:',
           choices: [
-            { name: '100 (100, 200, 300...)', value: 100 },
-            { name: '200 (200, 400, 600...)', value: 200 },
-            { name: '50 (50, 100, 150...)', value: 50 }
+            { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
+            { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
+            { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
+            { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' }
           ]
         }
       ]);
@@ -489,7 +493,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'alphabeticalCase',
-          message: 'For Alphabetical scale, choose the case:',
+          message: 'For Alphabetical scale, choose the format:',
           choices: [
             { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
             { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
@@ -802,8 +806,8 @@ async function typographyWiz() {
       
       if (index < sizes.length) {
         fontSizes[name] = { 
-          value: `${sizes[index]}${scaleInfo.unit}`, 
-          type: 'fontSizes' 
+          $value: `${sizes[index]}${scaleInfo.unit}`, 
+          $type: 'fontSize' 
         };
       }
     });
@@ -964,7 +968,7 @@ async function typographyWiz() {
     });
 
     Object.entries(fontSizes).forEach(([name, data]) => {
-      sizeTable.push([name, data.value]);
+      sizeTable.push([name, data.$value]);
     });
 
     console.log(sizeTable.toString());
@@ -1049,7 +1053,10 @@ async function typographyWiz() {
 
     const fontWeight = {};
     selectedWeights.forEach((weight, index) => {
-      fontWeight[tokenNames[index]] = { value: weight.value, type: 'fontWeights' };
+      fontWeight[tokenNames[index]] = {
+        $value: weight.value,
+        $type: "fontWeight"
+      };
     });
 
     console.log(chalk.bold.yellowBright("\n📋 Font Weight Settings Summary:"));
@@ -1074,7 +1081,7 @@ async function typographyWiz() {
     });
 
     Object.entries(fontWeight).forEach(([name, data]) => {
-      weightTable.push([name, data.value]);
+      weightTable.push([name, data.$value]);
     });
 
     console.log(weightTable.toString());
@@ -1321,8 +1328,8 @@ async function typographyWiz() {
     
     for (let i = 0; i < totalValues; i++) {
       letterSpacing[names[i]] = {
-        value: values[i],
-        type: 'letterSpacing'
+        $value: values[i],
+        $type: 'letterSpacing'
       };
     }
 
@@ -1350,7 +1357,7 @@ async function typographyWiz() {
     });
 
     Object.entries(letterSpacing).forEach(([name, data]) => {
-      valuesTable.push([name, data.value]);
+      valuesTable.push([name, data.$value]);
     });
 
     console.log(valuesTable.toString());
@@ -1534,8 +1541,8 @@ async function typographyWiz() {
     const lineHeight = {};
     tokenNames.forEach((name, index) => {
       lineHeight[name] = {
-        value: lineHeightValues[index],
-        type: 'lineHeights'
+        $value: lineHeightValues[index],
+        $type: 'lineHeight'
       };
     });
 
@@ -1564,7 +1571,7 @@ async function typographyWiz() {
     });
 
     Object.entries(lineHeight).forEach(([name, data]) => {
-      valuesTable.push([name, data.value]);
+      valuesTable.push([name, data.$value]);
     });
 
     console.log(valuesTable.toString());
@@ -1756,39 +1763,30 @@ async function typographyWiz() {
 }
 
 function generateCSSVariables(tokenObj, prefix) {
-  let css = ":root {\n";
-  
-  for (const [key, token] of Object.entries(tokenObj)) {
-    if (typeof token === 'object') {
-      for (const [subKey, subToken] of Object.entries(token)) {
-        if (subToken && typeof subToken === 'object' && subToken.value) {
-          css += `  --${key}-${subKey}: ${subToken.value};\n`;
-        }
+  let css = '';
+  for (const [key, value] of Object.entries(tokenObj)) {
+    if (typeof value === 'object' && value !== null) {
+      if ('$value' in value) {
+        css += `--${prefix}${key}: ${value.$value};\n`;
+      } else {
+        css += generateCSSVariables(value, `${prefix}${key}-`);
       }
-    } else if (typeof token === 'string') {
-      css += `  --${key}: ${token};\n`;
     }
   }
-  
-  css += "}";
   return css;
 }
 
 function generateSCSSVariables(tokenObj, prefix) {
-  let scss = "";
-  
-  for (const [key, token] of Object.entries(tokenObj)) {
-    if (typeof token === 'object') {
-      for (const [subKey, subToken] of Object.entries(token)) {
-        if (subToken && typeof subToken === 'object' && subToken.value) {
-          scss += `$${key}-${subKey}: ${subToken.value};\n`;
-        }
+  let scss = '';
+  for (const [key, value] of Object.entries(tokenObj)) {
+    if (typeof value === 'object' && value !== null) {
+      if ('$value' in value) {
+        scss += `$${prefix}${key}: ${value.$value};\n`;
+      } else {
+        scss += generateSCSSVariables(value, `${prefix}${key}-`);
       }
-    } else if (typeof token === 'string') {
-      scss += `$${key}: ${token};\n`;
     }
   }
-  
   return scss;
 }
 

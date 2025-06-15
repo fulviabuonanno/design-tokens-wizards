@@ -233,7 +233,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       console.log(chalk.black.bgYellowBright("=======================================\n"));
 
       console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));
-      console.log(chalk.whiteBright("Examples: primitives, foundation, core, basics, essentials\n"));
+      console.log(chalk.whiteBright("\nExamples: primitives, foundation, core, basics, essentials, global, roots, custom \n"));
 
       const { includeCategory } = await inquirer.prompt([
         {
@@ -303,7 +303,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       console.log(chalk.black.bgYellowBright("=======================================\n"));
 
       console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));
-      console.log(chalk.whiteBright("Examples: color (single color), palette (group of colors), scheme (color combinations)\n"));
+      console.log(chalk.whiteBright("\nExamples: color (single color), palette (group of colors), scheme (color combinations)\n"));
 
       const { includeNamingLevel } = await inquirer.prompt([
         {
@@ -494,10 +494,10 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             name: 'incrementalOption',
             message: "For Incremental scale, choose the step increment:",
             choices: [
-              { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' },
-              { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
-              { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
               { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
+              { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
+              { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
+              { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' },
             ]
           }
         ]);
@@ -858,10 +858,10 @@ const customStringify = (obj, indent = 2) => {
     let keys = Object.keys(value);
     
     keys.sort((a, b) => {
-      if (a === "value") return -1;
-      if (b === "value") return 1;
-      if (a === "type") return -1;
-      if (b === "type") return 1;
+      if (a === "$value") return -1;
+      if (b === "$value") return 1;
+      if (a === "$type") return -1;
+      if (b === "$type") return 1;
       return a.localeCompare(b);
     });
 
@@ -950,8 +950,8 @@ const convertTokensToCSS = (tokens) => {
         keys.unshift("base");
       }
       for (const key of keys) {
-        if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
-          cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
         } else {
           processTokens(obj[key], `${prefix}${key}-`);
         }
@@ -983,8 +983,8 @@ const convertTokensToSCSS = (tokens) => {
         keys.unshift("base");
       }
       for (const key of keys) {
-        if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
-          scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
         } else {
           processTokens(obj[key], `${prefix}${key}-`);
         }
@@ -1011,15 +1011,15 @@ const convertTokensToFormat = (tokens, format) => {
   const converted = JSON.parse(JSON.stringify(tokens));
   const convertRecursive = (obj) => {
     for (const key in obj) {
-      if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
-        const { value, type, ...rest } = obj[key];
+      if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+        const { $value, $type, ...rest } = obj[key];
         if (format === "RGB") {
-          obj[key] = { value: tinycolor(value).toRgbString(), type, ...rest };
+          obj[key] = { $value: tinycolor($value).toRgbString(), $type, ...rest };
         } else if (format === "RGBA") {
-          const rgba = tinycolor(value).toRgb();
-          obj[key] = { value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, type, ...rest };
+          const rgba = tinycolor($value).toRgb();
+          obj[key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type, ...rest };
         } else if (format === "HSL") {
-          obj[key] = { value: tinycolor(value).toHslString(), type, ...rest };
+          obj[key] = { $value: tinycolor($value).toHslString(), $type, ...rest };
         }
       } else if (obj[key] && typeof obj[key] === "object") {
         convertRecursive(obj[key]);
@@ -1151,39 +1151,39 @@ const main = async () => {
           tokensData[category][namingLevel] = {};
         }
         tokensData[category][namingLevel][finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       } else if (category) {
         if (!tokensData[category]) {
           tokensData[category] = {};
         }
         tokensData[category][finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       } else if (namingLevel) {
         if (!tokensData[namingLevel]) {
           tokensData[namingLevel] = {};
         }
         tokensData[namingLevel][finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       } else {
         tokensData[finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       }
     } else {
       
       tokensData[finalConcept] = Object.fromEntries(
-        Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
       );
     }
 
     const ensureValueBeforeType = (obj) => {
       if (obj && typeof obj === 'object') {
-        if ('value' in obj && 'type' in obj) {
-          const { value, type, ...rest } = obj;
-          return { value, type, ...rest };
+        if ('$value' in obj && '$type' in obj) {
+          const { $value, $type, ...rest } = obj;
+          return { $value, $type, ...rest };
         }
         return Object.fromEntries(
           Object.entries(obj).map(([k, v]) => [k, ensureValueBeforeType(v)])
@@ -1225,10 +1225,10 @@ const main = async () => {
       Object.entries(tokensRGBData).forEach(([concept, variants]) => {
         Object.entries(variants).forEach(([variant, colors]) => {
           Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.value) {
-              tokensRGBData[concept][variant][key].value = tinycolor(token.value).toRgbString();
+            if (token && typeof token === "object" && token.$value) {
+              tokensRGBData[concept][variant][key].$value = tinycolor(token.$value).toRgbString();
             } else if (typeof token === "string") {
-              tokensRGBData[concept][variant][key] = { value: tinycolor(token).toRgbString(), type: "color" };
+              tokensRGBData[concept][variant][key] = { $value: tinycolor(token).toRgbString(), $type: "color" };
             }
           });
         });
@@ -1241,12 +1241,12 @@ const main = async () => {
       Object.entries(tokensRGBAData).forEach(([concept, variants]) => {
         Object.entries(variants).forEach(([variant, colors]) => {
           Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.value) {
-              const rgba = tinycolor(token.value).toRgb(); 
-              tokensRGBAData[concept][variant][key].value = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
+            if (token && typeof token === "object" && token.$value) {
+              const rgba = tinycolor(token.$value).toRgb(); 
+              tokensRGBAData[concept][variant][key].$value = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
             } else if (typeof token === "string") {
               const rgba = tinycolor(token).toRgb();
-              tokensRGBAData[concept][variant][key] = { value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, type: "color" };
+              tokensRGBAData[concept][variant][key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type: "color" };
             }
           });
         });
@@ -1259,10 +1259,10 @@ const main = async () => {
       Object.entries(tokensHSLData).forEach(([concept, variants]) => {
         Object.entries(variants).forEach(([variant, colors]) => {
           Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.value) {
-              tokensHSLData[concept][variant][key].value = tinycolor(token.value).toHslString();
+            if (token && typeof token === "object" && token.$value) {
+              tokensHSLData[concept][variant][key].$value = tinycolor(token.$value).toHslString();
             } else if (typeof token === "string") {
-              tokensHSLData[concept][variant][key] = { value: tinycolor(token).toHslString(), type: "color" };
+              tokensHSLData[concept][variant][key] = { $value: tinycolor(token).toHslString(), $type: "color" };
             }
           });
         });
@@ -1299,7 +1299,7 @@ const main = async () => {
       type: 'confirm',
       name: 'convert',
       message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
-      default: true
+      default: false
     }
   ]);
 
