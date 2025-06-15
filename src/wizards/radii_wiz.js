@@ -726,14 +726,14 @@ const main = async () => {
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the Border Radius Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your border radius tokens step by step.") +
-    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
-    chalk.underline("Tokens Studio") +
-    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
-    chalk.underline("SCSS") +
-    chalk.whiteBright(" and ") +
+    chalk.whiteBright("\n✨ Welcome to the Border Radius Tokens Wizard! 🧙✨ Ready to create some beautiful border radius tokens? Let's get started!") +
+    chalk.whiteBright("\n\n🎨 Your tokens will be ready to sync with ") +
+    chalk.underline("JSON format for Tokens Studio in Figma") +
+    chalk.whiteBright(" in a snap! 🌟 And here's the magical bonus: you'll get ") +
     chalk.underline("CSS") +
-    chalk.whiteBright(" to test in your implementation!")
+    chalk.whiteBright(" and ") +
+    chalk.underline("SCSS") +
+    chalk.whiteBright(" files to bring your border radius tokens to life! ✨")
   );
   
   const input = await askForInput();

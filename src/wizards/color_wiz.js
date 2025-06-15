@@ -368,7 +368,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   }
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 1: SELECT BASE COLOR"));
+  console.log(chalk.bold("🎨 STEP 4: SELECT BASE COLOR"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
   
   let hexResponse = await inquirer.prompt([
@@ -388,7 +388,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   console.log(`   Preview: ${baseColorPreview}`);
   
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
+  console.log(chalk.bold("✏️ STEP 5: COLOR NAME"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
   
   let response = await inquirer.prompt([
@@ -432,7 +432,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("➡️ STEP 3: CURRENT SCALE"));
+      console.log(chalk.bold("➡️ STEP 6: CURRENT SCALE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       
       // Display scale information in a more visually appealing way
@@ -458,7 +458,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
              : generateStopsOrdinal(hex, newScaleSettings.padded, newScaleSettings.stopsCount));
     } else {
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("🔢 STEP 3: SELECT SCALE TYPE"));
+      console.log(chalk.bold("🔢 STEP 6: SELECT SCALE TYPE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       const { scaleType } = await inquirer.prompt([
         {
@@ -587,7 +587,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     }
 
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("STEP 3.5: 🔍 EXAMPLE COLOR PREVIEW"));
+    console.log(chalk.bold("🔍 STEP 7: EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(
@@ -1098,14 +1098,14 @@ const main = async () => {
   await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens"), 1500);
 
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the Color Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your color tokens step by step.") +
-    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
-    chalk.underline("Tokens Studio") +
-    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.whiteBright("\n✨ Welcome to the Color Tokens Wizard! 🧙✨ Ready to sprinkle some color magic into your design system? Let's create beautiful color tokens together!") +
+    chalk.whiteBright("\n\n🎨 Your tokens will be ready to sync with ") +
+    chalk.underline("JSON format for Tokens Studio in Figma") +
+    chalk.whiteBright(" in a snap! 🌟 And here's the magical bonus: you'll get ") +
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +
-    chalk.whiteBright(" to test in your implementation!\n")
+    chalk.whiteBright(" files to bring your color tokens to life! ✨")
   );
 
   let tokensData = {};
@@ -1126,12 +1126,11 @@ const main = async () => {
   let addMoreColors = true;
 
   while (addMoreColors) {
-    
-    const existingVariants = previousConcept && tokensData[previousConcept] ? Object.keys(tokensData[previousConcept]) : [];
-    const input = await askForInput(tokensData, existingVariants, formatChoices, scaleSettings);
+    const input = await askForInput(tokensData, previousConcept, formatChoices, scaleSettings);
     if (!input) return;
 
-    const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings } = input;
+    const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings, colorType } = input;
+    
     namingChoice = newNamingChoice;
     previousConcept = concept;
     formatChoices = newFormatChoices;
@@ -1141,7 +1140,7 @@ const main = async () => {
     
     const finalConcept = concept || "color";
     
-    const { colorType, category, namingLevel } = input;
+    const { category, namingLevel } = input;
     
     if (colorType === 'Global') {
       if (category && namingLevel) {
