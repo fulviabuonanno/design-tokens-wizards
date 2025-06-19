@@ -885,7 +885,7 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the tokens to other units (rem, em)?',
+      message: 'Would you like to convert the tokens to other units (rem, em)? (y/N)',
       default: false
     }
   ]);
