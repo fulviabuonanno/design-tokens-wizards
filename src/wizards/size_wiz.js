@@ -48,7 +48,7 @@ const askForInput = async () => {
     {
       type: 'list',
       name: 'name',
-      message: '📝 What name would you like to assign to your size tokens?',
+      message: '\ud83d\udcdd What name would you like to assign to your size tokens?\n>>>',
       choices: ['size', 'sizing', 'dimension', 's', 'sz', 'd', 'dim', 'custom'],
       loop: false
     }
@@ -60,7 +60,7 @@ const askForInput = async () => {
       {
         type: 'input',
         name: 'customName',
-        message: '📝 Please provide a name for your size tokens:',
+        message: '\ud83d\udcdd Please provide a name for your size tokens:\n>>>',
         validate: (input) => {
           if (!input) {
             return "❌ Name is required. Please provide a valid name.";
@@ -84,7 +84,7 @@ const askForInput = async () => {
     {
       type: 'list',
       name: 'scale',
-      message: '🔢 Select the scale to use for your values:',
+      message: '\ud83d\udd22 Select the scale to use for your values:\n>>>',
       choices: [
         { name: '4-Point Grid System', value: '4' },
         { name: '8-Point Grid System', value: '8' },
@@ -148,7 +148,7 @@ const askForInput = async () => {
       {
         type: 'list',
         name: 'scale',
-        message: '🔢 Select the scale to use for your values:',
+        message: '\ud83d\udd22 Select the scale to use for your values:\n>>>',
         choices: [
           { name: '4-Point Grid System', value: '4' },
           { name: '8-Point Grid System', value: '8' },
@@ -166,7 +166,7 @@ const askForInput = async () => {
       {
         type: 'list',
         name: 'scaleRatio',
-        message: 'Choose a ratio for the modular scale:',
+        message: 'Choose a ratio for the modular scale:\n>>>',
         choices: [
           { name: 'Minor Second (1.067)', value: '1.067' },
           { name: 'Major Second (1.125)', value: '1.125' },
@@ -189,7 +189,7 @@ const askForInput = async () => {
       {
         type: 'input',
         name: 'multiplier',
-        message: 'Enter the starting value to build your modular scale (e.g. 4):',
+        message: 'Enter the starting value to build your modular scale (e.g. 4):\n>>>',
         validate: (input) => {
           const num = parseFloat(input);
           return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -203,7 +203,7 @@ const askForInput = async () => {
         {
           type: 'input',
           name: 'factor',
-          message: 'Enter the multiplication factor (e.g. 1.5):',
+          message: 'Enter the multiplication factor (e.g. 1.5):\n>>>',
           validate: (input) => {
             const num = parseFloat(input);
             return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -222,7 +222,7 @@ const askForInput = async () => {
       {
         type: 'input',
         name: 'base',
-        message: 'Enter the starting value for your custom intervals (e.g. 4)',
+        message: 'Enter the starting value for your custom intervals (e.g. 4)\n>>>',
         validate: (input) => {
           const num = parseFloat(input);
           return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -233,7 +233,7 @@ const askForInput = async () => {
       {
         type: 'input',
         name: 'step',
-        message: 'Enter the step interval (e.g. 6):',
+        message: 'Enter the step interval (e.g. 6):\n>>>',
         validate: (input) => {
           const num = parseFloat(input);
           return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -250,7 +250,7 @@ const askForInput = async () => {
       {
         type: 'input',
         name: 'fibonacciBase',
-        message: 'Enter a base value for your Fibonacci scale:',
+        message: 'Enter a base value for your Fibonacci scale:\n>>>',
         validate: (input) => {
           const num = parseFloat(input);
           return (isNaN(num) || num <= 0) ? "Please enter a valid positive number." : true;
@@ -269,7 +269,7 @@ const askForInput = async () => {
     {
       type: 'input',
       name: 'numValues',
-      message: '🔢 How many values would you like to define? (1-20)\n>>>',
+      message: '\ud83d\udd22 How many values would you like to define? (1-20)\n>>>',
       validate: (input) => {
         const num = parseInt(input);
         if (isNaN(num) || num <= 0 || num > 20) {
@@ -309,7 +309,7 @@ const askForInput = async () => {
       {
         type: 'list',
         name: 'namingChoice',
-        message: 'Please choose scale naming criteria of your preference:',
+        message: 'Please choose scale naming criteria of your preference:\n>>>',
         choices: choices
       }
     ]);
@@ -322,7 +322,7 @@ const askForInput = async () => {
         {
           type: 'list',
         name: 'ordinalFormat',
-        message: 'For Ordinal scale, choose the format:',
+        message: 'For Ordinal scale, choose the format:\n>>>',
         choices: [
           { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
           { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
@@ -335,7 +335,7 @@ const askForInput = async () => {
       {
         type: 'list',
         name: 'alphabeticalCase',
-        message: 'For Alphabetical scale, choose the case:',
+        message: 'For Alphabetical scale, choose the case:\n>>>',
         choices: [
           { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
           { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
@@ -348,7 +348,7 @@ const askForInput = async () => {
       {
         type: 'list',
         name: 'increment',
-        message: 'For Incremental scale, choose the step increment:',
+        message: 'For Incremental scale, choose the step increment:\n>>>',
         choices: [                
           { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: '100' },
           { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: '50' },
@@ -709,7 +709,7 @@ const main = async () => {
     {
       type: "confirm",
       name: "confirmSpacing",
-      message: "Would you like to continue with this nomenclature?",
+      message: "Would you like to continue with this nomenclature?\n>>>",
       default: true
     }
   ]);
@@ -743,7 +743,7 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the tokens to other units (rem, em)? (y/N)',
+      message: 'Would you like to convert the tokens to other units (rem, em)?\n>>>',
       default: false
     }
   ]);
@@ -757,7 +757,7 @@ const main = async () => {
       {
         type: 'checkbox',
         name: 'units',
-        message: 'Please, select the units you want to use to convert your tokens (leave empty to skip):',
+        message: 'Please, select the units you want to use to convert your tokens (leave empty to skip):\n>>>',
         choices: [
           { name: 'rem', value: 'rem' },
           { name: 'em', value: 'em' }

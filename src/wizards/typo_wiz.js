@@ -25,7 +25,7 @@ async function showAccessibilityNotes(propertyType) {
     {
       type: 'confirm',
       name: 'showNotes',
-      message: '📝 Would you like to see ' + chalk.underline('accessibility guidelines') + ' for this typography property?',
+      message: '\ud83d\udcdd Would you like to see ' + chalk.underline('accessibility guidelines') + ' for this typography property?\n>>>',
       default: false
     }
   ]);
@@ -115,7 +115,7 @@ async function typographyWiz() {
     {
       type: 'checkbox',
       name: 'selectedProperties',
-      message: 'Which typography tokens would you like to create? (Use space to select, enter to confirm):',
+      message: 'Which typography tokens would you like to create? (Use space to select, enter to confirm):\n>>>',
       choices: [
         { name: 'Font Family ', value: 'fontFamily' },
         { name: 'Font Size ', value: 'fontSize' },
@@ -154,7 +154,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'propertyName',
-        message: 'How would you like to name your font family tokens?',
+        message: 'How would you like to name your font family tokens?\n>>>',
         choices: [
           { name: 'fontFamily', value: 'fontFamily' },
           { name: 'font-family', value: 'font-family' },
@@ -173,7 +173,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., brandFonts, systemFonts):',
+          message: 'Enter your custom token name (e.g., brandFonts, systemFonts):\n>>>',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -189,7 +189,7 @@ async function typographyWiz() {
       { 
         type: 'list', 
         name: 'numFonts', 
-        message: 'How many fonts do you want to include for font family?',
+        message: 'How many fonts do you want to include for font family?\n>>>',
         choices: ['1', '2', '3'], 
         default: '1' 
       }
@@ -201,7 +201,7 @@ async function typographyWiz() {
       { 
         type: 'list', 
         name: 'namingConvention', 
-        message: 'Which naming convention for font family tokens would you like to use?',
+        message: 'Which naming convention for font family tokens would you like to use?\n>>>',
         choices: [
           { name: 'Semantic (primary, secondary, tertiary)', value: 'semantic' },
           { name: 'Purpose-based (title, body, details)', value: 'purpose' },
@@ -226,7 +226,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'ordinalFormat',
-          message: 'For Ordinal scale, choose the format:',
+          message: 'For Ordinal scale, choose the format:\n>>>',
           choices: [
             { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
             { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
@@ -244,7 +244,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'alphabeticalCase',
-          message: 'For Alphabetical scale, choose the case:',
+          message: 'For Alphabetical scale, choose the case:\n>>>',
           choices: [
             { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
             { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
@@ -262,7 +262,7 @@ async function typographyWiz() {
           {
             type: 'input',
             name: 'customName',
-            message: `Enter name for font family ${i}:`,
+            message: `Enter name for font family ${i}:\n>>>`,
             validate: input => {
               if (input.trim() === '') return 'Please enter a valid name';
               if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -282,7 +282,7 @@ async function typographyWiz() {
         { 
           type: 'list', 
           name: 'inputMethod', 
-          message: `How would you like to specify the font family for "${name}"?`,
+          message: `How would you like to specify the font family for "${name}"?\n>>>`,
           choices: [
             { name: 'Choose from popular fonts', value: 'popular' },
             { name: 'Enter custom font', value: 'custom' },

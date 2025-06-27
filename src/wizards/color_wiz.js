@@ -190,7 +190,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       {
         type: 'list',
         name: 'tokenType',
-        message: 'Select the type of color tokens you want to create:',
+        message: 'Select the type of color tokens you want to create:\n>>>',
         choices: [
           { name: 'Global Colors', value: 'global' },
           { name: 'Semantic Colors', value: 'semantic' }
@@ -210,7 +210,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: 'confirm',
           name: 'continueWithGlobal',
-          message: 'Would you like to continue with Global Colors instead?',
+          message: 'Would you like to continue with Global Colors instead?\n>>>',
           default: true
         }
       ]);
@@ -235,7 +235,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: 'confirm',
           name: 'includeCategory',
-          message: 'Would you like to include a category in your color naming?',
+          message: 'Would you like to include a category in your color naming?\n>>>',
           default: true
         }
       ]);
@@ -245,7 +245,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'globalCategory',
-            message: 'Select a category for your global colors:',
+            message: 'Select a category for your global colors:\n>>>',
             choices: [
               { name: 'primitives', value: 'primitives' },
               { name: 'foundation', value: 'foundation' },
@@ -264,7 +264,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             {
               type: 'input',
               name: 'customCategory',
-              message: 'Enter your custom category name:',
+              message: 'Enter your custom category name:\n>>>',
               validate: (input) => {
                 const trimmedInput = input.trim();
                 if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
@@ -283,7 +283,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'confirm',
             name: 'confirmCategory',
-            message: `Do you want to continue with the category "${category}"?`,
+            message: `Do you want to continue with the category "${category}"?\n>>>`,
             default: true
           }
         ]);
@@ -305,7 +305,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: 'confirm',
           name: 'includeNamingLevel',
-          message: 'Would you like to include a naming level in your color naming?',
+          message: 'Would you like to include a naming level in your color naming?\n>>>',
           default: true
         }
       ]);
@@ -315,7 +315,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'level',
-            message: 'Select a naming level for your colors:',
+            message: 'Select a naming level for your colors:\n>>>',
             choices: [
               { name: 'color', value: 'color' },
               { name: 'colour', value: 'colour' },
@@ -331,7 +331,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             {
               type: 'input',
               name: 'customLevel',
-              message: 'Enter your custom naming level:',
+              message: 'Enter your custom naming level:\n>>>',
               validate: (input) => {
                 const trimmedInput = input.trim();
                 if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
@@ -350,7 +350,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'confirm',
             name: 'confirmLevel',
-            message: `Do you want to continue with the naming level "${namingLevel}"?`,
+            message: `Do you want to continue with the naming level "${namingLevel}"?\n>>>`,
             default: true
           }
         ]);
@@ -460,7 +460,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: "list",
           name: "scaleType",
-          message: "Select the scale type for your color:",
+          message: "Select the scale type for your color:\n>>>",
           choices: [
             { name: "Incremental (e.g., 100, 200, 300, 400)", value: "incremental" },
             { name: "Ordinal (e.g., 1, 2, 3, 4)", value: "ordinal" },
@@ -475,7 +475,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'ordinalOption',
-            message: "For Ordinal scale, choose the format:",
+            message: "For Ordinal scale, choose the format:\n>>>",
             choices: [
               { name: "Padded (e.g., 01, 02, 03, 04)", value: 'padded' },
               { name: "Unpadded (e.g., 1, 2, 3, 4)", value: 'unpadded' }
@@ -488,7 +488,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'incrementalOption',
-            message: "For Incremental scale, choose the step increment:",
+            message: "For Incremental scale, choose the step increment:\n>>>",
             choices: [
               { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
               { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
@@ -502,7 +502,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: "list",
             name: "alphabeticalOption",
-            message: "For Alphabetical scale, choose the format:",
+            message: "For Alphabetical scale, choose the format:\n>>>",
             choices: [
               { name: "Uppercase (e.g., A, B, C, D)", value: 'uppercase' },
               { name: "Lowercase (e.g., a, b, c, d)", value: 'lowercase' }
@@ -515,7 +515,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: "list",
             name: "semanticStopsCount",
-            message: "Select the number of stops for the semantic scale:",
+            message: "Select the number of stops for the semantic scale:\n>>>",
             choices: [
               { name: "1", value: 1 },
               { name: "2", value: 2 },
@@ -533,7 +533,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: "number",
             name: "stopsCount",
-            message: "How many values would you like to include in the color scale? (1-20)",
+            message: "How many values would you like to include in the color scale? (1-20):\n>>>",
             default: 10,
             validate: (input) => {
               const num = Number(input);
@@ -644,7 +644,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: "confirm",
           name: "useMiddleToneAsBase",
-          message: `Do you want the value 'base' to be one of the middle tones (${middleKeys.map(k => k).join(', ')})?`,
+          message: `Do you want the value 'base' to be one of the middle tones (${middleKeys.map(k => k).join(', ')})?\n>>>`,
           default: false
         }
       ]);
@@ -655,7 +655,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             {
               type: "list",
               name: "selectedMiddleTone",
-              message: "Which of the middle tones do you want to use as 'base'?",
+              message: "Which of the middle tones do you want to use as 'base'?\n>>>",
               choices: middleKeys.map(k => ({
                 name: `${k} (${stops[k]})`,
                 value: k
@@ -674,7 +674,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       {
         type: "confirm",
         name: "confirmColor",
-        message: "Would you like to continue with this nomenclature?",
+        message: "Would you like to continue with this nomenclature?\n>>>",
         default: true
       }
     ]);
@@ -1042,7 +1042,7 @@ const customizeColorRanges = async () => {
     {
       type: "confirm",
       name: "customizeRanges",
-      message: "Would you like to customize the color mix ranges?",
+      message: "Would you like to customize the color mix ranges?\n>>>",
       default: false
     }
   ]);
@@ -1055,7 +1055,7 @@ const customizeColorRanges = async () => {
       {
         type: "number",
         name: "minMix",
-        message: "Enter minimum mix percentage (0-100):",
+        message: "Enter minimum mix percentage (0-100):\n>>>",
         default: MIN_MIX,
         validate: (input) => {
           const num = Number(input);
@@ -1068,7 +1068,7 @@ const customizeColorRanges = async () => {
       {
         type: "number",
         name: "maxMix",
-        message: "Enter maximum mix percentage (0-100):",
+        message: "Enter maximum mix percentage (0-100):\n>>>",
         default: MAX_MIX,
         validate: (input) => {
           const num = Number(input);
@@ -1294,7 +1294,7 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
+      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?\n>>>',
       default: false
     }
   ]);
@@ -1305,7 +1305,7 @@ const main = async () => {
       {
         type: 'checkbox',
         name: 'formats',
-        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
+        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):\n>>>',
         choices: [
           { name: 'RGB', value: 'rgb' },
           { name: 'RGBA', value: 'rgba' },

@@ -268,7 +268,7 @@ async function mergeOutputs() {
     questions.push({
       type: 'list',
       name: 'colorFormat',
-      message: "Which " + chalk.bold.yellowBright("color format") + " would you like to use?",
+      message: "Which " + chalk.bold.yellowBright("color format") + " would you like to use?\n>>>",
       choices: availableOptionsDict.Colors,
       default: availableOptionsDict.Colors[0]
     });
@@ -277,7 +277,7 @@ async function mergeOutputs() {
     questions.push({
       type: 'list',
       name: 'sizeUnit',
-      message: "Which " + chalk.bold.yellowBright("size unit") + " would you like to use?",
+      message: "Which " + chalk.bold.yellowBright("size unit") + " would you like to use?\n>>>",
       choices: availableOptionsDict.Size,
       default: availableOptionsDict.Size[0]
     });
@@ -286,7 +286,7 @@ async function mergeOutputs() {
     questions.push({
       type: 'list',
       name: 'spaceUnit',
-      message: "Which " + chalk.bold.yellowBright("space unit") + " would you like to use?",
+      message: "Which " + chalk.bold.yellowBright("space unit") + " would you like to use?\n>>>",
       choices: availableOptionsDict.Space,
       default: availableOptionsDict.Space[0]
     });
@@ -295,7 +295,7 @@ async function mergeOutputs() {
     questions.push({
       type: 'list',
       name: 'borderRadiusUnit',
-      message: "Which " + chalk.bold.yellowBright("border radius unit") + " would you like to use?",
+      message: "Which " + chalk.bold.yellowBright("border radius unit") + " would you like to use?\n>>>",
       choices: availableOptionsDict["Border Radius"],
       default: availableOptionsDict["Border Radius"][0]
     });
@@ -304,7 +304,7 @@ async function mergeOutputs() {
     questions.push({
       type: 'confirm',
       name: 'includeTypography',
-      message: "Would you like to include " + chalk.bold.yellowBright("typography tokens") + " in the merge?",
+      message: "Would you like to include " + chalk.bold.yellowBright("typography tokens") + " in the merge?\n>>>",
       default: true
     });
   }
@@ -390,7 +390,7 @@ async function mergeOutputs() {
   console.log(chalk.bold.bgGray("========================================\n"));
 
   if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
-    console.log(chalk.whiteBright("Select how you want your tokens to be named in the merged file:\n"));
+    console.log(chalk.whiteBright("Select how you want your tokens to be named in the merged file:\n>>>"));
     const namingCaseAnswer = await inquirer.prompt([
       {
         type: 'list',

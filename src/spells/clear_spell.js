@@ -164,31 +164,31 @@ async function startInterface() {
     {
       type: 'confirm',
       name: 'clearCSS',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("CSS") + " folder? (yes/no)"),
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("CSS") + " folder? (yes/no) \n>>>"),
       default: false,
     },
     {
       type: 'confirm',
       name: 'clearSCSS',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("SCSS") + " folder? (yes/no)"),
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("SCSS") + " folder? (yes/no) \n>>>"),
       default: false,
     },
     {
       type: 'confirm',
       name: 'clearJSON',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("JSON") + " folder? (yes/no)"),
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("JSON") + " folder? (yes/no) \n>>>"),
       default: false,
     },
     {
       type: 'confirm',
       name: 'clearFinal',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Final") + " folder? (yes/no)"),
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Final") + " folder? (yes/no) \n>>>"),
       default: false,
     },
     // {
     //   type: 'confirm',
     //   name: 'clearReports',
-    //   message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Reports") + " folder? (yes/no)"),
+    //   message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Reports") + " folder? (yes/no) \n>>>"),
     //   default: false,
     // }
   ]);
@@ -202,7 +202,7 @@ async function startInterface() {
     {
       type: 'confirm',
       name: 'confirm',
-      message: chalk.bold.red("⚠️ Are you sure you want to proceed with the deletion? This action cannot be undone!"),
+      message: chalk.bold.red("⚠️ Are you sure you want to proceed with the deletion? This action cannot be undone! \n>>>"),
       default: false,
     }
   ]);
