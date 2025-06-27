@@ -115,14 +115,12 @@ const displayExistingColors = (tokensData) => {
   const processTokens = (obj, path = []) => {
     for (const key in obj) {
       if (obj[key] && typeof obj[key] === 'object') {
-        if ('value' in obj[key] && 'type' in obj[key] && obj[key].type === 'color') {
-          
-          const colorValue = obj[key].value;
+        if ('$value' in obj[key] && '$type' in obj[key] && obj[key].$type === 'color') {
+          const colorValue = obj[key].$value;
           const colorPath = [...path, key].join('.');
           console.log(`${chalk.bold(colorPath)}: ${colorValue} ${chalk.bgHex(colorValue).white("     ")}`);
           colorCount++;
         } else {
-          
           processTokens(obj[key], [...path, key]);
         }
       }
@@ -135,21 +133,18 @@ const displayExistingColors = (tokensData) => {
 
 const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
   
-  if (Object.keys(tokensData).length > 0) {
-    displayExistingColors(tokensData);
-  }
-  
   let tokenType = 'global';
   let category = null;
   let namingLevel = null;
   
   if (Object.keys(tokensData).length > 0) {
+    displayExistingColors(tokensData);
     
+    // Find existing structure
     const findSettings = (obj, path = []) => {
       for (const key in obj) {
         if (obj[key] && typeof obj[key] === 'object') {
-          if ('value' in obj[key] && 'type' in obj[key] && obj[key].type === 'color') {
-            
+          if ('$value' in obj[key] && '$type' in obj[key] && obj[key].$type === 'color') {
             return path;
           } else {
             const result = findSettings(obj[key], [...path, key]);
@@ -162,12 +157,10 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     
     const colorPath = findSettings(tokensData);
     if (colorPath && colorPath.length > 0) {
-      
       if (colorPath.length >= 1) {
         category = colorPath[0];
       }
       if (colorPath.length >= 2) {
-        
         const potentialNamingLevel = colorPath[1];
         const isNamingLevel = ['color', 'colour', 'palette', 'scheme'].includes(potentialNamingLevel);
         if (isNamingLevel) {
@@ -184,6 +177,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     if (category) console.log(chalk.whiteBright(`Category: ${category}`));
     if (namingLevel) console.log(chalk.whiteBright(`Naming Level: ${namingLevel}`));
     console.log();
+    
+    console.log(chalk.yellowBright("📝 Note: New colors will maintain the same naming structure as existing ones."));
+    console.log(chalk.yellowBright("   This ensures consistency across your design system.\n"));
   } else {
     
     console.log(chalk.black.bgYellowBright("\n======================================="));
