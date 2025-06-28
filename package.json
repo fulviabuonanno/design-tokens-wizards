@@ -11,10 +11,10 @@
     "radii": "node src/wizards/radii_wiz.js --version=1.7.1",
     "merge": "node src/spells/merge_spell.js --version=1.3.1",
     "clear": "node src/spells/clear_spell.js --version=1.2.2",
-    "update": "node src/config/update_versions.js",
+    "update": "node .github/config/update_versions.js",
     "release": "node .github/config/create_release.js",
-    "dependencies": "node src/config/generate_dependencies.js",
-    "pdf": "mkdir -p info && md-to-pdf README.md README.es.md --config-file=src/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv README.es.pdf info/Instrucciones.pdf"
+    "dependencies": "node .github/config/generate_dependencies.js",
+    "pdf": "mkdir -p info && md-to-pdf README.md README.es.md --config-file=.github/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv README.es.pdf info/Instrucciones.pdf"
   },
   "scriptVersions": {
     "color": "2.8.2",
