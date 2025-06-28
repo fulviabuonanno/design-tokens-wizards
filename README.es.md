@@ -23,7 +23,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 4. **Descarga/Clona el Repositorio**
 
-   [Descargar ZIP](https://github.com/fulviabuonanno/design-tokens-wizards/archive/refs/heads/main.zip)
+   [Descargar ZIP](https://github.com/fulviabuonanno/design-tokens-wizards/archive/refs/heads/master.zip)
 
    o
 

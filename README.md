@@ -23,7 +23,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 4. **Download/Clone the Repository**
 
-   [Download ZIP](https://github.com/fulviabuonanno/design-tokens-wizards/archive/refs/heads/main.zip)
+   [Download ZIP](https://github.com/fulviabuonanno/design-tokens-wizards/archive/refs/heads/master.zip)
 
    or
 
