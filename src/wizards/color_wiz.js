@@ -115,14 +115,12 @@ const displayExistingColors = (tokensData) => {
   const processTokens = (obj, path = []) => {
     for (const key in obj) {
       if (obj[key] && typeof obj[key] === 'object') {
-        if ('value' in obj[key] && 'type' in obj[key] && obj[key].type === 'color') {
-          
-          const colorValue = obj[key].value;
+        if ('$value' in obj[key] && '$type' in obj[key] && obj[key].$type === 'color') {
+          const colorValue = obj[key].$value;
           const colorPath = [...path, key].join('.');
           console.log(`${chalk.bold(colorPath)}: ${colorValue} ${chalk.bgHex(colorValue).white("     ")}`);
           colorCount++;
         } else {
-          
           processTokens(obj[key], [...path, key]);
         }
       }
@@ -135,21 +133,18 @@ const displayExistingColors = (tokensData) => {
 
 const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
   
-  if (Object.keys(tokensData).length > 0) {
-    displayExistingColors(tokensData);
-  }
-  
   let tokenType = 'global';
   let category = null;
   let namingLevel = null;
   
   if (Object.keys(tokensData).length > 0) {
+    displayExistingColors(tokensData);
     
+    // Find existing structure
     const findSettings = (obj, path = []) => {
       for (const key in obj) {
         if (obj[key] && typeof obj[key] === 'object') {
-          if ('value' in obj[key] && 'type' in obj[key] && obj[key].type === 'color') {
-            
+          if ('$value' in obj[key] && '$type' in obj[key] && obj[key].$type === 'color') {
             return path;
           } else {
             const result = findSettings(obj[key], [...path, key]);
@@ -162,12 +157,10 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     
     const colorPath = findSettings(tokensData);
     if (colorPath && colorPath.length > 0) {
-      
       if (colorPath.length >= 1) {
         category = colorPath[0];
       }
       if (colorPath.length >= 2) {
-        
         const potentialNamingLevel = colorPath[1];
         const isNamingLevel = ['color', 'colour', 'palette', 'scheme'].includes(potentialNamingLevel);
         if (isNamingLevel) {
@@ -184,6 +177,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     if (category) console.log(chalk.whiteBright(`Category: ${category}`));
     if (namingLevel) console.log(chalk.whiteBright(`Naming Level: ${namingLevel}`));
     console.log();
+    
+    console.log(chalk.yellowBright("📝 Note: New colors will maintain the same naming structure as existing ones."));
+    console.log(chalk.yellowBright("   This ensures consistency across your design system.\n"));
   } else {
     
     console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -194,7 +190,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       {
         type: 'list',
         name: 'tokenType',
-        message: 'Select the type of color tokens you want to create:',
+        message: 'Select the type of color tokens you want to create:\n>>>',
         choices: [
           { name: 'Global Colors', value: 'global' },
           { name: 'Semantic Colors', value: 'semantic' }
@@ -214,7 +210,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: 'confirm',
           name: 'continueWithGlobal',
-          message: 'Would you like to continue with Global Colors instead?',
+          message: 'Would you like to continue with Global Colors instead?\n>>>',
           default: true
         }
       ]);
@@ -233,13 +229,13 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       console.log(chalk.black.bgYellowBright("=======================================\n"));
 
       console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));
-      console.log(chalk.whiteBright("Examples: primitives, foundation, core, basics, essentials\n"));
+      console.log(chalk.whiteBright("\nExamples: primitives, foundation, core, basics, essentials, global, roots, custom \n"));
 
       const { includeCategory } = await inquirer.prompt([
         {
           type: 'confirm',
           name: 'includeCategory',
-          message: 'Would you like to include a category in your color naming?',
+          message: 'Would you like to include a category in your color naming?\n>>>',
           default: true
         }
       ]);
@@ -249,7 +245,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'globalCategory',
-            message: 'Select a category for your global colors:',
+            message: 'Select a category for your global colors:\n>>>',
             choices: [
               { name: 'primitives', value: 'primitives' },
               { name: 'foundation', value: 'foundation' },
@@ -268,7 +264,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             {
               type: 'input',
               name: 'customCategory',
-              message: 'Enter your custom category name:',
+              message: 'Enter your custom category name:\n>>>',
               validate: (input) => {
                 const trimmedInput = input.trim();
                 if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
@@ -287,7 +283,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'confirm',
             name: 'confirmCategory',
-            message: `Do you want to continue with the category "${category}"?`,
+            message: `Do you want to continue with the category "${category}"?\n>>>`,
             default: true
           }
         ]);
@@ -303,13 +299,13 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       console.log(chalk.black.bgYellowBright("=======================================\n"));
 
       console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));
-      console.log(chalk.whiteBright("Examples: color (single color), palette (group of colors), scheme (color combinations)\n"));
+      console.log(chalk.whiteBright("\nExamples: color (single color), palette (group of colors), scheme (color combinations)\n"));
 
       const { includeNamingLevel } = await inquirer.prompt([
         {
           type: 'confirm',
           name: 'includeNamingLevel',
-          message: 'Would you like to include a naming level in your color naming?',
+          message: 'Would you like to include a naming level in your color naming?\n>>>',
           default: true
         }
       ]);
@@ -319,7 +315,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'level',
-            message: 'Select a naming level for your colors:',
+            message: 'Select a naming level for your colors:\n>>>',
             choices: [
               { name: 'color', value: 'color' },
               { name: 'colour', value: 'colour' },
@@ -335,7 +331,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             {
               type: 'input',
               name: 'customLevel',
-              message: 'Enter your custom naming level:',
+              message: 'Enter your custom naming level:\n>>>',
               validate: (input) => {
                 const trimmedInput = input.trim();
                 if (!trimmedInput.match(/^[a-zA-Z0-9.-]*$/)) {
@@ -354,7 +350,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'confirm',
             name: 'confirmLevel',
-            message: `Do you want to continue with the naming level "${namingLevel}"?`,
+            message: `Do you want to continue with the naming level "${namingLevel}"?\n>>>`,
             default: true
           }
         ]);
@@ -368,7 +364,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   }
 
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 1: SELECT BASE COLOR"));
+  console.log(chalk.bold("🎨 STEP 4: SELECT BASE COLOR"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
   
   let hexResponse = await inquirer.prompt([
@@ -388,7 +384,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   console.log(`   Preview: ${baseColorPreview}`);
   
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("✏️ STEP 2: COLOR NAME"));
+  console.log(chalk.bold("✏️ STEP 5: COLOR NAME"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
   
   let response = await inquirer.prompt([
@@ -432,7 +428,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     if (scaleSettings) {
       newScaleSettings = scaleSettings;
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("➡️ STEP 3: CURRENT SCALE"));
+      console.log(chalk.bold("➡️ STEP 6: CURRENT SCALE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       
       // Display scale information in a more visually appealing way
@@ -458,13 +454,13 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
              : generateStopsOrdinal(hex, newScaleSettings.padded, newScaleSettings.stopsCount));
     } else {
       console.log(chalk.black.bgYellowBright("\n======================================="));
-      console.log(chalk.bold("🔢 STEP 3: SELECT SCALE TYPE"));
+      console.log(chalk.bold("🔢 STEP 6: SELECT SCALE TYPE"));
       console.log(chalk.black.bgYellowBright("=======================================\n"));
       const { scaleType } = await inquirer.prompt([
         {
           type: "list",
           name: "scaleType",
-          message: "Select the scale type for your color:",
+          message: "Select the scale type for your color:\n>>>",
           choices: [
             { name: "Incremental (e.g., 100, 200, 300, 400)", value: "incremental" },
             { name: "Ordinal (e.g., 1, 2, 3, 4)", value: "ordinal" },
@@ -479,7 +475,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'ordinalOption',
-            message: "For Ordinal scale, choose the format:",
+            message: "For Ordinal scale, choose the format:\n>>>",
             choices: [
               { name: "Padded (e.g., 01, 02, 03, 04)", value: 'padded' },
               { name: "Unpadded (e.g., 1, 2, 3, 4)", value: 'unpadded' }
@@ -492,12 +488,12 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: 'list',
             name: 'incrementalOption',
-            message: "For Incremental scale, choose the step increment:",
+            message: "For Incremental scale, choose the step increment:\n>>>",
             choices: [
-              { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' },
-              { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
-              { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
               { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
+              { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
+              { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
+              { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' },
             ]
           }
         ]);
@@ -506,7 +502,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: "list",
             name: "alphabeticalOption",
-            message: "For Alphabetical scale, choose the format:",
+            message: "For Alphabetical scale, choose the format:\n>>>",
             choices: [
               { name: "Uppercase (e.g., A, B, C, D)", value: 'uppercase' },
               { name: "Lowercase (e.g., a, b, c, d)", value: 'lowercase' }
@@ -519,7 +515,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: "list",
             name: "semanticStopsCount",
-            message: "Select the number of stops for the semantic scale:",
+            message: "Select the number of stops for the semantic scale:\n>>>",
             choices: [
               { name: "1", value: 1 },
               { name: "2", value: 2 },
@@ -537,7 +533,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           {
             type: "number",
             name: "stopsCount",
-            message: "How many values would you like to include in the color scale? (1-20)",
+            message: "How many values would you like to include in the color scale? (1-20):\n>>>",
             default: 10,
             validate: (input) => {
               const num = Number(input);
@@ -587,7 +583,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     }
 
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("STEP 3.5: 🔍 EXAMPLE COLOR PREVIEW"));
+    console.log(chalk.bold("🔍 STEP 7: EXAMPLE COLOR PREVIEW"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(
@@ -648,7 +644,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         {
           type: "confirm",
           name: "useMiddleToneAsBase",
-          message: `Do you want the value 'base' to be one of the middle tones (${middleKeys.map(k => k).join(', ')})?`,
+          message: `Do you want the value 'base' to be one of the middle tones (${middleKeys.map(k => k).join(', ')})?\n>>>`,
           default: false
         }
       ]);
@@ -659,7 +655,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
             {
               type: "list",
               name: "selectedMiddleTone",
-              message: "Which of the middle tones do you want to use as 'base'?",
+              message: "Which of the middle tones do you want to use as 'base'?\n>>>",
               choices: middleKeys.map(k => ({
                 name: `${k} (${stops[k]})`,
                 value: k
@@ -678,7 +674,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       {
         type: "confirm",
         name: "confirmColor",
-        message: "Would you like to continue with this nomenclature?",
+        message: "Would you like to continue with this nomenclature?\n>>>",
         default: true
       }
     ]);
@@ -858,10 +854,10 @@ const customStringify = (obj, indent = 2) => {
     let keys = Object.keys(value);
     
     keys.sort((a, b) => {
-      if (a === "value") return -1;
-      if (b === "value") return 1;
-      if (a === "type") return -1;
-      if (b === "type") return 1;
+      if (a === "$value") return -1;
+      if (b === "$value") return 1;
+      if (a === "$type") return -1;
+      if (b === "$type") return 1;
       return a.localeCompare(b);
     });
 
@@ -950,8 +946,8 @@ const convertTokensToCSS = (tokens) => {
         keys.unshift("base");
       }
       for (const key of keys) {
-        if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
-          cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
         } else {
           processTokens(obj[key], `${prefix}${key}-`);
         }
@@ -983,8 +979,8 @@ const convertTokensToSCSS = (tokens) => {
         keys.unshift("base");
       }
       for (const key of keys) {
-        if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
-          scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+          scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
         } else {
           processTokens(obj[key], `${prefix}${key}-`);
         }
@@ -1011,15 +1007,15 @@ const convertTokensToFormat = (tokens, format) => {
   const converted = JSON.parse(JSON.stringify(tokens));
   const convertRecursive = (obj) => {
     for (const key in obj) {
-      if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
-        const { value, type, ...rest } = obj[key];
+      if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+        const { $value, $type, ...rest } = obj[key];
         if (format === "RGB") {
-          obj[key] = { value: tinycolor(value).toRgbString(), type, ...rest };
+          obj[key] = { $value: tinycolor($value).toRgbString(), $type, ...rest };
         } else if (format === "RGBA") {
-          const rgba = tinycolor(value).toRgb();
-          obj[key] = { value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, type, ...rest };
+          const rgba = tinycolor($value).toRgb();
+          obj[key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type, ...rest };
         } else if (format === "HSL") {
-          obj[key] = { value: tinycolor(value).toHslString(), type, ...rest };
+          obj[key] = { $value: tinycolor($value).toHslString(), $type, ...rest };
         }
       } else if (obj[key] && typeof obj[key] === "object") {
         convertRecursive(obj[key]);
@@ -1046,7 +1042,7 @@ const customizeColorRanges = async () => {
     {
       type: "confirm",
       name: "customizeRanges",
-      message: "Would you like to customize the color mix ranges?",
+      message: "Would you like to customize the color mix ranges?\n>>>",
       default: false
     }
   ]);
@@ -1059,7 +1055,7 @@ const customizeColorRanges = async () => {
       {
         type: "number",
         name: "minMix",
-        message: "Enter minimum mix percentage (0-100):",
+        message: "Enter minimum mix percentage (0-100):\n>>>",
         default: MIN_MIX,
         validate: (input) => {
           const num = Number(input);
@@ -1072,7 +1068,7 @@ const customizeColorRanges = async () => {
       {
         type: "number",
         name: "maxMix",
-        message: "Enter maximum mix percentage (0-100):",
+        message: "Enter maximum mix percentage (0-100):\n>>>",
         default: MAX_MIX,
         validate: (input) => {
           const num = Number(input);
@@ -1098,14 +1094,14 @@ const main = async () => {
   await showLoader(chalk.bold.magenta("🦄 Casting the magic of tokens"), 1500);
 
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the Color Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your color tokens step by step.") +
-    chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
-    chalk.underline("Tokens Studio") +
-    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.whiteBright("\n✨ Welcome to the Color Tokens Wizard! 🧙✨ Ready to sprinkle some color magic into your design system? Let's create beautiful color tokens together!") +
+    chalk.whiteBright("\n\n🎨 Your tokens will be ready to sync with ") +
+    chalk.underline("JSON format for Tokens Studio in Figma") +
+    chalk.whiteBright(" in a snap! 🌟 And here's the magical bonus: you'll get ") +
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +
-    chalk.whiteBright(" to test in your implementation!\n")
+    chalk.whiteBright(" files to bring your color tokens to life! ✨")
   );
 
   let tokensData = {};
@@ -1113,7 +1109,6 @@ const main = async () => {
   const tokensFolder = path.join(outputsDir, "tokens/json/color");
   const cssFolder = path.join(outputsDir, "tokens/css/color");
   const scssFolder = path.join(outputsDir, "tokens/scss/color");
-  const reportsFolder = path.join(outputsDir, "reports");
   let namingChoice = null;
   let previousConcept = null;
   let formatChoices = null;
@@ -1123,17 +1118,15 @@ const main = async () => {
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });
   if (!fs.existsSync(cssFolder)) fs.mkdirSync(cssFolder, { recursive: true });
   if (!fs.existsSync(scssFolder)) fs.mkdirSync(scssFolder, { recursive: true });
-  if (!fs.existsSync(reportsFolder)) fs.mkdirSync(reportsFolder, { recursive: true });
 
   let addMoreColors = true;
 
   while (addMoreColors) {
-    
-    const existingVariants = previousConcept && tokensData[previousConcept] ? Object.keys(tokensData[previousConcept]) : [];
-    const input = await askForInput(tokensData, existingVariants, formatChoices, scaleSettings);
+    const input = await askForInput(tokensData, previousConcept, formatChoices, scaleSettings);
     if (!input) return;
 
-    const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings } = input;
+    const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings, colorType } = input;
+    
     namingChoice = newNamingChoice;
     previousConcept = concept;
     formatChoices = newFormatChoices;
@@ -1143,7 +1136,7 @@ const main = async () => {
     
     const finalConcept = concept || "color";
     
-    const { colorType, category, namingLevel } = input;
+    const { category, namingLevel } = input;
     
     if (colorType === 'Global') {
       if (category && namingLevel) {
@@ -1154,39 +1147,39 @@ const main = async () => {
           tokensData[category][namingLevel] = {};
         }
         tokensData[category][namingLevel][finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       } else if (category) {
         if (!tokensData[category]) {
           tokensData[category] = {};
         }
         tokensData[category][finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       } else if (namingLevel) {
         if (!tokensData[namingLevel]) {
           tokensData[namingLevel] = {};
         }
         tokensData[namingLevel][finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       } else {
         tokensData[finalConcept] = Object.fromEntries(
-          Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+          Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
         );
       }
     } else {
       
       tokensData[finalConcept] = Object.fromEntries(
-        Object.entries(stops).map(([k, v]) => [k, { value: tinycolor(v).toHexString().toUpperCase(), type: "color" }])
+        Object.entries(stops).map(([k, v]) => [k, { $value: tinycolor(v).toHexString().toUpperCase(), $type: "color" }])
       );
     }
 
     const ensureValueBeforeType = (obj) => {
       if (obj && typeof obj === 'object') {
-        if ('value' in obj && 'type' in obj) {
-          const { value, type, ...rest } = obj;
-          return { value, type, ...rest };
+        if ('$value' in obj && '$type' in obj) {
+          const { $value, $type, ...rest } = obj;
+          return { $value, $type, ...rest };
         }
         return Object.fromEntries(
           Object.entries(obj).map(([k, v]) => [k, ensureValueBeforeType(v)])
@@ -1228,10 +1221,10 @@ const main = async () => {
       Object.entries(tokensRGBData).forEach(([concept, variants]) => {
         Object.entries(variants).forEach(([variant, colors]) => {
           Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.value) {
-              tokensRGBData[concept][variant][key].value = tinycolor(token.value).toRgbString();
+            if (token && typeof token === "object" && token.$value) {
+              tokensRGBData[concept][variant][key].$value = tinycolor(token.$value).toRgbString();
             } else if (typeof token === "string") {
-              tokensRGBData[concept][variant][key] = { value: tinycolor(token).toRgbString(), type: "color" };
+              tokensRGBData[concept][variant][key] = { $value: tinycolor(token).toRgbString(), $type: "color" };
             }
           });
         });
@@ -1244,12 +1237,12 @@ const main = async () => {
       Object.entries(tokensRGBAData).forEach(([concept, variants]) => {
         Object.entries(variants).forEach(([variant, colors]) => {
           Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.value) {
-              const rgba = tinycolor(token.value).toRgb(); 
-              tokensRGBAData[concept][variant][key].value = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
+            if (token && typeof token === "object" && token.$value) {
+              const rgba = tinycolor(token.$value).toRgb(); 
+              tokensRGBAData[concept][variant][key].$value = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
             } else if (typeof token === "string") {
               const rgba = tinycolor(token).toRgb();
-              tokensRGBAData[concept][variant][key] = { value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, type: "color" };
+              tokensRGBAData[concept][variant][key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type: "color" };
             }
           });
         });
@@ -1262,10 +1255,10 @@ const main = async () => {
       Object.entries(tokensHSLData).forEach(([concept, variants]) => {
         Object.entries(variants).forEach(([variant, colors]) => {
           Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.value) {
-              tokensHSLData[concept][variant][key].value = tinycolor(token.value).toHslString();
+            if (token && typeof token === "object" && token.$value) {
+              tokensHSLData[concept][variant][key].$value = tinycolor(token.$value).toHslString();
             } else if (typeof token === "string") {
-              tokensHSLData[concept][variant][key] = { value: tinycolor(token).toHslString(), type: "color" };
+              tokensHSLData[concept][variant][key] = { $value: tinycolor(token).toHslString(), $type: "color" };
             }
           });
         });
@@ -1301,8 +1294,8 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?',
-      default: true
+      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?\n>>>',
+      default: false
     }
   ]);
 
@@ -1312,7 +1305,7 @@ const main = async () => {
       {
         type: 'checkbox',
         name: 'formats',
-        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):',
+        message: 'Please, select the formats you want to use to convert your color tokens (leave empty to skip):\n>>>',
         choices: [
           { name: 'RGB', value: 'rgb' },
           { name: 'RGBA', value: 'rgba' },
@@ -1389,9 +1382,9 @@ const main = async () => {
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
-  console.log(chalk.whiteBright("   -> /outputs/tokens/color: JSON Token Files"));
-  console.log(chalk.whiteBright("   -> /outputs/css/color: CSS variables"));
-  console.log(chalk.whiteBright("   -> /outputs/scss/color: SCSS variables\n"));
+  console.log(chalk.whiteBright("   -> /outputs_files/tokens/color: JSON Token Files"));
+  console.log(chalk.whiteBright("   -> /outputs_files/css/color: CSS variables"));
+  console.log(chalk.whiteBright("   -> /outputs_files/scss/color: SCSS variables\n"));
 
   if (updatedFiles.length > 0) {
     console.log(chalk.whiteBright("🆕 Updated:"));

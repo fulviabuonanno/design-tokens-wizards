@@ -42,19 +42,19 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.0 ✅ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.1    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.0    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.0    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.0    |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.2 ✨ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.2 ✨ |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.1 ✨ |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.1 ✨ |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.1 ✨ |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.1 ✅ |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.1    |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.1 ✨ |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.2✨  |
 
-Legend:  
-✅ Patch // 🔥 Minor Change // 🆙 Major Change
+Legend:
+✨ Patch // 🌟 Minor Change // ✅ Major Change
 
 ## 🗂 Project Structure
 
@@ -63,21 +63,19 @@ src/
   wizards/         # All wizard scripts (color, typo, space, size, radii)
   spells/          # Utility scripts (merge, clear)
   config/          # Config and helper scripts
+  assets/          # Images and other static assets
 output_files/      # Where generated tokens are saved
   tokens/
-    color/
-    typography/
-    space/
-    size/
-    border-radius/
-  css/
-  scss/
-  final/
+    json/          # JSON token files
+    css/           # CSS token files
+    scss/          # SCSS token files
+  final/           # Final merged token files
+info/              # Additional project information
 ```
 
 ## 🎨 **Color Tokens Wizard**
 
-Version 2.8.0
+Version 2.8.2
 
 Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
 
@@ -109,10 +107,10 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
 7. **Select Scale Type**  
    Decide how your color stops will be generated:
 
-   - **Incremental:** 100, 200, 300, 400 (choose step size: 10, 25, 50, 100)
-   - **Ordinal:** 01, 02, 03, 04 or 1, 2, 3, 4 (choose padded or unpadded)
+   - **Incremental:** 100, 200, 300, 400
+   - **Ordinal:** 01, 02, 03, 04 or 1, 2, 3, 4
    - **Alphabetical:** A, B, C, D or a, b, c, d
-   - **Semantic Stops:** dark, base, light, etc. (choose number of stops: 1, 2, 4, 6, 8, 10)
+   - **Semantic Stops:** dark, base, light, etc.
 
 8. **Set Number of Stops**  
    Choose how many stops (shades) to generate (1–20, depending on scale type).
@@ -158,7 +156,7 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
 
 ## 🔤 **Typography Tokens Wizard**
 
-Version 1.7.0
+Version 1.2.2
 
 Craft a harmonious typographic elixir for your design system with the Typography Tokens Wizard 🧙! This wizard helps you blend font families, sizes, weights, spacing, and heights into a cohesive typography system.
 
@@ -185,8 +183,8 @@ Craft a harmonious typographic elixir for your design system with the Typography
    - Choose naming convention:
      - Semantic (primary, secondary, tertiary)
      - Purpose-based (title, body, details)
-     - Ordinal (1, 2, 3)
-     - Alphabetical (a, b, c)
+     - Ordinal (1, 2, 3, 4)
+     - Alphabetical (A, B, C, D)
 
 4. **Configure Font Size**
 
@@ -200,9 +198,9 @@ Craft a harmonious typographic elixir for your design system with the Typography
    - Choose unit (px, rem, em)
    - Define 1–12 sizes with naming convention:
      - T-shirt (xs, sm, md, lg, xl)
-     - Incremental (10, 20, 30)
-     - Ordinal (1, 2, 3)
-     - Alphabetical (a, b, c...)
+     - Incremental (100, 200, 300, 400)
+     - Ordinal (1, 2, 3, 4)
+     - Alphabetical (A, B, C, D)
 
 5. **Configure Font Weight**
 
@@ -223,7 +221,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
    - Select unit (em, rem, %)
    - Define 1–7 values with naming convention:
      - T-shirt (xs to xl)
-     - Incremental (100, 200...)
+     - Incremental (100, 200, 300...)
      - Ordinal (01, 02... or 1, 2...)
      - Alphabetical (a, b, c...)
 
@@ -239,7 +237,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - Semantic (tight, normal, loose, relaxed, spacious)
      - Ordinal (1 to 5)
      - Purpose-based (body, heading, display, compact, expanded)
-     - Incremental (100, 200...)
+     - Incremental (100, 200, 300...)
      - Alphabetical (a, b, c...)
 
 8. **Preview Your Tokens**  
@@ -249,9 +247,10 @@ Craft a harmonious typographic elixir for your design system with the Typography
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
-     Stored in: `output_files/tokens/typography/typography_tokens.json`
-   - Create CSS and SCSS files with your tokens as variables
-     Stored in `output_files/tokens/css/typography/typography_variables.css` and `output_files/tokens/scss/typography/typography_variables.scss`
+     Stored in: `output_files/tokens/json/typography/typography_tokens.json`
+   - Generate CSS and SCSS files
+     - CSS: `output_files/tokens/css/typography/typography_variables.css`
+     - SCSS: `output_files/tokens/scss/typography/typography_variables.scss`
 
 10. **Finalize Your Spell**  
     Review the output files and integrate your typography tokens into your system.
@@ -268,7 +267,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
 
 ## 🔳 **Space Tokens Wizard**
 
-Version 1.7.0
+Version 1.7.1
 
 Conjure the perfect spacing system for your design with the Space Tokens Wizard 🧙! This wizard helps you create a harmonious set of spacing tokens that will bring balance and rhythm to your layouts.
 
@@ -301,9 +300,9 @@ Conjure the perfect spacing system for your design with the Space Tokens Wizard 
    Select a naming pattern for your space tokens:
 
    - T-shirt Sizes (xs, sm, md, lg, xl)
-   - Incremental (100, 200, 300)
-   - Ordinal (1, 2, 3)
-   - Alphabetical (A, B, C or a, b, c)
+   - Incremental (100, 200, 300, 400)
+   - Ordinal (1, 2, 3, 4)
+   - Alphabetical (A, B, C, D)
 
 7. **Preview Your Tokens**  
    The wizard will show your space tokens preview:
@@ -335,7 +334,7 @@ Conjure the perfect spacing system for your design with the Space Tokens Wizard 
 
 ## 📏 **Size Tokens Wizard**
 
-Version 1.7.0
+Version 1.7.1
 
 Conjure the perfect sizing system for your design with the Size Tokens Wizard 🧙! This wizard helps you create a harmonious set of size tokens that will bring consistency and precision to your layouts.
 
@@ -368,9 +367,9 @@ Conjure the perfect sizing system for your design with the Size Tokens Wizard �
    Select a naming pattern for your size tokens:
 
    - T-shirt Sizes (xs, sm, md, lg, xl)
-   - Incremental (100, 200, 300)
-   - Ordinal (1, 2, 3)
-   - Alphabetical (A, B, C or a, b, c)
+   - Incremental (100, 200, 300, 400)
+   - Ordinal (1, 2, 3, 4)
+   - Alphabetical (A, B, C, D)
 
 7. **Preview Your Tokens**  
    The wizard will show your size tokens preview:
@@ -402,7 +401,7 @@ Conjure the perfect sizing system for your design with the Size Tokens Wizard �
 
 ## 🔲 **Border Radius Tokens Wizard**
 
-Version 1.7.0
+Version 1.7.1
 
 Conjure the perfect border radius system for your design with the Border Radius Tokens Wizard 🧙! This wizard helps you create a harmonious set of border radius tokens that will bring elegance and consistency to your UI elements.
 
@@ -435,9 +434,9 @@ Conjure the perfect border radius system for your design with the Border Radius 
    Select a naming pattern for your border radius tokens:
 
    - T-shirt Sizes (xs, sm, md, lg, xl)
-   - Incremental Numbers (100, 200, 300)
-   - Ordinal Numbers (1, 2, 3)
-   - Alphabetical (A, B, C or a, b, c)
+   - Incremental (100, 200, 300, 400)
+   - Ordinal (1, 2, 3, 4)
+   - Alphabetical (A, B, C, D)
 
 7. **Preview Your Tokens**  
    The wizard will show your border radius tokens preview:
@@ -469,7 +468,7 @@ Conjure the perfect border radius system for your design with the Border Radius 
 
 ## 🧹 **Clear Tokens Spell**
 
-Version 1.7.0
+Version 1.2.2
 
 Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you remove all generated token files, giving you a fresh start for your design system.
 
@@ -515,7 +514,7 @@ Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you rem
 
 ### 🔄 **Merge Tokens Spell**
 
-Version 1.7.0
+Version 1.3.1
 
 Conjure a unified design system by merging your token files with the Merge Tokens Spell 🧙! This spell combines multiple token files into a single, cohesive design system file, ensuring consistent naming conventions across your tokens.
 

@@ -25,7 +25,7 @@ async function showAccessibilityNotes(propertyType) {
     {
       type: 'confirm',
       name: 'showNotes',
-      message: '📝 Would you like to see ' + chalk.underline('accessibility guidelines') + ' for this typography property?',
+      message: '\ud83d\udcdd Would you like to see ' + chalk.underline('accessibility guidelines') + ' for this typography property?\n>>>',
       default: false
     }
   ]);
@@ -101,21 +101,21 @@ async function typographyWiz() {
 
   await showLoader(chalk.bold.yellowBright("🦄 Casting the magic of tokens..."), 1500);
   console.log(
-    chalk.whiteBright("\n❤️ Welcome to the Typography Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your typography tokens step by step.") +
-    chalk.whiteBright("Generate your tokens and prepare them ready for using or syncing in ") +
-    chalk.underline("Tokens Studio") +
-    chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
+    chalk.whiteBright("\n✨ Welcome to the Typography Tokens Wizard! 🧙✨ Ready to create some beautiful typography tokens? Let's get started!") +
+    chalk.whiteBright("\n\n🎨 Your tokens will be ready to sync with ") +
+    chalk.underline("JSON format for Tokens Studio in Figma") +
+    chalk.whiteBright(" in a snap! 🌟 And here's the magical bonus: you'll get ") +
     chalk.underline("SCSS") +
     chalk.whiteBright(" and ") +
     chalk.underline("CSS") +
-    chalk.whiteBright(" to test in your implementation!\n")
+    chalk.whiteBright(" files to bring your typography tokens to life! ✨\n")
   );
 
   const { selectedProperties } = await inquirer.prompt([
     {
       type: 'checkbox',
       name: 'selectedProperties',
-      message: 'Which typography tokens would you like to create? (Use space to select, enter to confirm):',
+      message: 'Which typography tokens would you like to create? (Use space to select, enter to confirm):\n>>>',
       choices: [
         { name: 'Font Family ', value: 'fontFamily' },
         { name: 'Font Size ', value: 'fontSize' },
@@ -154,7 +154,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'propertyName',
-        message: 'How would you like to name your font family tokens?',
+        message: 'How would you like to name your font family tokens?\n>>>',
         choices: [
           { name: 'fontFamily', value: 'fontFamily' },
           { name: 'font-family', value: 'font-family' },
@@ -173,7 +173,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., brandFonts, systemFonts):',
+          message: 'Enter your custom token name (e.g., brandFonts, systemFonts):\n>>>',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -189,7 +189,7 @@ async function typographyWiz() {
       { 
         type: 'list', 
         name: 'numFonts', 
-        message: 'How many fonts do you want to include for font family?',
+        message: 'How many fonts do you want to include for font family?\n>>>',
         choices: ['1', '2', '3'], 
         default: '1' 
       }
@@ -201,7 +201,7 @@ async function typographyWiz() {
       { 
         type: 'list', 
         name: 'namingConvention', 
-        message: 'Which naming convention for font family tokens would you like to use?',
+        message: 'Which naming convention for font family tokens would you like to use?\n>>>',
         choices: [
           { name: 'Semantic (primary, secondary, tertiary)', value: 'semantic' },
           { name: 'Purpose-based (title, body, details)', value: 'purpose' },
@@ -226,7 +226,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'ordinalFormat',
-          message: 'For Ordinal scale, choose the format:',
+          message: 'For Ordinal scale, choose the format:\n>>>',
           choices: [
             { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
             { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
@@ -244,7 +244,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'alphabeticalCase',
-          message: 'For Alphabetical scale, choose the case:',
+          message: 'For Alphabetical scale, choose the case:\n>>>',
           choices: [
             { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
             { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
@@ -262,7 +262,7 @@ async function typographyWiz() {
           {
             type: 'input',
             name: 'customName',
-            message: `Enter name for font family ${i}:`,
+            message: `Enter name for font family ${i}:\n>>>`,
             validate: input => {
               if (input.trim() === '') return 'Please enter a valid name';
               if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -282,7 +282,7 @@ async function typographyWiz() {
         { 
           type: 'list', 
           name: 'inputMethod', 
-          message: `How would you like to specify the font family for "${name}"?`,
+          message: `How would you like to specify the font family for "${name}"?\n>>>`,
           choices: [
             { name: 'Choose from popular fonts', value: 'popular' },
             { name: 'Enter custom font', value: 'custom' },
@@ -309,7 +309,7 @@ async function typographyWiz() {
           { 
             type: 'list', 
             name: 'selectedFont', 
-            message: `Select a font family for "${name}":`, 
+            message: `Select a font family for "${name}":\n>>>`, 
             choices: popularFonts, 
             default: popularFonts[0] 
           }
@@ -320,7 +320,7 @@ async function typographyWiz() {
           { 
             type: 'input', 
             name: 'customFont', 
-            message: `Enter the font family name for "${name}" (e.g., "Montserrat"):`,  
+            message: `Enter the font family name for "${name}" (e.g., "Montserrat"):\n>>>`,  
             validate: input => input.trim() !== '' || 'Please enter a font family name'
           }
         ]);
@@ -328,7 +328,7 @@ async function typographyWiz() {
           {
             type: 'list',
             name: 'genericFamily',
-            message: 'Select a fallback generic font family:',
+            message: 'Select a fallback generic font family:\n>>>',
             choices: ['sans-serif', 'serif', 'monospace', 'cursive', 'fantasy', 'system-ui', 'none'],
           }
         ]);
@@ -340,13 +340,16 @@ async function typographyWiz() {
           {
             type: 'input',
             name: 'multipleFonts',
-            message: `Enter font families with fallbacks for "${name}" (comma-separated, e.g., "Montserrat", "Helvetica Neue", sans-serif):\n`,
+            message: `Enter font families with fallbacks for "${name}" (comma-separated, e.g., "Montserrat", "Helvetica Neue", sans-serif):\n>>>`,
             validate: input => input.trim() !== '' || 'Please enter at least one font family'
           }
         ]);
         fontValue = multipleFonts;
       }
-      fontFamilies[name] = { value: fontValue, type: 'fontFamilies' };
+      fontFamilies[name] = {
+        $value: fontValue,
+        $type: "fontFamily"
+      };
     }
 
     console.log(chalk.bold.yellowBright("\n📋 Font Family Settings Summary:"));
@@ -372,7 +375,7 @@ async function typographyWiz() {
     });
 
     Object.entries(fontFamilies).forEach(([name, data]) => {
-      fontTable.push([name, data.value]);
+      fontTable.push([name, data.$value]);
     });
 
     console.log(fontTable.toString());
@@ -381,7 +384,7 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmFontFamily",
-        message: "Would you like to continue with these font family settings?",
+        message: "Would you like to continue with these font family settings?\n>>>",
         default: true
       }
     ]);
@@ -409,7 +412,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'propertyName',
-        message: 'How would you like to name your font size tokens?',
+        message: 'How would you like to name your font size tokens?\n>>>',
         choices: [
           { name: 'fontSize', value: 'fontSize' },
           { name: 'font-size', value: 'font-size' },
@@ -428,7 +431,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., sizeScale, fontSizeScale):',
+          message: 'Enter your custom token name (e.g., sizeScale, fontSizeScale):\n>>>',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -444,11 +447,11 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming convention for your font size tokens:',
+        message: 'Choose a naming convention for your font size tokens:\n>>>',
         choices: [
           { name: 'T-shirt sizes (e.g. xs, sm, md, lg)', value: 'tshirt' },
           { name: 'Ordinal (e.g. 1, 2, 3, 4)', value: 'ordinal' },
-          { name: 'Incremental (e.g. 100, 200, 300)', value: 'incremental' },
+          { name: 'Incremental (e.g. 100, 200, 300, 400)', value: 'incremental' },
           { name: 'Alphabetical (e.g. A, B, C, D)', value: 'alphabetical' }
         ]
       }
@@ -462,7 +465,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'ordinalFormat',
-          message: 'For Ordinal scale, choose the format:',
+          message: 'For Ordinal scale, choose the format:\n>>>',
           choices: [
             { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
             { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
@@ -475,11 +478,12 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'increment',
-          message: 'Choose the increment step:',
+          message: 'For Incremental scale, choose the step increment:\n>>>',
           choices: [
-            { name: '100 (100, 200, 300...)', value: 100 },
-            { name: '200 (200, 400, 600...)', value: 200 },
-            { name: '50 (50, 100, 150...)', value: 50 }
+            { name: "100 in 100 (e.g., 100, 200, 300, 400)", value: '100' },
+            { name: "50 in 50 (e.g., 50, 100, 150, 200)", value: '50' },
+            { name: "25 in 25 (e.g., 25, 50, 75, 100)", value: '25' },
+            { name: "10 in 10 (e.g., 10, 20, 30, 40)", value: '10' }
           ]
         }
       ]);
@@ -489,7 +493,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'alphabeticalCase',
-          message: 'For Alphabetical scale, choose the case:',
+          message: 'For Alphabetical scale, choose the format:\n>>>',
           choices: [
             { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
             { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
@@ -504,7 +508,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'scaleType',
-        message: 'Choose the scale type for font sizes:',
+        message: 'Choose the scale type for font sizes:\n>>>',
         choices: [
           { name: '4-Point Grid System', value: 'grid4' },
           { name: '8-Point Grid System', value: 'grid8' },
@@ -568,7 +572,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'scaleType',
-          message: 'Choose the scale type for font sizes:',
+          message: 'Choose the scale type for font sizes:\n>>>',
           choices: [
             { name: '4-Point Grid System', value: 'grid4' },
             { name: '8-Point Grid System', value: 'grid8' },
@@ -593,7 +597,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'baseValue',
-          message: 'Enter the base size (middle value):',
+          message: 'Enter the base size (middle value):\n>>>',
           default: '16',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -614,7 +618,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'baseValue',
-          message: 'Enter the base size (middle value):',
+          message: 'Enter the base size (middle value):\n>>>',
           default: '16',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -631,7 +635,7 @@ async function typographyWiz() {
         {
           type: 'list',
           name: 'scaleRatio',
-          message: 'Choose a ratio for the modular scale:',
+          message: 'Choose a ratio for the modular scale:\n>>>',
           choices: [
             { name: 'Minor Second (1.067)', value: '1.067' },
             { name: 'Major Second (1.125)', value: '1.125' },
@@ -655,7 +659,7 @@ async function typographyWiz() {
           {
             type: 'input',
             name: 'customRatio',
-            message: 'Enter your custom ratio (e.g., 1.42):',
+            message: 'Enter your custom ratio (e.g., 1.42):\n>>>',
             default: '1.42',
             validate: input => {
               if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -686,7 +690,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'baseValue',
-          message: 'Enter the base size (starting value):',
+          message: 'Enter the base size (starting value):\n>>>',
           default: '16',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -708,7 +712,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'baseValue',
-          message: 'Enter the base size:',
+          message: 'Enter the base size:\n>>>',
           default: '16',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -725,7 +729,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'step',
-          message: 'Enter the custom step increment:',
+          message: 'Enter the custom step increment:\n>>>',
           default: '4',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -745,7 +749,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'sizingUnit',
-        message: 'Choose the unit for font sizes:',
+        message: 'Choose the unit for font sizes:\n>>>',
         choices: ['px', 'rem', 'em'],
         default: 'px'
       }
@@ -757,7 +761,7 @@ async function typographyWiz() {
       {
         type: 'input',
         name: 'totalSizes',
-        message: 'How many font sizes do you want to create? (min: 1, max: 12):',
+        message: 'How many font sizes do you want to create? (min: 1, max: 12):\n>>>',
         default: '5',
         validate: (input) => {
           const num = parseInt(input.trim());
@@ -802,8 +806,8 @@ async function typographyWiz() {
       
       if (index < sizes.length) {
         fontSizes[name] = { 
-          value: `${sizes[index]}${scaleInfo.unit}`, 
-          type: 'fontSizes' 
+          $value: `${sizes[index]}${scaleInfo.unit}`, 
+          $type: 'fontSize' 
         };
       }
     });
@@ -964,7 +968,7 @@ async function typographyWiz() {
     });
 
     Object.entries(fontSizes).forEach(([name, data]) => {
-      sizeTable.push([name, data.value]);
+      sizeTable.push([name, data.$value]);
     });
 
     console.log(sizeTable.toString());
@@ -973,7 +977,7 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmFontSize",
-        message: "Would you like to continue with these font size settings?",
+        message: "Would you like to continue with these font size settings?\n>>>",
         default: true
       }
     ]);
@@ -999,7 +1003,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'propertyName',
-        message: 'How would you like to name your font weight tokens?',
+        message: 'How would you like to name your font weight tokens?\n>>>',
         choices: [
           { name: 'fontWeight', value: 'fontWeight' },
           { name: 'font-weight', value: 'font-weight' },
@@ -1017,7 +1021,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., weightScale, weightType):',
+          message: 'Enter your custom token name (e.g., weightScale, weightType):\n>>>',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -1033,7 +1037,7 @@ async function typographyWiz() {
       {
         type: 'checkbox',
         name: 'selectedWeights',
-        message: 'Select the font weights to include in your design system:',
+        message: 'Select the font weights to include in your design system:\n>>>',
         choices: weightOptions.map(opt => ({
           name: `${opt.weight} - ${opt.name} (${opt.usage})`,
           value: { name: opt.name.toLowerCase().replace(' ', ''), value: opt.weight }
@@ -1049,7 +1053,10 @@ async function typographyWiz() {
 
     const fontWeight = {};
     selectedWeights.forEach((weight, index) => {
-      fontWeight[tokenNames[index]] = { value: weight.value, type: 'fontWeights' };
+      fontWeight[tokenNames[index]] = {
+        $value: weight.value,
+        $type: "fontWeight"
+      };
     });
 
     console.log(chalk.bold.yellowBright("\n📋 Font Weight Settings Summary:"));
@@ -1074,7 +1081,7 @@ async function typographyWiz() {
     });
 
     Object.entries(fontWeight).forEach(([name, data]) => {
-      weightTable.push([name, data.value]);
+      weightTable.push([name, data.$value]);
     });
 
     console.log(weightTable.toString());
@@ -1083,7 +1090,7 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmFontWeight",
-        message: "Would you like to continue with these font weight settings?",
+        message: "Would you like to continue with these font weight settings?\n>>>",
         default: true
       }
     ]);
@@ -1122,7 +1129,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'propertyName',
-        message: 'How would you like to name your letter spacing tokens?',
+        message: 'How would you like to name your letter spacing tokens?\n>>>',
         choices: [
           { name: 'letterSpacing', value: 'letterSpacing' },
           { name: 'letter-spacing', value: 'letter-spacing' },
@@ -1141,7 +1148,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., spacingScale, spacingType):',
+          message: 'Enter your custom token name (e.g., spacingScale, spacingType):\n>>>',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -1157,7 +1164,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming convention for your letter spacing tokens:',  
+        message: 'Choose a naming convention for your letter spacing tokens:\n>>>',
         choices: [
           { name: 'T-shirt sizes (e.g. xs, sm, md, lg)', value: 'tshirt' },
           { name: 'Ordinal (e.g. 1, 2, 3, 4)', value: 'ordinal' },
@@ -1174,7 +1181,7 @@ async function typographyWiz() {
       {
         type: 'input',
         name: 'numValues',
-        message: 'How many letter spacing values do you want to create? (1-7):',
+        message: 'How many letter spacing values do you want to create? (1-7):\n>>>',
         default: '5',
         validate: (input) => {
           const num = parseInt(input);
@@ -1220,7 +1227,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'scaleType',
-        message: 'Choose the scale type for letter spacing values:',
+        message: 'Choose the scale type for letter spacing values:\n>>>',
         choices: [
           { name: 'Predetermined Scale (-1.25%, 0%, 1.25%, 2.5%)', value: 'predetermined' },
           { name: 'Custom Values', value: 'custom' }
@@ -1247,7 +1254,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'unit',
-        message: 'Choose the unit for letter spacing values:',
+        message: 'Choose the unit for letter spacing values:\n>>>',
         choices: [
           { name: 'em', value: 'em' },
           { name: 'rem', value: 'rem' },
@@ -1296,7 +1303,7 @@ async function typographyWiz() {
           {
             type: 'input',
             name: 'customValue',
-            message: `Enter value ${i + 1} of ${totalValues}:\n`,
+            message: `Enter value ${i + 1} of ${totalValues}:\n>>>`,
             default: i === 0 ? '-0.02' : i === 1 ? '0' : '0.02',
             validate: input => {
               if (!/^-?\d*\.?\d+$/.test(input)) {
@@ -1321,8 +1328,8 @@ async function typographyWiz() {
     
     for (let i = 0; i < totalValues; i++) {
       letterSpacing[names[i]] = {
-        value: values[i],
-        type: 'letterSpacing'
+        $value: values[i],
+        $type: 'letterSpacing'
       };
     }
 
@@ -1350,7 +1357,7 @@ async function typographyWiz() {
     });
 
     Object.entries(letterSpacing).forEach(([name, data]) => {
-      valuesTable.push([name, data.value]);
+      valuesTable.push([name, data.$value]);
     });
 
     console.log(valuesTable.toString());
@@ -1359,7 +1366,7 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmLetterSpacing",
-        message: "Would you like to continue with these letter spacing settings?",
+        message: "Would you like to continue with these letter spacing settings?\n>>>",
         default: true
       }
     ]);
@@ -1411,7 +1418,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'propertyName',
-        message: 'How would you like to name your line height tokens?',
+        message: 'How would you like to name your line height tokens?\n>>>',
         choices: [
           { name: 'lineHeight', value: 'lineHeight' },
           { name: 'line-height', value: 'line-height' },
@@ -1430,7 +1437,7 @@ async function typographyWiz() {
         {
           type: 'input',
           name: 'customName',
-          message: 'Enter your custom token name (e.g., leadingScale, lineSpacing):',
+          message: 'Enter your custom token name (e.g., leadingScale, lineSpacing):\n>>>',
           validate: input => {
             if (input.trim() === '') return 'Please enter a valid token name';
             if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
@@ -1446,7 +1453,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'namingConvention',
-        message: 'Choose a naming convention for your line height tokens:',
+        message: 'Choose a naming convention for your line height tokens:\n>>>',
         choices: [
           { name: 'T-shirt sizes (e.g. xs, sm, md)', value: 'tshirt' },
           { name: 'Ordinal (e.g. 1, 2, 3)', value: 'ordinal' },
@@ -1464,7 +1471,7 @@ async function typographyWiz() {
       {
         type: 'list',
         name: 'scaleType',
-        message: 'Choose the scale type for line height values:',
+        message: 'Choose the scale type for line height values:\n>>>',
         choices: [
           { name: 'Predetermined Scale 1 (1.1, 1.25, 1.5, 1.6, 1.75, 2.0)', value: 'scale1' },
           { name: 'Predetermined Scale 2 (1.0, 1.2, 1.5, 1.6, 2.0)', value: 'scale2' },
@@ -1505,7 +1512,7 @@ async function typographyWiz() {
           {
             type: 'input',
             name: 'customValue',
-            message: `Enter value ${i + 1} of 5:`,
+            message: `Enter value ${i + 1} of 5:\n>>>`,
             default: i === 0 ? '1.0' : i === 1 ? '1.2' : i === 2 ? '1.5' : i === 3 ? '1.6' : '2.0',
             validate: input => {
               if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
@@ -1534,8 +1541,8 @@ async function typographyWiz() {
     const lineHeight = {};
     tokenNames.forEach((name, index) => {
       lineHeight[name] = {
-        value: lineHeightValues[index],
-        type: 'lineHeights'
+        $value: lineHeightValues[index],
+        $type: 'lineHeight'
       };
     });
 
@@ -1564,7 +1571,7 @@ async function typographyWiz() {
     });
 
     Object.entries(lineHeight).forEach(([name, data]) => {
-      valuesTable.push([name, data.value]);
+      valuesTable.push([name, data.$value]);
     });
 
     console.log(valuesTable.toString());
@@ -1573,7 +1580,7 @@ async function typographyWiz() {
       {
         type: "confirm",
         name: "confirmLineHeight",
-        message: "Would you like to continue with these line height settings?",
+        message: "Would you like to continue with these line height settings?\n>>>",
         default: true
       }
     ]);
@@ -1654,7 +1661,7 @@ async function typographyWiz() {
         {
           type: 'confirm',
           name: 'addMore',
-          message: 'Would you like to add more typography properties?',
+          message: 'Would you like to add more typography properties?\n>>>',
           default: false
         }
       ]);
@@ -1664,7 +1671,7 @@ async function typographyWiz() {
           {
             type: 'checkbox',
             name: 'additionalProperties',
-            message: 'Select additional properties to include:',
+            message: 'Select additional properties to include:\n>>>',
             choices: unselectedProperties.map(prop => 
               ({ 
                 name: prop === 'fontFamily' ? 'Font Family' :
@@ -1756,39 +1763,30 @@ async function typographyWiz() {
 }
 
 function generateCSSVariables(tokenObj, prefix) {
-  let css = ":root {\n";
-  
-  for (const [key, token] of Object.entries(tokenObj)) {
-    if (typeof token === 'object') {
-      for (const [subKey, subToken] of Object.entries(token)) {
-        if (subToken && typeof subToken === 'object' && subToken.value) {
-          css += `  --${key}-${subKey}: ${subToken.value};\n`;
-        }
+  let css = '';
+  for (const [key, value] of Object.entries(tokenObj)) {
+    if (typeof value === 'object' && value !== null) {
+      if ('$value' in value) {
+        css += `--${prefix}${key}: ${value.$value};\n`;
+      } else {
+        css += generateCSSVariables(value, `${prefix}${key}-`);
       }
-    } else if (typeof token === 'string') {
-      css += `  --${key}: ${token};\n`;
     }
   }
-  
-  css += "}";
   return css;
 }
 
 function generateSCSSVariables(tokenObj, prefix) {
-  let scss = "";
-  
-  for (const [key, token] of Object.entries(tokenObj)) {
-    if (typeof token === 'object') {
-      for (const [subKey, subToken] of Object.entries(token)) {
-        if (subToken && typeof subToken === 'object' && subToken.value) {
-          scss += `$${key}-${subKey}: ${subToken.value};\n`;
-        }
+  let scss = '';
+  for (const [key, value] of Object.entries(tokenObj)) {
+    if (typeof value === 'object' && value !== null) {
+      if ('$value' in value) {
+        scss += `$${prefix}${key}: ${value.$value};\n`;
+      } else {
+        scss += generateSCSSVariables(value, `${prefix}${key}-`);
       }
-    } else if (typeof token === 'string') {
-      scss += `$${key}: ${token};\n`;
     }
   }
-  
   return scss;
 }
 
