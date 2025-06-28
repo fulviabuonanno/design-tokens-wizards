@@ -626,7 +626,7 @@ const generateBorderRadiusTokens = (
 
   const tokens = {};
   tokensArray.forEach(item => {
-    tokens[item.key] = { value: item.value, type: item.type };
+    tokens[item.key] = { $value: item.value, $type: item.type };
   });
   return tokens;
 };
@@ -639,10 +639,10 @@ const convertPxToOtherUnits = (tokens, unit) => {
   
   const convertedTokens = {};
   for (const [key, token] of Object.entries(tokens)) {
-    const numericValue = parseFloat(token.value);
+    const numericValue = parseFloat(token.$value);
     convertedTokens[key] = {
-      value: conversions[unit](numericValue),
-      type: "borderRadius"
+      $value: conversions[unit](numericValue),
+      $type: "borderRadius"
     };
   }
   return convertedTokens;
@@ -695,7 +695,9 @@ const convertTokensToCSS = (tokens) => {
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
           cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
-        } else {
+        } else if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+          cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+        } else if (obj[key] && typeof obj[key] === "object" && !Array.isArray(obj[key])) {
           processTokens(obj[key], `${prefix}${key}-`);
         }
       }
@@ -723,7 +725,9 @@ const convertTokensToSCSS = (tokens) => {
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
           scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
-        } else {
+        } else if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+          scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+        } else if (obj[key] && typeof obj[key] === "object" && !Array.isArray(obj[key])) {
           processTokens(obj[key], `${prefix}${key}-`);
         }
       }
@@ -859,7 +863,7 @@ const main = async () => {
   });
 
   sortedEntries.forEach(([tokenName, token]) => {
-    table.push([tokenName, token.value]);
+    table.push([tokenName, token.$value]);
   });
 
   console.log(table.toString());

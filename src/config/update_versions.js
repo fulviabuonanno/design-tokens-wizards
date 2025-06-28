@@ -19,6 +19,17 @@ const versions = {
   merge: packageJson.scriptVersions.merge
 };
 
+// For demo: force oldVersion for all wizards to a lower value
+const forcedOldVersions = {
+  color: '2.8.1',
+  typo: '1.2.1',
+  space: '1.7.0',
+  size: '1.7.0',
+  radii: '1.7.0',
+  clear: '1.2.1',
+  merge: '1.3.0'
+};
+
 // Validate versions
 Object.entries(versions).forEach(([key, version]) => {
   if (!version) {
@@ -37,13 +48,13 @@ let readmeEsContent = fs.readFileSync(readmeEsPath, 'utf8');
 
 // Function to determine version change type
 const getVersionEmoji = (oldVersion, newVersion) => {
-  if (!oldVersion) return '🔥'; // New feature
+  if (!oldVersion) return '✨'; // New feature
   const [oldMajor, oldMinor, oldPatch] = oldVersion.split('.').map(Number);
   const [newMajor, newMinor, newPatch] = newVersion.split('.').map(Number);
   
-  if (oldMajor !== newMajor) return '🆙'; // Major update
-  if (oldMinor !== newMinor) return '🔥'; // New feature
-  if (oldPatch !== newPatch) return '✅'; // Minor update
+  if (oldMajor !== newMajor) return '✅'; // Major update
+  if (oldMinor !== newMinor) return '🌟'; // New feature
+  if (oldPatch !== newPatch) return '✨'; // Minor update
   
   return ''; // No change
 };
@@ -52,42 +63,42 @@ const getVersionEmoji = (oldVersion, newVersion) => {
 function updateVersionsInContent(content) {
   // Update versions in the tables in the correct order
   content = content.replace(
-    /\| 🟡 \*\*COLOR WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: 🔥|🆙|✅)?/,
+    /\| 🟡 \*\*COLOR WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: ✨|🌟|✅|🆙|🔥)?/,
     (match, oldVersion) => {
-      const emoji = getVersionEmoji(oldVersion, versions.color);
+      const emoji = getVersionEmoji(forcedOldVersions.color, versions.color);
       return `| 🟡 **COLOR WIZ**         | \`color-wiz.js\` | \`npm run color\` | ${content.includes('Genera y gestiona') ? 'Genera y gestiona tokens de color' : 'Generate and manage color tokens'}         | ${versions.color}${emoji ? ' ' + emoji : ''}`;
     }
   );
   content = content.replace(
-    /\| 🔴 \*\*TYPOGRAPHY WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: 🔥|🆙|✅)?/,
+    /\| 🔴 \*\*TYPOGRAPHY WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: ✨|🌟|✅|🆙|🔥)?/,
     (match, oldVersion) => {
-      const emoji = getVersionEmoji(oldVersion, versions.typo);
+      const emoji = getVersionEmoji(forcedOldVersions.typo || oldVersion, versions.typo);
       return `| 🔴 **TYPOGRAPHY WIZ**    | \`typo_wiz.js\`  | \`npm run typo\`  | ${content.includes('Genera y gestiona') ? 'Genera y gestiona tokens de tipografía' : 'Generate and manage typography tokens'}    | ${versions.typo}${emoji ? ' ' + emoji : ''}`;
     }
   );
   content = content.replace(
-    /\| 🟣 \*\*SPACE WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: 🔥|🆙|✅)?/,
+    /\| 🟣 \*\*SPACE WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: ✨|🌟|✅|🆙|🔥)?/,
     (match, oldVersion) => {
-      const emoji = getVersionEmoji(oldVersion, versions.space);
+      const emoji = getVersionEmoji(forcedOldVersions.space || oldVersion, versions.space);
       return `| 🟣 **SPACE WIZ**         | \`space_wiz.js\` | \`npm run space\` | ${content.includes('Genera y gestiona') ? 'Genera y gestiona tokens de espaciado' : 'Generate and manage spacing tokens'}       | ${versions.space}${emoji ? ' ' + emoji : ''}`;
     }
   );
   content = content.replace(
-    /\| 🔵 \*\*SIZE WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: 🔥|🆙|✅)?/,
+    /\| 🔵 \*\*SIZE WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: ✨|🌟|✅|🆙|🔥)?/,
     (match, oldVersion) => {
-      const emoji = getVersionEmoji(oldVersion, versions.size);
+      const emoji = getVersionEmoji(forcedOldVersions.size || oldVersion, versions.size);
       return `| 🔵 **SIZE WIZ**          | \`size_wiz.js\`  | \`npm run size\`  | ${content.includes('Genera y gestiona') ? 'Genera y gestiona tokens de tamaño' : 'Generate and manage size tokens'}          | ${versions.size}${emoji ? ' ' + emoji : ''}`;
     }
   );
   content = content.replace(
-    /\| 🟢 \*\*BORDER RADIUS WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: 🔥|🆙|✅)?/,
+    /\| 🟢 \*\*BORDER RADIUS WIZ\*\*.*?\| (\d+\.\d+\.\d+)(?: ✨|🌟|✅|🆙|🔥)?/,
     (match, oldVersion) => {
-      const emoji = getVersionEmoji(oldVersion, versions.radii);
+      const emoji = getVersionEmoji(forcedOldVersions.radii || oldVersion, versions.radii);
       return `| 🟢 **BORDER RADIUS WIZ** | \`radii_wiz.js\` | \`npm run radii\` | ${content.includes('Genera y gestiona') ? 'Genera y gestiona tokens de radio' : 'Generate and manage border radius tokens'} | ${versions.radii}${emoji ? ' ' + emoji : ''}`;
     }
   );
 
-  // Update spell versions
+  // Update spell versions in tables
   content = content.replace(
     /\| \*\*MERGE SPELL\*\*.*?\| (\d+\.\d+\.\d+)(?: 🔥|🆙|✅)?/,
     (match, oldVersion) => {
@@ -105,43 +116,72 @@ function updateVersionsInContent(content) {
 
   // Update version sections with proper formatting
   content = content.replace(
-    /## 🎨 \*\*Color Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-    `## 🎨 **Color Tokens Wizard** ✨\n\nVersion ${versions.color}`
+    /## 🎨 \*\*Color Tokens Wizard\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `## 🎨 **Color Tokens Wizard**\n\nVersion ${versions.color}`
   );
   content = content.replace(
-    /### 📏 \*\*Size Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-    `### 📏 **Size Tokens Wizard** ✨\n\nVersion ${versions.size}`
+    /## 📏 \*\*Size Tokens Wizard\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `## 📏 **Size Tokens Wizard**\n\nVersion ${versions.size}`
   );
   content = content.replace(
-    /### 🔳 \*\*Space Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-    `### 🔳 **Space Tokens Wizard** ✨\n\nVersion ${versions.space}`
+    /## 🔳 \*\*Space Tokens Wizard\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `## 🔳 **Space Tokens Wizard**\n\nVersion ${versions.space}`
   );
   content = content.replace(
-    /### ⭕️ \*\*Border Radius Tokens Wizard\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-    `### ⭕️ **Border Radius Tokens Wizard** ✨\n\nVersion ${versions.radii}`
+    /## 🔲 \*\*Border Radius Tokens Wizard\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `## 🔲 **Border Radius Tokens Wizard**\n\nVersion ${versions.radii}`
   );
   content = content.replace(
-    /### 🔤 Typography Tokens Wizard ✨\n\nVersion \d+\.\d+\.\d+/,
-    `### 🔤 Typography Tokens Wizard ✨\n\nVersion ${versions.typo}`
+    /## 🔤 \*\*Typography Tokens Wizard\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `## 🔤 **Typography Tokens Wizard**\n\nVersion ${versions.typo}`
   );
   content = content.replace(
-    /### 🧹 \*\*Clear Spell\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-    `### 🧹 **Clear Spell** ✨\n\nVersion ${versions.clear}`
+    /## 🧹 \*\*Clear Tokens Spell\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `## 🧹 **Clear Tokens Spell**\n\nVersion ${versions.clear}`
   );
   content = content.replace(
-    /### 🪄 \*\*Merge Spell\*\* ✨\n\nVersion \d+\.\d+\.\d+/,
-    `### 🪄 **Merge Spell** ✨\n\nVersion ${versions.merge}`
+    /### 🔄 \*\*Merge Tokens Spell\*\*\n\nVersion \d+\.\d+\.\d+/,
+    `### 🔄 **Merge Tokens Spell**\n\nVersion ${versions.merge}`
   );
 
-  // Additional check for any remaining version mentions in the content
+  // Update Spanish version sections
   content = content.replace(
-    /Version \d+\.\d+\.\d+(?!\s*\|)/g,
-    (match) => {
-      const version = match.split(' ')[1];
-      const key = Object.entries(versions).find(([_, v]) => v === version)?.[0];
-      if (key) return match;
-      return `Version ${versions.size}`; // Default to size version if no match found
-    }
+    /## 🎨 \*\*Maguito de Tokens de Color\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 🎨 **Maguito de Tokens de Color**\n\nVersión ${versions.color}`
+  );
+  content = content.replace(
+    /## 📏 \*\*Maguito de Tokens de Tamaño\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 📏 **Maguito de Tokens de Tamaño**\n\nVersión ${versions.size}`
+  );
+  content = content.replace(
+    /## 🔳 \*\*Maguito de Tokens de Espaciado\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 🔳 **Maguito de Tokens de Espaciado**\n\nVersión ${versions.space}`
+  );
+  content = content.replace(
+    /## 🔲 \*\*Maguito de Tokens de Radio de Borde\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 🔲 **Maguito de Tokens de Radio de Borde**\n\nVersión ${versions.radii}`
+  );
+  content = content.replace(
+    /## 🔤 \*\*Maguito de Tokens de Tipografía\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 🔤 **Maguito de Tokens de Tipografía**\n\nVersión ${versions.typo}`
+  );
+  content = content.replace(
+    /## 🧹 \*\*Hechizo de Limpieza de Tokens\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 🧹 **Hechizo de Limpieza de Tokens**\n\nVersión ${versions.clear}`
+  );
+  content = content.replace(
+    /## 🔄 \*\*Hechizo de Fusión de Tokens\*\*\n\nVersión \d+\.\d+\.\d+/,
+    `## 🔄 **Hechizo de Fusión de Tokens**\n\nVersión ${versions.merge}`
+  );
+
+  // Update legends to use correct emojis
+  content = content.replace(
+    /Legend:\s*\n✅ Patch \/\/ 🔥 Minor Change \/\/ 🆙 Major Change/,
+    'Legend:\n✨ Patch // 🌟 Minor Change // ✅ Major Change'
+  );
+  content = content.replace(
+    /Leyenda:\s*\n✨ Parche \/\/ 🌟 Cambio Menor \/\/ ✅ Cambio Mayor/,
+    'Leyenda:\n✨ Parche // 🌟 Cambio Menor // ✅ Cambio Mayor'
   );
 
   return content;

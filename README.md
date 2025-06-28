@@ -40,21 +40,21 @@ A powerful collection of scripts to generate and manage design tokens for your d
 6. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.0   |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 2.8.0   |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 2.8.0   |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 2.8.0   |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 2.8.0   |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.2 ✨ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.2 ✨ |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.1 ✨ |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.1 ✨ |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.1 ✨ |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 2.8.0 ✅ |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 2.8.0    |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.1 ✨ |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.2✨  |
 
-Legend:  
-✅ Patch // 🔥 Minor Change // 🆙 Major Change
+Legend:
+✨ Patch // 🌟 Minor Change // ✅ Major Change
 
 ## 🗂 Project Structure
 
@@ -75,7 +75,7 @@ info/              # Additional project information
 
 ## 🎨 **Color Tokens Wizard**
 
-Version 2.8.0
+Version 2.8.2
 
 Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
 
@@ -156,7 +156,7 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
 
 ## 🔤 **Typography Tokens Wizard**
 
-Version 1.7.0
+Version 1.2.2
 
 Craft a harmonious typographic elixir for your design system with the Typography Tokens Wizard 🧙! This wizard helps you blend font families, sizes, weights, spacing, and heights into a cohesive typography system.
 
@@ -267,7 +267,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
 
 ## 🔳 **Space Tokens Wizard**
 
-Version 1.7.0
+Version 1.7.1
 
 Conjure the perfect spacing system for your design with the Space Tokens Wizard 🧙! This wizard helps you create a harmonious set of spacing tokens that will bring balance and rhythm to your layouts.
 
@@ -334,7 +334,7 @@ Conjure the perfect spacing system for your design with the Space Tokens Wizard 
 
 ## 📏 **Size Tokens Wizard**
 
-Version 1.7.0
+Version 1.7.1
 
 Conjure the perfect sizing system for your design with the Size Tokens Wizard 🧙! This wizard helps you create a harmonious set of size tokens that will bring consistency and precision to your layouts.
 
@@ -401,7 +401,7 @@ Conjure the perfect sizing system for your design with the Size Tokens Wizard �
 
 ## 🔲 **Border Radius Tokens Wizard**
 
-Version 1.7.0
+Version 1.7.1
 
 Conjure the perfect border radius system for your design with the Border Radius Tokens Wizard 🧙! This wizard helps you create a harmonious set of border radius tokens that will bring elegance and consistency to your UI elements.
 
@@ -468,7 +468,7 @@ Conjure the perfect border radius system for your design with the Border Radius 
 
 ## 🧹 **Clear Tokens Spell**
 
-Version 1.7.0
+Version 1.2.2
 
 Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you remove all generated token files, giving you a fresh start for your design system.
 
@@ -514,7 +514,7 @@ Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you rem
 
 ### 🔄 **Merge Tokens Spell**
 
-Version 1.7.0
+Version 1.3.1
 
 Conjure a unified design system by merging your token files with the Merge Tokens Spell 🧙! This spell combines multiple token files into a single, cohesive design system file, ensuring consistent naming conventions across your tokens.
 
