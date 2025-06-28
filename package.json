@@ -1,5 +1,6 @@
 {
   "name": "design-tokens-wizards",
+  "version": "1.5.0",
   "description": "Some little script 🧙🦄🧝‍♀️ fellas that will help you generate your design tokens in just a few steps!",
   "type": "module",
   "scripts": {
@@ -11,6 +12,7 @@
     "merge": "node src/spells/merge_spell.js --version=1.3.1",
     "clear": "node src/spells/clear_spell.js --version=1.2.2",
     "update": "node src/config/update_versions.js",
+    "release": "node src/config/create_release.js",
     "dependencies": "node src/config/generate_dependencies.js",
     "pdf": "mkdir -p info && md-to-pdf README.md README.es.md --config-file=src/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv README.es.pdf info/Instrucciones.pdf"
   },
