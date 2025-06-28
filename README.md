@@ -62,7 +62,6 @@ Legend:
 src/
   wizards/         # All wizard scripts (color, typo, space, size, radii)
   spells/          # Utility scripts (merge, clear)
-  config/          # Config and helper scripts
   assets/          # Images and other static assets
 output_files/      # Where generated tokens are saved
   tokens/
