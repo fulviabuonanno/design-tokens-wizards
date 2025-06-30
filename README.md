@@ -50,7 +50,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version     |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | ----------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.2 ✨ ✨ |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.2 ✨ |
 | **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.2       |
 
 Legend:
