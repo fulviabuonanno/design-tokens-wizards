@@ -1763,31 +1763,94 @@ async function typographyWiz() {
 }
 
 function generateCSSVariables(tokenObj, prefix) {
-  let css = '';
-  for (const [key, value] of Object.entries(tokenObj)) {
-    if (typeof value === 'object' && value !== null) {
-      if ('$value' in value) {
-        css += `--${prefix}${key}: ${value.$value};\n`;
+  let cssLines = [];
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  function process(obj, currentPrefix = "") {
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      const allNumeric = keys.every(k => /^\d+$/.test(k));
+      const allTshirt = keys.every(k => tshirtOrder.includes(k));
+      if (allNumeric) {
+        keys = keys.map(Number).sort((a, b) => a - b).map(String);
+      } else if (allTshirt) {
+        keys = keys.sort((a, b) => tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b));
       } else {
-        css += generateCSSVariables(value, `${prefix}${key}-`);
+        keys = keys.sort((a, b) => a.localeCompare(b));
+      }
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === 'object' && '$value' in obj[key]) {
+          cssLines.push(`  --${currentPrefix}${key}: ${obj[key].$value};`);
+        } else {
+          process(obj[key], `${currentPrefix}${key}-`);
+        }
       }
     }
   }
-  return css;
+  process(tokenObj, prefix);
+  return `:root {\n${cssLines.join('\n')}\n}`;
 }
 
 function generateSCSSVariables(tokenObj, prefix) {
   let scss = '';
-  for (const [key, value] of Object.entries(tokenObj)) {
-    if (typeof value === 'object' && value !== null) {
-      if ('$value' in value) {
-        scss += `$${prefix}${key}: ${value.$value};\n`;
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  function process(obj, currentPrefix = "") {
+    let keys = Object.keys(obj);
+    if (keys.length) {
+      const allNumeric = keys.every(k => /^\d+$/.test(k));
+      const allTshirt = keys.every(k => tshirtOrder.includes(k));
+      if (allNumeric) {
+        keys = keys.map(Number).sort((a, b) => a - b).map(String);
+      } else if (allTshirt) {
+        keys = keys.sort((a, b) => tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b));
       } else {
-        scss += generateSCSSVariables(value, `${prefix}${key}-`);
+        keys = keys.sort((a, b) => a.localeCompare(b));
+      }
+      for (const key of keys) {
+        if (obj[key] && typeof obj[key] === 'object' && '$value' in obj[key]) {
+          scss += `$${currentPrefix}${key}: ${obj[key].$value};\n`;
+        } else {
+          process(obj[key], `${currentPrefix}${key}-`);
+        }
       }
     }
   }
+  process(tokenObj, prefix);
   return scss;
+}
+
+function sortKeysForJSON(obj) {
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  let keys = Object.keys(obj);
+  const allNumeric = keys.every(k => /^\d+$/.test(k));
+  const allTshirt = keys.every(k => tshirtOrder.includes(k));
+  if (allNumeric) {
+    keys = keys.map(Number).sort((a, b) => a - b).map(String);
+  } else if (allTshirt) {
+    keys = keys.sort((a, b) => tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b));
+  } else {
+    keys = keys.sort((a, b) => a.localeCompare(b));
+  }
+  const sortedObj = {};
+  for (const key of keys) {
+    if (obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+      sortedObj[key] = sortKeysForJSON(obj[key]);
+    } else {
+      sortedObj[key] = obj[key];
+    }
+  }
+  return sortedObj;
 }
 
 typographyWiz();

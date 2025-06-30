@@ -69,13 +69,19 @@ function mergeTextFiles(filePaths) {
   
   // For CSS files, combine all :root blocks into one
   if (filePaths[0].toLowerCase().endsWith('.css')) {
-    const allVariables = contents.map(content => {
-      // Extract content between :root { and }
-      const match = content.match(/:root\s*{([^}]*)}/);
-      return match ? match[1].trim() : '';
-    }).filter(Boolean);
-    
-    return `:root {\n${allVariables.join('\n')}\n}`;
+    // Extraer todas las variables de todos los bloques :root
+    const allVariables = contents.flatMap(content => {
+      // Buscar todos los bloques :root { ... }
+      const matches = [...content.matchAll(/:root\s*{([^}]*)}/g)];
+      return matches.map(match => match[1].trim()).filter(Boolean);
+    });
+    // Indentar cada línea de variable con dos espacios
+    const indented = allVariables
+      .join('\n')
+      .split('\n')
+      .map(line => line.trim() ? '  ' + line.trim() : '')
+      .join('\n');
+    return `:root {\n${indented}\n}`;
   }
   
   return contents.join('\n');
@@ -353,9 +359,16 @@ async function mergeOutputs() {
   table.push(...tableRows);
   console.log(table.toString());
 
+  // Incluir todos los archivos CSS relevantes de tokens, revisando toda la ruta relativa
   const cssFiles = outputFiles.filter(file => {
-    const lowerName = path.basename(file).toLowerCase();
-    return lowerName.endsWith('.css') && expectedSuffixes.some(suffix => lowerName.includes(suffix));
+    const lowerPath = path.relative(outputsDir, file).toLowerCase();
+    return file.toLowerCase().endsWith('.css') && (
+      lowerPath.includes('color') ||
+      lowerPath.includes('size') ||
+      lowerPath.includes('space') ||
+      lowerPath.includes('border') ||
+      lowerPath.includes('typography')
+    );
   });
   const scssFiles = outputFiles.filter(file => {
     const lowerName = path.basename(file).toLowerCase();
@@ -417,6 +430,9 @@ async function mergeOutputs() {
   }
   
   let mergedJSONObj = mergeJSONFiles(jsonFiles);
+  
+  // Asegurarse de que la carpeta 'final' exista
+  fs.mkdirSync(finalDir, { recursive: true });
   
   // Write CSS output: transform CSS variables if needed
   if (cssFiles.length > 0) {

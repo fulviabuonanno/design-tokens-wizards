@@ -531,33 +531,68 @@ const convertPxToOtherUnits = (tokens, unit) => {
   return convertedTokens;
 };
 
-const saveTokensToFile = (tokensData, folder, fileName) => {
+const saveTokensToFile = (tokensObject, folder, fileName) => {
   const filePath = path.join(folder, fileName);
-  const fileExists = fs.existsSync(filePath);
-  
-  const sortedTokensData = sortObjectRecursively(tokensData);
-  const outputJSON = customStringify(sortedTokensData, 2);
-  
-  fs.writeFileSync(filePath, outputJSON);
-  return fileExists;
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  const sortKeys = (obj) => {
+    let keys = Object.keys(obj);
+    const allNumeric = keys.every(k => /^\d+$/.test(k));
+    const allTshirt = keys.every(k => tshirtOrder.includes(k));
+    if (allNumeric) {
+      keys = keys.map(Number).sort((a, b) => a - b).map(String);
+    } else if (allTshirt) {
+      keys = keys.sort((a, b) => tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b));
+    } else {
+      keys = keys.sort((a, b) => a.localeCompare(b));
+    }
+    const sortedObj = {};
+    for (const key of keys) {
+      if (obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+        sortedObj[key] = sortKeys(obj[key]);
+      } else {
+        sortedObj[key] = obj[key];
+      }
+    }
+    return sortedObj;
+  };
+  const sortedTokens = sortKeys(tokensObject);
+  fs.writeFileSync(filePath, JSON.stringify(sortedTokens, null, 2));
+  return fs.existsSync(filePath);
 };
 
-const convertTokensToCSS = (tokens) => {
+const convertTokensToCSS = (tokens, prefix = "") => {
   let cssVariables = ":root {\n";
-  const processTokens = (obj, prefix = "") => {
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
+  const processTokens = (obj, currentPrefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
-      keys = keys.sort((a, b) => a.localeCompare(b));
+      const allNumeric = keys.every(k => /^\d+$/.test(k));
+      const allTshirt = keys.every(k => tshirtOrder.includes(k));
+      if (allNumeric) {
+        keys = keys.map(Number).sort((a, b) => a - b).map(String);
+      } else if (allTshirt) {
+        keys = keys.sort((a, b) => tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b));
+      } else {
+        keys = keys.sort((a, b) => a.localeCompare(b));
+      }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
-          cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
+          cssVariables += `  --${currentPrefix}${key}: ${obj[key].$value};\n`;
         } else {
-          processTokens(obj[key], `${prefix}${key}-`);
+          processTokens(obj[key], `${currentPrefix}${key}-`);
         }
       }
     }
   };
-  processTokens(tokens);
+  processTokens(tokens, prefix);
   cssVariables += "}";
   return cssVariables;
 };
@@ -565,17 +600,30 @@ const convertTokensToCSS = (tokens) => {
 const saveCSSTokensToFile = (tokens, name, folder, fileName) => {
   const filePath = path.join(folder, fileName);
   const fileExists = fs.existsSync(filePath);
-  const cssContent = convertTokensToCSS(tokens);
+  const cssContent = convertTokensToCSS(tokens, name ? name + '-' : '');
   fs.writeFileSync(filePath, cssContent);
   return fileExists;
 };
 
 const convertTokensToSCSS = (tokens) => {
   let scssVariables = "";
+  const tshirtOrder = [
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
+    "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
+  ];
   const processTokens = (obj, prefix = "") => {
     let keys = Object.keys(obj);
     if (keys.length) {
-      keys = keys.sort((a, b) => a.localeCompare(b));
+      const allNumeric = keys.every(k => /^\d+$/.test(k));
+      const allTshirt = keys.every(k => tshirtOrder.includes(k));
+      if (allNumeric) {
+        keys = keys.map(Number).sort((a, b) => a - b).map(String);
+      } else if (allTshirt) {
+        keys = keys.sort((a, b) => tshirtOrder.indexOf(a) - tshirtOrder.indexOf(b));
+      } else {
+        keys = keys.sort((a, b) => a.localeCompare(b));
+      }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
           scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;

@@ -45,16 +45,16 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Genera y gestiona tokens de color         | 2.8.2 ✨ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Genera y gestiona tokens de tipografía    | 1.2.2 ✨ |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Genera y gestiona tokens de espaciado       | 1.7.1 ✨ |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Genera y gestiona tokens de tamaño          | 1.7.1 ✨ |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Genera y gestiona tokens de radio | 1.7.1 ✨ |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.8.2    |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.2 ✨ |
+| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2 ✨ |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2 ✨ |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2 ✨ |
 
-| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión  |
-| --------------- | ----------------- | --------------- | ------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combina todos los archivos de tokens en uno solo     | 1.3.1✨  |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Elimina todos los archivos generados de una vez | 1.2.2 ✨ |
+| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión    |
+| --------------- | ----------------- | --------------- | ------------------------------------------------ | ---------- |
+| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.2 ✨✨ |
+| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2      |
 
 Leyenda:
 ✨ Parche // 🌟 Cambio Menor // ✅ Cambio Mayor
@@ -269,7 +269,7 @@ Versión 1.2.2
 
 ## 🔳 **Maguito de Tokens de Espaciado**
 
-Versión 1.7.1
+Versión 1.7.2
 
 ¡Conjura el sistema de espaciado perfecto para tu diseño con el Maguito de Tokens de Espaciado 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de espaciado que traerán equilibrio y ritmo a tus diseños.
 
@@ -336,7 +336,7 @@ Versión 1.7.1
 
 ## 📏 **Maguito de Tokens de Tamaño**
 
-Versión 1.7.1
+Versión 1.7.2
 
 ¡Conjura el sistema de tamaños perfecto para tu diseño con el Maguito de Tokens de Tamaño 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de tamaño que traerán consistencia y precisión a tus diseños.
 
@@ -403,7 +403,7 @@ Versión 1.7.1
 
 ## 🔲 **Maguito de Tokens de Radio de Borde**
 
-Versión 1.7.1
+Versión 1.7.2
 
 ¡Conjura el sistema de radio de borde perfecto para tu diseño con el Maguito de Tokens de Radio de Borde 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de radio de borde que traerán elegancia y consistencia a tus elementos de UI.
 
@@ -516,7 +516,7 @@ Versión 1.2.2
 
 ## 🔄 **Hechizo de Fusión de Tokens**
 
-Versión 1.3.1
+Versión 1.3.2
 
 ¡Conjura un sistema de diseño unificado fusionando tus archivos de tokens con el Hechizo de Fusión de Tokens 🧙! Este hechizo combina múltiples archivos de tokens en un único archivo cohesivo del sistema de diseño.
 
