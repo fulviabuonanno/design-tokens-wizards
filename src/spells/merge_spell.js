@@ -359,16 +359,24 @@ async function mergeOutputs() {
   table.push(...tableRows);
   console.log(table.toString());
 
-  // Incluir todos los archivos CSS relevantes de tokens, revisando toda la ruta relativa
+  // Filter CSS files based on user selections and expected suffixes
   const cssFiles = outputFiles.filter(file => {
+    const lowerName = path.basename(file).toLowerCase();
     const lowerPath = path.relative(outputsDir, file).toLowerCase();
-    return file.toLowerCase().endsWith('.css') && (
-      lowerPath.includes('color') ||
-      lowerPath.includes('size') ||
-      lowerPath.includes('space') ||
-      lowerPath.includes('border') ||
-      lowerPath.includes('typography')
-    );
+    
+    if (!file.toLowerCase().endsWith('.css')) {
+      return false;
+    }
+    
+    // Check if the file matches any of the expected suffixes
+    return expectedSuffixes.some(suffix => {
+      // For typography, check if it's a typography file
+      if (suffix === 'typography') {
+        return lowerPath.includes('typography') || lowerName.includes('typography');
+      }
+      // For other token types, check if the filename contains the suffix
+      return lowerName.includes(suffix);
+    });
   });
   const scssFiles = outputFiles.filter(file => {
     const lowerName = path.basename(file).toLowerCase();
