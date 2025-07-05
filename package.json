@@ -1,7 +1,7 @@
 {
   "name": "design-tokens-wizards",
   "version": "1.5.0",
-  "description": "🧙✨ A magical collection of interactive CLI wizards and spells to generate, manage, and merge design tokens for your design system. Create consistent color palettes, typography scales, spacing systems, and more with an enchanting RPG-inspired experience!",
+  "description": "🧙✨ A magical collection of interactive CLI wizards and spells to generate, manage, and merge design tokens for your design system. Create consistent color palettes, typography scales, spacing tokens, and more with an enchanting RPG-inspired experience!",
   "type": "module",
   "scripts": {
     "color": "node src/wizards/color_wiz.js --version=2.8.2",

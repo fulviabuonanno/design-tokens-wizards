@@ -5,6 +5,23 @@
 
 A powerful collection of scripts to generate and manage design tokens for your design system. Each wizard specializes in creating specific types of tokens, ensuring consistency and efficiency across your projects.
 
+## 📋 Table of Contents
+
+- [🧙 Getting Started](#-getting-started)
+- [🗂 Project Structure](#-project-structure)
+- [🎨 Color Tokens Wizard](#-color-tokens-wizard)
+- [🔤 Typography Tokens Wizard](#-typography-tokens-wizard)
+- [🔳 Space Tokens Wizard](#-space-tokens-wizard)
+- [📏 Size Tokens Wizard](#-size-tokens-wizard)
+- [🔲 Border Radius Tokens Wizard](#-border-radius-tokens-wizard)
+- [🧹 Clear Tokens Spell](#-clear-tokens-spell)
+- [🔄 Merge Tokens Spell](#-merge-tokens-spell)
+- [📦 Dependencies](#-dependencies)
+- [📝 License](#-license)
+- [❓ Troubleshooting and FAQ](#-troubleshooting-and-faq)
+- [📬 Contact and Support](#-contact-and-support)
+- [🤝 Contributing](#-contributing)
+
 ## 🧙 Getting Started
 
 1. **Install Node.js**  

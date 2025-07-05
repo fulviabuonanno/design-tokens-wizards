@@ -5,6 +5,23 @@
 
 Una potente colección de scripts para generar y gestionar tokens de diseño para tu sistema de diseño. Cada maguito se especializa en crear tipos específicos de tokens, garantizando consistencia y eficiencia en tus proyectos.
 
+## 📋 Tabla de Contenidos
+
+- [🧙 Primeros Pasos](#-primeros-pasos)
+- [🗂 Estructura del Proyecto](#-estructura-del-proyecto)
+- [🎨 Maguito de Tokens de Color](#-maguito-de-tokens-de-color)
+- [🔤 Maguito de Tokens de Tipografía](#-maguito-de-tokens-de-tipografía)
+- [🔳 Maguito de Tokens de Espaciado](#-maguito-de-tokens-de-espaciado)
+- [📏 Maguito de Tokens de Tamaño](#-maguito-de-tokens-de-tamaño)
+- [🔲 Maguito de Tokens de Radio de Borde](#-maguito-de-tokens-de-radio-de-borde)
+- [🧹 Hechizo de Limpieza de Tokens](#-hechizo-de-limpieza-de-tokens)
+- [🔄 Hechizo de Fusión de Tokens](#-hechizo-de-fusión-de-tokens)
+- [📦 Dependencias](#-dependencias)
+- [📝 Licencia](#-licencia)
+- [❓ Solución de Problemas y Preguntas Frecuentes](#-solución-de-problemas-y-preguntas-frecuentes)
+- [📬 Contacto y Soporte](#-contacto-y-soporte)
+- [🤝 Contribución](#-contribución)
+
 ## 🧙 Primeros Pasos
 
 1. **Instala Node.js**  
