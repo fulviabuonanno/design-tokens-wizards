@@ -74,7 +74,7 @@ info/              # Additional project information
 
 ## 🎨 **Color Tokens Wizard**
 
-<img src="src/assets/color_wiz.png" alt="Color Wizard" width="120">
+<img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
 Version 2.8.2
 
@@ -157,7 +157,7 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
 
 ## 🔤 **Typography Tokens Wizard**
 
-<img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="120">
+<img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="200">
 
 Version 1.2.3
 
@@ -270,7 +270,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
 
 ## 🔳 **Space Tokens Wizard**
 
-<img src="src/assets/space_wiz.png" alt="Space Wizard" width="120">
+<img src="src/assets/space_wiz.png" alt="Space Wizard" width="200">
 
 Version 1.7.2
 
@@ -339,7 +339,7 @@ Conjure the perfect spacing system for your design with the Space Tokens Wizard 
 
 ## 📏 **Size Tokens Wizard**
 
-<img src="src/assets/size_wiz.png" alt="Size Wizard" width="120">
+<img src="src/assets/size_wiz.png" alt="Size Wizard" width="200">
 
 Version 1.7.2
 
@@ -408,7 +408,7 @@ Conjure the perfect sizing system for your design with the Size Tokens Wizard �
 
 ## 🔲 **Border Radius Tokens Wizard**
 
-<img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="120">
+<img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="200">
 
 Version 1.7.2
 
@@ -477,7 +477,7 @@ Conjure the perfect border radius system for your design with the Border Radius 
 
 ## 🧹 **Clear Tokens Spell**
 
-<img src="src/assets/clear_spell.png" alt="Clear Spell" width="120">
+<img src="src/assets/clear_spell.png" alt="Clear Spell" width="200">
 
 Version 1.2.2
 
@@ -525,7 +525,7 @@ Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you rem
 
 ### 🔄 **Merge Tokens Spell**
 
-<img src="src/assets/merge_spell.png" alt="Merge Spell" width="120">
+<img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
 Version 1.3.2
 

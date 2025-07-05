@@ -78,7 +78,7 @@ info/              # Información adicional del proyecto
 
 ## 🎨 **Maguito de Tokens de Color**
 
-<img src="src/assets/color_wiz.png" alt="Color Wizard" width="120">
+<img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
 Versión 2.8.2
 
@@ -161,7 +161,7 @@ Versión 2.8.2
 
 ## 🔤 **Maguito de Tokens de Tipografía**
 
-<img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="120">
+<img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="200">
 
 Versión 1.2.3
 
@@ -273,7 +273,7 @@ Versión 1.2.3
 
 ## 🔳 **Maguito de Tokens de Espaciado**
 
-<img src="src/assets/space_wiz.png" alt="Space Wizard" width="120">
+<img src="src/assets/space_wiz.png" alt="Space Wizard" width="200">
 
 Versión 1.7.2
 
@@ -342,7 +342,7 @@ Versión 1.7.2
 
 ## 📏 **Maguito de Tokens de Tamaño**
 
-<img src="src/assets/size_wiz.png" alt="Size Wizard" width="120">
+<img src="src/assets/size_wiz.png" alt="Size Wizard" width="200">
 
 Versión 1.7.2
 
@@ -411,7 +411,7 @@ Versión 1.7.2
 
 ## 🔲 **Maguito de Tokens de Radio de Borde**
 
-<img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="120">
+<img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="200">
 
 Versión 1.7.2
 
@@ -480,7 +480,7 @@ Versión 1.7.2
 
 ## 🧹 **Hechizo de Limpieza de Tokens**
 
-<img src="src/assets/clear_spell.png" alt="Clear Spell" width="120">
+<img src="src/assets/clear_spell.png" alt="Clear Spell" width="200">
 
 Versión 1.2.2
 
@@ -528,7 +528,7 @@ Versión 1.2.2
 
 ## 🔄 **Hechizo de Fusión de Tokens**
 
-<img src="src/assets/merge_spell.png" alt="Merge Spell" width="120">
+<img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
 Versión 1.3.2
 
