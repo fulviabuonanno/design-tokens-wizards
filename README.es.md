@@ -5,6 +5,23 @@
 
 Una potente colección de scripts para generar y gestionar tokens de diseño para tu sistema de diseño. Cada maguito se especializa en crear tipos específicos de tokens, garantizando consistencia y eficiencia en tus proyectos.
 
+## 📋 Tabla de Contenidos
+
+- [🧙 Primeros Pasos](#-primeros-pasos)
+- [🗂 Estructura del Proyecto](#-estructura-del-proyecto)
+- [🎨 Maguito de Tokens de Color](#-maguito-de-tokens-de-color)
+- [🔤 Maguito de Tokens de Tipografía](#-maguito-de-tokens-de-tipografía)
+- [🔳 Maguito de Tokens de Espaciado](#-maguito-de-tokens-de-espaciado)
+- [📏 Maguito de Tokens de Tamaño](#-maguito-de-tokens-de-tamaño)
+- [🔲 Maguito de Tokens de Radio de Borde](#-maguito-de-tokens-de-radio-de-borde)
+- [🧹 Hechizo de Limpieza de Tokens](#-hechizo-de-limpieza-de-tokens)
+- [🔄 Hechizo de Fusión de Tokens](#-hechizo-de-fusión-de-tokens)
+- [📦 Dependencias](#-dependencias)
+- [📝 Licencia](#-licencia)
+- [❓ Solución de Problemas y Preguntas Frecuentes](#-solución-de-problemas-y-preguntas-frecuentes)
+- [📬 Contacto y Soporte](#-contacto-y-soporte)
+- [🤝 Contribución](#-contribución)
+
 ## 🧙 Primeros Pasos
 
 1. **Instala Node.js**  
@@ -45,16 +62,16 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.8.2    |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.8.2 ✨ |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3 ✨ |
 | 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2 ✨ |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2 ✨ |
 | 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2 ✨ |
 
-| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión    |
-| --------------- | ----------------- | --------------- | ------------------------------------------------ | ---------- |
-| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.2 ✨✨ |
-| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2      |
+| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión  |
+| --------------- | ----------------- | --------------- | ------------------------------------------------ | -------- |
+| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.2 ✨ |
+| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2    |
 
 Leyenda:
 ✨ Parche // 🌟 Cambio Menor // ✅ Cambio Mayor
@@ -77,6 +94,8 @@ info/              # Información adicional del proyecto
 ```
 
 ## 🎨 **Maguito de Tokens de Color**
+
+<img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
 Versión 2.8.2
 
@@ -159,7 +178,9 @@ Versión 2.8.2
 
 ## 🔤 **Maguito de Tokens de Tipografía**
 
-Versión 1.2.2
+<img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="200">
+
+Versión 1.2.3
 
 ¡Crea una poción tipográfica armoniosa para tu sistema de diseño con el Maguito de Tokens de Tipografía 🧙! Este maguito te ayuda a combinar familias de fuentes, tamaños, pesos, espaciados y alturas en un sistema tipográfico cohesivo.
 
@@ -269,6 +290,8 @@ Versión 1.2.2
 
 ## 🔳 **Maguito de Tokens de Espaciado**
 
+<img src="src/assets/space_wiz.png" alt="Space Wizard" width="200">
+
 Versión 1.7.2
 
 ¡Conjura el sistema de espaciado perfecto para tu diseño con el Maguito de Tokens de Espaciado 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de espaciado que traerán equilibrio y ritmo a tus diseños.
@@ -335,6 +358,8 @@ Versión 1.7.2
 ---
 
 ## 📏 **Maguito de Tokens de Tamaño**
+
+<img src="src/assets/size_wiz.png" alt="Size Wizard" width="200">
 
 Versión 1.7.2
 
@@ -403,6 +428,8 @@ Versión 1.7.2
 
 ## 🔲 **Maguito de Tokens de Radio de Borde**
 
+<img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="200">
+
 Versión 1.7.2
 
 ¡Conjura el sistema de radio de borde perfecto para tu diseño con el Maguito de Tokens de Radio de Borde 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de radio de borde que traerán elegancia y consistencia a tus elementos de UI.
@@ -470,6 +497,8 @@ Versión 1.7.2
 
 ## 🧹 **Hechizo de Limpieza de Tokens**
 
+<img src="src/assets/clear_spell.png" alt="Clear Spell" width="200">
+
 Versión 1.2.2
 
 ¡Conjura una pizarra limpia con el Hechizo de Limpieza de Tokens 🧙! Este hechizo te ayuda a eliminar todos los archivos de tokens generados, dándote un nuevo comienzo para tu sistema de diseño.
@@ -515,6 +544,8 @@ Versión 1.2.2
 ---
 
 ## 🔄 **Hechizo de Fusión de Tokens**
+
+<img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
 Versión 1.3.2
 

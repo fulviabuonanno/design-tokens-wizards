@@ -1,10 +1,10 @@
 {
   "name": "design-tokens-wizards",
-  "version": "1.5.0",
-  "description": "Some little script 🧙🦄🧝‍♀️ fellas that will help you generate your design tokens in just a few steps!",
+  "version": "1.5.1",
+  "description": "🧙✨ A magical collection of interactive CLI wizards and spells to generate, manage, and merge design tokens for your design system. Create consistent color palettes, typography scales, spacing tokens, and more with an enchanting RPG-inspired experience!",
   "type": "module",
   "scripts": {
-    "color": "node src/wizards/color_wiz.js --version=2.8.1", 
+    "color": "node src/wizards/color_wiz.js --version=2.8.2",
     "typo": "node src/wizards/typo_wiz.js --version=1.2.3",
     "space": "node src/wizards/space_wiz.js --version=1.7.2",
     "size": "node src/wizards/size_wiz.js --version=1.7.2",
@@ -33,6 +33,7 @@
     "chalk": "^5.4.1",
     "cli-table3": "^0.6.5",
     "debug": "^4.3.4",
+    "ffmpeg": "^0.0.4",
     "inquirer": "^12.4.2",
     "path": "^0.12.7",
     "puppeteer": "^24.7.0",
