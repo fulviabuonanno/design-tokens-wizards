@@ -59,6 +59,11 @@ const printStopsTable = (stops, mode = "semantic stops", padded = false) => {
         if (key !== "base") {
           entries[idx][0] = key.padStart(2, "0");
         }
+        // Remember this choice in scale settings so subsequent colors maintain consistency
+        if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
+          newScaleSettings.middleAsBaseEnabled = true;
+          newScaleSettings.middleAsBaseKey = chosenMiddleTone;
+        }
       });
     }
     
@@ -125,6 +130,7 @@ const displayExistingColors = (tokensData) => {
         }
       }
     }
+    
   };
   
   processTokens(tokensData);
@@ -376,7 +382,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
     }
   ]);
-  const hex = hexResponse.hex.toUpperCase();
+  let hex = hexResponse.hex.toUpperCase();
   
   const baseColorPreview = chalk.bgHex(hex).white("  Sample  ");
   console.log(`\n${chalk.bold("Selected color:")}`);
@@ -555,6 +561,11 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         minMix: minMix,
         maxMix: maxMix
       };
+      // Persist prior middle-as-base mapping if applicable and the new scale is numeric
+      if ((scaleType === "incremental" || scaleType === "ordinal") && scaleSettings && scaleSettings.middleAsBaseEnabled) {
+        newScaleSettings.middleAsBaseEnabled = true;
+        newScaleSettings.middleAsBaseKey = scaleSettings.middleAsBaseKey;
+      }
       stops = scaleType === "incremental"
         ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount, incrementalChoice.startValue)
         : (scaleType === "semanticStops"
@@ -601,19 +612,29 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
     }
 
     console.log(printStopsTable(stops, mode, padded));
+    // If prior session configured middle-as-base for numeric scales, apply it automatically for consistency
+    if ((newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") && newScaleSettings.middleAsBaseEnabled && newScaleSettings.middleAsBaseKey && stops[newScaleSettings.middleAsBaseKey]) {
+      stops[newScaleSettings.middleAsBaseKey] = tinycolor(hex).toHexString().toUpperCase();
+      if (stops.hasOwnProperty("base")) delete stops["base"];
+      console.log(chalk.gray("\nApplied preferred base mapping to middle key for consistency:"));
+      console.log(printStopsTable(stops, mode, padded));
+    }
     
     // Find the middle key(s) depending on the scale type
     let stopKeys = Object.keys(stops).filter(k => k !== "base");
     let middleKeys = [];
     if (stopKeys.length > 0) {
       if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
-        let numericKeys = stopKeys.map(Number).sort((a, b) => a - b);
-        if (numericKeys.length % 2 === 1) {
-          middleKeys = [String(numericKeys[Math.floor(numericKeys.length / 2)])];
+        // Preserve original keys (e.g., "01") while sorting by their numeric value
+        const keyed = stopKeys
+          .map((k) => ({ key: k, num: Number(k) }))
+          .sort((a, b) => a.num - b.num);
+        if (keyed.length % 2 === 1) {
+          middleKeys = [keyed[Math.floor(keyed.length / 2)].key];
         } else {
           middleKeys = [
-            String(numericKeys[numericKeys.length / 2 - 1]),
-            String(numericKeys[numericKeys.length / 2])
+            keyed[keyed.length / 2 - 1].key,
+            keyed[keyed.length / 2].key
           ];
         }
       } else if (newScaleSettings.type === "alphabetical") {
@@ -665,8 +686,19 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           ]);
           chosenMiddleTone = selectedMiddleTone;
         }
-        // Replace the value of base with the chosen middle tone
-        stops["base"] = stops[chosenMiddleTone];
+        // Map the current base hex to the selected middle numeric key (e.g., 500 or 600)
+        if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
+          if (stops.hasOwnProperty(chosenMiddleTone)) {
+            stops[chosenMiddleTone] = tinycolor(hex).toHexString().toUpperCase();
+            // Remove standalone 'base' so that the middle key effectively becomes the base slot
+            if (stops.hasOwnProperty("base")) {
+              delete stops["base"]; 
+            }
+          }
+        }
+        // Show updated preview table
+        console.log(chalk.gray("\nUpdated scale after setting base to a middle tone:"));
+        console.log(printStopsTable(stops, mode, padded));
       }
     }
     

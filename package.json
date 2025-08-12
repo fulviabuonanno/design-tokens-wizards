@@ -1,6 +1,6 @@
 {
   "name": "design-tokens-wizards",
-  "version": "1.5.1",
+  "version": "1.0.0",
   "description": "🧙✨ A magical collection of interactive CLI wizards and spells to generate, manage, and merge design tokens for your design system. Create consistent color palettes, typography scales, spacing tokens, and more with an enchanting RPG-inspired experience!",
   "type": "module",
   "scripts": {
@@ -13,7 +13,6 @@
     "clear": "node src/spells/clear_spell.js --version=1.2.2",
     "update": "node .github/config/update_versions.js",
     "release": "node .github/config/create_release.js",
-    "dependencies": "node .github/config/generate_dependencies.js",
     "pdf": "mkdir -p info && md-to-pdf README.md README.es.md --config-file=.github/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv README.es.pdf info/Instrucciones.pdf"
   },
   "scriptVersions": {
@@ -25,7 +24,7 @@
     "merge": "1.3.2",
     "clear": "1.2.2",
     "update": "1.0.0",
-    "dependencies": "1.0.0"
+    "release": "1.0.0"
   },
   "author": "Fulvia Buonanno",
   "license": "MIT",
