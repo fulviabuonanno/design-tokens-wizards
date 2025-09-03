@@ -143,10 +143,15 @@ Versión 2.8.2
 
 10. **Vista Previa y Confirma**  
     Revisa tu escala de color en una tabla, completa con nombres de tokens y valores HEX.
-    Puedes establecer el tono medio como `base` si lo deseas. Confirma para continuar o reinicia para ajustar.
+
+    - Para escalas numéricas (Incremental/Ordinal), puedes mapear el HEX base actual a una clave numérica media (por ejemplo, `500` o `600`). La clave `base` se elimina y la clave numérica elegida pasa a ser el stop medio canónico para ese color.
+    - Esta preferencia (p. ej., mapear a `500`) se recuerda y se aplica automáticamente a los colores que agregues en la misma sesión, para asegurar consistencia.
+    - Para escalas no numéricas (Alfabética/Semántica), la vista previa se muestra tal cual.
 
 11. **Expande tu Paleta**  
     Añade más colores y repite el proceso tantas veces como quieras.
+
+    - Si mapeaste el base a una clave numérica en un color anterior (p. ej., `500`), el maguito aplicará automáticamente el mismo mapeo al nuevo color para mantener una estructura consistente.
 
 12. **Exporta y Convierte**  
     Cuando termines, el maguito:

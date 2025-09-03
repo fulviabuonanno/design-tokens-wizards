@@ -139,10 +139,15 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard ð
 
 10. **Preview and Confirm**  
     Review your color scale in a table, complete with token names and HEX values.
-    You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
+
+    - For numeric scales (Incremental/Ordinal), you can map the current base HEX to a middle numeric key (e.g., `500` or `600`). The standalone `base` key is removed and the chosen numeric key becomes the canonical middle stop for that color.
+    - This preference (e.g., mapping to `500`) is remembered and auto-applied to subsequent colors you add in the same session to ensure consistency.
+    - For non-numeric scales (Alphabetical/Semantic), the preview is shown as-is.
 
 11. **Expand Your Palette**  
     Add more colors and repeat the process as many times as you like.
+
+    - If you mapped the base to a numeric key in a previous color (e.g., `500`), the wizard will automatically apply the same mapping to the new color for consistent token structure.
 
 12. **Export and Convert**  
     When you're done, the wizard:

@@ -59,11 +59,6 @@ const printStopsTable = (stops, mode = "semantic stops", padded = false) => {
         if (key !== "base") {
           entries[idx][0] = key.padStart(2, "0");
         }
-        // Remember this choice in scale settings so subsequent colors maintain consistency
-        if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
-          newScaleSettings.middleAsBaseEnabled = true;
-          newScaleSettings.middleAsBaseKey = chosenMiddleTone;
-        }
       });
     }
     
@@ -613,11 +608,31 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 
     console.log(printStopsTable(stops, mode, padded));
     // If prior session configured middle-as-base for numeric scales, apply it automatically for consistency
-    if ((newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") && newScaleSettings.middleAsBaseEnabled && newScaleSettings.middleAsBaseKey && stops[newScaleSettings.middleAsBaseKey]) {
-      stops[newScaleSettings.middleAsBaseKey] = tinycolor(hex).toHexString().toUpperCase();
-      if (stops.hasOwnProperty("base")) delete stops["base"];
-      console.log(chalk.gray("\nApplied preferred base mapping to middle key for consistency:"));
-      console.log(printStopsTable(stops, mode, padded));
+    if ((newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") && newScaleSettings.middleAsBaseEnabled && newScaleSettings.middleAsBaseKey) {
+      let targetKey = newScaleSettings.middleAsBaseKey;
+      if (!stops.hasOwnProperty(targetKey)) {
+        // Try to resolve by numeric equivalence (handles padded/unpadded differences)
+        const desiredNum = Number(String(newScaleSettings.middleAsBaseKey).replace(/\D/g, ""));
+        const numericKeyed = Object.keys(stops)
+          .filter(k => k !== "base" && /^\d+$/.test(k))
+          .map(k => ({ key: k, num: Number(k) }));
+        const exact = numericKeyed.find(o => o.num === desiredNum);
+        if (exact) {
+          targetKey = exact.key;
+        } else if (numericKeyed.length > 0) {
+          // Fallback: use the median numeric key if the exact number is not present
+          const sorted = numericKeyed.sort((a, b) => a.num - b.num);
+          targetKey = sorted[Math.floor(sorted.length / 2)].key;
+        }
+      }
+      if (targetKey && stops.hasOwnProperty(targetKey)) {
+        stops[targetKey] = tinycolor(hex).toHexString().toUpperCase();
+        if (stops.hasOwnProperty("base")) delete stops["base"];
+        // Update setting to resolved key for future iterations
+        newScaleSettings.middleAsBaseKey = targetKey;
+        console.log(chalk.gray("\nApplied preferred base mapping to middle key for consistency:"));
+        console.log(printStopsTable(stops, mode, padded));
+      }
     }
     
     // Find the middle key(s) depending on the scale type
@@ -695,6 +710,11 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
               delete stops["base"]; 
             }
           }
+        }
+        // Persist this preference so subsequent colors auto-apply the same mapping
+        if (newScaleSettings.type === "incremental" || newScaleSettings.type === "ordinal") {
+          newScaleSettings.middleAsBaseEnabled = true;
+          newScaleSettings.middleAsBaseKey = chosenMiddleTone;
         }
         // Show updated preview table
         console.log(chalk.gray("\nUpdated scale after setting base to a middle tone:"));
