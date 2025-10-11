@@ -1,7 +1,7 @@
 ![Banner de Design Tokens Wizards](src/assets/banner.png)
 
 ![Licencia: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Node.js](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)
+![Node.js](https://img.shields.io/badge/node-%3E=20.11.0-brightgreen)
 
 Una potente colección de scripts para generar y gestionar tokens de diseño para tu sistema de diseño. Cada maguito se especializa en crear tipos específicos de tokens, garantizando consistencia y eficiencia en tus proyectos.
 
@@ -60,18 +60,18 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 6. **Ejecuta los Scripts**  
    Elige entre los siguientes maguitos:
 
-| Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
-| ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.8.2 ✨ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3 ✨ |
-| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2 ✨ |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2 ✨ |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2 ✨ |
+| Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión |
+| ------------------------ | ----------------- | --------------- | -------------------------------------- | ------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.8.2   |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3   |
+| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2   |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2   |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2   |
 
-| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión  |
-| --------------- | ----------------- | --------------- | ------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.2 ✨ |
-| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2    |
+| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión |
+| --------------- | ----------------- | --------------- | ------------------------------------------------ | ------- |
+| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.2   |
+| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2   |
 
 Leyenda:
 ✨ Parche // 🌟 Cambio Menor // ✅ Cambio Mayor
