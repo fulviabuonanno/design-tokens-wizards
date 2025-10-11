@@ -1,1 +1,12 @@
-{ }
+{
+  "stylesheet": "src/config/pdf-styles.css",
+  "pdf_options": {
+    "format": "A4",
+    "margin": "15mm 15mm",
+    "printBackground": true
+  },
+  "marked_options": {
+    "headerIds": true,
+    "smartypants": true
+  }
+} 
