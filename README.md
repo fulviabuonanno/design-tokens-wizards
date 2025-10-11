@@ -59,7 +59,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.8.2 ✨ |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.9.0 ✨ |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.3    |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.2    |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.2    |
@@ -67,7 +67,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.2 ✨ |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.3 ✨ |
 | **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.2    |
 
 Legend:
@@ -148,7 +148,7 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
     When you're done, the wizard:
 
     - Exports tokens in Tokens Studio JSON format (HEX by default)
-    - Offers to convert tokens to RGB, RGBA, and/or HSL
+    - Offers to convert tokens to RGB, RGBA, HSL, and/or OKLCH
     - Generates CSS and SCSS files for each format
     - Cleans up unused files
 
@@ -544,7 +544,7 @@ Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you rem
 
 <img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
-Version 1.3.2
+Version 1.3.3
 
 Conjure a unified design system by merging your token files with the Merge Tokens Spell 🧙! This spell combines multiple token files into a single, cohesive design system file, ensuring consistent naming conventions across your tokens.
 
@@ -567,7 +567,7 @@ Conjure a unified design system by merging your token files with the Merge Token
 3. **Configure Token Formats**  
    The spell will automatically review which files are available in your `output/tokens` folder. For each token type found, select your preferred format:
 
-   - Colors: Choose between HEX, RGB, RGBA, or HSL
+   - Colors: Choose between HEX, RGB, RGBA, HSL or OKLCH
    - Typography: Select units (px, rem, em)
    - Space: Choose units (px, rem, em)
    - Size: Select units (px, rem, em)
@@ -618,14 +618,15 @@ Created with love by Fulvia Buonanno, a Design Systems Designer based in Barcelo
 
 Below is a comprehensive list of all dependencies used in this project:
 
-| Dependency     | Version | Description                                                     | Repository                                                        |
-| -------------- | ------- | --------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **chalk**      | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                     |
-| **cli-table3** | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)             |
-| **inquirer**   | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js) |
-| **path**       | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                     |
-| **tinycolor2** | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)           |
-| **puppeteer**  | ^20.0.0 | Headless Chrome Node.js API for automating web interactions     | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)     |
+| Dependency                               | Version | Description                                                     | Repository                                                                                                           |
+| ---------------------------------------- | ------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **chalk**                                | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
+| **cli-table3**                           | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
+| **inquirer**                             | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
+| **path**                                 | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                                                                        |
+| **tinycolor2**                           | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
+| **puppeteer**                            | ^20.0.0 | Headless Chrome Node.js API for automating web interactions     | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)                                                        |
+| **@builtwithjavascript/oklch-converter** | ^0.9.2  | OKLCH color space converter                                     | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
 
 ---
 
@@ -681,7 +682,7 @@ A: Check out our [Contributing](#-contributing) section for guidelines. We welco
 A: Yes! This project is licensed under MIT, which means you can use it freely in any project, including commercial ones.
 
 **Q: What color formats are supported?**  
-A: The Color Tokens Wizard supports HEX, RGB, RGBA, and HSL formats. You can choose your preferred format during the generation process.
+A: The Color Tokens Wizard supports HEX, RGB, RGBA, HSL, and OKLCH formats. You can choose your preferred format during the generation process.
 
 **Q: Can I use custom fonts in the Typography Wizard?**  
 A: Yes! You can specify any font family, including custom fonts. Just make sure to include proper fallbacks for better cross-platform compatibility.
@@ -703,12 +704,6 @@ A: Yes! The tokens are exported in standard formats (CSS, SCSS) that can be used
 
 **Q: Something else isn't working!**  
 A: Please [open an issue](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or contact [me](mailto:designtokenswizards@gmail.com).
-
----
-
-## 📬 Contact and Support
-
-For questions, suggestions, or bug reports, please open an issue or [contact me](mailto:designtokenswizards@gmail.com).
 
 ---
 

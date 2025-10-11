@@ -62,7 +62,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.8.2 ✨ |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.9.0 ✨ |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3 ✨ |
 | 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2 ✨ |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2 ✨ |
@@ -70,7 +70,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión  |
 | --------------- | ----------------- | --------------- | ------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.2 ✨ |
+| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.3 ✨ |
 | **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2    |
 
 Leyenda:
@@ -570,7 +570,7 @@ Versión 1.3.2
 3. **Configura los Formatos de Tokens**  
    El hechizo revisará automáticamente qué archivos están disponibles en tu carpeta `output/tokens`. Para cada tipo de token encontrado, selecciona tu formato preferido:
 
-   - Colores: Elige entre HEX, RGB, RGBA, o HSL
+   - Colores: Elige entre HEX, RGB, RGBA, HSL o OKLCH
    - Tipografía: Selecciona unidades (px, rem, em)
    - Espaciado: Elige unidades (px, rem, em)
    - Tamaño: Selecciona unidades (px, rem, em)
@@ -619,14 +619,15 @@ Creado con amor por Fulvia Buonanno, una Diseñadora de Sistemas de Diseño basa
 
 A continuación se muestra una lista completa de todas las dependencias utilizadas en este proyecto:
 
-| Dependencia    | Versión | Descripción                                                              | Repositorio                                                       |
-| -------------- | ------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| **chalk**      | ^5.4.1  | Estilizado de cadenas de terminal hecho bien                             | [chalk/chalk](https://github.com/chalk/chalk)                     |
-| **cli-table3** | ^0.6.5  | Tablas unicode bonitas para la línea de comandos                         | [cli-table3](https://github.com/cli-table/cli-table3)             |
-| **inquirer**   | ^12.4.2 | Una colección de interfaces de usuario comunes de línea de comandos      | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js) |
-| **path**       | ^0.12.7 | Módulo path de Node.js                                                   | [nodejs/node](https://github.com/nodejs/node)                     |
-| **tinycolor2** | ^1.6.0  | Manipulación y conversión de color rápida y pequeña                      | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)           |
-| **puppeteer**  | ^20.0.0 | API de Chrome sin cabeza para Node.js para automatizar interacciones web | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)     |
+| Dependencia                              | Versión | Descripción                                                              | Repositorio                                                                                                          |
+| ---------------------------------------- | ------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| **chalk**                                | ^5.4.1  | Estilizado de cadenas de terminal hecho bien                             | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
+| **cli-table3**                           | ^0.6.5  | Tablas unicode bonitas para la línea de comandos                         | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
+| **inquirer**                             | ^12.4.2 | Una colección de interfaces de usuario comunes de línea de comandos      | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
+| **path**                                 | ^0.12.7 | Módulo path de Node.js                                                   | [nodejs/node](https://github.com/nodejs/node)                                                                        |
+| **tinycolor2**                           | ^1.6.0  | Manipulación y conversión de color rápida y pequeña                      | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
+| **puppeteer**                            | ^20.0.0 | API de Chrome sin cabeza para Node.js para automatizar interacciones web | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)                                                        |
+| **@builtwithjavascript/oklch-converter** | ^0.9.2  | Convertidor de espacio de color OKLCH                                    | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
 
 ---
 
@@ -682,7 +683,7 @@ R: Consulta nuestra sección de [Contribución](#-contribución) para ver las pa
 R: ¡Sí! Este proyecto está licenciado bajo MIT, lo que significa que puedes usarlo libremente en cualquier proyecto, incluyendo comerciales.
 
 **P: ¿Qué formatos de color son compatibles?**  
-R: El maguito de Tokens de Color es compatible con formatos HEX, RGB, RGBA y HSL. Puedes elegir tu formato preferido durante el proceso de generación.
+R: El maguito de Tokens de Color es compatible con formatos HEX, RGB, RGBA, HSL y OKLCH. Puedes elegir tu formato preferido durante el proceso de generación.
 
 **P: ¿Puedo usar fuentes personalizadas en el maguito de Tipografía?**  
 R: ¡Sí! Puedes especificar cualquier familia de fuentes, incluyendo fuentes personalizadas. Solo asegúrate de incluir alternativas adecuadas para una mejor compatibilidad multiplataforma.
@@ -707,18 +708,7 @@ R: Por favor [abre un issue](https://github.com/fulviabuonanno/design-tokens-wiz
 
 ---
 
-## 📬 Contacto y Soporte
-
-Para preguntas, sugerencias o reportes de errores, por favor abre un issue o [contáctame](mailto:designtokenswizards@gmail.com).
-
----
-
 ## 🤝 Contribución
-
-¡Las contribuciones, issues y solicitudes de características son bienvenidas!  
-No dudes en revisar la [página de issues](https://github.com/fulviabuonanno/design-tokens-wizards/issues) o enviar un pull request.
-
-Por favor, consulta [CONTRIBUTING.md](CONTRIBUTING.md) para ver las pautas.
 
 ### ☕️ Apoya el Proyecto
 
@@ -735,4 +725,4 @@ Cada café me ayuda a:
 
 Incluso una pequeña contribución hace una gran diferencia en mantener este proyecto prosperando. ¡Gracias por ser parte de nuestra comunidad mágica! 🧙‍♀️
 
----
+--
