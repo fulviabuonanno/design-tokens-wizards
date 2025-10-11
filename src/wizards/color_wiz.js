@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import chalk from "chalk";
 import Table from "cli-table3";
 import puppeteer from 'puppeteer';
+import { useOklchConverter } from "@builtwithjavascript/oklch-converter";
+
+const oklchConverter = useOklchConverter();
 
 const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
 if (versionArg) {
@@ -876,7 +879,7 @@ const customStringify = (obj, indent = 2) => {
 };
 
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
-  const filePath = path.join(folder, fileName);
+  const filePath = path.join(folder, fileName.replace("hex", format.toLowerCase()));
   fs.writeFileSync(filePath, customStringify(tokensData, 2));
 };
 
@@ -902,6 +905,11 @@ const deleteUnusedFormatFiles = (folders, formats) => {
     HEX: {
       css: "color_variables_hex.css",
       scss: "color_variables_hex.scss"
+    },
+    OKLCH: {
+      tokens: "color_tokens_oklch.json",
+      css: "color_variables_oklch.css",
+      scss: "color_variables_oklch.scss"
     }
   };
 
@@ -1016,6 +1024,8 @@ const convertTokensToFormat = (tokens, format) => {
           obj[key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type, ...rest };
         } else if (format === "HSL") {
           obj[key] = { $value: tinycolor($value).toHslString(), $type, ...rest };
+        } else if (format === "OKLCH") {
+          obj[key] = { $value: oklchConverter.hexToOklchString($value), $type, ...rest };
         }
       } else if (obj[key] && typeof obj[key] === "object") {
         convertRecursive(obj[key]);
@@ -1125,7 +1135,7 @@ const main = async () => {
     const input = await askForInput(tokensData, previousConcept, formatChoices, scaleSettings);
     if (!input) return;
 
-    const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings, colorType } = input;
+    const { hex, concept, variant, generateRGB, generateRGBA, generateHSL, generateOKLCH, stops, namingChoice: newNamingChoice, formatChoices: newFormatChoices, scaleSettings: newScaleSettings, colorType } = input;
     
     namingChoice = newNamingChoice;
     previousConcept = concept;
@@ -1209,10 +1219,15 @@ const main = async () => {
         tokens: fs.existsSync(path.join(tokensFolder, 'color_tokens_hsl.json')),
         css:    fs.existsSync(path.join(cssFolder, 'color_variables_hsl.css')),
         scss:   fs.existsSync(path.join(scssFolder, 'color_variables_hsl.scss'))
+      },
+      OKLCH: {
+        tokens: fs.existsSync(path.join(tokensFolder, 'color_tokens_oklch.json')),
+        css:    fs.existsSync(path.join(cssFolder, 'color_variables_oklch.css')),
+        scss:   fs.existsSync(path.join(scssFolder, 'color_variables_oklch.scss'))
       }
     };
 
-    saveTokensToFile(tokensData, 'HEX', tokensFolder, 'color_tokens_hex.json');
+    saveTokensToFile(tokensData, 'hex', tokensFolder, 'color_tokens_hex.json');
     saveCSSTokensToFile(tokensData, cssFolder, 'color_variables_hex.css');
     saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables_hex.scss');
 
@@ -1229,7 +1244,7 @@ const main = async () => {
           });
         });
       });
-      saveTokensToFile(tokensRGBData, 'RGB', tokensFolder, 'color_tokens_rgb.json');
+      saveTokensToFile(tokensRGBData, 'rgb', tokensFolder, 'color_tokens_rgb.json');
     }
     
     if (generateRGBA) {
@@ -1247,7 +1262,7 @@ const main = async () => {
           });
         });
       });
-      saveTokensToFile(tokensRGBAData, 'RGBA', tokensFolder, 'color_tokens_rgba.json');
+      saveTokensToFile(tokensRGBAData, 'rgba', tokensFolder, 'color_tokens_rgba.json');
     }
     
     if (generateHSL) {
@@ -1263,7 +1278,23 @@ const main = async () => {
           });
         });
       });
-      saveTokensToFile(tokensHSLData, 'HSL', tokensFolder, 'color_tokens_hsl.json');
+      saveTokensToFile(tokensHSLData, 'hsl', tokensFolder, 'color_tokens_hsl.json');
+    }
+
+    if (generateOKLCH) {
+      const tokensOKLCHData = JSON.parse(JSON.stringify(tokensData));
+      Object.entries(tokensOKLCHData).forEach(([concept, variants]) => {
+        Object.entries(variants).forEach(([variant, colors]) => {
+          Object.entries(colors).forEach(([key, token]) => {
+            if (token && typeof token === "object" && token.$value) {
+              tokensOKLCHData[concept][variant][key].$value = oklchConverter.hexToOklchString(token.$value);
+            } else if (typeof token === "string") {
+              tokensOKLCHData[concept][variant][key] = { $value: oklchConverter.hexToOklchString(token), $type: "color" };
+            }
+          });
+        });
+      });
+      saveTokensToFile(tokensOKLCHData, 'oklch', tokensFolder, 'color_tokens_oklch.json');
     }
 
     deleteUnusedFormatFiles({ tokens: tokensFolder, css: cssFolder, scss: scssFolder }, formatChoices);
@@ -1294,7 +1325,7 @@ const main = async () => {
     {
       type: 'confirm',
       name: 'convert',
-      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA and/or HSL)?\n>>>',
+      message: 'Would you like to convert the color tokens to other formats (RGB, RGBA, HSL and/or OKLCH)?\n>>>',
       default: false
     }
   ]);
@@ -1309,13 +1340,14 @@ const main = async () => {
         choices: [
           { name: 'RGB', value: 'rgb' },
           { name: 'RGBA', value: 'rgba' },
-          { name: 'HSL', value: 'hsl' }
+          { name: 'HSL', value: 'hsl' },
+          { name: 'OKLCH', value: 'oklch' }
         ]
       }
     ]);
   }
 
-  let conversionFormats = { generateRGB: false, generateRGBA: false, generateHSL: false };
+  let conversionFormats = { generateRGB: false, generateRGBA: false, generateHSL: false, generateOKLCH: false };
 
   let updatedFiles = [];
   let savedNewFiles = [];

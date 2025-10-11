@@ -1,19 +1,19 @@
-# 🎉 Release Notes - Design Tokens Wizards v1.5.1
+# 🎉 Release Notes - Design Tokens Wizards v2.0.0
 
 **Release Date:** 2025-10-11  
-**Release Type:** PATCH  
+**Release Type:** MAJOR  
 **Previous Version:** 1.5.1
 
 ## 📦 **Component Versions**
 
 | Component               | Version | Type  |
 | ----------------------- | ------- | ----- |
-| 🎨 Color Wizard         | 2.8.2   | patch |
+| 🎨 Color Wizard         | 2.9.0   | major |
 | 🔤 Typography Wizard    | 1.2.3   | patch |
 | 🔳 Space Wizard         | 1.7.2   | patch |
 | 📏 Size Wizard          | 1.7.2   | patch |
 | 🔲 Border Radius Wizard | 1.7.2   | patch |
-| 🔄 Merge Spell          | 1.3.2   | patch |
+| 🔄 Merge Spell          | 1.3.3   | patch |
 | 🧹 Clear Spell          | 1.2.2   | patch |
 
 ## 📋 **Change Summary**
@@ -26,6 +26,7 @@
 
 - Updated outdated npm dependencies (`chalk`, `debug`, `inquirer`, `puppeteer`).
 - Installed missing `ffmpeg` package.
+- Added `@builtwithjavascript/oklch-converter` dependency for OKLCH color support.
 - Removed non-existent `.github/config/generate_dependencies.js` script from `package.json` to resolve installation errors.
 
 ### 📚 **Documentation Updates**
@@ -76,10 +77,10 @@ This version maintains **full backward compatibility** while introducing improve
 - [ ] Documentation updated
 - [ ] Version numbers synchronized
 - [ ] Release notes generated
-- [ ] Git tag created: v1.5.1
+- [ ] Git tag created: v2.0.0
 - [ ] GitHub release created
 
 ## 🔗 **Git Information**
 
-- **Release type**: patch
-- **Tag to create**: v1.5.1
+- **Release type**: major
+- **Tag to create**: v2.0.0

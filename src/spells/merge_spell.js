@@ -159,6 +159,7 @@ function transformCssVariables(text, namingConvention) {
 }
 
 async function mergeOutputs() {
+  let namingConvention = "none";
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🪄 STARTING THE MERGING MAGIC"));
   console.log(chalk.bold.bgGray("========================================\n"));
@@ -233,7 +234,7 @@ async function mergeOutputs() {
     });
   }
 
-  const availableColorOptions        = getAvailableOptions(['HEX', 'RGB', 'RGBA', 'HSL'], 'Colors');
+  const availableColorOptions        = getAvailableOptions(['HEX', 'RGB', 'RGBA', 'HSL', 'OKLCH'], 'Colors');
   const availableSizeOptions         = getAvailableOptions(['px','rem','em'], 'Size');
   const availableSpaceOptions        = getAvailableOptions(['px','rem','em'], 'Space');
   const availableBorderRadiusOptions = getAvailableOptions(['px','rem'], 'Border Radius');
@@ -342,24 +343,6 @@ async function mergeOutputs() {
     expectedSuffixes.push("typography");
   }
 
-  console.log(chalk.bold.bgGray("\n========================================"));
-  console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
-  console.log(chalk.bold.bgGray("========================================\n"));
-  
-  const table = new Table({
-    head: [chalk.bold.yellow('Token Type'), chalk.bold.yellow('Format/Unit')],
-    colWidths: [20, 20]
-  });
-  const tableRows = [];
-  tableRows.push(['Colors', availableOptionsDict.Colors.length > 0 ? answers.colorFormat : "N/A"]);
-  tableRows.push(['Size', availableOptionsDict.Size.length > 0 ? answers.sizeUnit : "N/A"]);
-  tableRows.push(['Space', availableOptionsDict.Space.length > 0 ? answers.spaceUnit : "N/A"]);
-  tableRows.push(['Border Radius', availableOptionsDict["Border Radius"].length > 0 ? answers.borderRadiusUnit : "N/A"]);
-  tableRows.push(['Typography', availableOptionsDict.Typography.length > 0 ? (answers.includeTypography ? "Yes" : "No") : "N/A"]);
-  table.push(...tableRows);
-  console.log(table.toString());
-
-  // Filter CSS files based on user selections and expected suffixes
   const cssFiles = outputFiles.filter(file => {
     const lowerName = path.basename(file).toLowerCase();
     const lowerPath = path.relative(outputsDir, file).toLowerCase();
@@ -386,29 +369,6 @@ async function mergeOutputs() {
     const lowerName = path.basename(file).toLowerCase();
     return lowerName.endsWith('.json') && expectedSuffixes.some(suffix => lowerName.includes(suffix));
   });
-  
-  // Add file summary section
-  console.log(chalk.bold.bgGray("\n========================================"));
-  console.log(chalk.bold("📋 FILES TO MERGE"));
-  console.log(chalk.bold.bgGray("========================================\n"));
-
-  const fileSummaryTable = new Table({
-    head: [chalk.bold.yellow('Type'), chalk.bold.yellow('Count'), chalk.bold.yellow('Status')],
-    colWidths: [15, 10, 20]
-  });
-
-  fileSummaryTable.push(
-    ['CSS', cssFiles.length, cssFiles.length > 0 ? chalk.green('Ready') : chalk.yellow('Skipped')],
-    ['SCSS', scssFiles.length, scssFiles.length > 0 ? chalk.green('Ready') : chalk.yellow('Skipped')],
-    ['JSON', jsonFiles.length, jsonFiles.length > 0 ? chalk.green('Ready') : chalk.yellow('Skipped')]
-  );
-
-  console.log(fileSummaryTable.toString());
-  
-  // Prompt user for naming case convention only if there are token files to merge
-  console.log(chalk.bold.bgGray("\n========================================"));
-  console.log(chalk.bold("📝 NAMING CONVENTION"));
-  console.log(chalk.bold.bgGray("========================================\n"));
 
   if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
     console.log(chalk.whiteBright("Select how you want your tokens to be named in the merged file:\n>>>"));
@@ -427,16 +387,34 @@ async function mergeOutputs() {
         default: "none"
       }
     ]);
-    var namingConvention = namingCaseAnswer.namingCase;
+    namingConvention = namingCaseAnswer.namingCase;
   } else {
     console.log(chalk.yellow("⚠️ No token files found to merge:"));
     if (cssFiles.length === 0) console.log(chalk.yellow("   • No CSS tokens to merge"));
     if (scssFiles.length === 0) console.log(chalk.yellow("   • No SCSS tokens to merge"));
     if (jsonFiles.length === 0) console.log(chalk.yellow("   • No JSON tokens to merge"));
     console.log(chalk.yellow("\nSkipping naming convention selection."));
-    var namingConvention = "none";
+    namingConvention = "none";
   }
+
+  console.log(chalk.bold.bgGray("\n========================================"));
+  console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
+  console.log(chalk.bold.bgGray("========================================\n"));
   
+  const table = new Table({
+    head: [chalk.bold.yellow('Token Type'), chalk.bold.yellow('Format/Unit')],
+    colWidths: [20, 20]
+  });
+  const tableRows = [];
+  tableRows.push(['Colors', availableOptionsDict.Colors.length > 0 ? answers.colorFormat : "N/A"]);
+  tableRows.push(['Size', availableOptionsDict.Size.length > 0 ? answers.sizeUnit : "N/A"]);
+  tableRows.push(['Space', availableOptionsDict.Space.length > 0 ? answers.spaceUnit : "N/A"]);
+  tableRows.push(['Border Radius', availableOptionsDict["Border Radius"].length > 0 ? answers.borderRadiusUnit : "N/A"]);
+  tableRows.push(['Typography', availableOptionsDict.Typography.length > 0 ? (answers.includeTypography ? "Yes" : "No") : "N/A"]);
+  tableRows.push(['Naming Convention', namingConvention]);
+  table.push(...tableRows);
+  console.log(table.toString());
+
   let mergedJSONObj = mergeJSONFiles(jsonFiles);
   
   // Asegurarse de que la carpeta 'final' exista
@@ -514,13 +492,20 @@ async function mergeOutputs() {
   }
 
   function getFileSize(filePath) {
-    if (!fs.existsSync(filePath)) return "N/A";
+    if (!fs.existsSync(filePath)) {
+      return chalk.red("N/A");
+    }
     const stats = fs.statSync(filePath);
-    const sizeInBytes = stats.size;
-    if (sizeInBytes < 1024) return `${sizeInBytes} B`;
-    if (sizeInBytes < 1024 * 1024) return `${(sizeInBytes / 1024).toFixed(1)} KB`;
-    return `${(sizeInBytes / (1024 * 1024)).toFixed(1)} MB`;
+    const fileSizeInBytes = stats.size;
+    if (fileSizeInBytes < 1024) {
+      return `${fileSizeInBytes} B`;
+    } else if (fileSizeInBytes < 1024 * 1024) {
+      return `${(fileSizeInBytes / 1024).toFixed(2)} KB`;
+    } else {
+      return `${(fileSizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
   }
+
 
   const outputTable = new Table({
     head: [chalk.bold.yellow('File'), chalk.bold.yellow('Status'), chalk.bold.yellow('Size'), chalk.bold.yellow('Path')],

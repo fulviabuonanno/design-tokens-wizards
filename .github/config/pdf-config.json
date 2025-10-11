@@ -1,12 +1,15 @@
 {
-  "stylesheet": "src/config/pdf-styles.css",
+  "stylesheet": ".github/config/pdf-styles.css",
+  "body_class": "markdown-body",
+  "highlight_style": "github",
+  "css": "h1 { color: #2C3E50; }",
   "pdf_options": {
     "format": "A4",
-    "margin": "15mm 15mm",
-    "printBackground": true
-  },
-  "marked_options": {
-    "headerIds": true,
-    "smartypants": true
+    "margin": {
+      "top": "20mm",
+      "right": "22mm",
+      "bottom": "20mm",
+      "left": "22mm"
+    }
   }
-} 
+}
