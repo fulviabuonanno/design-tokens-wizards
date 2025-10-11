@@ -62,11 +62,11 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.9.0 ✨ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3 ✨ |
-| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2 ✨ |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2 ✨ |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2 ✨ |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.9.0 ✅ |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2    |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2    |
 
 | Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión  |
 | --------------- | ----------------- | --------------- | ------------------------------------------------ | -------- |
