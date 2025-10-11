@@ -95,3 +95,4 @@ storybook-static
 *.ess
 .github/
 
+.DS_Store
