@@ -13,7 +13,7 @@
 | 🔳 Space Wizard         | 1.7.2   | patch |
 | 📏 Size Wizard          | 1.7.2   | patch |
 | 🔲 Border Radius Wizard | 1.7.2   | patch |
-| 🔄 Merge Spell          | 1.3.2   | patch |
+| 🔄 Merge Spell          | 1.3.3   | patch |
 | 🧹 Clear Spell          | 1.2.2   | patch |
 
 ## 📋 **Change Summary**
