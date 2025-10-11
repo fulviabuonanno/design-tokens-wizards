@@ -1,7 +1,7 @@
 ![Banner de Design Tokens Wizards](src/assets/banner.png)
 
 ![Licencia: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Node.js](https://img.shields.io/badge/node-%3E=18.0.0-brightgreen)
+![Node.js](https://img.shields.io/badge/node-%3E=20.11.0-brightgreen)
 
 Una potente colección de scripts para generar y gestionar tokens de diseño para tu sistema de diseño. Cada maguito se especializa en crear tipos específicos de tokens, garantizando consistencia y eficiencia en tus proyectos.
 

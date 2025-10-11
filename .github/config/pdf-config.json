@@ -1,5 +1,5 @@
 {
-  "stylesheet": "./markdown.css",
+  "stylesheet": ".github/config/pdf-styles.css",
   "body_class": "markdown-body",
   "highlight_style": "github",
   "css": "h1 { color: #2C3E50; }",

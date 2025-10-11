@@ -397,37 +397,6 @@ async function mergeOutputs() {
     namingConvention = "none";
   }
 
-
-  
-
-
-  if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
-    console.log(chalk.whiteBright("Select how you want your tokens to be named in the merged file:\n>>>"));
-    const namingCaseAnswer = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'namingCase',
-        message: "Select the naming case convention for your tokens:",
-        choices: [
-          { name: "No change", value: "none" },
-          { name: "camelCase", value: "camelCase" },
-          { name: "kebab-case", value: "kebab-case" },
-          { name: "snake_case", value: "snake_case" },
-          { name: "PascalCase", value: "PascalCase" }
-        ],
-        default: "none"
-      }
-    ]);
-    namingConvention = namingCaseAnswer.namingCase;
-  } else {
-    console.log(chalk.yellow("⚠️ No token files found to merge:"));
-    if (cssFiles.length === 0) console.log(chalk.yellow("   • No CSS tokens to merge"));
-    if (scssFiles.length === 0) console.log(chalk.yellow("   • No SCSS tokens to merge"));
-    if (jsonFiles.length === 0) console.log(chalk.yellow("   • No JSON tokens to merge"));
-    console.log(chalk.yellow("\nSkipping naming convention selection."));
-    namingConvention = "none";
-  }
-
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
   console.log(chalk.bold.bgGray("========================================\n"));
@@ -520,6 +489,21 @@ async function mergeOutputs() {
     }
     const stats = fs.statSync(filePath);
     return stats.birthtime.getTime() === stats.mtime.getTime() ? chalk.green("✅ Saved") : chalk.blue("🆕 Updated");
+  }
+
+  function getFileSize(filePath) {
+    if (!fs.existsSync(filePath)) {
+      return chalk.red("N/A");
+    }
+    const stats = fs.statSync(filePath);
+    const fileSizeInBytes = stats.size;
+    if (fileSizeInBytes < 1024) {
+      return `${fileSizeInBytes} B`;
+    } else if (fileSizeInBytes < 1024 * 1024) {
+      return `${(fileSizeInBytes / 1024).toFixed(2)} KB`;
+    } else {
+      return `${(fileSizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
   }
 
 
