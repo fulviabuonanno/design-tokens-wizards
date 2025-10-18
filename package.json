@@ -9,6 +9,8 @@
     "space": "node src/wizards/space_wiz.js --version=1.7.2",
     "size": "node src/wizards/size_wiz.js --version=1.7.2",
     "radii": "node src/wizards/radii_wiz.js --version=1.7.2",
+    "shadow": "node src/wizards/shadow_wiz.js --version=1.0.0",
+    "gradient": "node src/wizards/gradient_wiz.js --version=1.0.0",
     "merge": "node src/spells/merge_spell.js --version=1.3.3",
     "clear": "node src/spells/clear_spell.js --version=1.2.2",
     "update": "node .github/config/update_versions.js",
@@ -21,6 +23,8 @@
     "space": "1.7.2",
     "size": "1.7.2",
     "radii": "1.7.2",
+    "shadow": "1.0.0",
+    "gradient": "1.0.0",
     "merge": "1.3.3",
     "clear": "1.2.2",
     "update": "1.0.0"
@@ -34,6 +38,7 @@
     "debug": "^4.3.4",
     "ffmpeg": "^0.0.4",
     "inquirer": "^12.4.2",
+    "ora": "^9.0.0",
     "path": "^0.12.7",
     "puppeteer": "^24.7.0",
     "tinycolor2": "^1.6.0"
