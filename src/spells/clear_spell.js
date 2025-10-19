@@ -20,9 +20,9 @@ if (versionArg) {
 
 const outputsDir = path.join(__dirname, "..", "..", "output_files");
 const finalDir = path.join(outputsDir, "final");
-const jsonFolder = path.join(outputsDir, "tokens/json");
-const cssFolder = path.join(outputsDir, "tokens/css");
-const scssFolder = path.join(outputsDir, "tokens/scss"); 
+const tokensFolder = path.join(outputsDir, "tokens");
+const cssFolder = path.join(outputsDir, "css");
+const scssFolder = path.join(outputsDir, "scss");
 // const reportsDir = path.join(outputsDir, "reports");
 
 async function clearFolder(dirPath) {
@@ -86,7 +86,7 @@ function showLoader(message, ms) {
   });
 }
 
-async function processOutputs(clearCSS, clearSCSS, clearJSON, clearFinal, clearReports) {
+async function processOutputs(clearCSS, clearSCSS, clearTokens, clearFinal) {
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🧹 STEP 2: PURGING FOLDER CONTENT"));
   console.log(chalk.bold.bgGray("========================================\n"));
@@ -95,16 +95,14 @@ async function processOutputs(clearCSS, clearSCSS, clearJSON, clearFinal, clearR
 
   let cssCount = { fileCount: 0, folderCount: 0 };
   let scssCount = { fileCount: 0, folderCount: 0 };
-  let jsonCount = { fileCount: 0, folderCount: 0 };
+  let tokensCount = { fileCount: 0, folderCount: 0 };
   let finalCount = { fileCount: 0 };
-  // let reportsCount = { fileCount: 0 };
 
   const tasks = [];
   if (clearCSS) tasks.push({ name: 'CSS', folder: cssFolder, count: () => cssCount });
   if (clearSCSS) tasks.push({ name: 'SCSS', folder: scssFolder, count: () => scssCount });
-  if (clearJSON) tasks.push({ name: 'JSON', folder: jsonFolder, count: () => jsonCount });
+  if (clearTokens) tasks.push({ name: 'Tokens', folder: tokensFolder, count: () => tokensCount });
   if (clearFinal) tasks.push({ name: 'Final', folder: finalDir, count: () => finalCount });
-  // if (clearReports) tasks.push({ name: 'Reports', folder: reportsDir, count: () => reportsCount });
 
   console.log(chalk.blue("\n📋 Selected folders for cleanup:"));
   tasks.forEach(task => {
@@ -118,12 +116,10 @@ async function processOutputs(clearCSS, clearSCSS, clearJSON, clearFinal, clearR
       cssCount = result;
     } else if (task.name === 'SCSS') {
       scssCount = result;
-    } else if (task.name === 'JSON') {
-      jsonCount = result;
+    } else if (task.name === 'Tokens') {
+      tokensCount = result;
     } else if (task.name === 'Final') {
       finalCount = result;
-    // } else if (task.name === 'Reports') {
-    //   reportsCount = result;
     }
   }
 
@@ -131,17 +127,16 @@ async function processOutputs(clearCSS, clearSCSS, clearJSON, clearFinal, clearR
   console.log(chalk.bold("🎉 FOLDERS CLEARED SUCCESSFULLY!".toUpperCase()));
   console.log(chalk.bold.bgGray("========================================\n"));
 
-  const totalFiles = cssCount.fileCount + scssCount.fileCount + jsonCount.fileCount + finalCount.fileCount;
-  const totalFolders = cssCount.folderCount + scssCount.folderCount + jsonCount.folderCount;
+  const totalFiles = cssCount.fileCount + scssCount.fileCount + tokensCount.fileCount + finalCount.fileCount;
+  const totalFolders = cssCount.folderCount + scssCount.folderCount + tokensCount.folderCount;
 
   if (totalFiles === 0 && totalFolders === 0) {
     console.log(chalk.bold(capitalize("no files or folders were found for deletion – all folders remain pristine.")));
   } else {
     if (clearCSS) console.log(chalk.bold(`✅ ${chalk.bold('CSS')}: ${cssCount.fileCount} files, ${cssCount.folderCount} folders 📄`));
     if (clearSCSS) console.log(chalk.bold(`✅ ${chalk.bold('SCSS')}: ${scssCount.fileCount} files, ${scssCount.folderCount} folders 📄`));
-    if (clearJSON) console.log(chalk.bold(`✅ ${chalk.bold('JSON')}: ${jsonCount.fileCount} files, ${jsonCount.folderCount} folders 📄`));
+    if (clearTokens) console.log(chalk.bold(`✅ ${chalk.bold('TOKENS')}: ${tokensCount.fileCount} files, ${tokensCount.folderCount} folders 📄`));
     if (clearFinal) console.log(chalk.bold(`✅ ${chalk.bold('FINAL')}: ${finalCount.fileCount} files`));
-    // if (clearReports) console.log(chalk.bold(`✅ ${chalk.bold('REPORTS')}: ${reportsCount.fileCount} files`));
     console.log(chalk.bold(`\n📊 Total: ${totalFiles} files, ${totalFolders} folders 📄`));
   }
 
@@ -164,19 +159,19 @@ async function startInterface() {
     {
       type: 'confirm',
       name: 'clearCSS',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("CSS") + " folder? (yes/no) \n>>>"),
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("CSS") + " folder (includes shadow tokens)? (yes/no) \n>>>"),
       default: false,
     },
     {
       type: 'confirm',
       name: 'clearSCSS',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("SCSS") + " folder? (yes/no) \n>>>"),
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("SCSS") + " folder (includes shadow tokens)? (yes/no) \n>>>"),
       default: false,
     },
     {
       type: 'confirm',
-      name: 'clearJSON',
-      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("JSON") + " folder? (yes/no) \n>>>"),
+      name: 'clearTokens',
+      message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Tokens") + " folder (includes shadow tokens)? (yes/no) \n>>>"),
       default: false,
     },
     {
@@ -184,13 +179,7 @@ async function startInterface() {
       name: 'clearFinal',
       message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Final") + " folder? (yes/no) \n>>>"),
       default: false,
-    },
-    // {
-    //   type: 'confirm',
-    //   name: 'clearReports',
-    //   message: capitalize("🗑️ Do you want to delete " + chalk.bold.red("ALL") + " files from the " + chalk.underline("Reports") + " folder? (yes/no) \n>>>"),
-    //   default: false,
-    // }
+    }
   ]);
 
   if (!Object.values(answers).some(value => value === true)) {
@@ -212,7 +201,12 @@ async function startInterface() {
     return;
   }
 
-  await processOutputs(answers.clearCSS, answers.clearSCSS, answers.clearJSON, answers.clearFinal, answers.clearReports);
+  await processOutputs(
+    answers.clearCSS,
+    answers.clearSCSS,
+    answers.clearTokens,
+    answers.clearFinal
+  );
 }
 
 startInterface();

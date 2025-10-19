@@ -14,6 +14,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 - [🔳 Maguito de Tokens de Espaciado](#-maguito-de-tokens-de-espaciado)
 - [📏 Maguito de Tokens de Tamaño](#-maguito-de-tokens-de-tamaño)
 - [🔲 Maguito de Tokens de Radio de Borde](#-maguito-de-tokens-de-radio-de-borde)
+- [🌑 Maguito de Tokens de Sombra](#-maguito-de-tokens-de-sombra)
 - [🧹 Hechizo de Limpieza de Tokens](#-hechizo-de-limpieza-de-tokens)
 - [🔄 Hechizo de Fusión de Tokens](#-hechizo-de-fusión-de-tokens)
 - [📦 Dependencias](#-dependencias)
@@ -60,18 +61,19 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 6. **Ejecuta los Scripts**  
    Elige entre los siguientes maguitos:
 
-| Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
-| ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.9.0 ✅ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | 1.7.2    |
+| Maguito de Tokens        | Nombre del Script | Comando          | Descripción                            | Versión  |
+| ------------------------ | ----------------- | ---------------- | -------------------------------------- | -------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color`  | Genera y gestiona tokens de color      | 2.9.0    |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`   | Genera y gestiona tokens de tipografía | 1.2.3    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space`  | Genera y gestiona tokens de espaciado  | 1.7.2    |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`   | Genera y gestiona tokens de tamaño     | 1.7.2    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii`  | Genera y gestiona tokens de radio      | 1.7.2    |
+| 🌑 **SHADOW WIZ**        | `shadow_wiz.js`   | `npm run shadow` | Genera y gestiona tokens de sombra     | 1.0.0 ✅ |
 
 | Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión  |
 | --------------- | ----------------- | --------------- | ------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.3.3 ✨ |
-| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.2.2    |
+| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | 1.4.0 ✨ |
+| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | 1.3.0 ✨ |
 
 Leyenda:
 ✨ Parche // 🌟 Cambio Menor // ✅ Cambio Mayor
@@ -490,8 +492,84 @@ Versión 1.7.2
    - Crea archivos CSS y SCSS con tus tokens como variables
      Almacenado en `output_files/tokens/css/radius/radius_variables_{unit}.css` y `output_files/tokens/scss/radius/radius_variables_{unit}.scss`
 
-9. **Finaliza tu Hechizo**  
+9. **Finaliza tu Hechizo**
    Revisa los archivos de salida e integra tus tokens de radio de borde en tu sistema.
+
+---
+
+## 🌑 **Maguito de Tokens de Sombra**
+
+<img src="src/assets/shadow_wiz.png" alt="Shadow Wizard" width="200">
+
+Versión 1.0.0
+
+¡Conjura el sistema de sombras perfecto para tu diseño con el Maguito de Tokens de Sombra 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de sombra que aportarán profundidad y elevación a tus elementos de UI.
+
+1. **Invoca el Maguito**
+   Lanza el hechizo de sombra en tu terminal:
+
+   ```sh
+   npm run shadow
+   ```
+
+2. **Elige la Convención de Nomenclatura de Tokens**
+   Selecciona la convención de nomenclatura para tus tokens de sombra:
+
+   - shadow
+   - boxShadow
+   - elevation
+   - depth
+   - Personalizado
+
+3. **Selecciona el Tipo de Sombra**
+   Elige el tipo de sombra que deseas crear:
+
+   - Sombra Exterior (dropShadow)
+   - Sombra Interior (innerShadow)
+
+4. **Elige el Enfoque de Nomenclatura**
+   Selecciona un patrón de nomenclatura para tus tokens de sombra:
+
+   - Tallas (xs, sm, md, lg, xl, 2xl)
+   - Niveles (1, 2, 3, 4, 5)
+   - Elevación (ground, low, medium, high, sky)
+   - Material Design (dp-1, dp-2, dp-3, dp-4, dp-6)
+   - Contextual (card, button, modal, dropdown, tooltip)
+   - Interacción (hover, active, focus)
+   - Personalizado
+
+5. **Establece el Número de Sombras**
+   Especifica cuántos valores de sombra quieres generar (1-10).
+
+6. **Configura los Valores de Sombra**
+   Elige entre:
+
+   - **Valores Estándar Prellenados:** Valores de sombra preconfigurados basados en tu enfoque de nomenclatura
+   - **Valores Personalizados:** Define valores personalizados para desplazamiento-x, desplazamiento-y, desenfoque, expansión y opacidad
+
+7. **Elige el Color de Sombra**
+   Opción de usar un color personalizado para tus sombras o mantener el negro predeterminado.
+
+8. **Vista Previa de tus Tokens**
+   El maguito mostrará la vista previa de tus tokens de sombra con:
+
+   - Nombre de la sombra
+   - Tipo de sombra (Interior/Exterior)
+   - Valor completo de la sombra
+
+9. **Genera Conjuntos Adicionales**
+   Opción de crear múltiples conjuntos de sombras (ej., sombras exteriores e interiores) con las mismas o diferentes convenciones de nomenclatura.
+
+10. **Genera tus Artefactos**
+    Una vez confirmado, el maguito:
+
+    - Exporta tus tokens en formato Tokens Studio JSON
+      Almacenado en: `output_files/tokens/shadow/shadow-tokens.json`
+    - Crea archivos CSS y SCSS con tus tokens como variables
+      Almacenado en `output_files/css/shadow/shadow-tokens.css` y `output_files/scss/shadow/shadow-tokens.scss`
+
+11. **Finaliza tu Hechizo**
+    Revisa los archivos de salida e integra tus tokens de sombra en tu sistema.
 
 ---
 

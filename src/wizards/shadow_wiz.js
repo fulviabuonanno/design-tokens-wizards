@@ -8,7 +8,7 @@ import tinycolor from "tinycolor2";
 const versionArg = process.argv.find((arg) => arg.startsWith("--version="));
 if (versionArg) {
   const version = versionArg.split("=")[1];
-  console.log(chalk.bold.whiteBright.bgGray(`Box Shadow Tokens Wizard - Version ${version}`));
+  console.log(chalk.bold.whiteBright.bgGray(`Shadow Tokens Wizard - Version ${version}`));
 }
 
 const showLoader = (message, duration) => {
@@ -38,7 +38,7 @@ const printShadowTable = (shadows) => {
   Object.entries(shadows).forEach(([name, shadow]) => {
     const shadowType = shadow.$value.type === 'innerShadow' ? 'Inner' : 'Outer';
     table.push([
-      chalk.yellow(name),
+      chalk.cyan(name),
       chalk.green(shadowType),
       chalk.white(generatePreview(shadow.$value))
     ]);
@@ -53,74 +53,54 @@ const generatePreview = (shadow) => {
   return shadowValue;
 };
 
-const generateSummary = (shadows) => {
-  const summary = [];
-  for (const [name, shadow] of Object.entries(shadows)) {
-    const { x, y, blur, spread, color } = shadow.$value;
-    summary.push({
-      name,
-      type: shadow.$type,
-      value: generatePreview(shadow.$value)
-    });
+const extractOpacity = (colorString) => {
+  const match = colorString.match(/rgba?\([^)]+,\s*([0-9.]+)\)/);
+  return match ? parseFloat(match[1]) : 0.15;
+};
+
+const detectShadowTypes = (shadows) => {
+  const hasInnerShadows = Object.values(shadows).some(shadow => shadow.$value.type === 'innerShadow');
+  const hasOuterShadows = Object.values(shadows).some(shadow => shadow.$value.type === 'dropShadow');
+  return { hasInnerShadows, hasOuterShadows };
+};
+
+const saveTokenFile = (tokens, outputPath, filename, type) => {
+  const fullPath = path.join(outputPath, filename);
+  const fileExists = fs.existsSync(fullPath);
+
+  if (type === 'json') {
+    fs.writeFileSync(fullPath, JSON.stringify(tokens, null, 2));
+  } else if (type === 'css') {
+    fs.writeFileSync(fullPath, convertTokensToCSS(tokens));
+  } else if (type === 'scss') {
+    fs.writeFileSync(fullPath, convertTokensToSCSS(tokens));
   }
-  return summary;
+
+  return fileExists ? 'updated' : 'created';
 };
 
-const printSummary = (shadows) => {
-  console.log(chalk.black.bgCyan("\n======================================="));
-  console.log(chalk.bold("📊 SHADOW SUMMARY"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
-
-  const summary = generateSummary(shadows);
-  const table = new Table({
-    head: [
-      chalk.cyan('Name'),
-      chalk.cyan('Type'),
-      chalk.cyan('Value')
-    ],
-    colWidths: [20, 15, 50]
-  });
-
-  summary.forEach(shadow => {
-    table.push([
-      chalk.yellow(shadow.name),
-      chalk.green(shadow.type),
-      chalk.white(shadow.value)
-    ]);
-  });
-
-  console.log(table.toString());
-};
-
-const generateShadowValue = (shadow) => {
-  const { x, y, blur, spread, color } = shadow;
-  const shadowType = shadow.$type === 'inner' ? 'inset ' : '';
-  return {
-    x: x.toString(),
-    y: y.toString(),
-    blur: blur.toString(),
-    spread: spread.toString(),
-    color: shadowType + color
-  };
-};
-
-const generateShadowName = (baseName, shadowType, includeTypeInName, tokenName, existingShadows = {}) => {
+const generateShadowName = (baseName, shadowType, includeTypeInName, tokenName, existingShadows = {}, autoAddSuffix = false) => {
   if (includeTypeInName) {
     return `${shadowType}.${tokenName}.${baseName}`;
   }
-  
+
+  // If autoAddSuffix is true, always add the shadow type suffix
+  if (autoAddSuffix) {
+    return `${baseName}-${shadowType}`;
+  }
+
   // Check if this name already exists and create a unique name if needed
   let finalName = baseName;
   if (existingShadows[finalName]) {
     // If the existing shadow has a different type, add type suffix
     const existingType = existingShadows[finalName].$value.type;
     const currentType = shadowType === 'inner' ? 'innerShadow' : 'dropShadow';
-    
+
     if (existingType !== currentType) {
       finalName = `${baseName}-${shadowType}`;
     }
   }
-  
+
   return finalName;
 };
 
@@ -278,9 +258,9 @@ const askForColor = async () => {
 };
 
 const askForNamingOnly = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 NAMING CONVENTION"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { tokenName } = await inquirer.prompt([
     {
@@ -316,9 +296,9 @@ const askForNamingOnly = async () => {
     customTokenName = customName;
   }
 
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 NAMING APPROACH"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { namingApproach } = await inquirer.prompt([
     {
@@ -337,9 +317,9 @@ const askForNamingOnly = async () => {
     }
   ]);
 
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 TOKEN NAMING OPTIONS"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { includeTypeInName } = await inquirer.prompt([
     {
@@ -358,9 +338,9 @@ const askForNamingOnly = async () => {
 };
 
 const askForInput = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 STEP 1: TOKEN NAMING"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { tokenName } = await inquirer.prompt([
     {
@@ -396,9 +376,9 @@ const askForInput = async () => {
     customTokenName = customName;
   }
 
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 STEP 2: SHADOW TYPE"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { shadowType } = await inquirer.prompt([
     {
@@ -412,9 +392,9 @@ const askForInput = async () => {
     }
   ]);
 
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 STEP 3: NAMING APPROACH"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { namingApproach } = await inquirer.prompt([
     {
@@ -446,9 +426,9 @@ const askForInput = async () => {
     }
   ]);
 
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.black.bgGray("\n======================================="));
   console.log(chalk.bold("🎨 TOKEN NAMING OPTIONS"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.black.bgGray("=======================================\n"));
 
   const { includeTypeInName } = await inquirer.prompt([
     {
@@ -466,16 +446,6 @@ const askForInput = async () => {
     shadowCount,
     includeTypeInName
   };
-};
-
-const saveTokensToFile = (tokens, format, folder, fileName) => {
-  const outputDir = path.join(process.cwd(), 'outputs', folder);
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  const filePath = path.join(outputDir, `${fileName}.${format}`);
-  fs.writeFileSync(filePath, JSON.stringify(tokens, null, 2));
 };
 
 const convertTokensToCSS = (tokens) => {
@@ -517,82 +487,48 @@ const convertTokensToSCSS = (tokens) => {
   return scss;
 };
 
-const saveCSSTokensToFile = (tokens, folder, fileName) => {
-  const outputDir = path.join(process.cwd(), 'outputs', folder);
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  const filePath = path.join(outputDir, `${fileName}.css`);
-  const css = convertTokensToCSS(tokens);
-  fs.writeFileSync(filePath, css);
-};
-
-const saveSCSSTokensToFile = (tokens, folder, fileName) => {
-  const outputDir = path.join(process.cwd(), 'outputs', folder);
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  const filePath = path.join(outputDir, `${fileName}.scss`);
-  const scss = convertTokensToSCSS(tokens);
-  fs.writeFileSync(filePath, scss);
-};
-
 const main = async () => {
   let allShadows = {};
   let previousSettings = null;
 
   const generateShadows = async (isAdditionalSet = false, previousSettings = null) => {
-    console.log(chalk.black.bgCyan("\n======================================="));
-    console.log(chalk.bold("🪄 STARTING THE SHADOW TOKENS WIZARD'S MAGIC"));
-    console.log(chalk.black.bgCyan("=======================================\n"));
+    let tokenName, shadowType, namingApproach, shadowCount, includeTypeInName, baseColor;
 
-    await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
-
-    // Don't clear allShadows - we want to preserve all shadows across sets
-
-    // Show existing shadows if any
-    if (Object.keys(allShadows).length > 0) {
-      console.log(chalk.black.bgCyan("\n======================================="));
-      console.log(chalk.bold("📋 EXISTING SHADOWS"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
-      printShadowTable(allShadows);
-    }
-
-    console.log(
-      chalk.whiteBright("\n❤️ Welcome to the Shadow Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your shadow tokens step by step.") +
-      chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
-      chalk.underline("Tokens Studio") +
-      chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
-      chalk.underline("SCSS") +
-      chalk.whiteBright(" and ") +
-      chalk.underline("CSS") +
-      chalk.whiteBright(" to test in your implementation!\n")
-    );
-
-    let tokenName, shadowType, namingApproach, shadowCount, includeTypeInName;
-    
     if (isAdditionalSet && previousSettings) {
-      // For additional sets, ask for shadow type first
-      console.log(chalk.black.bgCyan("\n======================================="));
+      // For additional sets, skip the welcome message and go straight to configuration
+      console.log(chalk.black.bgGray("\n======================================="));
       console.log(chalk.bold("🎨 ADDITIONAL SHADOW SET"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
-      
+      console.log(chalk.black.bgGray("=======================================\n"));
+
+      // Detect the type from existing shadows to suggest the opposite
+      const { hasInnerShadows, hasOuterShadows } = detectShadowTypes(allShadows);
+
+      let suggestedType = 'outer';
+      let suggestedMessage = 'What type of shadows do you want to add?';
+
+      if (hasOuterShadows && !hasInnerShadows) {
+        suggestedType = 'inner';
+        suggestedMessage = 'You have outer shadows. Add inner shadows to complement them?';
+      } else if (hasInnerShadows && !hasOuterShadows) {
+        suggestedType = 'outer';
+        suggestedMessage = 'You have inner shadows. Add outer shadows to complement them?';
+      }
+
       const { newShadowType } = await inquirer.prompt([
         {
           type: 'list',
           name: 'newShadowType',
-          message: 'What type of shadows do you want to add?',
+          message: suggestedMessage,
           choices: [
             { name: 'Outer Shadow', value: 'outer' },
             { name: 'Inner Shadow', value: 'inner' }
-          ]
+          ],
+          default: suggestedType
         }
       ]);
-      
+
       shadowType = newShadowType;
-      
+
       // Ask if they want to use the same naming convention
       const { useSameNaming } = await inquirer.prompt([
         {
@@ -602,7 +538,7 @@ const main = async () => {
           default: true
         }
       ]);
-      
+
       if (useSameNaming) {
         tokenName = previousSettings.tokenName;
         namingApproach = previousSettings.namingApproach;
@@ -613,7 +549,23 @@ const main = async () => {
         namingApproach = newNamingApproach;
         includeTypeInName = newIncludeTypeInName;
       }
-      
+
+      // Ask if they want to use the same color
+      const { useSameColor } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'useSameColor',
+          message: `Use the same color as before (${previousSettings.baseColor})?`,
+          default: true
+        }
+      ]);
+
+      if (useSameColor) {
+        baseColor = previousSettings.baseColor;
+      } else {
+        baseColor = await askForColor();
+      }
+
       // Ask for shadow count
       const { newShadowCount } = await inquirer.prompt([
         {
@@ -627,31 +579,60 @@ const main = async () => {
           }
         }
       ]);
-      
+
       shadowCount = newShadowCount;
     } else {
-      // First time or full input
+      // First time - show welcome message and loader
+      console.log(chalk.black.bgGray("\n======================================="));
+      console.log(chalk.bold("🪄 STARTING THE SHADOW TOKENS WIZARD'S MAGIC"));
+      console.log(chalk.black.bgGray("=======================================\n"));
+
+      await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
+
+      console.log(
+        chalk.whiteBright("\n❤️ Welcome to the Shadow Tokens Wizard script! Let this wizard 🧙 guide you through \ncreating your shadow tokens step by step.") +
+        chalk.whiteBright("Generate your tokens and prepare them for using or syncing in ") +
+        chalk.underline("Tokens Studio") +
+        chalk.whiteBright(". \n✨ As a delightful bonus, you'll receive magical files in ") +
+        chalk.underline("SCSS") +
+        chalk.whiteBright(" and ") +
+        chalk.underline("CSS") +
+        chalk.whiteBright(" to test in your implementation!\n")
+      );
+
       const input = await askForInput();
       tokenName = input.tokenName;
       shadowType = input.shadowType;
       namingApproach = input.namingApproach;
       shadowCount = input.shadowCount;
       includeTypeInName = input.includeTypeInName;
+
+      console.log(chalk.black.bgGray("\n======================================="));
+      console.log(chalk.bold("🎨 COLOR CONFIGURATION"));
+      console.log(chalk.black.bgGray("=======================================\n"));
+
+      // Ask for color preferences once for all shadows
+      baseColor = await askForColor();
+    }
+
+    // Show existing shadows if any (for both first time and additional sets)
+    if (Object.keys(allShadows).length > 0) {
+      console.log(chalk.black.bgGray("\n======================================="));
+      console.log(chalk.bold("📋 EXISTING SHADOWS"));
+      console.log(chalk.black.bgGray("=======================================\n"));
+      printShadowTable(allShadows);
     }
 
     const shadows = {};
     const namingOptions = namingApproach === 'custom' ? [] : getNamingOptions(namingApproach);
 
-    console.log(chalk.black.bgCyan("\n======================================="));
-    console.log(chalk.bold("🎨 COLOR CONFIGURATION"));
-    console.log(chalk.black.bgCyan("=======================================\n"));
+    // Determine if we should auto-add suffix based on existing shadows
+    const { hasInnerShadows, hasOuterShadows } = detectShadowTypes(allShadows);
+    const autoAddSuffix = (hasInnerShadows && shadowType === 'outer') || (hasOuterShadows && shadowType === 'inner');
 
-    // Ask for color preferences once for all shadows
-    const baseColor = await askForColor();
-
-    console.log(chalk.black.bgCyan("\n======================================="));
+    console.log(chalk.black.bgGray("\n======================================="));
     console.log(chalk.bold("🎨 SHADOW CONFIGURATION"));
-    console.log(chalk.black.bgCyan("=======================================\n"));
+    console.log(chalk.black.bgGray("=======================================\n"));
 
     const { configType } = await inquirer.prompt([
       {
@@ -666,16 +647,16 @@ const main = async () => {
     ]);
 
     if (configType === 'standard') {
-      console.log(chalk.black.bgCyan("\n======================================="));
+      console.log(chalk.black.bgGray("\n======================================="));
       console.log(chalk.bold("📋 STANDARD VALUES PREVIEW"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
+      console.log(chalk.black.bgGray("======================================="));
 
       const previewShadows = {};
       for (let i = 0; i < shadowCount; i++) {
         const baseName = namingApproach === 'custom' ? `shadow-${i + 1}` : (namingOptions[i] || `shadow-${i + 1}`);
-        const shadowName = generateShadowName(baseName, shadowType, includeTypeInName, tokenName, allShadows);
+        const shadowName = generateShadowName(baseName, shadowType, includeTypeInName, tokenName, allShadows, autoAddSuffix);
         const defaultValues = getDefaultValues(shadowType, shadowName);
-        const opacity = defaultValues.color.match(/rgba?\([^)]+,\s*([0-9.]+)\)/)?.[1] || 0.15;
+        const opacity = extractOpacity(defaultValues.color);
         const rgbaColor = tinycolor(baseColor).setAlpha(opacity).toRgbString();
         previewShadows[shadowName] = {
           $type: "boxShadow",
@@ -720,16 +701,16 @@ const main = async () => {
             }
           }
         ]);
-        shadowName = generateShadowName(customShadowName, shadowType, includeTypeInName, tokenName, allShadows);
+        shadowName = generateShadowName(customShadowName, shadowType, includeTypeInName, tokenName, allShadows, autoAddSuffix);
       } else {
         const baseName = namingOptions[i] || `shadow-${i + 1}`;
-        shadowName = generateShadowName(baseName, shadowType, includeTypeInName, tokenName, allShadows);
+        shadowName = generateShadowName(baseName, shadowType, includeTypeInName, tokenName, allShadows, autoAddSuffix);
       }
 
       let shadowProperties;
       if (configType === 'standard') {
         const defaultValues = getDefaultValues(shadowType, shadowName);
-        const opacity = defaultValues.color.match(/rgba?\([^)]+,\s*([0-9.]+)\)/)?.[1] || 0.15;
+        const opacity = extractOpacity(defaultValues.color);
         const rgbaColor = tinycolor(baseColor).setAlpha(opacity).toRgbString();
         shadowProperties = {
           ...defaultValues,
@@ -737,9 +718,9 @@ const main = async () => {
           type: shadowType === 'inner' ? 'innerShadow' : 'dropShadow'
         };
       } else {
-        console.log(chalk.black.bgCyan("\n======================================="));
+        console.log(chalk.black.bgGray("\n======================================="));
         console.log(chalk.bold(`🎨 CUSTOM VALUES FOR SHADOW ${i + 1}`));
-        console.log(chalk.black.bgCyan("=======================================\n"));
+        console.log(chalk.black.bgGray("=======================================\n"));
 
         const { x } = await inquirer.prompt([
           {
@@ -842,9 +823,9 @@ const main = async () => {
 
     // Only show preview if we're using custom configuration
     if (configType === 'custom') {
-      console.log(chalk.black.bgCyan("\n======================================="));
+      console.log(chalk.black.bgGray("\n======================================="));
       console.log(chalk.bold("🎨 PREVIEW"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
+      console.log(chalk.black.bgGray("=======================================\n"));
 
       printShadowTable(allShadows);
     }
@@ -859,15 +840,33 @@ const main = async () => {
     ]);
 
     if (confirm) {
+      console.log(chalk.black.bgGray("\n======================================="));
+      console.log(chalk.bold("🔄 GENERATE ANOTHER SET"));
+      console.log(chalk.black.bgGray("=======================================\n"));
+
+      const { generateMore } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'generateMore',
+          message: 'Would you like to generate another set of shadow tokens?',
+          default: false
+        }
+      ]);
+
+      if (generateMore) {
+        return { continue: true, settings: { tokenName, shadowType, namingApproach, includeTypeInName, baseColor } };
+      }
+
+      // Save files only when user is done
+      await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 1500);
+
       const tokens = {
         [tokenName]: allShadows
       };
 
-      await showLoader(chalk.bold.yellow("\n🪄 Finalizing your spell"), 1500);
-
-      const tokensDir = path.join(process.cwd(), 'outputs', 'tokens', 'shadow');
-      const cssDir = path.join(process.cwd(), 'outputs', 'css', 'shadow');
-      const scssDir = path.join(process.cwd(), 'outputs', 'scss', 'shadow');
+      const tokensDir = path.join(process.cwd(), 'output_files', 'tokens', 'shadow');
+      const cssDir = path.join(process.cwd(), 'output_files', 'css', 'shadow');
+      const scssDir = path.join(process.cwd(), 'output_files', 'scss', 'shadow');
 
       // Create directories if they don't exist
       [tokensDir, cssDir, scssDir].forEach(dir => {
@@ -880,36 +879,25 @@ const main = async () => {
       const savedNewFiles = [];
       const deletedFiles = [];
 
-      // Save JSON tokens
-      const jsonPath = path.join(tokensDir, 'shadow-tokens.json');
-      if (fs.existsSync(jsonPath)) {
-        updatedFiles.push('tokens/shadow/shadow-tokens.json');
-      } else {
-        savedNewFiles.push('tokens/shadow/shadow-tokens.json');
-      }
-      saveTokensToFile(tokens, 'json', 'tokens/shadow', 'shadow-tokens');
+      // Save token files
+      const filesToSave = [
+        { dir: tokensDir, name: 'shadow-tokens.json', type: 'json', path: 'tokens/shadow/shadow-tokens.json' },
+        { dir: cssDir, name: 'shadow-tokens.css', type: 'css', path: 'css/shadow/shadow-tokens.css' },
+        { dir: scssDir, name: 'shadow-tokens.scss', type: 'scss', path: 'scss/shadow/shadow-tokens.scss' }
+      ];
 
-      // Save CSS tokens
-      const cssPath = path.join(cssDir, 'shadow-tokens.css');
-      if (fs.existsSync(cssPath)) {
-        updatedFiles.push('css/shadow/shadow-tokens.css');
-      } else {
-        savedNewFiles.push('css/shadow/shadow-tokens.css');
-      }
-      saveCSSTokensToFile(tokens, 'css/shadow', 'shadow-tokens');
+      filesToSave.forEach(({ dir, name, type, path: filePath }) => {
+        const status = saveTokenFile(tokens, dir, name, type);
+        if (status === 'updated') {
+          updatedFiles.push(filePath);
+        } else {
+          savedNewFiles.push(filePath);
+        }
+      });
 
-      // Save SCSS tokens
-      const scssPath = path.join(scssDir, 'shadow-tokens.scss');
-      if (fs.existsSync(scssPath)) {
-        updatedFiles.push('scss/shadow/shadow-tokens.scss');
-      } else {
-        savedNewFiles.push('scss/shadow/shadow-tokens.scss');
-      }
-      saveSCSSTokensToFile(tokens, 'scss/shadow', 'shadow-tokens');
-
-      console.log(chalk.black.bgCyan("\n======================================="));
+      console.log(chalk.black.bgGray("\n======================================="));
       console.log(chalk.bold("📄 OUTPUT FILES"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
+      console.log(chalk.black.bgGray("=======================================\n"));
 
       if (updatedFiles.length > 0) {
         console.log(chalk.whiteBright("🔄 Updated:"));
@@ -932,29 +920,12 @@ const main = async () => {
         });
       }
 
-      console.log(chalk.black.bgCyan("\n======================================="));
-      console.log(chalk.bold("🔄 GENERATE ANOTHER SET"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
+      console.log(chalk.black.bgGray("\n======================================="));
+      console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
+      console.log(chalk.black.bgGray("=======================================\n"));
 
-      const { generateMore } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'generateMore',
-          message: 'Would you like to generate another set of shadow tokens?',
-          default: false
-        }
-      ]);
-
-      if (!generateMore) {
-        console.log(chalk.black.bgCyan("\n======================================="));
-        console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
-        console.log(chalk.black.bgCyan("=======================================\n"));
-
-        console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.cyan("Box Shadow Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄✨\n"));
-        console.log(chalk.black.bgCyan("=======================================\n"));
-        return { continue: false, settings: null };
-      }
-      return { continue: true, settings: { tokenName, shadowType, namingApproach, includeTypeInName } };
+      console.log(chalk.bold.whiteBright("Thank you for summoning the power of the ") + chalk.bold.yellow("Shadow Tokens Wizard") + chalk.bold.whiteBright("! ❤️🪄✨\n"));
+      return { continue: false, settings: null };
     } else {
       console.log(chalk.yellow("\nNo changes were saved. Feel free to run the wizard again!"));
       return { continue: false, settings: null };

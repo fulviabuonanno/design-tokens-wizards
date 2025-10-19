@@ -14,6 +14,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 - [🔳 Space Tokens Wizard](#-space-tokens-wizard)
 - [📏 Size Tokens Wizard](#-size-tokens-wizard)
 - [🔲 Border Radius Tokens Wizard](#-border-radius-tokens-wizard)
+- [🌑 Shadow Tokens Wizard](#-shadow-tokens-wizard)
 - [🧹 Clear Tokens Spell](#-clear-tokens-spell)
 - [🔄 Merge Tokens Spell](#-merge-tokens-spell)
 - [📦 Dependencies](#-dependencies)
@@ -57,18 +58,19 @@ A powerful collection of scripts to generate and manage design tokens for your d
 6. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.9.0 ✅ |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.3    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.2    |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.2    |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | 1.7.2    |
+| Token Wizard             | Script Name     | Run Command      | Description                              | Version  |
+| ------------------------ | --------------- | ---------------- | ---------------------------------------- | -------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`  | `npm run color`  | Generate and manage color tokens         | 2.9.0    |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`   | `npm run typo`   | Generate and manage typography tokens    | 1.2.3    |
+| 🟣 **SPACE WIZ**         | `space_wiz.js`  | `npm run space`  | Generate and manage spacing tokens       | 1.7.2    |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`   | `npm run size`   | Generate and manage size tokens          | 1.7.2    |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`  | `npm run radii`  | Generate and manage border radius tokens | 1.7.2    |
+| 🌑 **SHADOW WIZ**        | `shadow_wiz.js` | `npm run shadow` | Generate and manage shadow tokens        | 1.0.0 ✅ |
 
 | Spell           | Script Name      | Run Command     | Description                                            | Version  |
 | --------------- | ---------------- | --------------- | ------------------------------------------------------ | -------- |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.3.3 ✨ |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.2.2    |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | 1.4.0 🌟 |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | 1.3.0 🌟 |
 
 Legend:
 ✨ Patch // 🌟 Minor Change // ✅ Major Change
@@ -487,8 +489,84 @@ Conjure the perfect border radius system for your design with the Border Radius 
    - Create CSS and SCSS files with your tokens as variables
      Stored in `output_files/tokens/css/radius/radius_variables_{unit}.css` and `output_files/tokens/scss/radius/radius_variables_{unit}.scss`
 
-9. **Finalize Your Spell**  
+9. **Finalize Your Spell**
    Review the output files and integrate your border radius tokens into your system.
+
+---
+
+## 🌑 **Shadow Tokens Wizard**
+
+<img src="src/assets/shadow_wiz.png" alt="Shadow Wizard" width="200">
+
+Version 1.0.0
+
+Conjure the perfect shadow system for your design with the Shadow Tokens Wizard 🧙! This wizard helps you create a harmonious set of shadow tokens that will bring depth and elevation to your UI elements.
+
+1. **Invoke the Wizard**
+   Cast the shadow spell in your terminal:
+
+   ```sh
+   npm run shadow
+   ```
+
+2. **Choose Token Naming Convention**
+   Select the naming convention for your shadow tokens:
+
+   - shadow
+   - boxShadow
+   - elevation
+   - depth
+   - Custom
+
+3. **Select Shadow Type**
+   Choose the type of shadow you want to create:
+
+   - Outer Shadow (dropShadow)
+   - Inner Shadow (innerShadow)
+
+4. **Choose Naming Approach**
+   Select a naming pattern for your shadow tokens:
+
+   - T-shirt sizes (xs, sm, md, lg, xl, 2xl)
+   - Levels (1, 2, 3, 4, 5)
+   - Elevation (ground, low, medium, high, sky)
+   - Material Design (dp-1, dp-2, dp-3, dp-4, dp-6)
+   - Contextual (card, button, modal, dropdown, tooltip)
+   - Interaction (hover, active, focus)
+   - Custom
+
+5. **Set Number of Shadows**
+   Specify how many shadow values you want to generate (1-10).
+
+6. **Configure Shadow Values**
+   Choose between:
+
+   - **Prefilled Standard Values:** Pre-configured shadow values based on your naming approach
+   - **Custom Values:** Define custom values for x-offset, y-offset, blur, spread, and opacity
+
+7. **Choose Shadow Color**
+   Option to use a custom color for your shadows or stick with the default black.
+
+8. **Preview Your Tokens**
+   The wizard will show your shadow tokens preview with:
+
+   - Shadow name
+   - Shadow type (Inner/Outer)
+   - Complete shadow value
+
+9. **Generate Additional Sets**
+   Option to create multiple shadow sets (e.g., both outer and inner shadows) with the same or different naming conventions.
+
+10. **Generate Your Artifacts**
+    Once confirmed, the wizard will:
+
+    - Export your tokens in Tokens Studio JSON format
+      Stored in: `output_files/tokens/shadow/shadow-tokens.json`
+    - Create CSS and SCSS files with your tokens as variables
+      Stored in `output_files/css/shadow/shadow-tokens.css` and `output_files/scss/shadow/shadow-tokens.scss`
+
+11. **Finalize Your Spell**
+    Review the output files and integrate your shadow tokens into your system.
 
 ---
 

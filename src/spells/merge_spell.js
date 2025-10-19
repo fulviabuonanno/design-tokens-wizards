@@ -25,10 +25,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const outputsDir = path.join(__dirname, "..", "..", "output_files");
-const finalDir = path.join(__dirname, "..", "..", "output_files", "final");
+const finalDir = path.join(__dirname, "..", "..", "final_outputs");
 const tokensFolder = path.join(outputsDir, "tokens/json");
 const cssFolder = path.join(outputsDir, "tokens/css");
-const scssFolder = path.join(outputsDir, "tokens/scss"); 
+const scssFolder = path.join(outputsDir, "tokens/scss");
 // const reportsFolder = path.join(outputsDir, "reports");
 
 /**
@@ -246,6 +246,12 @@ async function mergeOutputs() {
 
   const availableTypographyOptions   = getAvailableOptions(['px','rem','em'], 'Typography');
 
+  const hasShadowFiles = outputFiles.some(file => {
+    const lowerFile = file.toLowerCase();
+    const relativePath = path.relative(outputsDir, file).toLowerCase();
+    return lowerFile.includes('shadow') || relativePath.includes('shadow');
+  });
+
   if (availableColorOptions.length === 0) {
     console.warn(chalk.yellow("⚠️ Warning: No files found with any of the color suffixes (_hex, _rgb, _rgba, _hsl)."));
   }
@@ -267,7 +273,8 @@ async function mergeOutputs() {
     Size: availableSizeOptions,
     Space: availableSpaceOptions,
     "Border Radius": availableBorderRadiusOptions,
-    Typography: hasTypographyFiles ? ['Yes'] : []
+    Typography: hasTypographyFiles ? ['Yes'] : [],
+    Shadow: hasShadowFiles ? ['Yes'] : []
   };
 
   let questions = [];
@@ -315,6 +322,14 @@ async function mergeOutputs() {
       default: true
     });
   }
+  if (availableOptionsDict.Shadow.length > 0) {
+    questions.push({
+      type: 'confirm',
+      name: 'includeShadow',
+      message: "Would you like to include " + chalk.bold.yellowBright("shadow tokens") + " in the merge?\n>>>",
+      default: true
+    });
+  }
 
   const answersFromPrompt = questions.length > 0 ? await inquirer.prompt(questions) : {};
   
@@ -323,7 +338,8 @@ async function mergeOutputs() {
     sizeUnit: answersFromPrompt.sizeUnit || "N/A",
     spaceUnit: answersFromPrompt.spaceUnit || "N/A",
     borderRadiusUnit: answersFromPrompt.borderRadiusUnit || "N/A",
-    includeTypography: answersFromPrompt.includeTypography || false
+    includeTypography: answersFromPrompt.includeTypography || false,
+    includeShadow: answersFromPrompt.includeShadow || false
   };
 
   const expectedSuffixes = [];
@@ -342,6 +358,9 @@ async function mergeOutputs() {
   if (availableOptionsDict.Typography.length > 0 && answers.includeTypography) {
     expectedSuffixes.push("typography");
   }
+  if (availableOptionsDict.Shadow.length > 0 && answers.includeShadow) {
+    expectedSuffixes.push("shadow");
+  }
 
   const cssFiles = outputFiles.filter(file => {
     const lowerName = path.basename(file).toLowerCase();
@@ -357,17 +376,39 @@ async function mergeOutputs() {
       if (suffix === 'typography') {
         return lowerPath.includes('typography') || lowerName.includes('typography');
       }
+      // For shadow, check if it's a shadow file
+      if (suffix === 'shadow') {
+        return lowerPath.includes('shadow') || lowerName.includes('shadow');
+      }
       // For other token types, check if the filename contains the suffix
       return lowerName.includes(suffix);
     });
   });
   const scssFiles = outputFiles.filter(file => {
     const lowerName = path.basename(file).toLowerCase();
-    return lowerName.endsWith('.scss') && expectedSuffixes.some(suffix => lowerName.includes(suffix));
+    const lowerPath = path.relative(outputsDir, file).toLowerCase();
+    return lowerName.endsWith('.scss') && expectedSuffixes.some(suffix => {
+      if (suffix === 'typography') {
+        return lowerPath.includes('typography') || lowerName.includes('typography');
+      }
+      if (suffix === 'shadow') {
+        return lowerPath.includes('shadow') || lowerName.includes('shadow');
+      }
+      return lowerName.includes(suffix);
+    });
   });
   const jsonFiles = outputFiles.filter(file => {
     const lowerName = path.basename(file).toLowerCase();
-    return lowerName.endsWith('.json') && expectedSuffixes.some(suffix => lowerName.includes(suffix));
+    const lowerPath = path.relative(outputsDir, file).toLowerCase();
+    return lowerName.endsWith('.json') && expectedSuffixes.some(suffix => {
+      if (suffix === 'typography') {
+        return lowerPath.includes('typography') || lowerName.includes('typography');
+      }
+      if (suffix === 'shadow') {
+        return lowerPath.includes('shadow') || lowerName.includes('shadow');
+      }
+      return lowerName.includes(suffix);
+    });
   });
 
   if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
@@ -411,13 +452,14 @@ async function mergeOutputs() {
   tableRows.push(['Space', availableOptionsDict.Space.length > 0 ? answers.spaceUnit : "N/A"]);
   tableRows.push(['Border Radius', availableOptionsDict["Border Radius"].length > 0 ? answers.borderRadiusUnit : "N/A"]);
   tableRows.push(['Typography', availableOptionsDict.Typography.length > 0 ? (answers.includeTypography ? "Yes" : "No") : "N/A"]);
+  tableRows.push(['Shadow', availableOptionsDict.Shadow.length > 0 ? (answers.includeShadow ? "Yes" : "No") : "N/A"]);
   tableRows.push(['Naming Convention', namingConvention]);
   table.push(...tableRows);
   console.log(table.toString());
 
   let mergedJSONObj = mergeJSONFiles(jsonFiles);
-  
-  // Asegurarse de que la carpeta 'final' exista
+
+  // Asegurarse de que la carpeta 'final_outputs' exista
   fs.mkdirSync(finalDir, { recursive: true });
   
   // Write CSS output: transform CSS variables if needed
@@ -521,7 +563,7 @@ async function mergeOutputs() {
   console.log(outputTable.toString());
   
   if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
-    console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'final' folder!\n"));
+    console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'final_outputs' folder!\n"));
   } else {
     console.log(chalk.bold.bgYellow("\n⚠️ No files were merged. Please generate some tokens first!\n"));
   }
