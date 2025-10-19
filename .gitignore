@@ -38,10 +38,6 @@ bower_components
 build/Release
 .state.json
 
-# Dependency directories
-node_modules/
-jspm_packages/
-
 # Snowpack dependency directory (https://www.snowpack.dev/)
 web_modules/
 
@@ -100,3 +96,4 @@ temp_file.txt
 
 
 
+node_modules
