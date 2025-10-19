@@ -805,7 +805,7 @@ const main = async () => {
     return main(); 
   }
 
-  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const outputsDir = path.join(__dirname, "..", "..", "output");
   const tokensFolder = path.join(outputsDir, "tokens/json/space");
   const cssFolder = path.join(outputsDir, "tokens/css/space");
   const scssFolder = path.join(outputsDir, "tokens/scss/space");

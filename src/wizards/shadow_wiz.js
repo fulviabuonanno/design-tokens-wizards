@@ -81,7 +81,9 @@ const saveTokenFile = (tokens, outputPath, filename, type) => {
 
 const generateShadowName = (baseName, shadowType, includeTypeInName, tokenName, existingShadows = {}, autoAddSuffix = false) => {
   if (includeTypeInName) {
-    return `${shadowType}.${tokenName}.${baseName}`;
+    // When including type in name, use format: outer.md or inner.md
+    // Don't repeat "shadow" if tokenName contains it
+    return `${shadowType}.${baseName}`;
   }
 
   // If autoAddSuffix is true, always add the shadow type suffix
@@ -766,18 +768,33 @@ const main = async () => {
           }
         ]);
 
-        const { opacity } = await inquirer.prompt([
+        const { opacityInput } = await inquirer.prompt([
           {
-            type: 'number',
-            name: 'opacity',
-            message: 'Enter shadow opacity (0-1):',
-            default: 0.15,
+            type: 'input',
+            name: 'opacityInput',
+            message: 'Enter shadow opacity (e.g., 15% or 0.15):',
+            default: '15%',
             validate: (input) => {
-              const num = Number(input);
-              return num >= 0 && num <= 1 ? true : 'Please enter a number between 0 and 1';
+              const trimmed = input.trim();
+              // Check if it's a percentage
+              if (trimmed.endsWith('%')) {
+                const num = parseFloat(trimmed);
+                return num >= 0 && num <= 100 ? true : 'Percentage must be between 0% and 100%';
+              }
+              // Check if it's a decimal
+              const num = parseFloat(trimmed);
+              return num >= 0 && num <= 1 ? true : 'Decimal opacity must be between 0 and 1';
             }
           }
         ]);
+
+        // Convert percentage to decimal if needed
+        let opacity;
+        if (opacityInput.trim().endsWith('%')) {
+          opacity = parseFloat(opacityInput) / 100;
+        } else {
+          opacity = parseFloat(opacityInput);
+        }
 
         const rgbaColor = tinycolor(baseColor).setAlpha(opacity).toRgbString();
 
@@ -864,9 +881,9 @@ const main = async () => {
         [tokenName]: allShadows
       };
 
-      const tokensDir = path.join(process.cwd(), 'output_files', 'tokens', 'shadow');
-      const cssDir = path.join(process.cwd(), 'output_files', 'css', 'shadow');
-      const scssDir = path.join(process.cwd(), 'output_files', 'scss', 'shadow');
+      const tokensDir = path.join(process.cwd(), 'output', 'tokens', 'json', 'shadow');
+      const cssDir = path.join(process.cwd(), 'output', 'tokens', 'css', 'shadow');
+      const scssDir = path.join(process.cwd(), 'output', 'tokens', 'scss', 'shadow');
 
       // Create directories if they don't exist
       [tokensDir, cssDir, scssDir].forEach(dir => {
@@ -881,9 +898,9 @@ const main = async () => {
 
       // Save token files
       const filesToSave = [
-        { dir: tokensDir, name: 'shadow-tokens.json', type: 'json', path: 'tokens/shadow/shadow-tokens.json' },
-        { dir: cssDir, name: 'shadow-tokens.css', type: 'css', path: 'css/shadow/shadow-tokens.css' },
-        { dir: scssDir, name: 'shadow-tokens.scss', type: 'scss', path: 'scss/shadow/shadow-tokens.scss' }
+        { dir: tokensDir, name: 'shadow-tokens.json', type: 'json', path: 'tokens/json/shadow/shadow-tokens.json' },
+        { dir: cssDir, name: 'shadow-tokens.css', type: 'css', path: 'tokens/css/shadow/shadow-tokens.css' },
+        { dir: scssDir, name: 'shadow-tokens.scss', type: 'scss', path: 'tokens/scss/shadow/shadow-tokens.scss' }
       ];
 
       filesToSave.forEach(({ dir, name, type, path: filePath }) => {

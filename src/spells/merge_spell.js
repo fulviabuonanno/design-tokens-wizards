@@ -24,8 +24,8 @@ function capitalize(str) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const outputsDir = path.join(__dirname, "..", "..", "output_files");
-const finalDir = path.join(__dirname, "..", "..", "final_outputs");
+const outputsDir = path.join(__dirname, "..", "..", "output");
+const finalDir = path.join(__dirname, "..", "..", "output/final");
 const tokensFolder = path.join(outputsDir, "tokens/json");
 const cssFolder = path.join(outputsDir, "tokens/css");
 const scssFolder = path.join(outputsDir, "tokens/scss");
@@ -459,7 +459,7 @@ async function mergeOutputs() {
 
   let mergedJSONObj = mergeJSONFiles(jsonFiles);
 
-  // Asegurarse de que la carpeta 'final_outputs' exista
+  // Asegurarse de que la carpeta 'output' exista
   fs.mkdirSync(finalDir, { recursive: true });
   
   // Write CSS output: transform CSS variables if needed
@@ -563,7 +563,7 @@ async function mergeOutputs() {
   console.log(outputTable.toString());
   
   if (cssFiles.length > 0 || scssFiles.length > 0 || jsonFiles.length > 0) {
-    console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'final_outputs' folder!\n"));
+    console.log(chalk.bold.bgGreen("\n✅ Files merged successfully in the 'output' folder!\n"));
   } else {
     console.log(chalk.bold.bgYellow("\n⚠️ No files were merged. Please generate some tokens first!\n"));
   }

@@ -759,7 +759,7 @@ const main = async () => {
  
   const topKey = (namingChoice === 't-shirt') ? 'size' : name;
 
-  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const outputsDir = path.join(__dirname, "..", "..", "output");
   const tokensFolder = path.join(outputsDir, "tokens/json/size");
   const cssFolder = path.join(outputsDir, "tokens/css/size");
   const scssFolder = path.join(outputsDir, "tokens/scss/size");

@@ -93,10 +93,27 @@ storybook-static
 *.user
 *.userosf
 *.ess
-.github/
 
 .DS_Store
 temp_file.txt
+
+# Output directories
+output/
+final_outputs/
+output_files/
+
+# Ignore all files in the output directory
+output/*
+
+# Ignore all files in the final_outputs directory
+final_outputs/* 
+
+# Ignore all files in the output_files directory
+output_files/*
+
+# Ignore all files in the .claude directory
+.claude/*
+
 
 
 

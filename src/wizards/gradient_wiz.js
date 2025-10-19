@@ -187,7 +187,7 @@ const generateGradientCSS = (gradient) => {
 };
 
 const saveTokensToFile = (tokens, format, folder, fileName) => {
-  const outputDir = path.join(__dirname, '..', '..', 'output_files', folder);
+  const outputDir = path.join(__dirname, '..', '..', 'output', folder);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
@@ -241,7 +241,7 @@ const main = async () => {
           type: 'input',
           name: 'folder',
           message: 'Enter the folder name to save the tokens:',
-          default: 'gradients'
+          default: 'tokens/json/gradient'
         }
       ]);
 

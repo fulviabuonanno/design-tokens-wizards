@@ -18,8 +18,8 @@ if (versionArg) {
   console.log(chalk.bold.whiteBright.bgGray(capitalize(`Clear Files Incantation - version ${version}`)));
 }
 
-const outputsDir = path.join(__dirname, "..", "..", "output_files");
-const finalDir = path.join(outputsDir, "final");
+const outputsDir = path.join(__dirname, "..", "..", "output");
+const finalDir = path.join(__dirname, "..", "..", "output");
 const tokensFolder = path.join(outputsDir, "tokens");
 const cssFolder = path.join(outputsDir, "css");
 const scssFolder = path.join(outputsDir, "scss");

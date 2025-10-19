@@ -42,7 +42,7 @@ console.log('📦 Using versions from scriptVersions:', versions);
 
 // Read README.md
 const readmePath = path.join(__dirname, '..', '..', 'README.md');
-const readmeEsPath = path.join(__dirname, '..', '..', 'README.es.md');
+const readmeEsPath = path.join(__dirname, '..', '..', 'docs', 'README.es.md');
 let readmeContent = fs.readFileSync(readmePath, 'utf8');
 let readmeEsContent = fs.readFileSync(readmeEsPath, 'utf8');
 

@@ -11,11 +11,11 @@
     "radii": "node src/wizards/radii_wiz.js --version=1.7.2",
     "shadow": "node src/wizards/shadow_wiz.js --version=1.0.0",
     "gradient": "node src/wizards/gradient_wiz.js --version=1.0.0",
-    "merge": "node src/spells/merge_spell.js --version=1.3.3",
-    "clear": "node src/spells/clear_spell.js --version=1.2.2",
+    "merge": "node src/spells/merge_spell.js --version=1.4.0",
+    "clear": "node src/spells/clear_spell.js --version=1.3.0",
     "update": "node .github/config/update_versions.js",
     "release": "node .github/config/create_release.js",
-    "pdf": "mkdir -p info && md-to-pdf README.md README.es.md --config-file=.github/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv README.es.pdf info/Instrucciones.pdf"
+    "pdf": "mkdir -p info && md-to-pdf README.md --config-file=.github/config/pdf-config.json && md-to-pdf docs/README.es.md --config-file=.github/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv docs/README.es.pdf info/Instrucciones.pdf"
   },
   "scriptVersions": {
     "color": "2.9.0",
@@ -25,8 +25,8 @@
     "radii": "1.7.2",
     "shadow": "1.0.0",
     "gradient": "1.0.0",
-    "merge": "1.3.3",
-    "clear": "1.2.2",
+    "merge": "1.4.0", 
+    "clear": "1.3.0",
     "update": "1.0.0"
   },
   "author": "Fulvia Buonanno",

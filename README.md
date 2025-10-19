@@ -82,7 +82,7 @@ src/
   wizards/         # All wizard scripts (color, typo, space, size, radii)
   spells/          # Utility scripts (merge, clear)
   assets/          # Images and other static assets
-output_files/      # Where generated tokens are saved
+output/      # Where generated tokens are saved
   tokens/
     json/          # JSON token files
     css/           # CSS token files
@@ -156,9 +156,9 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard 
 
     Your magical artifacts will appear in:
 
-    - JSON: `output_files/tokens/json/color/color_tokens_{format}.json`
-    - CSS: `output_files/tokens/css/color/color_variables_{format}.css`
-    - SCSS: `output_files/tokens/scss/color/color_variables_{format}.scss`
+    - JSON: `output/tokens/json/color/color_tokens_{format}.json`
+    - CSS: `output/tokens/css/color/color_variables_{format}.css`
+    - SCSS: `output/tokens/scss/color/color_variables_{format}.scss`
 
 13. **Review Your Spellwork**  
     The wizard lists all updated, new, and deleted files for your review.
@@ -269,10 +269,10 @@ Craft a harmonious typographic elixir for your design system with the Typography
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
-     Stored in: `output_files/tokens/json/typography/typography_tokens.json`
+     Stored in: `output/tokens/json/typography/typography_tokens.json`
    - Generate CSS and SCSS files
-     - CSS: `output_files/tokens/css/typography/typography_variables.css`
-     - SCSS: `output_files/tokens/scss/typography/typography_variables.scss`
+     - CSS: `output/tokens/css/typography/typography_variables.css`
+     - SCSS: `output/tokens/scss/typography/typography_variables.scss`
 
 10. **Finalize Your Spell**  
     Review the output files and integrate your typography tokens into your system.
@@ -347,9 +347,9 @@ Conjure the perfect spacing system for your design with the Space Tokens Wizard 
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
-     Stored in: `output_files/tokens/space/space_tokens_{unit}.json`
+     Stored in: `output/tokens/space/space_tokens_{unit}.json`
    - Create CSS and SCSS files with your tokens as variables
-     Stored in `output_files/tokens/css/space/space_variables_{unit}.css` and `output_files/tokens/scss/space/space_variables_{unit}.scss`
+     Stored in `output/tokens/css/space/space_variables_{unit}.css` and `output/tokens/scss/space/space_variables_{unit}.scss`
 
 9. **Finalize Your Spell**  
    Review the output files and integrate your space tokens into your system.
@@ -416,9 +416,9 @@ Conjure the perfect sizing system for your design with the Size Tokens Wizard ü
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
-     Stored in: `output_files/tokens/size/size_tokens_{unit}.json`
+     Stored in: `output/tokens/size/size_tokens_{unit}.json`
    - Create CSS and SCSS files with your tokens as variables
-     Stored in `output_files/tokens/css/size/size_variables_{unit}.css` and `output_files/tokens/scss/size/size_variables_{unit}.scss`
+     Stored in `output/tokens/css/size/size_variables_{unit}.css` and `output/tokens/scss/size/size_variables_{unit}.scss`
 
 9. **Finalize Your Spell**  
    Review the output files and integrate your size tokens into your system.
@@ -485,9 +485,9 @@ Conjure the perfect border radius system for your design with the Border Radius 
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
-     Stored in: `output_files/tokens/radius/radius_tokens_{unit}.json`
+     Stored in: `output/tokens/radius/radius_tokens_{unit}.json`
    - Create CSS and SCSS files with your tokens as variables
-     Stored in `output_files/tokens/css/radius/radius_variables_{unit}.css` and `output_files/tokens/scss/radius/radius_variables_{unit}.scss`
+     Stored in `output/tokens/css/radius/radius_variables_{unit}.css` and `output/tokens/scss/radius/radius_variables_{unit}.scss`
 
 9. **Finalize Your Spell**
    Review the output files and integrate your border radius tokens into your system.
@@ -561,9 +561,9 @@ Conjure the perfect shadow system for your design with the Shadow Tokens Wizard 
     Once confirmed, the wizard will:
 
     - Export your tokens in Tokens Studio JSON format
-      Stored in: `output_files/tokens/shadow/shadow-tokens.json`
+      Stored in: `output/tokens/json/shadow/shadow-tokens.json`
     - Create CSS and SCSS files with your tokens as variables
-      Stored in `output_files/css/shadow/shadow-tokens.css` and `output_files/scss/shadow/shadow-tokens.scss`
+      Stored in `output/tokens/css/shadow/shadow-tokens.css` and `output/tokens/scss/shadow/shadow-tokens.scss`
 
 11. **Finalize Your Spell**
     Review the output files and integrate your shadow tokens into your system.
@@ -590,12 +590,12 @@ Conjure a clean slate with the Clear Tokens Spell üßô! This spell helps you rem
 
    ```
    Files to remove:
-   - output_files/tokens/color/
-   - output_files/tokens/typography/
-   - output_files/tokens/space/
-   - output_files/tokens/size/
-   - output_files/tokens/border-radius/
-   - output_files/tokens/final/
+   - output/tokens/color/
+   - output/tokens/typography/
+   - output/tokens/space/
+   - output/tokens/size/
+   - output/tokens/border-radius/
+   - output/tokens/final/
    ```
 
 3. **Confirm Your Cleanup**  
@@ -663,9 +663,9 @@ Conjure a unified design system by merging your token files with the Merge Token
    Once confirmed, the spell will:
 
    - Create a merged tokens file in Tokens Studio JSON format
-     Stored in: `output_files/final/tokens.json`
+     Stored in: `output/final/tokens.json`
    - Create CSS and SCSS files with all your tokens as variables
-     Stored in `output_files/final/tokens.css` and `output_files/final/tokens.scss`
+     Stored in `output/final/tokens.css` and `output/final/tokens.scss`
 
 6. **Finalize Your Spell**  
    Review the merged files and integrate them into your design system.
@@ -736,7 +736,7 @@ Your feedback helps us improve the tool and make it better for everyone. We're p
 A: Make sure you have Node.js (v18+) installed and are running commands from the project root.
 
 **Q: Where are my generated files?**  
-A: Check the `output_files/` directory.
+A: Check the `output/` directory.
 
 **Q: How do I reset/clean all generated files?**  
 A: Run `npm run clear` to remove all generated output.
@@ -790,7 +790,7 @@ A: Please [open an issue](https://github.com/fulviabuonanno/design-tokens-wizard
 Contributions, issues, and feature requests are welcome!  
 Feel free to check the [issues page](https://github.com/fulviabuonanno/design-tokens-wizards/issues) or submit a pull request.
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 
 ### ‚òïÔ∏è Support the Project
 

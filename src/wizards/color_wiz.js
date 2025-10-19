@@ -1115,7 +1115,7 @@ const main = async () => {
   );
 
   let tokensData = {};
-  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const outputsDir = path.join(__dirname, "..", "..", "output");
   const tokensFolder = path.join(outputsDir, "tokens/json/color");
   const cssFolder = path.join(outputsDir, "tokens/css/color");
   const scssFolder = path.join(outputsDir, "tokens/scss/color");

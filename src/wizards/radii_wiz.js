@@ -847,7 +847,7 @@ const main = async () => {
   
   const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, scale, valueScale, multiplier, factor, customIntervals, fibonacciBase);
 
-  const outputsDir = path.join(__dirname, "..", "..", "output_files");
+  const outputsDir = path.join(__dirname, "..", "..", "output");
   const tokensFolder = path.join(outputsDir, "tokens/json/border-radius");
   const cssFolder = path.join(outputsDir, "tokens/css/border-radius");
   const scssFolder = path.join(outputsDir, "tokens/scss/border-radius");
