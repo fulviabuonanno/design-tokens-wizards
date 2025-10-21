@@ -59,7 +59,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version  |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.9.0 ✅ |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | 2.9.1 ✨ |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | 1.2.3    |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | 1.7.2    |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | 1.7.2    |
@@ -93,9 +93,11 @@ info/              # Additional project information
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-Version 2.8.2
+Version 2.9.1
 
 Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
+
+**Latest Update (v2.9.1):** Fixed middle tone selection logic - when selecting a middle tone as 'base', the original hex color is now correctly assigned to the middle tone (e.g., "500") and 'base' is removed from the output, eliminating duplicate values.
 
 1. **Invoke the Wizard**  
    Cast the color spell in your terminal:

@@ -62,7 +62,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión  |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | -------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.9.0 ✅ |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | 2.9.1 ✨ |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | 1.2.3    |
 | 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | 1.7.2    |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | 1.7.2    |
@@ -97,9 +97,11 @@ info/              # Información adicional del proyecto
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-Versión 2.8.2
+Versión 2.9.1
 
 ¡Conjura una paleta deslumbrante para tu sistema de diseño con el Maguito de Tokens de Color 🧙! Este script mágico te guía a través de cada paso para crear tokens de color flexibles y escalables, sin necesidad de libro de hechizos.
+
+**Última Actualización (v2.9.1):** Se corrigió la lógica de selección del tono medio - cuando se selecciona un tono medio como 'base', el color hexadecimal original ahora se asigna correctamente al tono medio (ej., "500") y 'base' se elimina de la salida, eliminando valores duplicados.
 
 1. **Invoca el Maguito**  
    Lanza el hechizo de color en tu terminal:

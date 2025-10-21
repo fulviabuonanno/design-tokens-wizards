@@ -668,8 +668,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
           ]);
           chosenMiddleTone = selectedMiddleTone;
         }
-        // Replace the value of base with the chosen middle tone
-        stops["base"] = stops[chosenMiddleTone];
+        // Swap: assign the original hex (from base) to the middle tone and remove base
+        stops[chosenMiddleTone] = stops["base"];
+        delete stops["base"];
       }
     }
     

@@ -4,7 +4,7 @@
   "description": "🧙✨ A magical collection of interactive CLI wizards and spells to generate, manage, and merge design tokens for your design system. Create consistent color palettes, typography scales, spacing tokens, and more with an enchanting RPG-inspired experience!",
   "type": "module",
   "scripts": {
-    "color": "node src/wizards/color_wiz.js --version=2.9.0",
+    "color": "node src/wizards/color_wiz.js --version=2.9.1",
     "typo": "node src/wizards/typo_wiz.js --version=1.2.3",
     "space": "node src/wizards/space_wiz.js --version=1.7.2",
     "size": "node src/wizards/size_wiz.js --version=1.7.2",
@@ -16,7 +16,7 @@
     "pdf": "mkdir -p info && md-to-pdf README.md README.es.md --config-file=.github/config/pdf-config.json && mv README.pdf info/Instructions.pdf && mv README.es.pdf info/Instrucciones.pdf"
   },
   "scriptVersions": {
-    "color": "2.9.0",
+    "color": "2.9.1",
     "typo": "1.2.3",
     "space": "1.7.2",
     "size": "1.7.2",
