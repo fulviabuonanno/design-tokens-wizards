@@ -44,11 +44,9 @@ A powerful collection of scripts to generate and manage design tokens for your d
    git clone https://github.com/fulviabuonanno/design-tokens-wizards.git
    cd design-tokens-wizards
 
-5. **Install Dependencies**
+5. **Dependencies**
 
-   ```sh
-   npm install
-   ```
+   The repository includes all necessary dependencies (node_modules) so you can run the wizards immediately without installing anything. If you need to install optional development dependencies, see [.github/config/DEVELOPER_SETUP.md](.github/config/DEVELOPER_SETUP.md).
 
 6. **Run the Scripts**  
    Choose from the following wizards:
@@ -118,13 +116,12 @@ Below is a comprehensive list of all dependencies used in this project:
 
 | Dependency                               | Version | Description                                                     | Repository                                                                                                           |
 | ---------------------------------------- | ------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **@builtwithjavascript/oklch-converter** | ^0.9.2  | OKLCH color space converter                                     | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
 | **chalk**                                | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
 | **cli-table3**                           | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
 | **inquirer**                             | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
 | **path**                                 | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                                                                        |
 | **tinycolor2**                           | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
-| **puppeteer**                            | ^20.0.0 | Headless Chrome Node.js API for automating web interactions     | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)                                                        |
-| **@builtwithjavascript/oklch-converter** | ^0.9.2  | OKLCH color space converter                                     | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
 
 ---
 

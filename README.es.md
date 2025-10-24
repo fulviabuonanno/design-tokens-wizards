@@ -47,11 +47,9 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
    cd design-tokens-wizards
    ```
 
-5. **Instala las Dependencias**
+5. **Dependencias**
 
-   ```sh
-   npm install
-   ```
+   El repositorio incluye todas las dependencias necesarias (node_modules) para que puedas ejecutar los maguitos inmediatamente sin instalar nada. Si necesitas instalar dependencias de desarrollo opcionales, consulta [.github/config/DEVELOPER_SETUP.md](.github/config/DEVELOPER_SETUP.md).
 
 6. **Ejecuta los Scripts**  
    Elige entre los siguientes maguitos:
@@ -120,15 +118,14 @@ Creado con amor por Fulvia Buonanno, una Diseñadora de Sistemas de Diseño basa
 
 A continuación se muestra una lista completa de todas las dependencias utilizadas en este proyecto:
 
-| Dependencia                              | Versión | Descripción                                                              | Repositorio                                                                                                          |
-| ---------------------------------------- | ------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| **chalk**                                | ^5.4.1  | Estilizado de cadenas de terminal hecho bien                             | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
-| **cli-table3**                           | ^0.6.5  | Tablas unicode bonitas para la línea de comandos                         | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
-| **inquirer**                             | ^12.4.2 | Una colección de interfaces de usuario comunes de línea de comandos      | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
-| **path**                                 | ^0.12.7 | Módulo path de Node.js                                                   | [nodejs/node](https://github.com/nodejs/node)                                                                        |
-| **tinycolor2**                           | ^1.6.0  | Manipulación y conversión de color rápida y pequeña                      | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
-| **puppeteer**                            | ^20.0.0 | API de Chrome sin cabeza para Node.js para automatizar interacciones web | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)                                                        |
-| **@builtwithjavascript/oklch-converter** | ^0.9.2  | Convertidor de espacio de color OKLCH                                    | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
+| Dependencia                              | Versión | Descripción                                                          | Repositorio                                                                                                          |
+| ---------------------------------------- | ------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **@builtwithjavascript/oklch-converter** | ^0.9.2  | Convertidor de espacio de color OKLCH                                | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
+| **chalk**                                | ^5.4.1  | Estilizado de cadenas de terminal hecho bien                         | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
+| **cli-table3**                           | ^0.6.5  | Tablas unicode bonitas para la línea de comandos                     | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
+| **inquirer**                             | ^12.4.2 | Una colección de interfaces de usuario comunes de línea de comandos  | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
+| **path**                                 | ^0.12.7 | Módulo path de Node.js                                               | [nodejs/node](https://github.com/nodejs/node)                                                                        |
+| **tinycolor2**                           | ^1.6.0  | Manipulación y conversión de color rápida y pequeña                  | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
 
 ---
 
