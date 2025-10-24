@@ -4,7 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Table from 'cli-table3';
-import puppeteer from 'puppeteer';
 
 async function showLoader(message, duration) {
   console.log(message);

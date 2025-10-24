@@ -5,7 +5,6 @@ import inquirer from "inquirer";
 import { fileURLToPath } from "url";
 import chalk from "chalk";
 import Table from "cli-table3";
-import puppeteer from 'puppeteer';
 import { useOklchConverter } from "@builtwithjavascript/oklch-converter";
 
 const oklchConverter = useOklchConverter();
