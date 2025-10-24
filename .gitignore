@@ -89,7 +89,6 @@ storybook-static
 *.user
 *.userosf
 *.ess
-.github/
 
 .DS_Store
 temp_file.txt
