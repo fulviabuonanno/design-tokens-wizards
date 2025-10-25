@@ -86,13 +86,13 @@ Track individual Wizards versions:
 
 | Wizard / Spell          | Version | Last Updated |
 | ----------------------- | ------- | ------------ |
-| 🎨 Color Wizard         | 2.11.0  | 2025-10-24   |
-| 🔤 Typography Wizard    | 1.2.3   | -            |
-| 🔳 Space Wizard         | 1.7.2   | -            |
-| 📏 Size Wizard          | 1.7.2   | -            |
-| 🔲 Border Radius Wizard | 1.7.2   | -            |
-| 🔄 Merge Spell          | 1.3.3   | -            |
-| 🧹 Clear Spell          | 1.2.2   | -            |
+| 🎨 Color Wizard         | 2.11.0 ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow) | 2025-10-24   |
+| 🔤 Typography Wizard    | 1.2.3 ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red)   | -            |
+| 🔳 Space Wizard         | 1.7.2 ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) | -            |
+| 📏 Size Wizard          | 1.7.2 ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue)   | -            |
+| 🔲 Border Radius Wizard | 1.7.2 ![Border Radius Wizard](https://img.shields.io/badge/Border%20Radius%20Wiz-v1.7.2-green) | -            |
+| 🔄 Merge Spell          | 1.3.3 ![Merge Spell](https://img.shields.io/badge/Merge%20Spell-v1.3.3-orange) | -            |
+| 🧹 Clear Spell          | 1.2.2 ![Clear Spell](https://img.shields.io/badge/Clear%20Spell-v1.2.2-lightgrey) | -            |
 
 ## Feedback
 

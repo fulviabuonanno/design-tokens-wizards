@@ -47,27 +47,25 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
    cd design-tokens-wizards
    ```
 
-5. **Instala las Dependencias**
+5. **Dependencias**
 
-   ```sh
-   npm install
-   ```
+   El repositorio incluye todas las dependencias necesarias (node_modules) para que puedas ejecutar los maguitos inmediatamente sin instalar nada.
 
 6. **Ejecuta los Scripts**  
    Elige entre los siguientes maguitos:
 
-| Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            |
-| ------------------------ | ----------------- | --------------- | -------------------------------------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía |
-| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      |
+| Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión |
+| ------------------------ | ----------------- | --------------- | -------------------------------------- | ------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow) |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
+| 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js`    | `npm run radii` | Genera y gestiona tokens de radio      | ![Border Radius Wizard](https://img.shields.io/badge/Border%20Radius%20Wiz-v1.7.2-green) |
 
-| Hechizo         | Nombre del Script | Comando         | Descripción                                      |
-| --------------- | ----------------- | --------------- | ------------------------------------------------ |
-| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo |
-| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  |
+| Hechizo         | Nombre del Script | Comando         | Descripción                                      | Versión |
+| --------------- | ----------------- | --------------- | ------------------------------------------------ | ------- |
+| **MERGE SPELL** | `merge_spell.js`  | `npm run merge` | Combina todos los archivos de tokens en uno solo | ![Merge Spell](https://img.shields.io/badge/Merge%20Spell-v1.3.3-orange) |
+| **CLEAR SPELL** | `clear_spell.js`  | `npm run clear` | Elimina todos los archivos generados de una vez  | ![Clear Spell](https://img.shields.io/badge/Clear%20Spell-v1.2.2-lightgrey) |
 
 ## 🗂 Estructura del Proyecto
 
@@ -120,15 +118,14 @@ Creado con amor por Fulvia Buonanno, una Diseñadora de Sistemas de Diseño basa
 
 A continuación se muestra una lista completa de todas las dependencias utilizadas en este proyecto:
 
-| Dependencia                              | Versión | Descripción                                                              | Repositorio                                                                                                          |
-| ---------------------------------------- | ------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| **chalk**                                | ^5.4.1  | Estilizado de cadenas de terminal hecho bien                             | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
-| **cli-table3**                           | ^0.6.5  | Tablas unicode bonitas para la línea de comandos                         | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
-| **inquirer**                             | ^12.4.2 | Una colección de interfaces de usuario comunes de línea de comandos      | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
-| **path**                                 | ^0.12.7 | Módulo path de Node.js                                                   | [nodejs/node](https://github.com/nodejs/node)                                                                        |
-| **tinycolor2**                           | ^1.6.0  | Manipulación y conversión de color rápida y pequeña                      | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
-| **puppeteer**                            | ^20.0.0 | API de Chrome sin cabeza para Node.js para automatizar interacciones web | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)                                                        |
-| **@builtwithjavascript/oklch-converter** | ^0.9.2  | Convertidor de espacio de color OKLCH                                    | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
+| Dependencia                              | Versión | Descripción                                                          | Repositorio                                                                                                          |
+| ---------------------------------------- | ------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **@builtwithjavascript/oklch-converter** | ^0.9.2  | Convertidor de espacio de color OKLCH                                | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
+| **chalk**                                | ^5.4.1  | Estilizado de cadenas de terminal hecho bien                         | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
+| **cli-table3**                           | ^0.6.5  | Tablas unicode bonitas para la línea de comandos                     | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
+| **inquirer**                             | ^12.4.2 | Una colección de interfaces de usuario comunes de línea de comandos  | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
+| **path**                                 | ^0.12.7 | Módulo path de Node.js                                               | [nodejs/node](https://github.com/nodejs/node)                                                                        |
+| **tinycolor2**                           | ^1.6.0  | Manipulación y conversión de color rápida y pequeña                  | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
 
 ---
 

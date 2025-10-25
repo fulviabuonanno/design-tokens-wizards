@@ -2,7 +2,7 @@
 
 <img src="src/assets/clear_spell.png" alt="Clear Spell" width="200">
 
-Versión 1.2.2
+![Clear Spell](https://img.shields.io/badge/Clear%20Spell-v1.2.2-lightgrey)
 
 ¡Conjura una pizarra limpia con el Hechizo de Limpieza de Tokens 🧙! Este hechizo te ayuda a eliminar todos los archivos de tokens generados, dándote un nuevo comienzo para tu sistema de diseño.
 

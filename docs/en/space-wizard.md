@@ -2,7 +2,7 @@
 
 <img src="src/assets/space_wiz.png" alt="Space Wizard" width="200">
 
-Version 1.7.2
+![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet)
 
 Conjure the perfect spacing system for your design with the Space Tokens Wizard 🧙! This wizard helps you create a harmonious set of spacing tokens that will bring balance and rhythm to your layouts.
 

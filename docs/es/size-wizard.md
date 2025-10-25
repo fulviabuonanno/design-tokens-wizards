@@ -2,7 +2,7 @@
 
 <img src="src/assets/size_wiz.png" alt="Size Wizard" width="200">
 
-Versión 1.7.2
+![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue)
 
 ¡Conjura el sistema de tamaños perfecto para tu diseño con el Maguito de Tokens de Tamaño 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de tamaño que traerán consistencia y precisión a tus diseños.
 

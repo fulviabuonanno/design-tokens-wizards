@@ -2,7 +2,7 @@
 
 <img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="200">
 
-Version 1.2.3
+![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red)
 
 Craft a harmonious typographic elixir for your design system with the Typography Tokens Wizard 🧙! This wizard helps you blend font families, sizes, weights, spacing, and heights into a cohesive typography system.
 

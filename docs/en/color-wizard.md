@@ -2,14 +2,15 @@
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-Version 2.11.0
+![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow)
 
 Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
 
 **Latest Update (v2.11.0):** 🎨 Enhanced batch mode feature! You can now add multiple colors at once using two convenient methods:
+
 - **Bulk Entry:** Paste multiple HEX codes separated by commas or semicolons (e.g., `#FF5733, 3498DB; 2ECC71`)
 - **Individual Entry:** Add colors one at a time with immediate feedback
-All colors in a batch share the same scale configuration, dramatically speeding up the creation of comprehensive color palettes.
+  All colors in a batch share the same scale configuration, dramatically speeding up the creation of comprehensive color palettes.
 
 **Previous Update (v2.9.1):** Fixed middle tone selection logic - when selecting a middle tone as 'base', the original hex color is now correctly assigned to the middle tone (e.g., "500") and 'base' is removed from the output, eliminating duplicate values.
 
@@ -34,6 +35,7 @@ All colors in a batch share the same scale configuration, dramatically speeding 
 
 5. **Choose Color Mode** ✨
    Select how you want to add colors:
+
    - **Single Color:** Add one color at a time (traditional workflow)
    - **Batch Mode:** Add multiple colors at once with the same scale settings
 
@@ -41,6 +43,7 @@ All colors in a batch share the same scale configuration, dramatically speeding 
    Depending on your mode choice:
 
    **Single Color Mode:**
+
    - Enter a HEX color code (e.g., `#FABADA`)
    - Preview your magical hue
    - Give your color a unique name (e.g., `blue`, `yellow`, `red`)
@@ -48,6 +51,7 @@ All colors in a batch share the same scale configuration, dramatically speeding 
    **Batch Mode** (NEW in v2.11.0!):
 
    Choose your input method:
+
    - **Bulk Entry:** Paste multiple HEX codes at once
      - Separate codes with commas (`,`) or semicolons (`;`)
      - With or without `#` symbol (e.g., `#FF5733, 3498DB; 2ECC71` or `FF5733,3498DB,2ECC71`)
@@ -74,9 +78,10 @@ All colors in a batch share the same scale configuration, dramatically speeding 
 
 10. **Preview and Confirm**
     Review your color scale(s) in a table, complete with token names and HEX values.
+
     - For single colors: Full preview with all stops displayed
     - For batch mode: Preview of the first color with a summary of additional colors
-    You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
+      You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
 
 11. **Expand Your Palette**
     Add more colors and repeat the process as many times as you like.

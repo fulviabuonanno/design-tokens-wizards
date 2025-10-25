@@ -44,27 +44,25 @@ A powerful collection of scripts to generate and manage design tokens for your d
    git clone https://github.com/fulviabuonanno/design-tokens-wizards.git
    cd design-tokens-wizards
 
-5. **Install Dependencies**
+5. **Dependencies**
 
-   ```sh
-   npm install
-   ```
+   The repository includes all necessary dependencies (node_modules) so you can run the wizards immediately without installing anything.
 
 6. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow) |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | ![Border Radius Wizard](https://img.shields.io/badge/Border%20Radius%20Wiz-v1.7.2-green) |
 
-| Spell           | Script Name      | Run Command     | Description                                            |
-| --------------- | ---------------- | --------------- | ------------------------------------------------------ |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command |
+| Spell           | Script Name      | Run Command     | Description                                            | Version |
+| --------------- | ---------------- | --------------- | ------------------------------------------------------ | ------- |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | ![Merge Spell](https://img.shields.io/badge/Merge%20Spell-v1.3.3-orange) |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | ![Clear Spell](https://img.shields.io/badge/Clear%20Spell-v1.2.2-lightgrey) |
 
 ## 🗂 Project Structure
 
@@ -118,13 +116,12 @@ Below is a comprehensive list of all dependencies used in this project:
 
 | Dependency                               | Version | Description                                                     | Repository                                                                                                           |
 | ---------------------------------------- | ------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **@builtwithjavascript/oklch-converter** | ^0.9.2  | OKLCH color space converter                                     | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
 | **chalk**                                | ^5.4.1  | Terminal string styling done right                              | [chalk/chalk](https://github.com/chalk/chalk)                                                                        |
 | **cli-table3**                           | ^0.6.5  | Pretty unicode tables for the command line                      | [cli-table3](https://github.com/cli-table/cli-table3)                                                                |
 | **inquirer**                             | ^12.4.2 | A collection of common interactive command line user interfaces | [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)                                                    |
 | **path**                                 | ^0.12.7 | Node.js path module                                             | [nodejs/node](https://github.com/nodejs/node)                                                                        |
 | **tinycolor2**                           | ^1.6.0  | Fast, small color manipulation and conversion                   | [bgrins/TinyColor](https://github.com/bgrins/TinyColor)                                                              |
-| **puppeteer**                            | ^20.0.0 | Headless Chrome Node.js API for automating web interactions     | [puppeteer/puppeteer](https://github.com/puppeteer/puppeteer)                                                        |
-| **@builtwithjavascript/oklch-converter** | ^0.9.2  | OKLCH color space converter                                     | [npmjs.com/@builtwithjavascript/oklch-converter](https://www.npmjs.com/package/@builtwithjavascript/oklch-converter) |
 
 ---
 
