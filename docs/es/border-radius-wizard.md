@@ -2,7 +2,7 @@
 
 <img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="200">
 
-Versión 1.7.2
+![Border Radius Wizard](https://img.shields.io/badge/Border%20Radius%20Wiz-v1.7.2-green)
 
 ¡Conjura el sistema de radio de borde perfecto para tu diseño con el Maguito de Tokens de Radio de Borde 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de radio de borde que traerán elegancia y consistencia a tus elementos de UI.
 

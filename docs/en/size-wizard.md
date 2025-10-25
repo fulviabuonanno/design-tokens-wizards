@@ -2,7 +2,7 @@
 
 <img src="src/assets/size_wiz.png" alt="Size Wizard" width="200">
 
-Version 1.7.2
+![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue)
 
 Conjure the perfect sizing system for your design with the Size Tokens Wizard 🧙! This wizard helps you create a harmonious set of size tokens that will bring consistency and precision to your layouts.
 

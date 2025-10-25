@@ -2,8 +2,6 @@
 
 <img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
-Version 1.3.3
-
 Conjure a unified design system by merging your token files with the Merge Tokens Spell 🧙! This spell combines multiple token files into a single, cohesive design system file, ensuring consistent naming conventions across your tokens.
 
 1. **Invoke the Spell**  

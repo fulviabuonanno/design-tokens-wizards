@@ -46,23 +46,23 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 5. **Dependencies**
 
-   The repository includes all necessary dependencies (node_modules) so you can run the wizards immediately without installing anything. If you need to install optional development dependencies, see [.github/config/DEVELOPER_SETUP.md](.github/config/DEVELOPER_SETUP.md).
+   The repository includes all necessary dependencies (node_modules) so you can run the wizards immediately without installing anything.
 
 6. **Run the Scripts**  
    Choose from the following wizards:
 
-| Token Wizard             | Script Name    | Run Command     | Description                              |
-| ------------------------ | -------------- | --------------- | ---------------------------------------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         |
-| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    |
-| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       |
-| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          |
-| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens |
+| Token Wizard             | Script Name    | Run Command     | Description                              | Version |
+| ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow) |
+| 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
+| 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
+| 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |
+| 🟢 **BORDER RADIUS WIZ** | `radii_wiz.js` | `npm run radii` | Generate and manage border radius tokens | ![Border Radius Wizard](https://img.shields.io/badge/Border%20Radius%20Wiz-v1.7.2-green) |
 
-| Spell           | Script Name      | Run Command     | Description                                            |
-| --------------- | ---------------- | --------------- | ------------------------------------------------------ |
-| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     |
-| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command |
+| Spell           | Script Name      | Run Command     | Description                                            | Version |
+| --------------- | ---------------- | --------------- | ------------------------------------------------------ | ------- |
+| **MERGE SPELL** | `merge_spell.js` | `npm run merge` | Combine all token files into a single unified file     | ![Merge Spell](https://img.shields.io/badge/Merge%20Spell-v1.3.3-orange) |
+| **CLEAR SPELL** | `clear_spell.js` | `npm run clear` | Remove all generated output files in one swift command | ![Clear Spell](https://img.shields.io/badge/Clear%20Spell-v1.2.2-lightgrey) |
 
 ## 🗂 Project Structure
 

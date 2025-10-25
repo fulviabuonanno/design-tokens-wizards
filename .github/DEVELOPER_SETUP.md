@@ -110,13 +110,30 @@ npm run clear   # Clear generated files
 
 ## Version Management
 
-To update version numbers across all wizards:
+To update version numbers across all wizards and documentation:
 
 ```bash
 npm run update
 ```
 
-This runs `.github/config/update_versions.js` which synchronizes version numbers in package.json scripts and README files.
+This runs `.github/config/update_versions.js` which:
+- Synchronizes version numbers from `package.json` scriptVersions
+- Updates README files (English and Spanish) with version badges
+- Updates all wizard documentation files (14 files total)
+- Updates CHANGELOG.md with current versions and badges
+- Updates RELEASE.md with current package and wizard versions
+- Generates color-coded shields.io badges for each wizard
+
+**Current Versions:**
+- Package: v2.0.0
+- Color Wizard: v2.11.0
+- Typography Wizard: v1.2.3
+- Space Wizard: v1.7.2
+- Size Wizard: v1.7.2
+- Border Radius Wizard: v1.7.2
+- Merge Spell: v1.3.3
+- Clear Spell: v1.2.2
+
 
 ## Questions?
 

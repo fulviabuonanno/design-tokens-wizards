@@ -2,7 +2,7 @@
 
 <img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
-Versión 1.3.2
+![Merge Spell](https://img.shields.io/badge/Merge%20Spell-v1.3.3-orange)
 
 ¡Conjura un sistema de diseño unificado fusionando tus archivos de tokens con el Hechizo de Fusión de Tokens 🧙! Este hechizo combina múltiples archivos de tokens en un único archivo cohesivo del sistema de diseño.
 

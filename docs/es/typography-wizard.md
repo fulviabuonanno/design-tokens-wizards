@@ -2,7 +2,7 @@
 
 <img src="src/assets/typo_wiz.png" alt="Typography Wizard" width="200">
 
-Versión 1.2.3
+![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red)
 
 ¡Crea una poción tipográfica armoniosa para tu sistema de diseño con el Maguito de Tokens de Tipografía 🧙! Este maguito te ayuda a combinar familias de fuentes, tamaños, pesos, espaciados y alturas en un sistema tipográfico cohesivo.
 

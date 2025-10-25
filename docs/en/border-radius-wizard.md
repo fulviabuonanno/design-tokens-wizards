@@ -2,7 +2,7 @@
 
 <img src="src/assets/radii_wiz.png" alt="Border Radius Wizard" width="200">
 
-Version 1.7.2
+![Border Radius Wizard](https://img.shields.io/badge/Border%20Radius%20Wiz-v1.7.2-green)
 
 Conjure the perfect border radius system for your design with the Border Radius Tokens Wizard 🧙! This wizard helps you create a harmonious set of border radius tokens that will bring elegance and consistency to your UI elements.
 

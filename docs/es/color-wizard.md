@@ -2,14 +2,15 @@
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-Versión 2.11.0
+![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow)
 
 ¡Conjura una paleta deslumbrante para tu sistema de diseño con el Maguito de Tokens de Color 🧙! Este script mágico te guía a través de cada paso para crear tokens de color flexibles y escalables, sin necesidad de libro de hechizos.
 
 **Última Actualización (v2.11.0):** 🎨 ¡Función de modo por lotes mejorada! Ahora puedes agregar múltiples colores a la vez usando dos métodos convenientes:
+
 - **Entrada Masiva:** Pega múltiples códigos HEX separados por comas o punto y coma (ej., `#FF5733, 3498DB; 2ECC71`)
 - **Entrada Individual:** Agrega colores uno a la vez con retroalimentación inmediata
-Todos los colores en un lote comparten la misma configuración de escala, acelerando drásticamente la creación de paletas de colores completas.
+  Todos los colores en un lote comparten la misma configuración de escala, acelerando drásticamente la creación de paletas de colores completas.
 
 **Actualización Anterior (v2.9.1):** Se corrigió la lógica de selección del tono medio - cuando se selecciona un tono medio como 'base', el color hexadecimal original ahora se asigna correctamente al tono medio (ej., "500") y 'base' se elimina de la salida, eliminando valores duplicados.
 
@@ -34,6 +35,7 @@ Todos los colores en un lote comparten la misma configuración de escala, aceler
 
 5. **Elige el Modo de Color** ✨
    Selecciona cómo quieres agregar colores:
+
    - **Color Individual:** Agrega un color a la vez (flujo tradicional)
    - **Modo por Lotes:** Agrega múltiples colores a la vez con la misma configuración de escala
 
@@ -41,6 +43,7 @@ Todos los colores en un lote comparten la misma configuración de escala, aceler
    Dependiendo de tu elección de modo:
 
    **Modo Color Individual:**
+
    - Ingresa un código de color HEX (ej., `#FABADA`)
    - Vista previa de tu tono mágico
    - Dale a tu color un nombre único (ej., `azul`, `amarillo`, `rojo`)
@@ -48,6 +51,7 @@ Todos los colores en un lote comparten la misma configuración de escala, aceler
    **Modo por Lotes** (¡NUEVO en v2.11.0!):
 
    Elige tu método de entrada:
+
    - **Entrada Masiva:** Pega múltiples códigos HEX a la vez
      - Separa los códigos con comas (`,`) o punto y coma (`;`)
      - Con o sin el símbolo `#` (ej., `#FF5733, 3498DB; 2ECC71` o `FF5733,3498DB,2ECC71`)
@@ -74,9 +78,10 @@ Todos los colores en un lote comparten la misma configuración de escala, aceler
 
 10. **Vista Previa y Confirma**
     Revisa tu(s) escala(s) de color en una tabla, completa con nombres de tokens y valores HEX.
+
     - Para colores individuales: Vista previa completa con todas las paradas mostradas
     - Para modo por lotes: Vista previa del primer color con un resumen de los colores adicionales
-    Puedes establecer el tono medio como `base` si lo deseas. Confirma para continuar o reinicia para ajustar.
+      Puedes establecer el tono medio como `base` si lo deseas. Confirma para continuar o reinicia para ajustar.
 
 11. **Expande tu Paleta**
     Añade más colores y repite el proceso tantas veces como quieras.

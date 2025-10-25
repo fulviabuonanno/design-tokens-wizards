@@ -2,7 +2,7 @@
 
 <img src="src/assets/space_wiz.png" alt="Space Wizard" width="200">
 
-Versión 1.7.2
+![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet)
 
 ¡Conjura el sistema de espaciado perfecto para tu diseño con el Maguito de Tokens de Espaciado 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de espaciado que traerán equilibrio y ritmo a tus diseños.
 

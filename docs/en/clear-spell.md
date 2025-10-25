@@ -2,7 +2,7 @@
 
 <img src="src/assets/clear_spell.png" alt="Clear Spell" width="200">
 
-Version 1.2.2
+![Clear Spell](https://img.shields.io/badge/Clear%20Spell-v1.2.2-lightgrey)
 
 Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you remove all generated token files, giving you a fresh start for your design system.
 
