@@ -18,6 +18,49 @@ if (versionArg) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Semantic ordering for color stops
+const semanticOrder = [
+  "ultra-dark", "darkest", "darker", "dark",
+  "semi-dark", "base", "semi-light", "light",
+  "lighter", "lightest", "ultra-light"
+];
+
+// Memoization cache for color mixing operations
+const colorMixCache = new Map();
+
+/**
+ * Memoized version of tinycolor.mix() to cache repeated color calculations
+ * @param {string} color1 - First color (hex string)
+ * @param {string} color2 - Second color (hex string, typically "white" or "black")
+ * @param {number} percentage - Mix percentage (0-100)
+ * @returns {string} - Resulting hex color (uppercase)
+ */
+const memoizedColorMix = (color1, color2, percentage) => {
+  // Create cache key from parameters
+  const cacheKey = `${color1}|${color2}|${percentage}`;
+
+  // Check if result exists in cache
+  if (colorMixCache.has(cacheKey)) {
+    return colorMixCache.get(cacheKey);
+  }
+
+  // Calculate color mix
+  const result = tinycolor.mix(color1, color2, percentage).toHexString().toUpperCase();
+
+  // Store in cache
+  colorMixCache.set(cacheKey, result);
+
+  return result;
+};
+
+/**
+ * Clears the color mix cache
+ * Should be called when starting a new session or to free memory
+ */
+const clearColorMixCache = () => {
+  colorMixCache.clear();
+};
+
 const showLoader = (message, duration) => {
   process.stdout.write(message);
   return new Promise((resolve) => {
@@ -45,11 +88,6 @@ const printStopsTable = (stops, mode = "semantic stops", padded = false) => {
   let entries = Object.entries(stops);
 
   if (mode === "semantic stops") {
-    const semanticOrder = [
-      "ultra-light", "lightest", "lighter", "light",
-      "semi-light", "base", "semi-dark", "dark",
-      "darker", "darkest", "ultra-dark"
-    ];
     entries.sort((a, b) => {
       const aIndex = semanticOrder.indexOf(a[0]);
       const bIndex = semanticOrder.indexOf(b[0]);
@@ -116,14 +154,25 @@ const displayExistingColors = (tokensData) => {
 
   const processTokens = (obj, path = []) => {
     for (const key in obj) {
-      if (obj[key] && typeof obj[key] === 'object') {
-        if ('$value' in obj[key] && '$type' in obj[key] && obj[key].$type === 'color') {
-          const colorValue = obj[key].$value;
-          const colorPath = [...path, key].join('.');
+      const value = obj[key];
+      if (value && typeof value === 'object') {
+        // Check if this is a color token (cache property checks)
+        const hasValue = '$value' in value;
+        const hasType = '$type' in value;
+
+        if (hasValue && hasType && value.$type === 'color') {
+          const colorValue = value.$value;
+          // Build path by mutating and restoring (avoids array spread)
+          path.push(key);
+          const colorPath = path.join('.');
           console.log(`${chalk.bold(colorPath)}: ${colorValue} ${chalk.bgHex(colorValue).white("     ")}`);
           colorCount++;
+          path.pop();
         } else {
-          processTokens(obj[key], [...path, key]);
+          // Recurse into nested objects
+          path.push(key);
+          processTokens(value, path);
+          path.pop();
         }
       }
     }
@@ -433,6 +482,37 @@ const validateColorName = (input, tokensData, category, namingLevel, allColors =
 };
 
 /**
+ * Validates and normalizes a HEX color input
+ * @param {string} input - The HEX color input (with or without #)
+ * @returns {boolean|string} - true if valid, error message if invalid
+ */
+const validateHexColor = (input) => {
+  if (!input || input.trim().length === 0) {
+    return "Please provide a HEX color value.";
+  }
+
+  const trimmed = input.trim();
+  const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+
+  if (!tinycolor(normalized).isValid()) {
+    return "Invalid HEX color. Please provide a valid HEX color (e.g., #FF5733 or FF5733).";
+  }
+
+  return true;
+};
+
+/**
+ * Normalizes a HEX color input to uppercase format with #
+ * @param {string} input - The HEX color input (with or without #)
+ * @returns {string} - Normalized HEX color (e.g., #FF5733)
+ */
+const normalizeHexColor = (input) => {
+  const trimmed = input.trim();
+  const withHash = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+  return tinycolor(withHash).toHexString().toUpperCase();
+};
+
+/**
  * Collects a single color from the user
  * @param {Object} tokensData - The existing tokens data
  * @param {string} category - The category (if any)
@@ -448,12 +528,11 @@ const collectSingleColor = async (tokensData, category, namingLevel) => {
     {
       type: "input",
       name: "hex",
-      message: "Enter a HEX value to use as base color (e.g., #FABADA):\n>>>",
-      validate: (input) =>
-        tinycolor(input).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color."
+      message: "Enter a HEX value to use as base color (e.g., #FABADA or FABADA):\n>>>",
+      validate: validateHexColor
     }
   ]);
-  const hex = tinycolor(hexResponse.hex).toHexString().toUpperCase();
+  const hex = normalizeHexColor(hexResponse.hex);
 
   const baseColorPreview = chalk.bgHex(hex).white("  Sample  ");
   console.log(`\n${chalk.bold("Selected color:")}`);
@@ -524,10 +603,7 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
             return "Please provide at least one valid HEX value.";
           }
 
-          const invalidCodes = hexCodes.filter(hex => {
-            const hexWithHash = hex.startsWith('#') ? hex : `#${hex}`;
-            return !tinycolor(hexWithHash).isValid();
-          });
+          const invalidCodes = hexCodes.filter(hex => validateHexColor(hex) !== true);
 
           if (invalidCodes.length > 0) {
             return `Invalid HEX code(s): ${invalidCodes.join(', ')}. Please check and try again.`;
@@ -541,10 +617,7 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
     const hexCodes = hexValues.split(/[,;]/)
       .map(h => h.trim())
       .filter(h => h.length > 0)
-      .map(h => {
-        const normalized = h.startsWith('#') ? h : `#${h}`;
-        return tinycolor(normalized).toHexString().toUpperCase();
-      });
+      .map(h => normalizeHexColor(h));
 
     console.log(chalk.greenBright(`\n✅ Found ${hexCodes.length} valid HEX code(s)!\n`));
 
@@ -581,10 +654,7 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
           type: "input",
           name: "hex",
           message: "Enter a HEX value (with or without #, e.g., #FABADA or FABADA):\n>>>",
-          validate: (input) => {
-            const normalized = input.trim().startsWith('#') ? input.trim() : `#${input.trim()}`;
-            return tinycolor(normalized).isValid() ? true : "Invalid HEX color. Please provide a valid HEX color.";
-          }
+          validate: validateHexColor
         },
         {
           type: "input",
@@ -594,10 +664,7 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
         }
       ]);
 
-      const normalizedHex = colorInput.hex.trim().startsWith('#')
-        ? colorInput.hex.trim()
-        : `#${colorInput.hex.trim()}`;
-      const finalHex = tinycolor(normalizedHex).toHexString().toUpperCase();
+      const finalHex = normalizeHexColor(colorInput.hex);
 
       const colorPreview = chalk.bgHex(finalHex).white("  Sample  ");
       console.log(`\n${chalk.bold("Color added:")}`);
@@ -689,12 +756,12 @@ const promptForScaleConfiguration = async (existingSettings, hex) => {
     console.log();
 
     stops = existingSettings.type === "incremental"
-      ? generateStopsIncremental(hex, existingSettings.incrementalOption, existingSettings.stopsCount, existingSettings.startValue)
+      ? generateStopsIncremental(hex, existingSettings.incrementalOption, existingSettings.stopsCount, existingSettings.startValue, existingSettings.minMix, existingSettings.maxMix)
       : (existingSettings.type === "semanticStops"
-        ? generateStopsSemantic(hex, existingSettings.stopsCount)
+        ? generateStopsSemantic(hex, existingSettings.stopsCount, existingSettings.minMix, existingSettings.maxMix)
         : (existingSettings.type === "alphabetical"
-          ? generateStopsAlphabetical(hex, existingSettings.alphabeticalOption, existingSettings.stopsCount)
-          : generateStopsOrdinal(hex, existingSettings.padded, existingSettings.stopsCount)));
+          ? generateStopsAlphabetical(hex, existingSettings.alphabeticalOption, existingSettings.stopsCount, existingSettings.minMix, existingSettings.maxMix)
+          : generateStopsOrdinal(hex, existingSettings.padded, existingSettings.stopsCount, existingSettings.minMix, existingSettings.maxMix)));
 
   } else {
     console.log(chalk.black.bgYellowBright("\n======================================="));
@@ -806,12 +873,12 @@ const promptForScaleConfiguration = async (existingSettings, hex) => {
     };
 
     stops = scaleType === "incremental"
-      ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount, incrementalChoice.startValue)
+      ? generateStopsIncremental(hex, newScaleSettings.incrementalOption, stopsCount, incrementalChoice.startValue, minMix, maxMix)
       : (scaleType === "semanticStops"
-        ? generateStopsSemantic(hex, stopsCount)
+        ? generateStopsSemantic(hex, stopsCount, minMix, maxMix)
         : (scaleType === "alphabetical"
-          ? generateStopsAlphabetical(hex, alphabeticalOption, stopsCount)
-          : generateStopsOrdinal(hex, ordinalPadded, stopsCount)));
+          ? generateStopsAlphabetical(hex, alphabeticalOption, stopsCount, minMix, maxMix)
+          : generateStopsOrdinal(hex, ordinalPadded, stopsCount, minMix, maxMix)));
   }
 
   return { stops, scaleSettings: newScaleSettings };
@@ -830,12 +897,6 @@ const calculateMiddleKeys = (stops, scaleSettings) => {
   if (stopKeys.length === 0) {
     return middleKeys;
   }
-
-  const semanticOrder = [
-    "ultra-dark", "darkest", "darker", "dark",
-    "semi-dark", "base", "semi-light", "light",
-    "lighter", "lightest", "ultra-light"
-  ];
 
   if (scaleSettings.type === "incremental" || scaleSettings.type === "ordinal") {
     const numericKeys = stopKeys.map(Number).sort((a, b) => a - b);
@@ -1080,41 +1141,41 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 const MIN_MIX = 10;
 const MAX_MIX = 90;
 
-const generateStopsIncremental = (hex, step = '50', stopsCount = 10, startValue = 100) => {
+const generateStopsIncremental = (hex, step = '50', stopsCount = 10, startValue = 100, minMix = MIN_MIX, maxMix = MAX_MIX) => {
   const stops = {};
   const stepNum = parseInt(step);
   const startNum = parseInt(startValue) || 100;
   for (let i = 0; i < stopsCount; i++) {
-    const key = startNum + (i * stepNum); 
+    const key = startNum + (i * stepNum);
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     let mixPercentage;
     if (ratio < 0.5) {
-      mixPercentage = MIN_MIX + (1 - ratio * 2) * (MAX_MIX - MIN_MIX);
-      stops[key] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
+      mixPercentage = minMix + (1 - ratio * 2) * (maxMix - minMix);
+      stops[key] = memoizedColorMix(hex, "white", mixPercentage);
     } else {
-      mixPercentage = MIN_MIX + ((ratio - 0.5) * 2) * (MAX_MIX - MIN_MIX);
-      stops[key] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
+      mixPercentage = minMix + ((ratio - 0.5) * 2) * (maxMix - minMix);
+      stops[key] = memoizedColorMix(hex, "black", mixPercentage);
     }
   }
   stops["base"] = tinycolor(hex).toHexString().toUpperCase();
   return stops;
 };
 
-const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
+const generateStopsOrdinal = (hex, padded = true, stopsCount = 10, minMix = MIN_MIX, maxMix = MAX_MIX) => {
   const stops = {};
-  
+
   stops["base"] = tinycolor(hex).toHexString().toUpperCase();
-  
+
   for (let i = 0; i < stopsCount; i++) {
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     const key = padded ? String(i + 1).padStart(2, '0') : String(i + 1);
-    
-    const mixPercentage = ratio < 0.5 
-      ? MIN_MIX + (1 - ratio * 2) * (MAX_MIX - MIN_MIX)
-      : MIN_MIX + ((ratio - 0.5) * 2) * (MAX_MIX - MIN_MIX);
-    stops[key] = tinycolor.mix(hex, ratio < 0.5 ? "white" : "black", mixPercentage).toHexString().toUpperCase();
+
+    const mixPercentage = ratio < 0.5
+      ? minMix + (1 - ratio * 2) * (maxMix - minMix)
+      : minMix + ((ratio - 0.5) * 2) * (maxMix - minMix);
+    stops[key] = memoizedColorMix(hex, ratio < 0.5 ? "white" : "black", mixPercentage);
   }
-  
+
   if (padded) {
     const sortedEntries = Object.entries(stops).sort((a, b) => {
       if (a[0] === "base") return -1;
@@ -1126,9 +1187,9 @@ const generateStopsOrdinal = (hex, padded = true, stopsCount = 10) => {
   return stops;
 };
 
-const generateStopsSemantic = (hex, stopsCount) => {
+const generateStopsSemantic = (hex, stopsCount, minMix = MIN_MIX, maxMix = MAX_MIX) => {
   let labels;
-  
+
   switch (stopsCount) {
     case 1:
       labels = ["base"];
@@ -1166,58 +1227,49 @@ const generateStopsSemantic = (hex, stopsCount) => {
       }
       break;
   }
-  
+
   const stops = {};
   const total = labels.length;
   const baseIndex = Math.floor(total / 2);
-  
-  const MIN_MIX = 10; 
-  const MAX_MIX = 90; 
-  
+
   for (let i = 0; i < total; i++) {
     if (i === baseIndex) {
       stops[labels[i]] = tinycolor(hex).toHexString().toUpperCase();
     } else if (i < baseIndex) {
       const mixPercentage = Math.round(
-        MIN_MIX + ((baseIndex - i) / baseIndex) * (MAX_MIX - MIN_MIX)
+        minMix + ((baseIndex - i) / baseIndex) * (maxMix - minMix)
       );
-      stops[labels[i]] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
+      stops[labels[i]] = memoizedColorMix(hex, "black", mixPercentage);
     } else {
       const mixPercentage = Math.round(
-        MIN_MIX + ((i - baseIndex) / (total - 1 - baseIndex)) * (MAX_MIX - MIN_MIX)
+        minMix + ((i - baseIndex) / (total - 1 - baseIndex)) * (maxMix - minMix)
       );
-      stops[labels[i]] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
+      stops[labels[i]] = memoizedColorMix(hex, "white", mixPercentage);
     }
   }
   return stops;
 };
 
-const generateStopsAlphabetical = (hex, format = 'uppercase', stopsCount = 10) => {
+const generateStopsAlphabetical = (hex, format = 'uppercase', stopsCount = 10, minMix = MIN_MIX, maxMix = MAX_MIX) => {
   const stops = {};
-  const startCharCode = format === 'uppercase' ? 65 : 97; 
-  
+  const startCharCode = format === 'uppercase' ? 65 : 97;
+
   stops["base"] = tinycolor(hex).toHexString().toUpperCase();
-  
+
   for (let i = 0; i < stopsCount; i++) {
     const key = String.fromCharCode(startCharCode + i);
     const ratio = stopsCount === 1 ? 0 : i / (stopsCount - 1);
     let mixPercentage;
     if (ratio < 0.5) {
-      mixPercentage = MIN_MIX + (1 - ratio * 2) * (MAX_MIX - MIN_MIX);
-      stops[key] = tinycolor.mix(hex, "white", mixPercentage).toHexString().toUpperCase();
+      mixPercentage = minMix + (1 - ratio * 2) * (maxMix - minMix);
+      stops[key] = memoizedColorMix(hex, "white", mixPercentage);
     } else {
-      mixPercentage = MIN_MIX + ((ratio - 0.5) * 2) * (MAX_MIX - MIN_MIX);
-      stops[key] = tinycolor.mix(hex, "black", mixPercentage).toHexString().toUpperCase();
+      mixPercentage = minMix + ((ratio - 0.5) * 2) * (maxMix - minMix);
+      stops[key] = memoizedColorMix(hex, "black", mixPercentage);
     }
   }
   return stops;
 };
-
-const semanticOrder = [
-  "ultra-dark", "darkest", "darker", "dark",
-  "semi-dark", "base", "semi-light", "light",
-  "lighter", "lightest", "ultra-light"
-];
 
 const customStringify = (obj, indent = 2) => {
   const spacer = " ".repeat(indent);
@@ -1254,8 +1306,13 @@ const customStringify = (obj, indent = 2) => {
 };
 
 const saveTokensToFile = (tokensData, format, folder, fileName) => {
-  const filePath = path.join(folder, fileName.replace("hex", format.toLowerCase()));
-  fs.writeFileSync(filePath, customStringify(tokensData, 2));
+  try {
+    const filePath = path.join(folder, fileName.replace("hex", format.toLowerCase()));
+    fs.writeFileSync(filePath, customStringify(tokensData, 2));
+  } catch (error) {
+    console.error(chalk.red(`\n❌ Error saving file: ${error.message}`));
+    throw error;
+  }
 };
 
 const deleteUnusedFormatFiles = (folders, formats) => {
@@ -1291,15 +1348,19 @@ const deleteUnusedFormatFiles = (folders, formats) => {
   const deletedFiles = [];
 
   for (const [format, filesByFolder] of Object.entries(formatFiles)) {
-    
+
     if (format === "HEX") continue;
     if (!formats[`generate${format}`]) {
       for (const [folderKey, fileName] of Object.entries(filesByFolder)) {
         const folderPath = folders[folderKey];
         const filePath = path.join(folderPath, fileName);
         if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-          deletedFiles.push(filePath);
+          try {
+            fs.unlinkSync(filePath);
+            deletedFiles.push(filePath);
+          } catch (error) {
+            console.error(chalk.red(`\n❌ Error deleting file ${filePath}: ${error.message}`));
+          }
         }
       }
     }
@@ -1375,15 +1436,25 @@ const convertTokensToSCSS = (tokens) => {
 };
 
 const saveCSSTokensToFile = (tokens, folder, fileName) => {
-  const cssContent = convertTokensToCSS(tokens);
-  const filePath = path.join(folder, fileName);
-  fs.writeFileSync(filePath, cssContent);
+  try {
+    const cssContent = convertTokensToCSS(tokens);
+    const filePath = path.join(folder, fileName);
+    fs.writeFileSync(filePath, cssContent);
+  } catch (error) {
+    console.error(chalk.red(`\n❌ Error saving CSS file: ${error.message}`));
+    throw error;
+  }
 };
 
 const saveSCSSTokensToFile = (tokens, folder, fileName) => {
-  const scssContent = convertTokensToSCSS(tokens);
-  const filePath = path.join(folder, fileName);
-  fs.writeFileSync(filePath, scssContent);
+  try {
+    const scssContent = convertTokensToSCSS(tokens);
+    const filePath = path.join(folder, fileName);
+    fs.writeFileSync(filePath, scssContent);
+  } catch (error) {
+    console.error(chalk.red(`\n❌ Error saving SCSS file: ${error.message}`));
+    throw error;
+  }
 };
 
 const convertTokensToFormat = (tokens, format) => {
@@ -1579,24 +1650,32 @@ const main = async () => {
             additionalColor.hex,
             newScaleSettings.incrementalOption,
             newScaleSettings.stopsCount,
-            newScaleSettings.startValue
+            newScaleSettings.startValue,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
           );
         } else if (newScaleSettings.type === "semanticStops") {
           additionalStops = generateStopsSemantic(
             additionalColor.hex,
-            newScaleSettings.stopsCount
+            newScaleSettings.stopsCount,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
           );
         } else if (newScaleSettings.type === "alphabetical") {
           additionalStops = generateStopsAlphabetical(
             additionalColor.hex,
             newScaleSettings.alphabeticalOption,
-            newScaleSettings.stopsCount
+            newScaleSettings.stopsCount,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
           );
         } else {
           additionalStops = generateStopsOrdinal(
             additionalColor.hex,
             newScaleSettings.padded,
-            newScaleSettings.stopsCount
+            newScaleSettings.stopsCount,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
           );
         }
 
@@ -1625,11 +1704,6 @@ const main = async () => {
               ];
             }
           } else if (newScaleSettings.type === "semanticStops") {
-            const semanticOrder = [
-              "ultra-dark", "darkest", "darker", "dark",
-              "semi-dark", "base", "semi-light", "light",
-              "lighter", "lightest", "ultra-light"
-            ];
             let ordered = stopKeys.slice().sort((a, b) => semanticOrder.indexOf(a) - semanticOrder.indexOf(b));
             if (ordered.length % 2 === 1) {
               middleKeys = [ordered[Math.floor(ordered.length / 2)]];
@@ -1704,68 +1778,22 @@ const main = async () => {
     saveSCSSTokensToFile(tokensData, scssFolder, 'color_variables_hex.scss');
 
     if (generateRGB) {
-      const tokensRGBData = JSON.parse(JSON.stringify(tokensData));
-      Object.entries(tokensRGBData).forEach(([concept, variants]) => {
-        Object.entries(variants).forEach(([variant, colors]) => {
-          Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.$value) {
-              tokensRGBData[concept][variant][key].$value = tinycolor(token.$value).toRgbString();
-            } else if (typeof token === "string") {
-              tokensRGBData[concept][variant][key] = { $value: tinycolor(token).toRgbString(), $type: "color" };
-            }
-          });
-        });
-      });
+      const tokensRGBData = convertTokensToFormat(tokensData, 'RGB');
       saveTokensToFile(tokensRGBData, 'rgb', tokensFolder, 'color_tokens_rgb.json');
     }
-    
+
     if (generateRGBA) {
-      const tokensRGBAData = JSON.parse(JSON.stringify(tokensData));
-      Object.entries(tokensRGBAData).forEach(([concept, variants]) => {
-        Object.entries(variants).forEach(([variant, colors]) => {
-          Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.$value) {
-              const rgba = tinycolor(token.$value).toRgb(); 
-              tokensRGBAData[concept][variant][key].$value = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
-            } else if (typeof token === "string") {
-              const rgba = tinycolor(token).toRgb();
-              tokensRGBAData[concept][variant][key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type: "color" };
-            }
-          });
-        });
-      });
+      const tokensRGBAData = convertTokensToFormat(tokensData, 'RGBA');
       saveTokensToFile(tokensRGBAData, 'rgba', tokensFolder, 'color_tokens_rgba.json');
     }
-    
+
     if (generateHSL) {
-      const tokensHSLData = JSON.parse(JSON.stringify(tokensData));
-      Object.entries(tokensHSLData).forEach(([concept, variants]) => {
-        Object.entries(variants).forEach(([variant, colors]) => {
-          Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.$value) {
-              tokensHSLData[concept][variant][key].$value = tinycolor(token.$value).toHslString();
-            } else if (typeof token === "string") {
-              tokensHSLData[concept][variant][key] = { $value: tinycolor(token).toHslString(), $type: "color" };
-            }
-          });
-        });
-      });
+      const tokensHSLData = convertTokensToFormat(tokensData, 'HSL');
       saveTokensToFile(tokensHSLData, 'hsl', tokensFolder, 'color_tokens_hsl.json');
     }
 
     if (generateOKLCH) {
-      const tokensOKLCHData = JSON.parse(JSON.stringify(tokensData));
-      Object.entries(tokensOKLCHData).forEach(([concept, variants]) => {
-        Object.entries(variants).forEach(([variant, colors]) => {
-          Object.entries(colors).forEach(([key, token]) => {
-            if (token && typeof token === "object" && token.$value) {
-              tokensOKLCHData[concept][variant][key].$value = oklchConverter.hexToOklchString(token.$value);
-            } else if (typeof token === "string") {
-              tokensOKLCHData[concept][variant][key] = { $value: oklchConverter.hexToOklchString(token), $type: "color" };
-            }
-          });
-        });
-      });
+      const tokensOKLCHData = convertTokensToFormat(tokensData, 'OKLCH');
       saveTokensToFile(tokensOKLCHData, 'oklch', tokensFolder, 'color_tokens_oklch.json');
     }
 

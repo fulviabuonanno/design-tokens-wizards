@@ -19,6 +19,93 @@ if (versionArg) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Font weight options and token names
+const weightOptions = [
+  { weight: '100', name: 'Thin', usage: 'Lightest weight, used for very light text' },
+  {weight: '200', name: 'Extra Light', usage: 'Slightly heavier than Thin, used for light text' },
+  { weight: '300', name: 'Light', usage: 'Used for light text, often in body copy' },
+  { weight: '400', name: 'Regular', usage: 'Normal weight, used for most text' },
+  { weight: '500', name: 'Medium', usage: 'Slightly heavier than Regular, used for emphasis' },
+  { weight: '600', name: 'Semi Bold', usage: 'Bold but not too heavy, used for headings' },
+  { weight: '700', name: 'Bold', usage: 'Used for strong emphasis and headings' },
+  { weight: '800', name: 'Extra Bold', usage: 'Heavier than Bold, used for strong emphasis' },
+  { weight: '900', name: 'Black', usage: 'Heaviest weight, used for very strong emphasis' }
+];
+const tokenNames = weightOptions.map(opt => opt.name.toLowerCase().replace(' ', ''));
+
+/**
+ * Prompts user to select a property name for tokens
+ * @param {string} propertyLabel - The label for the property (e.g., "font family")
+ * @param {Array} choices - Array of choice objects with name and value
+ * @param {string} defaultChoice - The default choice value
+ * @param {string} customExamples - Example text for custom naming (e.g., "brandFonts, systemFonts")
+ * @returns {Promise<string>} - The selected property name
+ */
+async function promptForPropertyName(propertyLabel, choices, defaultChoice, customExamples) {
+  const { propertyName } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'propertyName',
+      message: `How would you like to name your ${propertyLabel} tokens?\n>>>`,
+      choices: choices,
+      default: defaultChoice
+    }
+  ]);
+
+  let customPropertyName = propertyName;
+  if (propertyName === 'custom') {
+    const { customName } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'customName',
+        message: `Enter your custom token name (e.g., ${customExamples}):\n>>>`,
+        validate: input => {
+          if (input.trim() === '') return 'Please enter a valid token name';
+          if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
+          return true;
+        }
+      }
+    ]);
+    customPropertyName = customName.trim();
+  }
+
+  return customPropertyName;
+}
+
+/**
+ * Creates a settings summary table
+ * @param {Array<Array<string>>} rows - Array of [key, value] pairs for the settings
+ * @returns {string} - Formatted table as string
+ */
+function createSettingsTable(rows) {
+  const table = new Table({
+    head: [chalk.bold("Setting"), chalk.bold("Option")],
+    style: { head: ["red"], border: ["red"] }
+  });
+
+  rows.forEach(row => table.push(row));
+  return table.toString();
+}
+
+/**
+ * Creates a token values table
+ * @param {Object} values - Object with token names as keys and token data as values
+ * @returns {string} - Formatted table as string
+ */
+function createValuesTable(values) {
+  const table = new Table({
+    head: [chalk.bold("Token Name"), chalk.bold("Value")],
+    style: { head: ["red"], border: ["red"] }
+  });
+
+  Object.entries(values).forEach(([name, data]) => {
+    const value = typeof data === 'object' && data.$value ? data.$value : data;
+    table.push([name, value]);
+  });
+
+  return table.toString();
+}
+
 async function showAccessibilityNotes(propertyType) {
   const { showNotes } = await inquirer.prompt([
     {
@@ -36,7 +123,7 @@ async function showAccessibilityNotes(propertyType) {
     switch (propertyType) {
       case 'fontFamily':
         console.log(chalk.bold.yellow("⚠️ ACCESSIBILITY NOTE ABOUT FONT FAMILIES:"));
-        console.log(chalk.yellow("For optimal readability and :"));
+        console.log(chalk.yellow("For optimal readability and accessibility:"));
         console.log(chalk.yellow("• Choose fonts with clear letterforms and good character distinction"));
         console.log(chalk.yellow("• Sans-serif fonts are generally more readable on screens"));
         console.log(chalk.yellow("• Ensure fonts support all required characters and languages"));
@@ -147,41 +234,21 @@ async function typographyWiz() {
     console.log(chalk.bold.bgRedBright("========================================\n"));
     
     await showAccessibilityNotes('fontFamily');
-    
+
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'propertyName',
-        message: 'How would you like to name your font family tokens?\n>>>',
-        choices: [
-          { name: 'fontFamily', value: 'fontFamily' },
-          { name: 'font-family', value: 'font-family' },
-          { name: 'font_family', value: 'font_family' },
-          { name: 'fonts', value: 'fonts' },
-          { name: 'ff', value: 'ff' },
-          { name: 'custom', value: 'custom' }
-        ],
-        default: 'fontFamily'
-      }
-    ]);
-    
-    let customPropertyName = propertyName;
-    if (propertyName === 'custom') {
-      const { customName } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customName',
-          message: 'Enter your custom token name (e.g., brandFonts, systemFonts):\n>>>',
-          validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token name';
-            if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
-            return true;
-          }
-        }
-      ]);
-      customPropertyName = customName.trim();
-    }
+    const customPropertyName = await promptForPropertyName(
+      'font family',
+      [
+        { name: 'fontFamily', value: 'fontFamily' },
+        { name: 'font-family', value: 'font-family' },
+        { name: 'font_family', value: 'font_family' },
+        { name: 'fonts', value: 'fonts' },
+        { name: 'ff', value: 'ff' },
+        { name: 'custom', value: 'custom' }
+      ],
+      'fontFamily',
+      'brandFonts, systemFonts'
+    );
     
     console.log(chalk.bold.yellowBright(`\n🔢 Step ${currentStep}${String.fromCharCode(65 + substep++)}: Select Nº of Fonts`));
     const { numFonts } = await inquirer.prompt([
@@ -352,32 +419,14 @@ async function typographyWiz() {
     }
 
     console.log(chalk.bold.yellowBright("\n📋 Font Family Settings Summary:"));
-    
-    const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Option")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    settingsTable.push(
+    console.log(createSettingsTable([
       ["Token Name", customPropertyName],
       ["Number of Fonts", totalFonts.toString()],
       ["Naming Convention", namingConvention]
-    );
-
-    console.log(settingsTable.toString());
+    ]));
 
     console.log(chalk.bold.yellowBright("\n🔤 Font Families:"));
-    
-    const fontTable = new Table({
-      head: [chalk.bold("Token Name"), chalk.bold("Value")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    Object.entries(fontFamilies).forEach(([name, data]) => {
-      fontTable.push([name, data.$value]);
-    });
-
-    console.log(fontTable.toString());
+    console.log(createValuesTable(fontFamilies));
 
     const { confirmFontFamily } = await inquirer.prompt([
       {
@@ -405,41 +454,21 @@ async function typographyWiz() {
     await showAccessibilityNotes('fontSize');
     
     let fontSizes = {}; // Initialize fontSizes object
-    
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'propertyName',
-        message: 'How would you like to name your font size tokens?\n>>>',
-        choices: [
-          { name: 'fontSize', value: 'fontSize' },
-          { name: 'font-size', value: 'font-size' },
-          { name: 'font_size', value: 'font_size' },
-          { name: 'size', value: 'size' },
-          { name: 'fs', value: 'fs' },
-          { name: 'custom', value: 'custom' }
-        ],
-        default: 'fontSize'
-      }
-    ]);
 
-    let customPropertyName = propertyName;
-    if (propertyName === 'custom') {
-      const { customName } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customName',
-          message: 'Enter your custom token name (e.g., sizeScale, fontSizeScale):\n>>>',
-          validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token name';
-            if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
-            return true;
-          }
-        }
-      ]);
-      customPropertyName = customName.trim();
-    }
+    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
+    const customPropertyName = await promptForPropertyName(
+      'font size',
+      [
+        { name: 'fontSize', value: 'fontSize' },
+        { name: 'font-size', value: 'font-size' },
+        { name: 'font_size', value: 'font_size' },
+        { name: 'size', value: 'size' },
+        { name: 'fs', value: 'fs' },
+        { name: 'custom', value: 'custom' }
+      ],
+      'fontSize',
+      'sizeScale, fontSizeScale'
+    );
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Naming Convention`));
     const { namingConvention } = await inquirer.prompt([
@@ -919,14 +948,9 @@ async function typographyWiz() {
     }
     
     console.log(chalk.bold.yellowBright("\n📋 Font Size Settings Summary:"));
-    
+
     // Add note about minimum font size
     console.log(chalk.yellow("\n⚠️  Note: For accessibility, the minimum font size is enforced at 12px (or its rem/em equivalent). \nIf your scale would generate a smaller value, it will be clamped to this minimum.\n"));
-    
-    const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Option")],
-      style: { head: ["red"], border: ["red"] }
-    });
 
     function getDescriptiveName(setting, value) {
       if (setting === 'namingConvention') {
@@ -936,7 +960,7 @@ async function typographyWiz() {
         if (value === 'alphabetical') return 'Alphabetical';
         return value;
       }
-      
+
       if (setting === 'scaleType') {
         if (value === '4') return '4-Point Grid System';
         if (value === '8') return '8-Point Grid System';
@@ -945,32 +969,20 @@ async function typographyWiz() {
         if (value === 'fibonacci') return 'Fibonacci Scale';
         return value;
       }
-      
+
       return value;
     }
 
-    settingsTable.push(
+    console.log(createSettingsTable([
       ["Token Name", customPropertyName],
       ["Naming Convention", getDescriptiveName('namingConvention', namingConvention)],
       ["Scale Type", getDescriptiveName('scaleType', scaleType)],
       ["Number of Font Sizes", numSizes.toString()],
       ["Unit", scaleInfo.unit]
-    );
+    ]));
 
-    console.log(settingsTable.toString());
-    
     console.log(chalk.bold.yellowBright("\n📏 Font Sizes:"));
-    
-    const sizeTable = new Table({
-      head: [chalk.bold("Token Name"), chalk.bold("Value")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    Object.entries(fontSizes).forEach(([name, data]) => {
-      sizeTable.push([name, data.$value]);
-    });
-
-    console.log(sizeTable.toString());
+    console.log(createValuesTable(fontSizes));
     
     const { confirmFontSize } = await inquirer.prompt([
       {
@@ -996,40 +1008,20 @@ async function typographyWiz() {
     console.log(chalk.bold.bgRedBright("========================================\n"));
     
     await showAccessibilityNotes('fontWeight');
-    
+
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'propertyName',
-        message: 'How would you like to name your font weight tokens?\n>>>',
-        choices: [
-          { name: 'fontWeight', value: 'fontWeight' },
-          { name: 'font-weight', value: 'font-weight' },
-          { name: 'font_weight', value: 'font_weight' },
-          { name: 'fw', value: 'fw' },
-          { name: 'custom', value: 'custom' }
-        ],
-        default: 'fontWeight'
-      }
-    ]);
-    
-    let customPropertyName = propertyName;
-    if (propertyName === 'custom') {
-      const { customName } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customName',
-          message: 'Enter your custom token name (e.g., weightScale, weightType):\n>>>',
-          validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token name';
-            if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
-            return true;
-          }
-        }
-      ]);
-      customPropertyName = customName.trim();
-    }
+    const customPropertyName = await promptForPropertyName(
+      'font weight',
+      [
+        { name: 'fontWeight', value: 'fontWeight' },
+        { name: 'font-weight', value: 'font-weight' },
+        { name: 'font_weight', value: 'font_weight' },
+        { name: 'fw', value: 'fw' },
+        { name: 'custom', value: 'custom' }
+      ],
+      'fontWeight',
+      'weightScale, weightType'
+    );
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Font Weight Values`));
     const { selectedWeights } = await inquirer.prompt([
@@ -1059,31 +1051,13 @@ async function typographyWiz() {
     });
 
     console.log(chalk.bold.yellowBright("\n📋 Font Weight Settings Summary:"));
-    
-    const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Option")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    settingsTable.push(
+    console.log(createSettingsTable([
       ["Token Name", customPropertyName],
       ["Number of Weights", selectedWeights.length.toString()]
-    );
-
-    console.log(settingsTable.toString());
+    ]));
 
     console.log(chalk.bold.yellowBright("\n📏 Font Weights:"));
-    
-    const weightTable = new Table({
-      head: [chalk.bold("Token Name"), chalk.bold("Value")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    Object.entries(fontWeight).forEach(([name, data]) => {
-      weightTable.push([name, data.$value]);
-    });
-
-    console.log(weightTable.toString());
+    console.log(createValuesTable(fontWeight));
 
     const { confirmFontWeight } = await inquirer.prompt([
       {
@@ -1102,19 +1076,6 @@ async function typographyWiz() {
     return { fontWeight, propertyName: customPropertyName };
   }
 
-  const weightOptions = [
-    { weight: '100', name: 'Thin', usage: 'Lightest weight, used for very light text' },
-    {weight: '200', name: 'Extra Light', usage: 'Slightly heavier than Thin, used for light text' },
-    { weight: '300', name: 'Light', usage: 'Used for light text, often in body copy' },
-    { weight: '400', name: 'Regular', usage: 'Normal weight, used for most text' },
-    { weight: '500', name: 'Medium', usage: 'Slightly heavier than Regular, used for emphasis' },
-    { weight: '600', name: 'Semi Bold', usage: 'Bold but not too heavy, used for headings' },
-    { weight: '700', name: 'Bold', usage: 'Used for strong emphasis and headings' },
-    { weight: '800', name: 'Extra Bold', usage: 'Heavier than Bold, used for strong emphasis' },
-    { weight: '900', name: 'Black', usage: 'Heaviest weight, used for very strong emphasis' }
-  ];
-  const tokenNames = weightOptions.map(opt => opt.name.toLowerCase().replace(' ', ''));
-  
   async function setupLetterSpacing() {
     let substep = 0;
     console.log(chalk.bold.bgRedBright("\n========================================"));
@@ -1122,41 +1083,21 @@ async function typographyWiz() {
     console.log(chalk.bold.bgRedBright("========================================\n"));
     
     await showAccessibilityNotes('letterSpacing');
-    
+
     console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'propertyName',
-        message: 'How would you like to name your letter spacing tokens?\n>>>',
-        choices: [
-          { name: 'letterSpacing', value: 'letterSpacing' },
-          { name: 'letter-spacing', value: 'letter-spacing' },
-          { name: 'letter_spacing', value: 'letter_spacing' },
-          { name: 'tracking', value: 'tracking' },
-          { name: 'ls', value: 'ls' },
-          { name: 'custom', value: 'custom' }
-        ],
-        default: 'letterSpacing'
-      }
-    ]);
-    
-    let customPropertyName = propertyName;
-    if (propertyName === 'custom') {
-      const { customName } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customName',
-          message: 'Enter your custom token name (e.g., spacingScale, spacingType):\n>>>',
-          validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token name';
-            if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
-            return true;
-          }
-        }
-      ]);
-      customPropertyName = customName.trim();
-    }
+    const customPropertyName = await promptForPropertyName(
+      'letter spacing',
+      [
+        { name: 'letterSpacing', value: 'letterSpacing' },
+        { name: 'letter-spacing', value: 'letter-spacing' },
+        { name: 'letter_spacing', value: 'letter_spacing' },
+        { name: 'tracking', value: 'tracking' },
+        { name: 'ls', value: 'ls' },
+        { name: 'custom', value: 'custom' }
+      ],
+      'letterSpacing',
+      'spacingScale, spacingType'
+    );
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Naming Convention`));
     const { namingConvention } = await inquirer.prompt([
@@ -1333,33 +1274,15 @@ async function typographyWiz() {
     }
 
     console.log(chalk.bold.yellowBright("\n📋 Letter Spacing Settings Summary:"));
-    
-    const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Option")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    settingsTable.push(
+    console.log(createSettingsTable([
       ["Token Name", customPropertyName],
       ["Scale Type", scaleType === 'predetermined' ? 'Predetermined Scale' : 'Custom Values'],
       ["Unit", unit],
       ["Number of Values", totalValues.toString()]
-    );
-
-    console.log(settingsTable.toString());
+    ]));
 
     console.log(chalk.bold.yellowBright("\n📏 Letter Spacing Values:"));
-    
-    const valuesTable = new Table({
-      head: [chalk.bold("Token Name"), chalk.bold("Value")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    Object.entries(letterSpacing).forEach(([name, data]) => {
-      valuesTable.push([name, data.$value]);
-    });
-
-    console.log(valuesTable.toString());
+    console.log(createValuesTable(letterSpacing));
 
     const { confirmLetterSpacing } = await inquirer.prompt([
       {
@@ -1411,41 +1334,21 @@ async function typographyWiz() {
     console.log(chalk.bold.bgRedBright("========================================\n"));
     
     await showAccessibilityNotes('lineHeight');
-    
-    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
-    const { propertyName } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'propertyName',
-        message: 'How would you like to name your line height tokens?\n>>>',
-        choices: [
-          { name: 'lineHeight', value: 'lineHeight' },
-          { name: 'line-height', value: 'line-height' },
-          { name: 'line_height', value: 'line_height' },
-          { name: 'leading', value: 'leading' },
-          { name: 'lh', value: 'lh' },
-          { name: 'custom', value: 'custom' }
-        ],
-        default: 'lineHeight'
-      }
-    ]);
 
-    let customPropertyName = propertyName;
-    if (propertyName === 'custom') {
-        const { customName } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customName',
-          message: 'Enter your custom token name (e.g., leadingScale, lineSpacing):\n>>>',
-          validate: input => {
-            if (input.trim() === '') return 'Please enter a valid token name';
-            if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) return 'Token names must start with a letter and can only contain letters, numbers, and hyphens';
-            return true;
-          }
-        }
-      ]);
-      customPropertyName = customName.trim();
-    }
+    console.log(chalk.bold.yellowBright(`🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
+    const customPropertyName = await promptForPropertyName(
+      'line height',
+      [
+        { name: 'lineHeight', value: 'lineHeight' },
+        { name: 'line-height', value: 'line-height' },
+        { name: 'line_height', value: 'line_height' },
+        { name: 'leading', value: 'leading' },
+        { name: 'lh', value: 'lh' },
+        { name: 'custom', value: 'custom' }
+      ],
+      'lineHeight',
+      'leadingScale, lineSpacing'
+    );
 
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Naming Convention`));
     const { namingConvention } = await inquirer.prompt([
@@ -1546,34 +1449,16 @@ async function typographyWiz() {
     });
 
     console.log(chalk.bold.yellowBright("\n📋 Line Height Settings Summary:"));
-    
-    const settingsTable = new Table({
-      head: [chalk.bold("Setting"), chalk.bold("Option")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    settingsTable.push(
+    console.log(createSettingsTable([
       ["Token Name", customPropertyName],
-      ["Scale Type", scaleType === 'scale1' ? 'Predetermined Scale 1' : 
-                     scaleType === 'scale2' ? 'Predetermined Scale 2' : 
+      ["Scale Type", scaleType === 'scale1' ? 'Predetermined Scale 1' :
+                     scaleType === 'scale2' ? 'Predetermined Scale 2' :
                      'Custom Values'],
       ["Number of Values", lineHeightValues.length.toString()]
-    );
-
-    console.log(settingsTable.toString());
+    ]));
 
     console.log(chalk.bold.yellowBright("\n📏 Line Height Values:"));
-    
-    const valuesTable = new Table({
-      head: [chalk.bold("Token Name"), chalk.bold("Value")],
-      style: { head: ["red"], border: ["red"] }
-    });
-
-    Object.entries(lineHeight).forEach(([name, data]) => {
-      valuesTable.push([name, data.$value]);
-    });
-
-    console.log(valuesTable.toString());
+    console.log(createValuesTable(lineHeight));
 
     const { confirmLineHeight } = await inquirer.prompt([
       {
