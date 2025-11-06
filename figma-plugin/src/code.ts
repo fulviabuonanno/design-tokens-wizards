@@ -229,10 +229,9 @@ function createFigmaStyles(config: any, stops: Record<string, string>) {
   // Handle batch colors if enabled
   if (batchMode && batchColors && batchColors.length > 0) {
     batchColors.forEach((batchColor: any) => {
-      const batchStops = generateColorStops({
-        ...config,
+      const batchStops = generateColorStops(Object.assign({}, config, {
         hex: batchColor.hex,
-      });
+      }));
 
       Object.entries(batchStops).forEach(([stopName, hex]) => {
         const styleName = buildStyleName(batchColor.name, stopName);
@@ -291,10 +290,9 @@ function exportAsJSON(config: any, stops: Record<string, string>): string {
   // Add batch colors
   if (batchMode && batchColors && batchColors.length > 0) {
     batchColors.forEach((batchColor: any) => {
-      const batchStops = generateColorStops({
-        ...config,
+      const batchStops = generateColorStops(Object.assign({}, config, {
         hex: batchColor.hex,
-      });
+      }));
 
       Object.entries(batchStops).forEach(([stopName, hex]) => {
         const path: string[] = [];
