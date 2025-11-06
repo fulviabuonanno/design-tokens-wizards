@@ -106,6 +106,152 @@ function createValuesTable(values) {
   return table.toString();
 }
 
+/**
+ * Converts a pixel value to the specified unit
+ * @param {number} value - The value in pixels
+ * @param {string} unit - The target unit ('px', 'rem', or 'em')
+ * @returns {string} - Formatted value with trailing zeros removed
+ */
+function convertToUnit(value, unit) {
+  if (unit === 'px') {
+    // Remove trailing zeros after decimal point
+    return parseFloat(value.toFixed(2)).toString();
+  } else if (unit === 'rem' || unit === 'em') {
+    // Convert px to rem/em (1rem = 16px by default)
+    const converted = (value / 16).toFixed(2);
+    // Remove trailing zeros for whole numbers
+    return parseFloat(converted).toString();
+  }
+  return parseFloat(value.toFixed(2)).toString();
+}
+
+/**
+ * Calculates font sizes based on scale configuration
+ * @param {Object} scaleInfo - Scale configuration object
+ * @param {number} numSizes - Number of sizes to generate
+ * @returns {Array<string>} - Array of calculated font sizes
+ */
+function calculateSizes(scaleInfo, numSizes) {
+  const sizes = [];
+  const MIN_FONT_SIZE = 12;
+  const BASE_FONT_SIZE = 16; // Standard browser default
+
+  if (scaleInfo.method === 'grid4' || scaleInfo.method === 'grid8') {
+    const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
+    const step = scaleInfo.step;
+
+    // Generate a scale that goes both up and down from the base size
+    const halfSizes = Math.floor(numSizes / 2);
+    const remainingSizes = numSizes - halfSizes;
+
+    // Generate smaller sizes
+    for (let i = halfSizes; i > 0; i--) {
+      const size = Math.max(baseSize - (i * step), MIN_FONT_SIZE);
+      sizes.push(convertToUnit(size, scaleInfo.unit));
+    }
+
+    // Add base size
+    sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+
+    // Generate larger sizes
+    for (let i = 1; i < remainingSizes; i++) {
+      const size = baseSize + (i * step);
+      sizes.push(convertToUnit(size, scaleInfo.unit));
+    }
+  } else if (scaleInfo.method === 'modular') {
+    const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
+    const ratio = scaleInfo.ratio;
+
+    // Generate a scale that goes both up and down from the base size
+    const halfSizes = Math.floor(numSizes / 2);
+    const remainingSizes = numSizes - halfSizes;
+
+    // Generate smaller sizes
+    for (let i = halfSizes; i > 0; i--) {
+      const size = Math.max(baseSize / Math.pow(ratio, i), MIN_FONT_SIZE);
+      sizes.push(convertToUnit(size, scaleInfo.unit));
+    }
+
+    // Add base size
+    sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+
+    // Generate larger sizes
+    for (let i = 1; i < remainingSizes; i++) {
+      const size = baseSize * Math.pow(ratio, i);
+      sizes.push(convertToUnit(size, scaleInfo.unit));
+    }
+  } else if (scaleInfo.method === 'fibonacci') {
+    const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
+    const ratio = scaleInfo.ratio; // Golden Ratio (1.618)
+
+    // Generate Fibonacci sequence
+    let prev = baseSize;
+    let current = baseSize;
+
+    // Add base size
+    sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+
+    // Generate remaining sizes
+    for (let i = 1; i < numSizes; i++) {
+      const next = (current * ratio).toFixed(2);
+      sizes.push(convertToUnit(parseFloat(next), scaleInfo.unit));
+      prev = current;
+      current = parseFloat(next);
+    }
+  } else if (scaleInfo.method === 'custom') {
+    const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
+    const step = scaleInfo.step;
+
+    // Generate a scale that goes both up and down from the base size
+    const halfSizes = Math.floor(numSizes / 2);
+    const remainingSizes = numSizes - halfSizes;
+
+    // Generate smaller sizes
+    for (let i = halfSizes; i > 0; i--) {
+      const size = Math.max(baseSize - (i * step), MIN_FONT_SIZE);
+      sizes.push(convertToUnit(size, scaleInfo.unit));
+    }
+
+    // Add base size
+    sizes.push(convertToUnit(baseSize, scaleInfo.unit));
+
+    // Generate larger sizes
+    for (let i = 1; i < remainingSizes; i++) {
+      const size = baseSize + (i * step);
+      sizes.push(convertToUnit(size, scaleInfo.unit));
+    }
+  }
+
+  return sizes;
+}
+
+/**
+ * Returns descriptive names for settings values
+ * @param {string} setting - The setting type ('namingConvention' or 'scaleType')
+ * @param {string} value - The setting value
+ * @returns {string} - Descriptive name
+ */
+function getDescriptiveName(setting, value) {
+  if (setting === 'namingConvention') {
+    if (value === 'tshirt') return 'T-shirt size';
+    if (value === 'incremental') return 'Incremental';
+    if (value === 'ordinal') return 'Ordinal';
+    if (value === 'alphabetical') return 'Alphabetical';
+    return value;
+  }
+
+  if (setting === 'scaleType') {
+    if (value === '4') return '4-Point Grid System';
+    if (value === '8') return '8-Point Grid System';
+    if (value === 'modular') return 'Modular Scale';
+    if (value === 'custom') return 'Custom Intervals';
+    if (value === 'fibonacci') return 'Fibonacci Scale';
+    return value;
+  }
+
+  return value;
+}
+
 async function showAccessibilityNotes(propertyType) {
   const { showNotes } = await inquirer.prompt([
     {
@@ -839,139 +985,11 @@ async function typographyWiz() {
         };
       }
     });
-    
-    function convertToUnit(value, unit) {
-      if (unit === 'px') {
-        // Remove trailing zeros after decimal point
-        return parseFloat(value.toFixed(2)).toString();
-      } else if (unit === 'rem' || unit === 'em') {
-        // Convert px to rem/em (1rem = 16px by default)
-        const converted = (value / 16).toFixed(2);
-        // Remove trailing zeros for whole numbers
-        return parseFloat(converted).toString();
-      }
-      return parseFloat(value.toFixed(2)).toString();
-    }
 
-    function calculateSizes(scaleInfo, numSizes) {
-      const sizes = [];
-      const MIN_FONT_SIZE = 12;
-      const BASE_FONT_SIZE = 16; // Standard browser default
-      
-      if (scaleInfo.method === 'grid4' || scaleInfo.method === 'grid8') {
-        const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
-        const step = scaleInfo.step;
-        
-        // Generate a scale that goes both up and down from the base size
-        const halfSizes = Math.floor(numSizes / 2);
-        const remainingSizes = numSizes - halfSizes;
-        
-        // Generate smaller sizes
-        for (let i = halfSizes; i > 0; i--) {
-          const size = Math.max(baseSize - (i * step), MIN_FONT_SIZE);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
-        
-        // Add base size
-        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
-        
-        // Generate larger sizes
-        for (let i = 1; i < remainingSizes; i++) {
-          const size = baseSize + (i * step);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
-      } else if (scaleInfo.method === 'modular') {
-        const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
-        const ratio = scaleInfo.ratio;
-        
-        // Generate a scale that goes both up and down from the base size
-        const halfSizes = Math.floor(numSizes / 2);
-        const remainingSizes = numSizes - halfSizes;
-        
-        // Generate smaller sizes
-        for (let i = halfSizes; i > 0; i--) {
-          const size = Math.max(baseSize / Math.pow(ratio, i), MIN_FONT_SIZE);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
-        
-        // Add base size
-        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
-        
-        // Generate larger sizes
-        for (let i = 1; i < remainingSizes; i++) {
-          const size = baseSize * Math.pow(ratio, i);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
-      } else if (scaleInfo.method === 'fibonacci') {
-        const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
-        const ratio = scaleInfo.ratio; // Golden Ratio (1.618)
-        
-        // Generate Fibonacci sequence
-        let prev = baseSize;
-        let current = baseSize;
-        
-        // Add base size
-        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
-        
-        // Generate remaining sizes
-        for (let i = 1; i < numSizes; i++) {
-          const next = (current * ratio).toFixed(2);
-          sizes.push(convertToUnit(parseFloat(next), scaleInfo.unit));
-          prev = current;
-          current = parseFloat(next);
-        }
-      } else if (scaleInfo.method === 'custom') {
-        const baseSize = Math.max(scaleInfo.base, MIN_FONT_SIZE);
-        const step = scaleInfo.step;
-        
-        // Generate a scale that goes both up and down from the base size
-        const halfSizes = Math.floor(numSizes / 2);
-        const remainingSizes = numSizes - halfSizes;
-        
-        // Generate smaller sizes
-        for (let i = halfSizes; i > 0; i--) {
-          const size = Math.max(baseSize - (i * step), MIN_FONT_SIZE);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
-        
-        // Add base size
-        sizes.push(convertToUnit(baseSize, scaleInfo.unit));
-        
-        // Generate larger sizes
-        for (let i = 1; i < remainingSizes; i++) {
-          const size = baseSize + (i * step);
-          sizes.push(convertToUnit(size, scaleInfo.unit));
-        }
-      }
-      
-      return sizes;
-    }
-    
     console.log(chalk.bold.yellowBright("\n📋 Font Size Settings Summary:"));
 
     // Add note about minimum font size
     console.log(chalk.yellow("\n⚠️  Note: For accessibility, the minimum font size is enforced at 12px (or its rem/em equivalent). \nIf your scale would generate a smaller value, it will be clamped to this minimum.\n"));
-
-    function getDescriptiveName(setting, value) {
-      if (setting === 'namingConvention') {
-        if (value === 'tshirt') return 'T-shirt size';
-        if (value === 'incremental') return 'Incremental';
-        if (value === 'ordinal') return 'Ordinal';
-        if (value === 'alphabetical') return 'Alphabetical';
-        return value;
-      }
-
-      if (setting === 'scaleType') {
-        if (value === '4') return '4-Point Grid System';
-        if (value === '8') return '8-Point Grid System';
-        if (value === 'modular') return 'Modular Scale';
-        if (value === 'custom') return 'Custom Intervals';
-        if (value === 'fibonacci') return 'Fibonacci Scale';
-        return value;
-      }
-
-      return value;
-    }
 
     console.log(createSettingsTable([
       ["Token Name", customPropertyName],

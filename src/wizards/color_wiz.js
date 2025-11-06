@@ -61,6 +61,32 @@ const clearColorMixCache = () => {
   colorMixCache.clear();
 };
 
+// Cache for hex color validation results
+const hexValidationCache = new Map();
+
+/**
+ * Validates a hex color with caching to avoid redundant validations
+ * @param {string} input - The HEX color input (with or without #)
+ * @returns {boolean} - true if valid, false otherwise
+ */
+const isValidHexCached = (input) => {
+  if (!input) return false;
+
+  const trimmed = input.trim();
+
+  // Check cache first
+  if (hexValidationCache.has(trimmed)) {
+    return hexValidationCache.get(trimmed);
+  }
+
+  // Validate and cache result
+  const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+  const isValid = tinycolor(normalized).isValid();
+  hexValidationCache.set(trimmed, isValid);
+
+  return isValid;
+};
+
 const showLoader = (message, duration) => {
   process.stdout.write(message);
   return new Promise((resolve) => {
@@ -162,10 +188,16 @@ const displayExistingColors = (tokensData) => {
 
         if (hasValue && hasType && value.$type === 'color') {
           const colorValue = value.$value;
+          const colorBlock = chalk.bgHex(colorValue).white("      ");
+
           // Build path by mutating and restoring (avoids array spread)
           path.push(key);
-          const colorPath = path.join('.');
-          console.log(`${chalk.bold(colorPath)}: ${colorValue} ${chalk.bgHex(colorValue).white("     ")}`);
+
+          // Filter out null/undefined values from path before joining
+          const colorPath = path.filter(p => p != null && p !== 'null').join('.');
+
+          // Format: "category.namingLevel.colorName.stop: HEX [block]"
+          console.log(`${chalk.bold(colorPath)}: ${chalk.whiteBright(colorValue)} ${colorBlock}`);
           colorCount++;
           path.pop();
         } else {
@@ -190,30 +222,45 @@ const displayExistingColors = (tokensData) => {
 const detectExistingStructure = (tokensData) => {
   let category = null;
   let namingLevel = null;
+  let longestPath = [];
 
   const findSettings = (obj, path = []) => {
     for (const key in obj) {
-      if (obj[key] && typeof obj[key] === 'object') {
-        if ('$value' in obj[key] && '$type' in obj[key] && obj[key].$type === 'color') {
-          return path;
+      const value = obj[key];
+      if (value && typeof value === 'object') {
+        // Cache property checks
+        const hasValue = '$value' in value;
+        const hasType = '$type' in value;
+
+        if (hasValue && hasType && value.$type === 'color') {
+          // Found a color token, compare path length
+          if (path.length > longestPath.length) {
+            longestPath = [...path];
+          }
         } else {
-          const result = findSettings(obj[key], [...path, key]);
-          if (result) return result;
+          // Avoid array spread - use push/pop pattern
+          path.push(key);
+          findSettings(value, path);
+          path.pop();
         }
       }
     }
-    return null;
   };
 
-  const colorPath = findSettings(tokensData);
-  if (colorPath && colorPath.length > 0) {
-    if (colorPath.length >= 1) {
-      category = colorPath[0];
+  findSettings(tokensData);
+
+  // Use the longest path found (most deeply nested structure)
+  if (longestPath.length > 0) {
+    if (longestPath.length >= 1) {
+      category = longestPath[0];
     }
-    if (colorPath.length >= 2) {
-      const potentialNamingLevel = colorPath[1];
+    if (longestPath.length >= 2) {
+      const potentialNamingLevel = longestPath[1];
       const isNamingLevel = ['color', 'colour', 'palette', 'scheme'].includes(potentialNamingLevel);
       if (isNamingLevel) {
+        namingLevel = potentialNamingLevel;
+      } else {
+        // If not a recognized naming level, treat it as part of the category structure
         namingLevel = potentialNamingLevel;
       }
     }
@@ -482,7 +529,7 @@ const validateColorName = (input, tokensData, category, namingLevel, allColors =
 };
 
 /**
- * Validates and normalizes a HEX color input
+ * Validates and normalizes a HEX color input with real-time preview
  * @param {string} input - The HEX color input (with or without #)
  * @returns {boolean|string} - true if valid, error message if invalid
  */
@@ -491,12 +538,15 @@ const validateHexColor = (input) => {
     return "Please provide a HEX color value.";
   }
 
-  const trimmed = input.trim();
-  const normalized = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
-
-  if (!tinycolor(normalized).isValid()) {
+  // Use cached validation
+  if (!isValidHexCached(input)) {
     return "Invalid HEX color. Please provide a valid HEX color (e.g., #FF5733 or FF5733).";
   }
+
+  // Show real-time color preview for valid input
+  const normalized = normalizeHexColor(input);
+  const preview = chalk.bgHex(normalized).white("  Preview  ");
+  console.log(`  ${chalk.gray('Color:')} ${chalk.whiteBright(normalized)} ${preview}`);
 
   return true;
 };
@@ -603,7 +653,8 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
             return "Please provide at least one valid HEX value.";
           }
 
-          const invalidCodes = hexCodes.filter(hex => validateHexColor(hex) !== true);
+          // Use cached validation to avoid redundant checks
+          const invalidCodes = hexCodes.filter(hex => !isValidHexCached(hex));
 
           if (invalidCodes.length > 0) {
             return `Invalid HEX code(s): ${invalidCodes.join(', ')}. Please check and try again.`;
@@ -614,6 +665,7 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
       }
     ]);
 
+    // Split and normalize - validation already done and cached
     const hexCodes = hexValues.split(/[,;]/)
       .map(h => h.trim())
       .filter(h => h.length > 0)
@@ -694,6 +746,62 @@ const collectBatchColors = async (tokensData, category, namingLevel) => {
   console.log(chalk.yellowBright("All colors will use the same scale settings you configure next.\n"));
 
   return allColors;
+};
+
+/**
+ * Displays a visual preview of color stops with color blocks in table format
+ * @param {Object} stops - The color stops object
+ * @param {Object} scaleSettings - The scale settings
+ * @param {string} colorName - Name of the color (optional)
+ */
+const previewColorScale = (stops, scaleSettings, colorName = null) => {
+  console.log(chalk.bold(`\n${colorName ? colorName + ' - ' : ''}Color Scale Preview:`));
+
+  let entries = Object.entries(stops);
+
+  // Sort entries based on scale type
+  if (scaleSettings.type === "semanticStops") {
+    entries.sort((a, b) => {
+      const aIndex = semanticOrder.indexOf(a[0]);
+      const bIndex = semanticOrder.indexOf(b[0]);
+      return aIndex - bIndex;
+    });
+  } else if (scaleSettings.type === "ordinal" || scaleSettings.type === "incremental") {
+    entries.sort((a, b) => {
+      if (a[0] === "base") return -1;
+      if (b[0] === "base") return 1;
+      return Number(a[0]) - Number(b[0]);
+    });
+  } else if (scaleSettings.type === "alphabetical") {
+    entries.sort((a, b) => {
+      if (a[0] === "base") return -1;
+      if (b[0] === "base") return 1;
+      return a[0].localeCompare(b[0]);
+    });
+  }
+
+  // Create table with color previews
+  const table = new Table({
+    head: [chalk.bold('Stop'), chalk.bold('HEX'), chalk.bold('Preview')],
+    colWidths: [15, 12, 20],
+    style: {
+      head: ['cyan'],
+      border: ['gray']
+    }
+  });
+
+  // Add rows with color blocks
+  entries.forEach(([key, value]) => {
+    const colorBlock = chalk.bgHex(value).white("      ");
+    table.push([
+      chalk.whiteBright(key),
+      chalk.whiteBright(value),
+      colorBlock
+    ]);
+  });
+
+  console.log(table.toString());
+  console.log();
 };
 
 /**
@@ -968,6 +1076,14 @@ const applyMiddleToneLogic = async (stops, scaleSettings, autoApply = false) => 
     let chosenMiddleTone = middleKeys[0];
 
     if (middleKeys.length > 1) {
+      // Show preview of middle tone options with color blocks
+      console.log(chalk.bold("\nMiddle tone options:"));
+      middleKeys.forEach(k => {
+        const colorBlock = chalk.bgHex(stops[k]).white("      ");
+        console.log(`  ${chalk.bold(k.padEnd(12))} ${chalk.whiteBright(stops[k])} ${colorBlock}`);
+      });
+      console.log();
+
       const { selectedMiddleTone } = await inquirer.prompt([
         {
           type: "list",
@@ -1075,7 +1191,8 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       if (allColors.length > 1) {
         console.log(chalk.bold("📝 Naming Examples:"));
         allColors.slice(0, 3).forEach(color => {
-          const namingExample = `${category}.${namingLevel}.${color.name}`;
+          const pathParts = [category, namingLevel, color.name].filter(p => p != null);
+          const namingExample = pathParts.join('.');
           console.log(chalk.whiteBright(`   ${namingExample}`));
         });
         if (allColors.length > 3) {
@@ -1083,26 +1200,71 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
         }
         console.log(chalk.gray("   This is how your colors will be referenced in the tokens\n"));
       } else {
-        const namingExample = `${category}.${namingLevel}.${finalConcept}`;
+        const pathParts = [category, namingLevel, finalConcept].filter(p => p != null);
+        const namingExample = pathParts.join('.');
         console.log(chalk.bold("📝 Naming Example:"));
         console.log(chalk.whiteBright(`   ${namingExample}`));
         console.log(chalk.gray("   This is how your color will be referenced in the tokens\n"));
       }
     }
 
-    // Show preview for first color
-    console.log(chalk.bold(`Preview of "${finalConcept}":\n`));
-    console.log(printStopsTable(stops, mode, padded));
+    // Show preview for first color with visual color blocks
+    previewColorScale(stops, newScaleSettings, finalConcept);
 
-    // If in batch mode, show a summary of other colors
+    // If in batch mode, show preview for additional colors
     if (allColors.length > 1) {
       console.log(chalk.yellowBright(`\n💡 Note: All ${allColors.length} colors will use the same scale configuration.`));
-      console.log(chalk.gray("   Additional colors:"));
+      console.log(chalk.gray("\n   Additional color previews (first 5 stops shown):\n"));
+
       additionalColors.forEach(color => {
-        const preview = chalk.bgHex(color.hex).white("  ●  ");
-        console.log(chalk.gray(`   - ${color.name}: ${color.hex} ${preview}`));
+        // Generate stops for preview
+        let previewStops;
+        if (newScaleSettings.type === "incremental") {
+          previewStops = generateStopsIncremental(
+            color.hex,
+            newScaleSettings.incrementalOption,
+            newScaleSettings.stopsCount,
+            newScaleSettings.startValue,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
+          );
+        } else if (newScaleSettings.type === "semanticStops") {
+          previewStops = generateStopsSemantic(
+            color.hex,
+            newScaleSettings.stopsCount,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
+          );
+        } else if (newScaleSettings.type === "alphabetical") {
+          previewStops = generateStopsAlphabetical(
+            color.hex,
+            newScaleSettings.alphabeticalOption,
+            newScaleSettings.stopsCount,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
+          );
+        } else {
+          previewStops = generateStopsOrdinal(
+            color.hex,
+            newScaleSettings.padded,
+            newScaleSettings.stopsCount,
+            newScaleSettings.minMix,
+            newScaleSettings.maxMix
+          );
+        }
+
+        // Show compact preview with color blocks
+        console.log(chalk.bold(`   ${color.name}:`));
+        const entries = Object.entries(previewStops).slice(0, 5); // Show first 5 stops
+        entries.forEach(([key, value]) => {
+          const colorBlock = chalk.bgHex(value).white("      ");
+          console.log(`     ${chalk.whiteBright(key.padEnd(10))} ${chalk.whiteBright(value)} ${colorBlock}`);
+        });
+        if (Object.keys(previewStops).length > 5) {
+          console.log(chalk.gray(`     ... and ${Object.keys(previewStops).length - 5} more stops`));
+        }
+        console.log();
       });
-      console.log();
     }
 
     // Step 6: Apply middle tone logic
@@ -1282,13 +1444,24 @@ const customStringify = (obj, indent = 2) => {
       return "[\n" + " ".repeat(currentIndent + indent) + items.join(",\n" + " ".repeat(currentIndent + indent)) + "\n" + " ".repeat(currentIndent) + "]";
     }
     let keys = Object.keys(value);
-    
+
     keys.sort((a, b) => {
       if (a === "$value") return -1;
       if (b === "$value") return 1;
       if (a === "$type") return -1;
       if (b === "$type") return 1;
-      return a.localeCompare(b);
+
+      // Check if both keys are numeric (including "base")
+      const aIsNum = !isNaN(Number(a));
+      const bIsNum = !isNaN(Number(b));
+
+      if (aIsNum && bIsNum) {
+        // Both are numeric, sort numerically
+        return Number(a) - Number(b);
+      } else {
+        // At least one is not numeric, use string comparison
+        return a.localeCompare(b);
+      }
     });
 
     if (keys.includes("base")) {
@@ -1390,10 +1563,14 @@ const convertTokensToCSS = (tokens) => {
         keys.unshift("base");
       }
       for (const key of keys) {
-        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
-          cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
-        } else {
-          processTokens(obj[key], `${prefix}${key}-`);
+        const value = obj[key];
+        // Cache type and property checks
+        if (value && typeof value === "object") {
+          if ("$value" in value) {
+            cssVariables += `  --${prefix}${key}: ${value.$value};\n`;
+          } else {
+            processTokens(value, `${prefix}${key}-`);
+          }
         }
       }
     }
@@ -1423,10 +1600,14 @@ const convertTokensToSCSS = (tokens) => {
         keys.unshift("base");
       }
       for (const key of keys) {
-        if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
-          scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
-        } else {
-          processTokens(obj[key], `${prefix}${key}-`);
+        const value = obj[key];
+        // Cache type and property checks
+        if (value && typeof value === "object") {
+          if ("$value" in value) {
+            scssVariables += `$${prefix}${key}: ${value.$value};\n`;
+          } else {
+            processTokens(value, `${prefix}${key}-`);
+          }
         }
       }
     }
@@ -1461,20 +1642,28 @@ const convertTokensToFormat = (tokens, format) => {
   const converted = JSON.parse(JSON.stringify(tokens));
   const convertRecursive = (obj) => {
     for (const key in obj) {
-      if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
-        const { $value, $type, ...rest } = obj[key];
-        if (format === "RGB") {
-          obj[key] = { $value: tinycolor($value).toRgbString(), $type, ...rest };
-        } else if (format === "RGBA") {
-          const rgba = tinycolor($value).toRgb();
-          obj[key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type, ...rest };
-        } else if (format === "HSL") {
-          obj[key] = { $value: tinycolor($value).toHslString(), $type, ...rest };
-        } else if (format === "OKLCH") {
-          obj[key] = { $value: oklchConverter.hexToOklchString($value), $type, ...rest };
+      const value = obj[key];
+      // Cache type check
+      if (value && typeof value === "object") {
+        // Check if this is a token with $value
+        const hasValue = "$value" in value;
+
+        if (hasValue) {
+          const { $value, $type, ...rest } = value;
+          if (format === "RGB") {
+            obj[key] = { $value: tinycolor($value).toRgbString(), $type, ...rest };
+          } else if (format === "RGBA") {
+            const rgba = tinycolor($value).toRgb();
+            obj[key] = { $value: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`, $type, ...rest };
+          } else if (format === "HSL") {
+            obj[key] = { $value: tinycolor($value).toHslString(), $type, ...rest };
+          } else if (format === "OKLCH") {
+            obj[key] = { $value: oklchConverter.hexToOklchString($value), $type, ...rest };
+          }
+        } else {
+          // Recurse into nested objects
+          convertRecursive(value);
         }
-      } else if (obj[key] && typeof obj[key] === "object") {
-        convertRecursive(obj[key]);
       }
     }
   };
