@@ -1,0 +1,18 @@
+{
+  "name": "design-tokens-wizard-figma-plugin",
+  "version": "1.0.0",
+  "description": "Figma plugin to generate design token color scales",
+  "main": "dist/code.js",
+  "scripts": {
+    "build": "tsc && npm run copy-ui",
+    "copy-ui": "cp src/ui.html dist/ui.html",
+    "watch": "tsc --watch",
+    "dev": "npm run build && npm run watch"
+  },
+  "author": "Fulvia Buonanno",
+  "license": "MIT",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.90.0",
+    "typescript": "^5.3.3"
+  }
+}

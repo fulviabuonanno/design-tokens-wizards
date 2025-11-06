@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design Tokens Wizard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #333;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #999;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    input[type="text"],
+    input[type="color"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #18a0fb;
+      box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
+    }
+
+    .color-input-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      width: 60px;
+      height: 38px;
+      padding: 2px;
+      cursor: pointer;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .flex-row > * {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 16px;
+      background: #18a0fb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #0d8de0;
+    }
+
+    button:active {
+      background: #0074c2;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .button-secondary {
+      background: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+    }
+
+    .button-secondary:hover {
+      background: #f9f9f9;
+    }
+
+    .preview {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .preview-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .color-stop {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 12px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    .color-info {
+      flex: 1;
+    }
+
+    .color-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .color-value {
+      color: #666;
+      font-size: 11px;
+    }
+
+    .help-text {
+      font-size: 11px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .batch-colors {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .batch-color-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .remove-btn {
+      padding: 4px 8px;
+      background: #ff5c5c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .remove-btn:hover {
+      background: #ff3838;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e5e5;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎨 Design Tokens Wizard</h1>
+    <div class="subtitle">Generate beautiful color scales and sync them to Figma</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Color Setup</div>
+
+    <div class="form-group">
+      <label for="colorName">Color Name</label>
+      <input type="text" id="colorName" placeholder="e.g., blue, primary, brand" />
+      <div class="help-text">This will be the base name for your color scale</div>
+    </div>
+
+    <div class="form-group">
+      <label for="baseColor">Base Color</label>
+      <div class="color-input-wrapper">
+        <input type="color" id="colorPicker" value="#3B82F6" />
+        <input type="text" id="baseColor" value="#3B82F6" placeholder="#3B82F6" />
+      </div>
+      <div class="help-text">Choose your base color or enter a HEX value</div>
+    </div>
+
+    <div class="checkbox-wrapper">
+      <input type="checkbox" id="batchMode" />
+      <label for="batchMode">Batch Mode (add multiple colors)</label>
+    </div>
+
+    <div id="batchContainer" class="hidden">
+      <div id="batchColors" class="batch-colors"></div>
+      <button type="button" class="button-secondary" id="addBatchColor">+ Add Another Color</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scale Configuration</div>
+
+    <div class="form-group">
+      <label for="scaleType">Scale Type</label>
+      <select id="scaleType">
+        <option value="incremental">Incremental (100, 200, 300...)</option>
+        <option value="ordinal">Ordinal (1, 2, 3... or 01, 02, 03...)</option>
+        <option value="alphabetical">Alphabetical (A, B, C...)</option>
+        <option value="semanticStops">Semantic (light, base, dark...)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="incrementalOptions">
+      <label for="incrementStep">Step Size</label>
+      <select id="incrementStep">
+        <option value="100">100 (100, 200, 300...)</option>
+        <option value="50">50 (50, 100, 150...)</option>
+        <option value="25">25 (25, 50, 75...)</option>
+        <option value="10">10 (10, 20, 30...)</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="ordinalOptions">
+      <label>Number Format</label>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="paddedNumbers" checked />
+        <label for="paddedNumbers">Padded (01, 02, 03...)</label>
+      </div>
+    </div>
+
+    <div class="form-group hidden" id="alphabeticalOptions">
+      <label for="alphabetCase">Letter Case</label>
+      <select id="alphabetCase">
+        <option value="uppercase">Uppercase (A, B, C...)</option>
+        <option value="lowercase">Lowercase (a, b, c...)</option>
+      </select>
+    </div>
+
+    <div class="flex-row">
+      <div class="form-group">
+        <label for="stopsCount">Number of Stops</label>
+        <input type="number" id="stopsCount" value="10" min="1" max="20" />
+      </div>
+      <div class="form-group" id="startValueGroup">
+        <label for="startValue">Start Value</label>
+        <input type="number" id="startValue" value="100" min="0" step="50" />
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Naming Structure</div>
+
+    <div class="form-group">
+      <label for="category">Category (optional)</label>
+      <input type="text" id="category" placeholder="e.g., primitives, foundation, core" />
+      <div class="help-text">Helps organize colors in a hierarchy</div>
+    </div>
+
+    <div class="form-group">
+      <label for="namingLevel">Naming Level (optional)</label>
+      <input type="text" id="namingLevel" placeholder="e.g., color, palette, scheme" />
+      <div class="help-text">Adds context about color usage</div>
+    </div>
+  </div>
+
+  <button type="button" id="generatePreview">Generate Preview</button>
+
+  <div id="preview" class="preview hidden">
+    <div class="preview-title">Preview</div>
+    <div id="previewContent"></div>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="button-secondary" id="exportJSON">Export JSON</button>
+    <button type="button" id="createStyles">Create Figma Styles</button>
+  </div>
+
+  <script>
+    // Color picker and hex input sync
+    const colorPicker = document.getElementById('colorPicker');
+    const baseColorInput = document.getElementById('baseColor');
+
+    colorPicker.addEventListener('input', (e) => {
+      baseColorInput.value = e.target.value.toUpperCase();
+    });
+
+    baseColorInput.addEventListener('input', (e) => {
+      const hex = e.target.value;
+      if (/^#[0-9A-F]{6}$/i.test(hex)) {
+        colorPicker.value = hex;
+      }
+    });
+
+    // Scale type options visibility
+    const scaleType = document.getElementById('scaleType');
+    const incrementalOptions = document.getElementById('incrementalOptions');
+    const ordinalOptions = document.getElementById('ordinalOptions');
+    const alphabeticalOptions = document.getElementById('alphabeticalOptions');
+    const startValueGroup = document.getElementById('startValueGroup');
+
+    scaleType.addEventListener('change', (e) => {
+      incrementalOptions.classList.add('hidden');
+      ordinalOptions.classList.add('hidden');
+      alphabeticalOptions.classList.add('hidden');
+      startValueGroup.classList.add('hidden');
+
+      if (e.target.value === 'incremental') {
+        incrementalOptions.classList.remove('hidden');
+        startValueGroup.classList.remove('hidden');
+      } else if (e.target.value === 'ordinal') {
+        ordinalOptions.classList.remove('hidden');
+      } else if (e.target.value === 'alphabetical') {
+        alphabeticalOptions.classList.remove('hidden');
+      }
+    });
+
+    // Batch mode
+    const batchMode = document.getElementById('batchMode');
+    const batchContainer = document.getElementById('batchContainer');
+    const batchColors = document.getElementById('batchColors');
+    const addBatchColorBtn = document.getElementById('addBatchColor');
+    let batchColorsList = [];
+
+    batchMode.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        batchContainer.classList.remove('hidden');
+      } else {
+        batchContainer.classList.add('hidden');
+        batchColorsList = [];
+        batchColors.innerHTML = '';
+      }
+    });
+
+    addBatchColorBtn.addEventListener('click', () => {
+      const colorItem = document.createElement('div');
+      colorItem.className = 'batch-color-item';
+      const id = Date.now();
+
+      colorItem.innerHTML = `
+        <input type="color" class="batch-picker" value="#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}" data-id="${id}" />
+        <input type="text" class="batch-hex" placeholder="#HEX" data-id="${id}" />
+        <input type="text" class="batch-name" placeholder="color name" data-id="${id}" style="flex: 2;" />
+        <button class="remove-btn" data-id="${id}">✕</button>
+      `;
+
+      batchColors.appendChild(colorItem);
+
+      // Sync picker and hex input
+      const picker = colorItem.querySelector('.batch-picker');
+      const hexInput = colorItem.querySelector('.batch-hex');
+
+      hexInput.value = picker.value.toUpperCase();
+
+      picker.addEventListener('input', (e) => {
+        hexInput.value = e.target.value.toUpperCase();
+      });
+
+      hexInput.addEventListener('input', (e) => {
+        const hex = e.target.value;
+        if (/^#[0-9A-F]{6}$/i.test(hex)) {
+          picker.value = hex;
+        }
+      });
+
+      // Remove button
+      colorItem.querySelector('.remove-btn').addEventListener('click', (e) => {
+        colorItem.remove();
+      });
+    });
+
+    // Generate preview
+    let currentStops = null;
+
+    document.getElementById('generatePreview').addEventListener('click', () => {
+      const config = {
+        hex: document.getElementById('baseColor').value,
+        name: document.getElementById('colorName').value || 'color',
+        scaleType: document.getElementById('scaleType').value,
+        stopsCount: parseInt(document.getElementById('stopsCount').value),
+        incrementalOption: document.getElementById('incrementStep').value,
+        startValue: parseInt(document.getElementById('startValue').value),
+        padded: document.getElementById('paddedNumbers').checked,
+        alphabeticalOption: document.getElementById('alphabetCase').value,
+        category: document.getElementById('category').value,
+        namingLevel: document.getElementById('namingLevel').value,
+        batchMode: document.getElementById('batchMode').checked
+      };
+
+      // Collect batch colors if enabled
+      if (config.batchMode) {
+        config.batchColors = Array.from(document.querySelectorAll('.batch-color-item')).map(item => ({
+          hex: item.querySelector('.batch-hex').value,
+          name: item.querySelector('.batch-name').value
+        })).filter(c => c.hex && c.name);
+      }
+
+      parent.postMessage({ pluginMessage: { type: 'generate-preview', config } }, '*');
+    });
+
+    // Create Figma styles
+    document.getElementById('createStyles').addEventListener('click', () => {
+      if (!currentStops) {
+        alert('Please generate a preview first');
+        return;
+      }
+
+      const config = {
+        hex: document.getElementById('baseColor').value,
+        name: document.getElementById('colorName').value || 'color',
+        scaleType: document.getElementById('scaleType').value,
+        stopsCount: parseInt(document.getElementById('stopsCount').value),
+        incrementalOption: document.getElementById('incrementStep').value,
+        startValue: parseInt(document.getElementById('startValue').value),
+        padded: document.getElementById('paddedNumbers').checked,
+        alphabeticalOption: document.getElementById('alphabetCase').value,
+        category: document.getElementById('category').value,
+        namingLevel: document.getElementById('namingLevel').value,
+        batchMode: document.getElementById('batchMode').checked
+      };
+
+      if (config.batchMode) {
+        config.batchColors = Array.from(document.querySelectorAll('.batch-color-item')).map(item => ({
+          hex: item.querySelector('.batch-hex').value,
+          name: item.querySelector('.batch-name').value
+        })).filter(c => c.hex && c.name);
+      }
+
+      parent.postMessage({ pluginMessage: { type: 'create-styles', config } }, '*');
+    });
+
+    // Export JSON
+    document.getElementById('exportJSON').addEventListener('click', () => {
+      if (!currentStops) {
+        alert('Please generate a preview first');
+        return;
+      }
+
+      parent.postMessage({ pluginMessage: { type: 'export-json', stops: currentStops } }, '*');
+    });
+
+    // Listen for messages from plugin code
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+
+      if (msg.type === 'preview-generated') {
+        currentStops = msg.stops;
+        displayPreview(msg.stops);
+      } else if (msg.type === 'styles-created') {
+        alert(`✅ Created ${msg.count} Figma color styles!`);
+      } else if (msg.type === 'json-exported') {
+        // Download JSON file
+        const blob = new Blob([msg.json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'color-tokens.json';
+        a.click();
+      }
+    };
+
+    function displayPreview(stops) {
+      const preview = document.getElementById('preview');
+      const previewContent = document.getElementById('previewContent');
+
+      previewContent.innerHTML = '';
+
+      Object.entries(stops).forEach(([name, hex]) => {
+        const stopEl = document.createElement('div');
+        stopEl.className = 'color-stop';
+        stopEl.innerHTML = `
+          <div class="color-swatch" style="background-color: ${hex};"></div>
+          <div class="color-info">
+            <div class="color-name">${name}</div>
+            <div class="color-value">${hex}</div>
+          </div>
+        `;
+        previewContent.appendChild(stopEl);
+      });
+
+      preview.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
