@@ -28,6 +28,32 @@ A powerful Figma plugin that brings the magic of the Design Tokens Wizard CLI di
 
 ## 🚀 Installation
 
+### ⚠️ IMPORTANT: Build Required
+
+**If you cloned this repository, you MUST build the plugin first!**
+
+The compiled files (`dist/`) are not included in the repository. Run this before loading the plugin:
+
+```bash
+cd design-tokens-wizards/figma-plugin
+npm install
+npm run build
+```
+
+Or use the quick build script:
+```bash
+cd design-tokens-wizards/figma-plugin
+./build.sh
+```
+
+**Common Error:**
+```
+Error: ENOENT: no such file or directory, lstat '.../figma-plugin/dist/code.js'
+```
+**Solution:** You forgot to run `npm run build`. The dist/ folder needs to be generated locally.
+
+---
+
 ### Option 1: Install from Figma Community (Coming Soon)
 
 Search for "Design Tokens Wizard" in Figma's Community plugins.
@@ -39,18 +65,18 @@ Search for "Design Tokens Wizard" in Figma's Community plugins.
    cd design-tokens-wizards/figma-plugin
    ```
 
-2. **Install dependencies:**
+2. **Install dependencies & Build:**
    ```bash
    npm install
-   ```
-
-3. **Build the plugin:**
-   ```bash
    npm run build
    ```
 
-4. **Load in Figma:**
-   - Open Figma Desktop
+   This will create the `dist/` folder with:
+   - `dist/code.js` (compiled plugin code)
+   - `dist/ui.html` (plugin interface)
+
+3. **Load in Figma:**
+   - Open Figma Desktop (NOT web version)
    - Go to `Plugins` → `Development` → `Import plugin from manifest...`
    - Select the `manifest.json` file in the `figma-plugin` directory
    - The plugin will now appear in your plugins list
