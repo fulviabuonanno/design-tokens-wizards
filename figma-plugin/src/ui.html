@@ -244,14 +244,99 @@
       padding-top: 16px;
       border-top: 1px solid #e5e5e5;
     }
+
+    /* Tab Navigation Styles */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e5e5e5;
+      padding-bottom: 0;
+    }
+
+    .tab {
+      padding: 10px 16px;
+      background: transparent;
+      color: #666;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 0;
+    }
+
+    .tab:hover:not(:disabled) {
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    .tab.active {
+      color: #18a0fb;
+      border-bottom-color: #18a0fb;
+      background: transparent;
+    }
+
+    .tab:disabled {
+      color: #ccc;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .tab:disabled:hover {
+      background: transparent;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .coming-soon {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .coming-soon-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .coming-soon-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #666;
+    }
+
+    .coming-soon-text {
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>🎨 Design Tokens Wizard</h1>
-    <div class="subtitle">Generate beautiful color scales and sync them to Figma</div>
+    <div class="subtitle">Generate beautiful design tokens and sync them to Figma</div>
   </div>
 
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab active" data-tab="color">🎨 Color</button>
+    <button class="tab" data-tab="typography" disabled>✏️ Typography</button>
+    <button class="tab" data-tab="size" disabled>📐 Size</button>
+    <button class="tab" data-tab="space" disabled>📏 Space</button>
+    <button class="tab" data-tab="border-radius" disabled>⭕ Border Radius</button>
+    <button class="tab" data-tab="spells" disabled>✨ Spells</button>
+  </div>
+
+  <!-- Color Wizard Tab Content -->
+  <div class="tab-content active" id="color-content">
   <div class="section">
     <div class="section-title">Color Setup</div>
 
@@ -359,8 +444,80 @@
     <button type="button" class="button-secondary" id="exportJSON">Export JSON</button>
     <button type="button" id="createStyles">Create Figma Styles</button>
   </div>
+  </div>
+  <!-- End Color Wizard Tab Content -->
+
+  <!-- Typography Wizard Tab Content -->
+  <div class="tab-content" id="typography-content">
+    <div class="coming-soon">
+      <div class="coming-soon-icon">✏️</div>
+      <div class="coming-soon-title">Typography Wizard</div>
+      <div class="coming-soon-text">Coming soon! This wizard will help you create typography scales and styles.</div>
+    </div>
+  </div>
+
+  <!-- Size Wizard Tab Content -->
+  <div class="tab-content" id="size-content">
+    <div class="coming-soon">
+      <div class="coming-soon-icon">📐</div>
+      <div class="coming-soon-title">Size Wizard</div>
+      <div class="coming-soon-text">Coming soon! This wizard will help you create size scales for your design system.</div>
+    </div>
+  </div>
+
+  <!-- Space Wizard Tab Content -->
+  <div class="tab-content" id="space-content">
+    <div class="coming-soon">
+      <div class="coming-soon-icon">📏</div>
+      <div class="coming-soon-title">Space Wizard</div>
+      <div class="coming-soon-text">Coming soon! This wizard will help you create spacing scales for layouts.</div>
+    </div>
+  </div>
+
+  <!-- Border Radius Wizard Tab Content -->
+  <div class="tab-content" id="border-radius-content">
+    <div class="coming-soon">
+      <div class="coming-soon-icon">⭕</div>
+      <div class="coming-soon-title">Border Radius Wizard</div>
+      <div class="coming-soon-text">Coming soon! This wizard will help you create border radius scales.</div>
+    </div>
+  </div>
+
+  <!-- Spells Wizard Tab Content -->
+  <div class="tab-content" id="spells-content">
+    <div class="coming-soon">
+      <div class="coming-soon-icon">✨</div>
+      <div class="coming-soon-title">Spells Wizard</div>
+      <div class="coming-soon-text">Coming soon! This wizard will help you create advanced token combinations.</div>
+    </div>
+  </div>
 
   <script>
+    // Tab Navigation
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Don't switch if tab is disabled
+        if (tab.disabled) return;
+
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Show corresponding content
+        const tabName = tab.getAttribute('data-tab');
+        const content = document.getElementById(`${tabName}-content`);
+        if (content) {
+          content.classList.add('active');
+        }
+      });
+    });
+
     // Color picker and hex input sync
     const colorPicker = document.getElementById('colorPicker');
     const baseColorInput = document.getElementById('baseColor');
