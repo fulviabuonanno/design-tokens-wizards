@@ -190,24 +190,24 @@ function generateColorStops(config: any): Record<string, string> {
   }
 }
 
+// Helper to create token name
+function buildTokenName(colorName: string, stopName: string, category?: string, namingLevel?: string): string {
+  const parts: string[] = [];
+  if (category) parts.push(category);
+  if (namingLevel) parts.push(namingLevel);
+  parts.push(colorName);
+  parts.push(stopName);
+  return parts.join('/');
+}
+
 // Create Figma paint styles
 function createFigmaStyles(config: any, stops: Record<string, string>) {
   const { name, category, namingLevel, batchMode, batchColors } = config;
   let createdCount = 0;
 
-  // Helper to create style name
-  const buildStyleName = (colorName: string, stopName: string): string => {
-    const parts: string[] = [];
-    if (category) parts.push(category);
-    if (namingLevel) parts.push(namingLevel);
-    parts.push(colorName);
-    parts.push(stopName);
-    return parts.join('/');
-  };
-
   // Create styles for main color
   Object.entries(stops).forEach(([stopName, hex]) => {
-    const styleName = buildStyleName(name, stopName);
+    const styleName = buildTokenName(name, stopName, category, namingLevel);
     const rgb = hexToRgb(hex);
 
     // Check if style already exists
@@ -234,7 +234,7 @@ function createFigmaStyles(config: any, stops: Record<string, string>) {
       }));
 
       Object.entries(batchStops).forEach(([stopName, hex]) => {
-        const styleName = buildStyleName(batchColor.name, stopName);
+        const styleName = buildTokenName(batchColor.name, stopName, category, namingLevel);
         const rgb = hexToRgb(hex);
 
         const existingStyle = figma.getLocalPaintStyles().find(style => style.name === styleName);
@@ -255,7 +255,76 @@ function createFigmaStyles(config: any, stops: Record<string, string>) {
   return createdCount;
 }
 
-// Export as JSON tokens format
+// Create Figma variables
+function createFigmaVariables(config: any, stops: Record<string, string>) {
+  const { name, category, namingLevel, batchMode, batchColors } = config;
+  let createdCount = 0;
+
+  // Get or create a collection
+  const collectionName = category || 'Color Tokens';
+  let collection = figma.variables.getLocalVariableCollections().find(c => c.name === collectionName);
+
+  if (!collection) {
+    collection = figma.variables.createVariableCollection(collectionName);
+  }
+
+  // Create variables for main color
+  Object.entries(stops).forEach(([stopName, hex]) => {
+    const variableName = buildTokenName(name, stopName, undefined, namingLevel);
+    const rgb = hexToRgb(hex);
+
+    // Convert RGB to RGBA for variables
+    const rgba = { r: rgb.r, g: rgb.g, b: rgb.b, a: 1 };
+
+    // Check if variable already exists in this collection
+    const existingVariable = figma.variables.getLocalVariables().find(
+      v => v.name === variableName && v.variableCollectionId === collection.id
+    );
+
+    if (existingVariable) {
+      // Update existing variable
+      existingVariable.setValueForMode(collection.modes[0].modeId, rgba);
+    } else {
+      // Create new variable
+      const variable = figma.variables.createVariable(variableName, collection, 'COLOR');
+      variable.setValueForMode(collection.modes[0].modeId, rgba);
+    }
+
+    createdCount++;
+  });
+
+  // Handle batch colors if enabled
+  if (batchMode && batchColors && batchColors.length > 0) {
+    batchColors.forEach((batchColor: any) => {
+      const batchStops = generateColorStops(Object.assign({}, config, {
+        hex: batchColor.hex,
+      }));
+
+      Object.entries(batchStops).forEach(([stopName, hex]) => {
+        const variableName = buildTokenName(batchColor.name, stopName, undefined, namingLevel);
+        const rgb = hexToRgb(hex);
+        const rgba = { r: rgb.r, g: rgb.g, b: rgb.b, a: 1 };
+
+        const existingVariable = figma.variables.getLocalVariables().find(
+          v => v.name === variableName && v.variableCollectionId === collection.id
+        );
+
+        if (existingVariable) {
+          existingVariable.setValueForMode(collection.modes[0].modeId, rgba);
+        } else {
+          const variable = figma.variables.createVariable(variableName, collection, 'COLOR');
+          variable.setValueForMode(collection.modes[0].modeId, rgba);
+        }
+
+        createdCount++;
+      });
+    });
+  }
+
+  return createdCount;
+}
+
+// Export as JSON tokens format (Design Tokens W3C)
 function exportAsJSON(config: any, stops: Record<string, string>): string {
   const { name, category, namingLevel, batchMode, batchColors } = config;
 
@@ -312,16 +381,94 @@ function exportAsJSON(config: any, stops: Record<string, string>): string {
   return JSON.stringify(tokens, null, 2);
 }
 
+// Export as Tokens Studio JSON format
+function exportAsTokensStudio(config: any, stops: Record<string, string>): string {
+  const { name, category, namingLevel, batchMode, batchColors } = config;
+
+  const tokens: any = {};
+
+  // Helper to set nested value
+  const setNestedValue = (obj: any, path: string[], value: any) => {
+    let current = obj;
+    for (let i = 0; i < path.length - 1; i++) {
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      }
+      current = current[path[i]];
+    }
+    current[path[path.length - 1]] = value;
+  };
+
+  // Add main color
+  Object.entries(stops).forEach(([stopName, hex]) => {
+    const path: string[] = [];
+    if (category) path.push(category);
+    if (namingLevel) path.push(namingLevel);
+    path.push(name);
+    path.push(stopName);
+
+    setNestedValue(tokens, path, {
+      value: hex,
+      type: 'color',
+    });
+  });
+
+  // Add batch colors
+  if (batchMode && batchColors && batchColors.length > 0) {
+    batchColors.forEach((batchColor: any) => {
+      const batchStops = generateColorStops(Object.assign({}, config, {
+        hex: batchColor.hex,
+      }));
+
+      Object.entries(batchStops).forEach(([stopName, hex]) => {
+        const path: string[] = [];
+        if (category) path.push(category);
+        if (namingLevel) path.push(namingLevel);
+        path.push(batchColor.name);
+        path.push(stopName);
+
+        setNestedValue(tokens, path, {
+          value: hex,
+          type: 'color',
+        });
+      });
+    });
+  }
+
+  return JSON.stringify(tokens, null, 2);
+}
+
 // Handle messages from UI
 figma.ui.onmessage = (msg) => {
   if (msg.type === 'generate-preview') {
     const stops = generateColorStops(msg.config);
     figma.ui.postMessage({ type: 'preview-generated', stops });
-  } else if (msg.type === 'create-styles') {
+  } else if (msg.type === 'create-tokens') {
     const stops = generateColorStops(msg.config);
-    const count = createFigmaStyles(msg.config, stops);
-    figma.ui.postMessage({ type: 'styles-created', count });
-    figma.notify(`✅ Created ${count} color styles!`);
+    const format = msg.config.outputFormat || 'styles';
+
+    if (format === 'styles') {
+      const count = createFigmaStyles(msg.config, stops);
+      figma.ui.postMessage({ type: 'tokens-created', format: 'styles', count });
+      figma.notify(`✅ Created ${count} color styles!`);
+    } else if (format === 'variables') {
+      const count = createFigmaVariables(msg.config, stops);
+      figma.ui.postMessage({ type: 'tokens-created', format: 'variables', count });
+      figma.notify(`✅ Created ${count} color variables!`);
+    } else if (format === 'both') {
+      const stylesCount = createFigmaStyles(msg.config, stops);
+      const variablesCount = createFigmaVariables(msg.config, stops);
+      figma.ui.postMessage({
+        type: 'tokens-created',
+        format: 'both',
+        stylesCount,
+        variablesCount
+      });
+      figma.notify(`✅ Created ${stylesCount} styles and ${variablesCount} variables!`);
+    } else if (format === 'tokens-studio') {
+      const json = exportAsTokensStudio(msg.config, stops);
+      figma.ui.postMessage({ type: 'tokens-created', format: 'tokens-studio', json });
+    }
   } else if (msg.type === 'export-json') {
     const stops = msg.stops;
     const config = msg.config || {};

@@ -210,31 +210,158 @@
     .batch-colors {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 12px;
-      background: #f9f9f9;
-      border-radius: 4px;
-      margin-top: 8px;
+      gap: 12px;
+      margin-top: 12px;
+      max-height: 400px;
+      overflow-y: auto;
     }
 
     .batch-color-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .batch-color-item:hover {
+      border-color: #18a0fb;
+      box-shadow: 0 2px 8px rgba(24, 160, 251, 0.1);
+    }
+
+    .batch-color-item.error {
+      border-color: #ff5c5c;
+      background: #fff5f5;
+    }
+
+    .batch-color-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .batch-color-number {
+      font-size: 11px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .batch-color-inputs {
       display: flex;
       gap: 8px;
       align-items: center;
     }
 
+    .batch-color-preview {
+      width: 48px;
+      height: 48px;
+      border-radius: 4px;
+      border: 2px solid #e5e5e5;
+      flex-shrink: 0;
+      transition: border-color 0.2s;
+    }
+
+    .batch-color-fields {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .batch-color-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .batch-color-item input[type="color"] {
+      width: 48px;
+      height: 48px;
+      padding: 2px;
+      cursor: pointer;
+      border: 2px solid #e5e5e5;
+    }
+
+    .batch-color-item input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .batch-color-item input[type="text"]:focus {
+      outline: none;
+      border-color: #18a0fb;
+      box-shadow: 0 0 0 2px rgba(24, 160, 251, 0.1);
+    }
+
+    .batch-color-item input[type="text"].error {
+      border-color: #ff5c5c;
+    }
+
+    .batch-hex-input {
+      width: 100px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    .batch-error-message {
+      font-size: 11px;
+      color: #ff5c5c;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .batch-error-message.show {
+      display: block;
+    }
+
     .remove-btn {
-      padding: 4px 8px;
-      background: #ff5c5c;
-      color: white;
-      border: none;
+      padding: 6px 10px;
+      background: #fff;
+      color: #ff5c5c;
+      border: 1px solid #ff5c5c;
       border-radius: 4px;
       cursor: pointer;
       font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .remove-btn:hover {
-      background: #ff3838;
+      background: #ff5c5c;
+      color: white;
+    }
+
+    .batch-mode-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+
+    .batch-count {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .batch-count strong {
+      color: #18a0fb;
+    }
+
+    #addBatchColor {
+      margin-top: 8px;
     }
 
     .actions {
@@ -317,9 +444,141 @@
     .coming-soon-text {
       font-size: 13px;
     }
+
+    /* Side Panel Styles */
+    .side-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 350px;
+      height: 100vh;
+      background: #fff;
+      border-left: 1px solid #e5e5e5;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .side-panel.open {
+      transform: translateX(0);
+    }
+
+    .side-panel-header {
+      padding: 16px;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+    }
+
+    .side-panel-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .side-panel-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #666;
+      width: auto;
+      padding: 4px 8px;
+      transition: color 0.2s;
+    }
+
+    .side-panel-close:hover {
+      color: #333;
+      background: none;
+    }
+
+    .side-panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .json-display {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 12px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.5;
+    }
+
+    .json-string { color: #ce9178; }
+    .json-number { color: #b5cea8; }
+    .json-boolean { color: #569cd6; }
+    .json-null { color: #569cd6; }
+    .json-key { color: #9cdcfe; }
+
+    .panel-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: #18a0fb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 999;
+      transition: background 0.2s;
+      width: auto;
+    }
+
+    .panel-toggle:hover {
+      background: #0d8de0;
+    }
+
+    .panel-toggle.active {
+      background: #666;
+    }
+
+    .panel-toggle.active:hover {
+      background: #555;
+    }
+
+    .main-content {
+      transition: margin-right 0.3s ease;
+    }
+
+    .main-content.panel-open {
+      margin-right: 350px;
+    }
+
+    .copy-json-btn {
+      margin-top: 12px;
+      background: #18a0fb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .copy-json-btn:hover {
+      background: #0d8de0;
+    }
   </style>
 </head>
 <body>
+  <button class="panel-toggle" id="panelToggle">📄 JSON Preview</button>
+
+  <div class="main-content" id="mainContent">
   <div class="header">
     <h1>🎨 Design Tokens Wizard</h1>
     <div class="subtitle">Generate beautiful design tokens and sync them to Figma</div>
@@ -357,12 +616,17 @@
 
     <div class="checkbox-wrapper">
       <input type="checkbox" id="batchMode" />
-      <label for="batchMode">Batch Mode (add multiple colors)</label>
+      <label for="batchMode">Batch Mode (add multiple colors at once)</label>
     </div>
 
     <div id="batchContainer" class="hidden">
+      <div class="batch-mode-header">
+        <div class="batch-count">
+          <strong id="batchColorCount">0</strong> colors added
+        </div>
+        <button type="button" class="button-secondary" id="addBatchColor" style="width: auto; padding: 6px 12px;">+ Add Color</button>
+      </div>
       <div id="batchColors" class="batch-colors"></div>
-      <button type="button" class="button-secondary" id="addBatchColor">+ Add Another Color</button>
     </div>
   </div>
 
@@ -433,6 +697,21 @@
     </div>
   </div>
 
+  <div class="section">
+    <div class="section-title">Output Format</div>
+
+    <div class="form-group">
+      <label for="outputFormat">How would you like to create the tokens?</label>
+      <select id="outputFormat">
+        <option value="styles">Figma Styles (traditional color styles)</option>
+        <option value="variables">Figma Variables (new variables system)</option>
+        <option value="both">Both Styles & Variables</option>
+        <option value="tokens-studio">Tokens Studio JSON (export only)</option>
+      </select>
+      <div class="help-text">Choose your preferred output format</div>
+    </div>
+  </div>
+
   <button type="button" id="generatePreview">Generate Preview</button>
 
   <div id="preview" class="preview hidden">
@@ -442,7 +721,7 @@
 
   <div class="actions">
     <button type="button" class="button-secondary" id="exportJSON">Export JSON</button>
-    <button type="button" id="createStyles">Create Figma Styles</button>
+    <button type="button" id="createTokens">Create in Figma</button>
   </div>
   </div>
   <!-- End Color Wizard Tab Content -->
@@ -491,8 +770,169 @@
       <div class="coming-soon-text">Coming soon! This wizard will help you create advanced token combinations.</div>
     </div>
   </div>
+  </div>
+  <!-- End Main Content -->
+
+  <!-- Side Panel for JSON Preview -->
+  <div class="side-panel" id="sidePanel">
+    <div class="side-panel-header">
+      <div class="side-panel-title" id="sidePanelTitle">JSON Preview (W3C Format)</div>
+      <button class="side-panel-close" id="sidePanelClose">✕</button>
+    </div>
+    <div class="side-panel-content">
+      <div class="json-display" id="jsonDisplay">
+        Generate a preview to see the JSON output here...
+      </div>
+      <button class="copy-json-btn" id="copyJsonBtn">Copy to Clipboard</button>
+    </div>
+  </div>
 
   <script>
+    // Side Panel Toggle
+    const panelToggle = document.getElementById('panelToggle');
+    const sidePanel = document.getElementById('sidePanel');
+    const sidePanelClose = document.getElementById('sidePanelClose');
+    const mainContent = document.getElementById('mainContent');
+    const jsonDisplay = document.getElementById('jsonDisplay');
+    const sidePanelTitle = document.getElementById('sidePanelTitle');
+    const copyJsonBtn = document.getElementById('copyJsonBtn');
+    let currentJsonString = '';
+
+    function togglePanel() {
+      sidePanel.classList.toggle('open');
+      mainContent.classList.toggle('panel-open');
+      panelToggle.classList.toggle('active');
+
+      if (sidePanel.classList.contains('open')) {
+        panelToggle.textContent = '✕ Close JSON';
+      } else {
+        panelToggle.textContent = '📄 JSON Preview';
+      }
+    }
+
+    panelToggle.addEventListener('click', togglePanel);
+    sidePanelClose.addEventListener('click', togglePanel);
+
+    // Copy JSON to clipboard
+    copyJsonBtn.addEventListener('click', () => {
+      if (currentJsonString) {
+        navigator.clipboard.writeText(currentJsonString).then(() => {
+          const originalText = copyJsonBtn.textContent;
+          copyJsonBtn.textContent = '✓ Copied!';
+          setTimeout(() => {
+            copyJsonBtn.textContent = originalText;
+          }, 2000);
+        }).catch(err => {
+          alert('Failed to copy to clipboard');
+        });
+      }
+    });
+
+    // Function to syntax highlight JSON
+    function syntaxHighlight(json) {
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'json-key';
+          } else {
+            cls = 'json-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+
+    // Function to update JSON display
+    function updateJsonDisplay(stops, config) {
+      const format = config.outputFormat || 'styles';
+      const tokens = generateTokensJson(stops, config, format === 'tokens-studio');
+      currentJsonString = JSON.stringify(tokens, null, 2);
+
+      // Update panel title based on format
+      if (format === 'tokens-studio') {
+        sidePanelTitle.textContent = 'JSON Preview (Tokens Studio Format)';
+      } else {
+        sidePanelTitle.textContent = 'JSON Preview (W3C Format)';
+      }
+
+      jsonDisplay.innerHTML = syntaxHighlight(currentJsonString);
+    }
+
+    // Function to generate tokens JSON
+    function generateTokensJson(stops, config, isTokensStudio = false) {
+      const { name, category, namingLevel, batchMode, batchColors } = config;
+      const tokens = {};
+
+      // Helper to set nested value
+      const setNestedValue = (obj, path, value) => {
+        let current = obj;
+        for (let i = 0; i < path.length - 1; i++) {
+          if (!current[path[i]]) {
+            current[path[i]] = {};
+          }
+          current = current[path[i]];
+        }
+        current[path[path.length - 1]] = value;
+      };
+
+      // Add main color (only if not in batch mode)
+      if (!batchMode) {
+        Object.entries(stops).forEach(([stopName, hex]) => {
+          const path = [];
+          if (category) path.push(category);
+          if (namingLevel) path.push(namingLevel);
+          path.push(name);
+          path.push(stopName);
+
+          if (isTokensStudio) {
+            setNestedValue(tokens, path, {
+              value: hex,
+              type: 'color',
+            });
+          } else {
+            setNestedValue(tokens, path, {
+              $value: hex,
+              $type: 'color',
+            });
+          }
+        });
+      }
+
+      // Add batch colors
+      if (batchMode && batchColors && batchColors.length > 0) {
+        batchColors.forEach((batchColor) => {
+          // Generate stops for this batch color (simulated - in real preview this would come from backend)
+          Object.entries(stops).forEach(([stopName, hex]) => {
+            const path = [];
+            if (category) path.push(category);
+            if (namingLevel) path.push(namingLevel);
+            path.push(batchColor.name);
+            path.push(stopName);
+
+            if (isTokensStudio) {
+              setNestedValue(tokens, path, {
+                value: batchColor.hex, // Use batch color as base (simplified)
+                type: 'color',
+              });
+            } else {
+              setNestedValue(tokens, path, {
+                $value: batchColor.hex, // Use batch color as base (simplified)
+                $type: 'color',
+              });
+            }
+          });
+        });
+      }
+
+      return tokens;
+    }
+
     // Tab Navigation
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -516,6 +956,38 @@
           content.classList.add('active');
         }
       });
+    });
+
+    // Output format handling
+    const outputFormat = document.getElementById('outputFormat');
+    const createTokensBtn = document.getElementById('createTokens');
+    const exportJSONBtn = document.getElementById('exportJSON');
+
+    outputFormat.addEventListener('change', (e) => {
+      const format = e.target.value;
+
+      // Update button text based on format
+      if (format === 'styles') {
+        createTokensBtn.textContent = 'Create Figma Styles';
+      } else if (format === 'variables') {
+        createTokensBtn.textContent = 'Create Figma Variables';
+      } else if (format === 'both') {
+        createTokensBtn.textContent = 'Create Styles & Variables';
+      } else if (format === 'tokens-studio') {
+        createTokensBtn.textContent = 'Export Tokens Studio JSON';
+      }
+
+      // Show/hide export JSON button for Tokens Studio
+      if (format === 'tokens-studio') {
+        exportJSONBtn.style.display = 'none';
+      } else {
+        exportJSONBtn.style.display = 'block';
+      }
+
+      // Update JSON display if we have current stops
+      if (currentStops && currentConfig) {
+        updateJsonDisplay(currentStops, Object.assign({}, currentConfig, { outputFormat: format }));
+      }
     });
 
     // Color picker and hex input sync
@@ -561,59 +1033,208 @@
     const batchContainer = document.getElementById('batchContainer');
     const batchColors = document.getElementById('batchColors');
     const addBatchColorBtn = document.getElementById('addBatchColor');
-    let batchColorsList = [];
+    const batchColorCount = document.getElementById('batchColorCount');
+    let batchColorIndex = 0;
 
-    batchMode.addEventListener('change', (e) => {
-      if (e.target.checked) {
-        batchContainer.classList.remove('hidden');
-      } else {
-        batchContainer.classList.add('hidden');
-        batchColorsList = [];
-        batchColors.innerHTML = '';
-      }
-    });
+    function updateBatchCount() {
+      const count = document.querySelectorAll('.batch-color-item').length;
+      batchColorCount.textContent = count;
+    }
 
-    addBatchColorBtn.addEventListener('click', () => {
+    function validateHex(hex) {
+      return /^#[0-9A-F]{6}$/i.test(hex);
+    }
+
+    function validateColorName(name) {
+      return name && name.trim().length > 0;
+    }
+
+    function createBatchColorItem() {
+      batchColorIndex++;
       const colorItem = document.createElement('div');
       colorItem.className = 'batch-color-item';
       const id = Date.now();
+      const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 
       colorItem.innerHTML = `
-        <input type="color" class="batch-picker" value="#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}" data-id="${id}" />
-        <input type="text" class="batch-hex" placeholder="#HEX" data-id="${id}" />
-        <input type="text" class="batch-name" placeholder="color name" data-id="${id}" style="flex: 2;" />
-        <button class="remove-btn" data-id="${id}">✕</button>
+        <div class="batch-color-header">
+          <span class="batch-color-number">Color ${batchColorIndex}</span>
+          <button class="remove-btn" data-id="${id}">Remove</button>
+        </div>
+        <div class="batch-color-inputs">
+          <input type="color" class="batch-picker" value="${randomColor}" data-id="${id}" />
+          <div class="batch-color-fields">
+            <div class="batch-color-row">
+              <input type="text" class="batch-hex batch-hex-input" placeholder="#HEXCODE" data-id="${id}" value="${randomColor.toUpperCase()}" />
+              <input type="text" class="batch-name" placeholder="Color name (e.g., blue, primary)" data-id="${id}" />
+            </div>
+            <div class="batch-error-message" data-id="${id}"></div>
+          </div>
+        </div>
       `;
 
       batchColors.appendChild(colorItem);
 
-      // Sync picker and hex input
+      // Get elements
       const picker = colorItem.querySelector('.batch-picker');
       const hexInput = colorItem.querySelector('.batch-hex');
+      const nameInput = colorItem.querySelector('.batch-name');
+      const errorMessage = colorItem.querySelector('.batch-error-message');
+      const removeBtn = colorItem.querySelector('.remove-btn');
 
-      hexInput.value = picker.value.toUpperCase();
+      // Validate and update
+      function validateInputs() {
+        let isValid = true;
+        let errors = [];
 
+        // Validate hex
+        if (!validateHex(hexInput.value)) {
+          hexInput.classList.add('error');
+          errors.push('Invalid hex color');
+          isValid = false;
+        } else {
+          hexInput.classList.remove('error');
+        }
+
+        // Validate name
+        if (!validateColorName(nameInput.value)) {
+          nameInput.classList.add('error');
+          errors.push('Color name required');
+          isValid = false;
+        } else {
+          nameInput.classList.remove('error');
+        }
+
+        // Show/hide errors
+        if (errors.length > 0) {
+          colorItem.classList.add('error');
+          errorMessage.textContent = errors.join(', ');
+          errorMessage.classList.add('show');
+        } else {
+          colorItem.classList.remove('error');
+          errorMessage.classList.remove('show');
+        }
+
+        return isValid;
+      }
+
+      // Sync picker and hex input
       picker.addEventListener('input', (e) => {
         hexInput.value = e.target.value.toUpperCase();
+        hexInput.classList.remove('error');
+        validateInputs();
       });
 
       hexInput.addEventListener('input', (e) => {
-        const hex = e.target.value;
-        if (/^#[0-9A-F]{6}$/i.test(hex)) {
+        let hex = e.target.value.toUpperCase();
+        // Auto-add # if missing
+        if (hex.length > 0 && !hex.startsWith('#')) {
+          hex = '#' + hex;
+          hexInput.value = hex;
+        }
+        if (validateHex(hex)) {
           picker.value = hex;
         }
       });
 
+      hexInput.addEventListener('blur', validateInputs);
+      nameInput.addEventListener('blur', validateInputs);
+
       // Remove button
-      colorItem.querySelector('.remove-btn').addEventListener('click', (e) => {
+      removeBtn.addEventListener('click', () => {
         colorItem.remove();
+        updateBatchCount();
+        // Renumber remaining items
+        document.querySelectorAll('.batch-color-item').forEach((item, index) => {
+          item.querySelector('.batch-color-number').textContent = `Color ${index + 1}`;
+        });
+        batchColorIndex = document.querySelectorAll('.batch-color-item').length;
       });
+
+      updateBatchCount();
+    }
+
+    batchMode.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        batchContainer.classList.remove('hidden');
+        // Add one color by default if none exist
+        if (document.querySelectorAll('.batch-color-item').length === 0) {
+          createBatchColorItem();
+        }
+      } else {
+        batchContainer.classList.add('hidden');
+        batchColors.innerHTML = '';
+        batchColorIndex = 0;
+        updateBatchCount();
+      }
     });
+
+    addBatchColorBtn.addEventListener('click', createBatchColorItem);
 
     // Generate preview
     let currentStops = null;
+    let currentConfig = null;
+
+    function validateBatchColors() {
+      if (!document.getElementById('batchMode').checked) {
+        return true;
+      }
+
+      const batchItems = document.querySelectorAll('.batch-color-item');
+      if (batchItems.length === 0) {
+        alert('Please add at least one color in batch mode, or disable batch mode.');
+        return false;
+      }
+
+      let allValid = true;
+      batchItems.forEach(item => {
+        const hexInput = item.querySelector('.batch-hex');
+        const nameInput = item.querySelector('.batch-name');
+        const errorMessage = item.querySelector('.batch-error-message');
+        let errors = [];
+
+        // Validate hex
+        if (!validateHex(hexInput.value)) {
+          hexInput.classList.add('error');
+          errors.push('Invalid hex color');
+          allValid = false;
+        } else {
+          hexInput.classList.remove('error');
+        }
+
+        // Validate name
+        if (!validateColorName(nameInput.value)) {
+          nameInput.classList.add('error');
+          errors.push('Color name required');
+          allValid = false;
+        } else {
+          nameInput.classList.remove('error');
+        }
+
+        // Show/hide errors
+        if (errors.length > 0) {
+          item.classList.add('error');
+          errorMessage.textContent = errors.join(', ');
+          errorMessage.classList.add('show');
+        } else {
+          item.classList.remove('error');
+          errorMessage.classList.remove('show');
+        }
+      });
+
+      if (!allValid) {
+        alert('Please fix the errors in your batch colors before continuing.');
+      }
+
+      return allValid;
+    }
 
     document.getElementById('generatePreview').addEventListener('click', () => {
+      // Validate batch colors first
+      if (!validateBatchColors()) {
+        return;
+      }
+
       const config = {
         hex: document.getElementById('baseColor').value,
         name: document.getElementById('colorName').value || 'color',
@@ -625,7 +1246,8 @@
         alphabeticalOption: document.getElementById('alphabetCase').value,
         category: document.getElementById('category').value,
         namingLevel: document.getElementById('namingLevel').value,
-        batchMode: document.getElementById('batchMode').checked
+        batchMode: document.getElementById('batchMode').checked,
+        outputFormat: document.getElementById('outputFormat').value
       };
 
       // Collect batch colors if enabled
@@ -636,13 +1258,19 @@
         })).filter(c => c.hex && c.name);
       }
 
+      currentConfig = config;
       parent.postMessage({ pluginMessage: { type: 'generate-preview', config } }, '*');
     });
 
-    // Create Figma styles
-    document.getElementById('createStyles').addEventListener('click', () => {
+    // Create tokens (styles, variables, both, or export Tokens Studio)
+    document.getElementById('createTokens').addEventListener('click', () => {
       if (!currentStops) {
         alert('Please generate a preview first');
+        return;
+      }
+
+      // Validate batch colors first
+      if (!validateBatchColors()) {
         return;
       }
 
@@ -657,7 +1285,8 @@
         alphabeticalOption: document.getElementById('alphabetCase').value,
         category: document.getElementById('category').value,
         namingLevel: document.getElementById('namingLevel').value,
-        batchMode: document.getElementById('batchMode').checked
+        batchMode: document.getElementById('batchMode').checked,
+        outputFormat: document.getElementById('outputFormat').value
       };
 
       if (config.batchMode) {
@@ -667,17 +1296,17 @@
         })).filter(c => c.hex && c.name);
       }
 
-      parent.postMessage({ pluginMessage: { type: 'create-styles', config } }, '*');
+      parent.postMessage({ pluginMessage: { type: 'create-tokens', config } }, '*');
     });
 
     // Export JSON
     document.getElementById('exportJSON').addEventListener('click', () => {
-      if (!currentStops) {
+      if (!currentStops || !currentConfig) {
         alert('Please generate a preview first');
         return;
       }
 
-      parent.postMessage({ pluginMessage: { type: 'export-json', stops: currentStops } }, '*');
+      parent.postMessage({ pluginMessage: { type: 'export-json', stops: currentStops, config: currentConfig } }, '*');
     });
 
     // Listen for messages from plugin code
@@ -687,8 +1316,36 @@
       if (msg.type === 'preview-generated') {
         currentStops = msg.stops;
         displayPreview(msg.stops);
-      } else if (msg.type === 'styles-created') {
-        alert(`✅ Created ${msg.count} Figma color styles!`);
+
+        // Update JSON display and auto-open panel if not already open
+        if (currentConfig) {
+          updateJsonDisplay(msg.stops, currentConfig);
+          if (!sidePanel.classList.contains('open')) {
+            togglePanel();
+          }
+        }
+      } else if (msg.type === 'tokens-created') {
+        const format = msg.format;
+        let message = '';
+
+        if (format === 'styles') {
+          message = `✅ Created ${msg.count} Figma color styles!`;
+        } else if (format === 'variables') {
+          message = `✅ Created ${msg.count} Figma color variables!`;
+        } else if (format === 'both') {
+          message = `✅ Created ${msg.stylesCount} styles and ${msg.variablesCount} variables!`;
+        } else if (format === 'tokens-studio') {
+          // Download Tokens Studio JSON
+          const blob = new Blob([msg.json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '$metadata.json';
+          a.click();
+          message = '✅ Tokens Studio JSON exported successfully!';
+        }
+
+        alert(message);
       } else if (msg.type === 'json-exported') {
         // Download JSON file
         const blob = new Blob([msg.json], { type: 'application/json' });
