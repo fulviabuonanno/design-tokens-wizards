@@ -3,9 +3,16 @@
 
 const MIN_MIX = 10;
 const MAX_MIX = 90;
+const MAX_STOPS = 20;
+const MIN_STOPS = 1;
 
-// Show UI
-figma.showUI(__html__, { width: 400, height: 700 });
+// Show UI with resize enabled
+figma.showUI(__html__, {
+  width: 420,
+  height: 740,
+  themeColors: true,
+  title: 'Design Tokens Wizard'
+});
 
 // Helper: Convert HEX to RGB (Figma format 0-1)
 function hexToRgb(hex: string): RGB {
@@ -176,17 +183,20 @@ function generateStopsAlphabetical(
 function generateColorStops(config: any): Record<string, string> {
   const { hex, scaleType, stopsCount, incrementalOption, startValue, padded, alphabeticalOption } = config;
 
+  // Enforce stops limit
+  const validStopsCount = Math.max(MIN_STOPS, Math.min(MAX_STOPS, stopsCount));
+
   switch (scaleType) {
     case 'incremental':
-      return generateStopsIncremental(hex, incrementalOption, stopsCount, startValue);
+      return generateStopsIncremental(hex, incrementalOption, validStopsCount, startValue);
     case 'ordinal':
-      return generateStopsOrdinal(hex, padded, stopsCount);
+      return generateStopsOrdinal(hex, padded, validStopsCount);
     case 'semanticStops':
-      return generateStopsSemantic(hex, stopsCount);
+      return generateStopsSemantic(hex, validStopsCount);
     case 'alphabetical':
-      return generateStopsAlphabetical(hex, alphabeticalOption, stopsCount);
+      return generateStopsAlphabetical(hex, alphabeticalOption, validStopsCount);
     default:
-      return generateStopsOrdinal(hex, padded, stopsCount);
+      return generateStopsOrdinal(hex, padded, validStopsCount);
   }
 }
 
@@ -441,8 +451,26 @@ function exportAsTokensStudio(config: any, stops: Record<string, string>): strin
 // Handle messages from UI
 figma.ui.onmessage = (msg) => {
   if (msg.type === 'generate-preview') {
-    const stops = generateColorStops(msg.config);
-    figma.ui.postMessage({ type: 'preview-generated', stops });
+    const { batchMode, batchColors } = msg.config;
+
+    if (batchMode && batchColors && batchColors.length > 0) {
+      // Generate stops for all batch colors
+      const allStops: Record<string, Record<string, string>> = {};
+
+      batchColors.forEach((batchColor: any) => {
+        const batchConfig = Object.assign({}, msg.config, {
+          hex: batchColor.hex,
+        });
+        const stops = generateColorStops(batchConfig);
+        allStops[batchColor.name] = stops;
+      });
+
+      figma.ui.postMessage({ type: 'preview-generated', stops: allStops, batchMode: true });
+    } else {
+      // Single color mode
+      const stops = generateColorStops(msg.config);
+      figma.ui.postMessage({ type: 'preview-generated', stops, batchMode: false });
+    }
   } else if (msg.type === 'create-tokens') {
     const stops = generateColorStops(msg.config);
     const format = msg.config.outputFormat || 'styles';

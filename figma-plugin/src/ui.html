@@ -144,14 +144,36 @@
       padding: 12px;
       background: #f9f9f9;
       border-radius: 4px;
-      max-height: 300px;
+      max-height: 400px;
       overflow-y: auto;
     }
 
     .preview-title {
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       font-size: 12px;
+    }
+
+    .color-scale-group {
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #fff;
+      border-radius: 4px;
+      border: 1px solid #e5e5e5;
+    }
+
+    .color-scale-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .color-scale-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #333;
+      text-transform: capitalize;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #18a0fb;
     }
 
     .color-stop {
@@ -376,9 +398,11 @@
     .tabs {
       display: flex;
       gap: 4px;
-      margin-bottom: 24px;
       border-bottom: 1px solid #e5e5e5;
-      padding-bottom: 0;
+      padding: 0 16px;
+      flex-shrink: 0;
+      background: #fff;
+      z-index: 10;
     }
 
     .tab {
@@ -445,140 +469,9 @@
       font-size: 13px;
     }
 
-    /* Side Panel Styles */
-    .side-panel {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 350px;
-      height: 100vh;
-      background: #fff;
-      border-left: 1px solid #e5e5e5;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .side-panel.open {
-      transform: translateX(0);
-    }
-
-    .side-panel-header {
-      padding: 16px;
-      border-bottom: 1px solid #e5e5e5;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f9f9f9;
-    }
-
-    .side-panel-title {
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .side-panel-close {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      color: #666;
-      width: auto;
-      padding: 4px 8px;
-      transition: color 0.2s;
-    }
-
-    .side-panel-close:hover {
-      color: #333;
-      background: none;
-    }
-
-    .side-panel-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
-
-    .json-display {
-      background: #1e1e1e;
-      color: #d4d4d4;
-      font-family: 'Monaco', 'Courier New', monospace;
-      font-size: 11px;
-      padding: 12px;
-      border-radius: 4px;
-      overflow-x: auto;
-      white-space: pre;
-      line-height: 1.5;
-    }
-
-    .json-string { color: #ce9178; }
-    .json-number { color: #b5cea8; }
-    .json-boolean { color: #569cd6; }
-    .json-null { color: #569cd6; }
-    .json-key { color: #9cdcfe; }
-
-    .panel-toggle {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      background: #18a0fb;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      z-index: 999;
-      transition: background 0.2s;
-      width: auto;
-    }
-
-    .panel-toggle:hover {
-      background: #0d8de0;
-    }
-
-    .panel-toggle.active {
-      background: #666;
-    }
-
-    .panel-toggle.active:hover {
-      background: #555;
-    }
-
-    .main-content {
-      transition: margin-right 0.3s ease;
-    }
-
-    .main-content.panel-open {
-      margin-right: 350px;
-    }
-
-    .copy-json-btn {
-      margin-top: 12px;
-      background: #18a0fb;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      width: 100%;
-    }
-
-    .copy-json-btn:hover {
-      background: #0d8de0;
-    }
   </style>
 </head>
 <body>
-  <button class="panel-toggle" id="panelToggle">📄 JSON Preview</button>
-
-  <div class="main-content" id="mainContent">
   <div class="header">
     <h1>🎨 Design Tokens Wizard</h1>
     <div class="subtitle">Generate beautiful design tokens and sync them to Figma</div>
@@ -673,11 +566,15 @@
       <div class="form-group">
         <label for="stopsCount">Number of Stops</label>
         <input type="number" id="stopsCount" value="10" min="1" max="20" />
+        <div class="help-text">Maximum 20 stops per color scale</div>
       </div>
       <div class="form-group" id="startValueGroup">
         <label for="startValue">Start Value</label>
         <input type="number" id="startValue" value="100" min="0" step="50" />
       </div>
+    </div>
+    <div id="totalTokensWarning" class="help-text" style="display: none; color: #ff9800; font-weight: 500; margin-top: 8px;">
+      ⚠️ <span id="totalTokensCount">0</span> total tokens will be created
     </div>
   </div>
 
@@ -720,7 +617,9 @@
   </div>
 
   <div class="actions">
-    <button type="button" class="button-secondary" id="exportJSON">Export JSON</button>
+    <button type="button" class="button-secondary" id="exportJSON">📥 Export JSON</button>
+    <button type="button" class="button-secondary" id="exportCSS">📥 Export CSS</button>
+    <button type="button" class="button-secondary" id="exportSCSS">📥 Export SCSS</button>
     <button type="button" id="createTokens">Create in Figma</button>
   </div>
   </div>
@@ -773,100 +672,11 @@
   </div>
   <!-- End Main Content -->
 
-  <!-- Side Panel for JSON Preview -->
-  <div class="side-panel" id="sidePanel">
-    <div class="side-panel-header">
-      <div class="side-panel-title" id="sidePanelTitle">JSON Preview (W3C Format)</div>
-      <button class="side-panel-close" id="sidePanelClose">✕</button>
-    </div>
-    <div class="side-panel-content">
-      <div class="json-display" id="jsonDisplay">
-        Generate a preview to see the JSON output here...
-      </div>
-      <button class="copy-json-btn" id="copyJsonBtn">Copy to Clipboard</button>
-    </div>
-  </div>
-
   <script>
-    // Side Panel Toggle
-    const panelToggle = document.getElementById('panelToggle');
-    const sidePanel = document.getElementById('sidePanel');
-    const sidePanelClose = document.getElementById('sidePanelClose');
-    const mainContent = document.getElementById('mainContent');
-    const jsonDisplay = document.getElementById('jsonDisplay');
-    const sidePanelTitle = document.getElementById('sidePanelTitle');
-    const copyJsonBtn = document.getElementById('copyJsonBtn');
-    let currentJsonString = '';
-
-    function togglePanel() {
-      sidePanel.classList.toggle('open');
-      mainContent.classList.toggle('panel-open');
-      panelToggle.classList.toggle('active');
-
-      if (sidePanel.classList.contains('open')) {
-        panelToggle.textContent = '✕ Close JSON';
-      } else {
-        panelToggle.textContent = '📄 JSON Preview';
-      }
-    }
-
-    panelToggle.addEventListener('click', togglePanel);
-    sidePanelClose.addEventListener('click', togglePanel);
-
-    // Copy JSON to clipboard
-    copyJsonBtn.addEventListener('click', () => {
-      if (currentJsonString) {
-        navigator.clipboard.writeText(currentJsonString).then(() => {
-          const originalText = copyJsonBtn.textContent;
-          copyJsonBtn.textContent = '✓ Copied!';
-          setTimeout(() => {
-            copyJsonBtn.textContent = originalText;
-          }, 2000);
-        }).catch(err => {
-          alert('Failed to copy to clipboard');
-        });
-      }
-    });
-
-    // Function to syntax highlight JSON
-    function syntaxHighlight(json) {
-      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        let cls = 'json-number';
-        if (/^"/.test(match)) {
-          if (/:$/.test(match)) {
-            cls = 'json-key';
-          } else {
-            cls = 'json-string';
-          }
-        } else if (/true|false/.test(match)) {
-          cls = 'json-boolean';
-        } else if (/null/.test(match)) {
-          cls = 'json-null';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-      });
-    }
-
-    // Function to update JSON display
-    function updateJsonDisplay(stops, config) {
-      const format = config.outputFormat || 'styles';
-      const tokens = generateTokensJson(stops, config, format === 'tokens-studio');
-      currentJsonString = JSON.stringify(tokens, null, 2);
-
-      // Update panel title based on format
-      if (format === 'tokens-studio') {
-        sidePanelTitle.textContent = 'JSON Preview (Tokens Studio Format)';
-      } else {
-        sidePanelTitle.textContent = 'JSON Preview (W3C Format)';
-      }
-
-      jsonDisplay.innerHTML = syntaxHighlight(currentJsonString);
-    }
 
     // Function to generate tokens JSON
-    function generateTokensJson(stops, config, isTokensStudio = false) {
-      const { name, category, namingLevel, batchMode, batchColors } = config;
+    function generateTokensJson(stops, config, isTokensStudio = false, isBatchMode = false) {
+      const { name, category, namingLevel } = config;
       const tokens = {};
 
       // Helper to set nested value
@@ -881,8 +691,31 @@
         current[path[path.length - 1]] = value;
       };
 
-      // Add main color (only if not in batch mode)
-      if (!batchMode) {
+      if (isBatchMode) {
+        // Batch mode: stops is { colorName: { stopName: hex, ... }, ... }
+        Object.entries(stops).forEach(([colorName, colorStops]) => {
+          Object.entries(colorStops).forEach(([stopName, hex]) => {
+            const path = [];
+            if (category) path.push(category);
+            if (namingLevel) path.push(namingLevel);
+            path.push(colorName);
+            path.push(stopName);
+
+            if (isTokensStudio) {
+              setNestedValue(tokens, path, {
+                value: hex,
+                type: 'color',
+              });
+            } else {
+              setNestedValue(tokens, path, {
+                $value: hex,
+                $type: 'color',
+              });
+            }
+          });
+        });
+      } else {
+        // Single color mode: stops is { stopName: hex, ... }
         Object.entries(stops).forEach(([stopName, hex]) => {
           const path = [];
           if (category) path.push(category);
@@ -904,33 +737,55 @@
         });
       }
 
-      // Add batch colors
-      if (batchMode && batchColors && batchColors.length > 0) {
-        batchColors.forEach((batchColor) => {
-          // Generate stops for this batch color (simulated - in real preview this would come from backend)
-          Object.entries(stops).forEach(([stopName, hex]) => {
-            const path = [];
-            if (category) path.push(category);
-            if (namingLevel) path.push(namingLevel);
-            path.push(batchColor.name);
-            path.push(stopName);
-
-            if (isTokensStudio) {
-              setNestedValue(tokens, path, {
-                value: batchColor.hex, // Use batch color as base (simplified)
-                type: 'color',
-              });
-            } else {
-              setNestedValue(tokens, path, {
-                $value: batchColor.hex, // Use batch color as base (simplified)
-                $type: 'color',
-              });
-            }
-          });
-        });
-      }
-
       return tokens;
+    }
+
+    // Function to convert tokens to CSS
+    function convertTokensToCSS(tokens) {
+      let cssVariables = ":root {\n";
+      const processTokens = (obj, prefix = "") => {
+        Object.keys(obj).forEach(key => {
+          if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+            cssVariables += `  --${prefix}${key}: ${obj[key].$value};\n`;
+          } else if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+            cssVariables += `  --${prefix}${key}: ${obj[key].value};\n`;
+          } else {
+            processTokens(obj[key], `${prefix}${key}-`);
+          }
+        });
+      };
+      processTokens(tokens);
+      cssVariables += "}";
+      return cssVariables;
+    }
+
+    // Function to convert tokens to SCSS
+    function convertTokensToSCSS(tokens) {
+      let scssVariables = "";
+      const processTokens = (obj, prefix = "") => {
+        Object.keys(obj).forEach(key => {
+          if (obj[key] && typeof obj[key] === "object" && "$value" in obj[key]) {
+            scssVariables += `$${prefix}${key}: ${obj[key].$value};\n`;
+          } else if (obj[key] && typeof obj[key] === "object" && "value" in obj[key]) {
+            scssVariables += `$${prefix}${key}: ${obj[key].value};\n`;
+          } else {
+            processTokens(obj[key], `${prefix}${key}-`);
+          }
+        });
+      };
+      processTokens(tokens);
+      return scssVariables;
+    }
+
+    // Function to download file
+    function downloadFile(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     // Tab Navigation
@@ -977,17 +832,6 @@
         createTokensBtn.textContent = 'Export Tokens Studio JSON';
       }
 
-      // Show/hide export JSON button for Tokens Studio
-      if (format === 'tokens-studio') {
-        exportJSONBtn.style.display = 'none';
-      } else {
-        exportJSONBtn.style.display = 'block';
-      }
-
-      // Update JSON display if we have current stops
-      if (currentStops && currentConfig) {
-        updateJsonDisplay(currentStops, Object.assign({}, currentConfig, { outputFormat: format }));
-      }
     });
 
     // Color picker and hex input sync
@@ -1004,6 +848,53 @@
         colorPicker.value = hex;
       }
     });
+
+    // Stops count validation and enforcement
+    const stopsCountInput = document.getElementById('stopsCount');
+    const totalTokensWarning = document.getElementById('totalTokensWarning');
+    const totalTokensCount = document.getElementById('totalTokensCount');
+
+    function enforceStopsLimit() {
+      let value = parseInt(stopsCountInput.value);
+      if (isNaN(value) || value < 1) {
+        stopsCountInput.value = '1';
+      } else if (value > 20) {
+        stopsCountInput.value = '20';
+      }
+      updateTotalTokensCount();
+    }
+
+    function updateTotalTokensCount() {
+      const stopsCount = parseInt(stopsCountInput.value) || 10;
+      const batchModeEnabled = document.getElementById('batchMode').checked;
+      const batchColorItems = document.querySelectorAll('.batch-color-item').length;
+
+      let totalTokens;
+      if (batchModeEnabled && batchColorItems > 0) {
+        // Each batch color gets stopsCount + 1 (includes base)
+        totalTokens = batchColorItems * (stopsCount + 1);
+      } else {
+        // Single color mode
+        totalTokens = stopsCount + 1; // includes base
+      }
+
+      totalTokensCount.textContent = totalTokens;
+
+      // Show warning if creating more than 100 tokens
+      if (totalTokens > 100) {
+        totalTokensWarning.style.display = 'block';
+        totalTokensWarning.style.color = '#f44336';
+      } else if (totalTokens > 50) {
+        totalTokensWarning.style.display = 'block';
+        totalTokensWarning.style.color = '#ff9800';
+      } else {
+        totalTokensWarning.style.display = 'none';
+      }
+    }
+
+    stopsCountInput.addEventListener('input', enforceStopsLimit);
+    stopsCountInput.addEventListener('blur', enforceStopsLimit);
+    stopsCountInput.addEventListener('change', enforceStopsLimit);
 
     // Scale type options visibility
     const scaleType = document.getElementById('scaleType');
@@ -1039,6 +930,7 @@
     function updateBatchCount() {
       const count = document.querySelectorAll('.batch-color-item').length;
       batchColorCount.textContent = count;
+      updateTotalTokensCount(); // Update total tokens when batch count changes
     }
 
     function validateHex(hex) {
@@ -1167,13 +1059,13 @@
         batchColorIndex = 0;
         updateBatchCount();
       }
+      updateTotalTokensCount(); // Update when toggling batch mode
     });
 
     addBatchColorBtn.addEventListener('click', createBatchColorItem);
 
     // Generate preview
     let currentStops = null;
-    let currentConfig = null;
 
     function validateBatchColors() {
       if (!document.getElementById('batchMode').checked) {
@@ -1230,9 +1122,20 @@
     }
 
     document.getElementById('generatePreview').addEventListener('click', () => {
+      // Enforce stops limit
+      enforceStopsLimit();
+
       // Validate batch colors first
       if (!validateBatchColors()) {
         return;
+      }
+
+      // Check total tokens warning
+      const totalTokens = parseInt(totalTokensCount.textContent);
+      if (totalTokens > 200) {
+        if (!confirm(`You are about to create ${totalTokens} tokens. This may take a while and could slow down your Figma file. Continue?`)) {
+          return;
+        }
       }
 
       const config = {
@@ -1258,7 +1161,6 @@
         })).filter(c => c.hex && c.name);
       }
 
-      currentConfig = config;
       parent.postMessage({ pluginMessage: { type: 'generate-preview', config } }, '*');
     });
 
@@ -1269,9 +1171,20 @@
         return;
       }
 
+      // Enforce stops limit
+      enforceStopsLimit();
+
       // Validate batch colors first
       if (!validateBatchColors()) {
         return;
+      }
+
+      // Check total tokens warning
+      const totalTokens = parseInt(totalTokensCount.textContent);
+      if (totalTokens > 200) {
+        if (!confirm(`You are about to create ${totalTokens} tokens in Figma. This may take a while and could slow down your file. Continue?`)) {
+          return;
+        }
       }
 
       const config = {
@@ -1301,12 +1214,92 @@
 
     // Export JSON
     document.getElementById('exportJSON').addEventListener('click', () => {
-      if (!currentStops || !currentConfig) {
+      if (!currentStops) {
         alert('Please generate a preview first');
         return;
       }
 
-      parent.postMessage({ pluginMessage: { type: 'export-json', stops: currentStops, config: currentConfig } }, '*');
+      const config = {
+        name: document.getElementById('colorName').value || 'color',
+        category: document.getElementById('category').value,
+        namingLevel: document.getElementById('namingLevel').value,
+        batchMode: document.getElementById('batchMode').checked,
+        outputFormat: document.getElementById('outputFormat').value
+      };
+
+      if (config.batchMode) {
+        config.batchColors = Array.from(document.querySelectorAll('.batch-color-item')).map(item => ({
+          hex: item.querySelector('.batch-hex').value,
+          name: item.querySelector('.batch-name').value
+        })).filter(c => c.hex && c.name);
+      }
+
+      const isBatchMode = config.batchMode && config.batchColors && config.batchColors.length > 0;
+      const isTokensStudio = config.outputFormat === 'tokens-studio';
+      const tokens = generateTokensJson(currentStops, config, isTokensStudio, isBatchMode);
+      const jsonString = JSON.stringify(tokens, null, 2);
+
+      downloadFile(jsonString, 'dtw_color_tokens_generated.json', 'application/json');
+    });
+
+    // Export CSS
+    document.getElementById('exportCSS').addEventListener('click', () => {
+      if (!currentStops) {
+        alert('Please generate a preview first');
+        return;
+      }
+
+      const config = {
+        name: document.getElementById('colorName').value || 'color',
+        category: document.getElementById('category').value,
+        namingLevel: document.getElementById('namingLevel').value,
+        batchMode: document.getElementById('batchMode').checked,
+        outputFormat: document.getElementById('outputFormat').value
+      };
+
+      if (config.batchMode) {
+        config.batchColors = Array.from(document.querySelectorAll('.batch-color-item')).map(item => ({
+          hex: item.querySelector('.batch-hex').value,
+          name: item.querySelector('.batch-name').value
+        })).filter(c => c.hex && c.name);
+      }
+
+      const isBatchMode = config.batchMode && config.batchColors && config.batchColors.length > 0;
+      const isTokensStudio = config.outputFormat === 'tokens-studio';
+      const tokens = generateTokensJson(currentStops, config, isTokensStudio, isBatchMode);
+      const cssContent = convertTokensToCSS(tokens);
+
+      downloadFile(cssContent, 'dtw_color_tokens_generated.css', 'text/css');
+    });
+
+    // Export SCSS
+    document.getElementById('exportSCSS').addEventListener('click', () => {
+      if (!currentStops) {
+        alert('Please generate a preview first');
+        return;
+      }
+
+      const config = {
+        name: document.getElementById('colorName').value || 'color',
+        category: document.getElementById('category').value,
+        namingLevel: document.getElementById('namingLevel').value,
+        batchMode: document.getElementById('batchMode').checked,
+        outputFormat: document.getElementById('outputFormat').value
+      };
+
+      if (config.batchMode) {
+        config.batchColors = Array.from(document.querySelectorAll('.batch-color-item')).map(item => ({
+          hex: item.querySelector('.batch-hex').value,
+          name: item.querySelector('.batch-name').value
+        })).filter(c => c.hex && c.name);
+      }
+
+      const isBatchMode = config.batchMode && config.batchColors && config.batchColors.length > 0;
+      const isTokensStudio = config.outputFormat === 'tokens-studio';
+      const tokens = generateTokensJson(currentStops, config, isTokensStudio, isBatchMode);
+      const scssContent = convertTokensToSCSS(tokens);
+
+      downloadFile(scssContent, 'dtw_color_tokens_generated.scss', 'text/x-scss');
     });
 
     // Listen for messages from plugin code
@@ -1315,15 +1308,7 @@
 
       if (msg.type === 'preview-generated') {
         currentStops = msg.stops;
-        displayPreview(msg.stops);
-
-        // Update JSON display and auto-open panel if not already open
-        if (currentConfig) {
-          updateJsonDisplay(msg.stops, currentConfig);
-          if (!sidePanel.classList.contains('open')) {
-            togglePanel();
-          }
-        }
+        displayPreview(msg.stops, msg.batchMode || false);
       } else if (msg.type === 'tokens-created') {
         const format = msg.format;
         let message = '';
@@ -1357,24 +1342,64 @@
       }
     };
 
-    function displayPreview(stops) {
+    function displayPreview(stops, isBatchMode = false) {
       const preview = document.getElementById('preview');
       const previewContent = document.getElementById('previewContent');
 
       previewContent.innerHTML = '';
 
-      Object.entries(stops).forEach(([name, hex]) => {
-        const stopEl = document.createElement('div');
-        stopEl.className = 'color-stop';
-        stopEl.innerHTML = `
-          <div class="color-swatch" style="background-color: ${hex};"></div>
-          <div class="color-info">
-            <div class="color-name">${name}</div>
-            <div class="color-value">${hex}</div>
-          </div>
-        `;
-        previewContent.appendChild(stopEl);
-      });
+      if (isBatchMode) {
+        // Batch mode: stops is { colorName: { stopName: hex, ... }, ... }
+        Object.entries(stops).forEach(([colorName, colorStops]) => {
+          const groupEl = document.createElement('div');
+          groupEl.className = 'color-scale-group';
+
+          const titleEl = document.createElement('div');
+          titleEl.className = 'color-scale-title';
+          titleEl.textContent = colorName;
+          groupEl.appendChild(titleEl);
+
+          Object.entries(colorStops).forEach(([stopName, hex]) => {
+            const stopEl = document.createElement('div');
+            stopEl.className = 'color-stop';
+            stopEl.innerHTML = `
+              <div class="color-swatch" style="background-color: ${hex};"></div>
+              <div class="color-info">
+                <div class="color-name">${colorName}/${stopName}</div>
+                <div class="color-value">${hex}</div>
+              </div>
+            `;
+            groupEl.appendChild(stopEl);
+          });
+
+          previewContent.appendChild(groupEl);
+        });
+      } else {
+        // Single color mode: stops is { stopName: hex, ... }
+        const groupEl = document.createElement('div');
+        groupEl.className = 'color-scale-group';
+
+        const colorName = document.getElementById('colorName').value || 'color';
+        const titleEl = document.createElement('div');
+        titleEl.className = 'color-scale-title';
+        titleEl.textContent = colorName;
+        groupEl.appendChild(titleEl);
+
+        Object.entries(stops).forEach(([stopName, hex]) => {
+          const stopEl = document.createElement('div');
+          stopEl.className = 'color-stop';
+          stopEl.innerHTML = `
+            <div class="color-swatch" style="background-color: ${hex};"></div>
+            <div class="color-info">
+              <div class="color-name">${colorName}/${stopName}</div>
+              <div class="color-value">${hex}</div>
+            </div>
+          `;
+          groupEl.appendChild(stopEl);
+        });
+
+        previewContent.appendChild(groupEl);
+      }
 
       preview.classList.remove('hidden');
     }
