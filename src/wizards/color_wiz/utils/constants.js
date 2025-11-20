@@ -135,3 +135,201 @@ export const UI_MESSAGES = {
   PROCESSING_COLORS: (count) => `🎨 PROCESSING ${count} ADDITIONAL COLOR${count > 1 ? 'S' : ''}`,
   SUCCESS_PROCESSED: (total, additional) => `\n✅ Successfully processed ${total} color${additional > 0 ? 's' : ''} with the same scale settings!\n`
 };
+
+// Color scale presets
+export const COLOR_SCALE_PRESETS = {
+  // Popular frameworks
+  tailwind: {
+    name: 'Tailwind CSS',
+    description: 'Tailwind CSS v3 color system (50-950)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 50,
+    stopsCount: 10,
+    minMix: 10,
+    maxMix: 90,
+    includeBase: false
+  },
+
+  material: {
+    name: 'Material Design',
+    description: 'Material Design color palette (100-900)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 100,
+    stopsCount: 9,
+    minMix: 12,
+    maxMix: 88,
+    includeBase: false
+  },
+
+  bootstrap: {
+    name: 'Bootstrap',
+    description: 'Bootstrap 5 color system (100-900)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 100,
+    stopsCount: 9,
+    minMix: 15,
+    maxMix: 85,
+    includeBase: false
+  },
+
+  chakra: {
+    name: 'Chakra UI',
+    description: 'Chakra UI color scales (50-950)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 50,
+    stopsCount: 10,
+    minMix: 10,
+    maxMix: 90,
+    includeBase: false
+  },
+
+  // Component libraries
+  ant: {
+    name: 'Ant Design',
+    description: 'Ant Design color palette (1-10)',
+    type: 'ordinal',
+    padded: false,
+    stopsCount: 10,
+    minMix: 10,
+    maxMix: 90,
+    includeBase: true
+  },
+
+  mantine: {
+    name: 'Mantine UI',
+    description: 'Mantine color system (0-9)',
+    type: 'ordinal',
+    padded: false,
+    stopsCount: 10,
+    minMix: 8,
+    maxMix: 92,
+    includeBase: false
+  },
+
+  radix: {
+    name: 'Radix Colors',
+    description: 'Radix UI color scale (01-12)',
+    type: 'ordinal',
+    padded: true,
+    stopsCount: 12,
+    minMix: 5,
+    maxMix: 95,
+    includeBase: false
+  },
+
+  // Enterprise systems
+  carbon: {
+    name: 'IBM Carbon',
+    description: 'Carbon Design System (10-100)',
+    type: 'incremental',
+    incrementalOption: '10',
+    startValue: 10,
+    stopsCount: 10,
+    minMix: 5,
+    maxMix: 95,
+    includeBase: false
+  },
+
+  spectrum: {
+    name: 'Adobe Spectrum',
+    description: 'Adobe Spectrum colors (100-1400)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 100,
+    stopsCount: 14,
+    minMix: 12,
+    maxMix: 88,
+    includeBase: false
+  },
+
+  // Minimal scales
+  fiveShades: {
+    name: 'Five Shades',
+    description: 'Minimal 5-stop scale (100-500)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 100,
+    stopsCount: 5,
+    minMix: 20,
+    maxMix: 80,
+    includeBase: false
+  },
+
+  sevenShades: {
+    name: 'Seven Shades',
+    description: 'Balanced 7-stop scale (100-700)',
+    type: 'incremental',
+    incrementalOption: '100',
+    startValue: 100,
+    stopsCount: 7,
+    minMix: 15,
+    maxMix: 85,
+    includeBase: false
+  },
+
+  // Semantic scales
+  simpleSemantic: {
+    name: 'Simple Semantic',
+    description: 'Basic semantic scale (dark, base, light)',
+    type: 'semanticStops',
+    stopsCount: 2,
+    minMix: 25,
+    maxMix: 75,
+    includeBase: true
+  },
+
+  extendedSemantic: {
+    name: 'Extended Semantic',
+    description: 'Full semantic range (10 variations)',
+    type: 'semanticStops',
+    stopsCount: 10,
+    minMix: 10,
+    maxMix: 90,
+    includeBase: true
+  },
+
+  // Alphabetical
+  alphabeticalTen: {
+    name: 'Alphabetical A-J',
+    description: '10-stop alphabetical scale (A-J)',
+    type: 'alphabetical',
+    alphabeticalOption: 'uppercase',
+    stopsCount: 10,
+    minMix: 10,
+    maxMix: 90,
+    includeBase: false
+  }
+};
+
+// Preset categories for organization
+export const PRESET_CATEGORIES = {
+  popular: {
+    name: '🔥 Popular Frameworks',
+    description: 'Industry-standard design systems',
+    presets: ['tailwind', 'material', 'bootstrap', 'chakra']
+  },
+  components: {
+    name: '🧩 Component Libraries',
+    description: 'UI component library scales',
+    presets: ['ant', 'mantine', 'radix']
+  },
+  enterprise: {
+    name: '🏢 Enterprise Systems',
+    description: 'Enterprise design systems',
+    presets: ['carbon', 'spectrum']
+  },
+  minimal: {
+    name: '🎨 Minimal Scales',
+    description: 'Simple, focused color scales',
+    presets: ['fiveShades', 'sevenShades', 'simpleSemantic', 'extendedSemantic']
+  },
+  other: {
+    name: '📝 Other Formats',
+    description: 'Alternative naming schemes',
+    presets: ['alphabeticalTen']
+  }
+};

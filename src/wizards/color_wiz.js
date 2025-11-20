@@ -23,6 +23,7 @@ import { clearHexValidationCache } from "./color_wiz/utils/colorValidation.js";
 import { promptForTokenStructure } from "./color_wiz/prompts/tokenStructure.js";
 import { promptForColorMode, collectSingleColor, collectBatchColors } from "./color_wiz/prompts/colorCollection.js";
 import { promptForScaleConfiguration, previewColorScale, applyMiddleToneLogic } from "./color_wiz/prompts/scaleConfiguration.js";
+import { askPresetOrCustom, handlePresetSelection } from "./color_wiz/prompts/presetSelection.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,10 +73,14 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 
   const { tokenType, category, namingLevel } = structure;
 
-  // Step 2: Determine color mode (single vs batch)
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎨 STEP 2: SELECT COLOR"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+  // Part of Step 2: Determine color mode (single vs batch)
   const colorMode = await promptForColorMode();
 
-  // Step 3: Collect colors
+  // Part of Step 2: Collect colors
   let allColors;
   if (colorMode === 'single') {
     const singleColor = await collectSingleColor(tokensData, category, namingLevel);
@@ -91,12 +96,34 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   const finalConcept = concept || "color";
   const additionalColors = allColors.slice(1);
 
-  // Step 4: Configure scale (with confirmation loop)
+  // Step 3: Configure scale (with confirmation loop)
   let stops, newScaleSettings;
+  let scaleConfig = scaleSettings; // Reuse scale settings if available
+
+  if (!scaleConfig) {
+    const choice = await askPresetOrCustom();
+    if (choice === 'preset') {
+      scaleConfig = await handlePresetSelection();
+      if (!scaleConfig) {
+        // User backed out of preset selection, restart the process
+        console.log(chalk.bold.greenBright("\nRestarting to let you choose a different path."));
+        return await askForInput(tokensData);
+      }
+    }
+  }
+
   while (true) {
-    const scaleResult = await promptForScaleConfiguration(scaleSettings, hex);
-    stops = scaleResult.stops;
-    newScaleSettings = scaleResult.scaleSettings;
+    if (scaleConfig) {
+      // Use preset or reused settings
+      newScaleSettings = scaleConfig;
+      stops = generateStops(hex, newScaleSettings);
+      scaleConfig = null; // Consume the config to allow custom tweaking if rejected
+    } else {
+      // Go to custom configuration
+      const scaleResult = await promptForScaleConfiguration(null, hex);
+      stops = scaleResult.stops;
+      newScaleSettings = scaleResult.scaleSettings;
+    }
 
     // Determine display mode for table
     let mode, padded;
@@ -117,9 +144,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       padded = false;
     }
 
-    // Step 5: Preview and confirmation
+    // Step 4: Preview and confirmation
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold(`🔍 STEP 7: ${allColors.length > 1 ? 'COLORS' : 'COLOR'} PREVIEW`));
+    console.log(chalk.bold(`🔍 STEP 4: ${allColors.length > 1 ? 'COLORS' : 'COLOR'} PREVIEW`));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(
