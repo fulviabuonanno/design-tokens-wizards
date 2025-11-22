@@ -1,3 +1,6 @@
+# Dependencies
+node_modules/
+
 # Logs
 logs
 *.log
@@ -94,7 +97,6 @@ storybook-static
 temp_file.txt
 
 # Development dependencies (not needed for end users)
-node_modules/
 
 # Work in progress folder
 .github/wip/
