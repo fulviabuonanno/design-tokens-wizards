@@ -99,4 +99,4 @@ temp_file.txt
 # Development dependencies (not needed for end users)
 
 # Work in progress folder
-.github/wip/
+.github/
