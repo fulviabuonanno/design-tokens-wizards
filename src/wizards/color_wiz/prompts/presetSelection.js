@@ -10,11 +10,15 @@ import { COLOR_SCALE_PRESETS, PRESET_CATEGORIES } from '../utils/constants.js';
  * Ask user if they want to use a preset or custom configuration
  */
 export const askPresetOrCustom = async () => {
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎨 STEP 3: CONFIGURE COLOR SCALE"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+
   const { choice } = await inquirer.prompt([
     {
       type: 'list',
       name: 'choice',
-      message: '\n How would you like to configure your color scale?',
+      message: 'How would you like to configure your color scale?\n>>>',
       choices: [
         {
           name: '🎯 Use a preset (quick start with industry-standard configurations)',

@@ -183,9 +183,9 @@ export const promptForTokenStructure = async (tokensData) => {
   }
 
   if (tokenType === 'global') {
-    // Step 2: Category
+    // Category selection (sub-step of STEP 1)
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("📁 STEP 2: GLOBAL CATEGORY"));
+    console.log(chalk.bold("📁 CATEGORY SELECTION"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));
@@ -245,9 +245,9 @@ export const promptForTokenStructure = async (tokensData) => {
       }
     }
 
-    // Step 3: Naming Level
+    // Naming Level (sub-step of STEP 1)
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("📝 STEP 3: NAMING LEVEL"));
+    console.log(chalk.bold("📝 NAMING LEVEL"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));
