@@ -208,7 +208,11 @@ export const promptForScaleConfiguration = async (existingSettings, hex) => {
   if (existingSettings) {
     newScaleSettings = existingSettings;
     console.log(chalk.black.bgYellowBright("\n======================================="));
+<<<<<<< HEAD
     console.log(chalk.bold("➡️ STEP 6: SCALE CONFIGURATION"));
+=======
+    console.log(chalk.bold("➡️ CURRENT SCALE SETTINGS"));
+>>>>>>> master
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     // Display scale information in a more visually appealing way
@@ -231,7 +235,11 @@ export const promptForScaleConfiguration = async (existingSettings, hex) => {
 
   } else {
     console.log(chalk.black.bgYellowBright("\n======================================="));
+<<<<<<< HEAD
     console.log(chalk.bold("🔢 STEP 6: SCALE CONFIGURATION"));
+=======
+    console.log(chalk.bold("🔢 SELECT SCALE TYPE"));
+>>>>>>> master
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     const { scaleType } = await inquirer.prompt([
