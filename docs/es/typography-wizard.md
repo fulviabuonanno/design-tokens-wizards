@@ -6,7 +6,20 @@
 
 ¡Crea una poción tipográfica armoniosa para tu sistema de diseño con el Maguito de Tokens de Tipografía 🧙! Este maguito te ayuda a combinar familias de fuentes, tamaños, pesos, espaciados y alturas en un sistema tipográfico cohesivo.
 
-1. **Invoca el Maguito**  
+## Capacidades Clave
+
+- **Configuración Multi-Propiedad:** Configura familias de fuentes, tamaños, pesos, espaciado entre letras y alturas de línea en una sesión
+- **Convenciones de Nomenclatura Flexibles:** Elige entre nomenclatura semántica, tallas, incremental, ordinal, alfabética o basada en propósito
+- **Múltiples Tipos de Escala:** Soporte para escalas de 4 puntos, 8 puntos, modular, Fibonacci y personalizada
+- **Múltiples Unidades:** Exporta en unidades px, rem, em o porcentaje
+- **Guías de Accesibilidad:** Recomendaciones integradas para valores tipográficos óptimos
+- **Archivos Autogenerados:** Tokens JSON, variables CSS y variables SCSS listos para usar
+
+---
+
+## Cómo Usar
+
+### 1. **Invoca el Maguito**  
    Lanza el hechizo de tipografía en tu terminal:
 
    ```sh

@@ -1,10 +1,24 @@
-### 🔄 **Merge Tokens Spell**
+## 🔄 **Merge Tokens Spell**
 
 <img src="src/assets/merge_spell.png" alt="Merge Spell" width="200">
 
+![Merge Spell](https://img.shields.io/badge/Merge%20Spell-v1.3.3-orange)
+
 Conjure a unified design system by merging your token files with the Merge Tokens Spell 🧙! This spell combines multiple token files into a single, cohesive design system file, ensuring consistent naming conventions across your tokens.
 
-1. **Invoke the Spell**  
+## Key Capabilities
+
+- **Multi-Token Merging:** Combine color, typography, space, size, and border radius tokens in one file
+- **Format Selection:** Choose preferred formats for each token type (HEX, RGB, RGBA, HSL, OKLCH for colors; px, rem, em for others)
+- **Naming Convention Control:** Apply consistent naming patterns (camelCase, kebab-case, snake_case, PascalCase)
+- **Auto-generated Files:** Unified JSON tokens, CSS variables, and SCSS variables
+- **Smart Detection:** Automatically discovers available token files in your output directory
+
+---
+
+## How to Use
+
+### 1. **Invoke the Spell**  
    Cast the merge spell in your terminal:
 
    ```sh

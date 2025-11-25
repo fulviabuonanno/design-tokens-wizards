@@ -39,7 +39,7 @@ export const promptForColorMode = async () => {
  */
 export const collectSingleColor = async (tokensData, category, namingLevel) => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 5: SELECT COLOR"));
+  console.log(chalk.bold("🎨 STEP 5: COLOR INPUT"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   const hexResponse = await inquirer.prompt([
@@ -81,7 +81,7 @@ export const collectSingleColor = async (tokensData, category, namingLevel) => {
  */
 export const collectBatchColors = async (tokensData, category, namingLevel) => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 5: ADD MULTIPLE COLORS"));
+  console.log(chalk.bold("🎨 STEP 5: COLOR INPUT"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   console.log(chalk.yellowBright("💡 You can add multiple colors at once. They will all use the same scale configuration."));

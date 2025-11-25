@@ -6,7 +6,19 @@
 
 ¡Conjura el sistema de radio de borde perfecto para tu diseño con el Maguito de Tokens de Radio de Borde 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de radio de borde que traerán elegancia y consistencia a tus elementos de UI.
 
-1. **Invoca el Maguito**  
+## Capacidades Clave
+
+- **Múltiples Tipos de Escala:** Elige entre escalas de 4 puntos, 8 puntos, modular, Fibonacci o intervalos personalizados
+- **Convenciones de Nomenclatura Flexibles:** Opciones de nomenclatura por tallas, incremental, ordinal o alfabética
+- **Valores Personalizables:** Define 1-20 valores de radio de borde para ajustarse a tus necesidades de diseño
+- **Unidades Basadas en Píxeles:** Unidades px predeterminadas para redondeo de esquinas consistente
+- **Archivos Autogenerados:** Tokens JSON, variables CSS y variables SCSS listos para usar
+
+---
+
+## Cómo Usar
+
+### 1. **Invoca el Maguito**  
    Lanza el hechizo de radio de borde en tu terminal:
 
    ```sh

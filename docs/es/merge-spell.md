@@ -6,7 +6,19 @@
 
 ¡Conjura un sistema de diseño unificado fusionando tus archivos de tokens con el Hechizo de Fusión de Tokens 🧙! Este hechizo combina múltiples archivos de tokens en un único archivo cohesivo del sistema de diseño.
 
-1. **Invoca el Hechizo**  
+## Capacidades Clave
+
+- **Fusión Multi-Token:** Combina tokens de color, tipografía, espaciado, tamaño y radio de borde en un solo archivo
+- **Selección de Formato:** Elige formatos preferidos para cada tipo de token (HEX, RGB, RGBA, HSL, OKLCH para colores; px, rem, em para otros)
+- **Control de Convención de Nomenclatura:** Aplica patrones de nomenclatura consistentes (camelCase, kebab-case, snake_case, PascalCase)
+- **Archivos Autogenerados:** Tokens JSON unificados, variables CSS y variables SCSS
+- **Detección Inteligente:** Descubre automáticamente archivos de tokens disponibles en tu directorio de salida
+
+---
+
+## Cómo Usar
+
+### 1. **Invoca el Hechizo**  
    Lanza el hechizo de fusión en tu terminal:
 
    ```sh

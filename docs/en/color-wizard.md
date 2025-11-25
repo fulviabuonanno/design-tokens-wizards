@@ -2,106 +2,143 @@
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow)
+![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow)
 
 Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
 
-**Latest Update (v2.11.0):** 🎨 Enhanced batch mode feature! You can now add multiple colors at once using two convenient methods:
+## Features
 
-- **Bulk Entry:** Paste multiple HEX codes separated by commas or semicolons (e.g., `#FF5733, 3498DB; 2ECC71`)
-- **Individual Entry:** Add colors one at a time with immediate feedback
-  All colors in a batch share the same scale configuration, dramatically speeding up the creation of comprehensive color palettes.
+- **Flexible Token Structure:** Organize colors with optional categories and naming levels
+- **Batch Processing:** Add multiple colors at once with shared scale configuration
+- **Preset Configurations:** Quick start with industry-standard color scales (Tailwind, Material Design, and more)
+- **Custom Scales:** Full control over scale types (incremental, ordinal, alphabetical, semantic)
+- **Multiple Output Formats:** Export to HEX, RGB, RGBA, HSL, and OKLCH
+- **Auto-generated Files:** JSON tokens, CSS variables, and SCSS variables ready to use
 
-**Previous Update (v2.9.1):** Fixed middle tone selection logic - when selecting a middle tone as 'base', the original hex color is now correctly assigned to the middle tone (e.g., "500") and 'base' is removed from the output, eliminating duplicate values.
+---
 
-1. **Invoke the Wizard**  
+## How to Use
+
+### 1. **Invoke the Wizard**  
    Cast the color spell in your terminal:
 
    ```sh
    npm run color
    ```
 
-2. **Choose Token Type**  
-   Select your color token foundation:
+### 2. **Choose Token Type**
 
-   - **Global Colors**
-   - **Semantic Colors** (coming soon; currently redirects to Global)
+Select your color token foundation:
 
-3. **Set Category**  
-   (Optional) Organize your tokens by category (e.g., primitives, foundation, core, basics, essentials, global, roots, or custom). Enter your own if you wish.
+- **Global Colors**
+- **Semantic Colors** (coming soon; currently redirects to Global)
 
-4. **Set Naming Level**
-   (Optional) Add a naming level for extra clarity (e.g., color, colour, palette, scheme, or custom).
+### 3. **Set Category**
 
-5. **Choose Color Mode** ✨
-   Select how you want to add colors:
+(Optional) Organize your tokens by category (e.g., primitives, foundation, core, basics, essentials, global, roots, or custom). Enter your own if you wish.
 
-   - **Single Color:** Add one color at a time (traditional workflow)
-   - **Batch Mode:** Add multiple colors at once with the same scale settings
+### 4. **Set Naming Level**
 
-6. **Add Your Colors**
-   Depending on your mode choice:
+(Optional) Add a naming level for extra clarity (e.g., color, colour, palette, scheme, or custom).
 
-   **Single Color Mode:**
+### 5. **Choose Color Mode** ✨
 
-   - Enter a HEX color code (e.g., `#FABADA`)
-   - Preview your magical hue
-   - Give your color a unique name (e.g., `blue`, `yellow`, `red`)
+Select how you want to add colors:
 
-   **Batch Mode** (NEW in v2.11.0!):
+- **Single Color:** Add one color at a time (traditional workflow)
+- **Batch Mode:** Add multiple colors at once with the same scale settings
 
-   Choose your input method:
+### 6. **Color Input**
 
-   - **Bulk Entry:** Paste multiple HEX codes at once
-     - Separate codes with commas (`,`) or semicolons (`;`)
-     - With or without `#` symbol (e.g., `#FF5733, 3498DB; 2ECC71` or `FF5733,3498DB,2ECC71`)
-     - Name each color after entering all codes
-   - **Individual Entry:** Add colors one at a time
-     - Enter HEX code and name for each color
-     - Choose to add more colors when ready
+Depending on your mode choice:
 
-   All colors in batch mode will share the same scale configuration, dramatically speeding up palette creation!
+**Single Color Mode:**
 
-7. **Select Scale Type**
-   Decide how your color stops will be generated:
+- Enter a HEX color code (e.g., `#FABADA`)
+- Preview your magical hue
+- Give your color a unique name (e.g., `blue`, `yellow`, `red`)
 
-   - **Incremental:** 100, 200, 300, 400
-   - **Ordinal:** 01, 02, 03, 04 or 1, 2, 3, 4
-   - **Alphabetical:** A, B, C, D or a, b, c, d
-   - **Semantic Stops:** dark, base, light, etc.
+**Batch Mode:**
 
-8. **Set Number of Stops**
-   Choose how many stops (shades) to generate (1–20, depending on scale type).
+Choose your input method:
 
-9. **Customize Color Mix Range**
-   (Optional) Set the minimum and maximum mix percentages (default: 10%–90%) to control how your base color blends with white and black for the lightest and darkest stops.
+- **Bulk Entry:** Paste multiple HEX codes at once
+  - Separate codes with commas (`,`) or semicolons (`;`)
+  - With or without `#` symbol (e.g., `#FF5733, 3498DB; 2ECC71` or `FF5733,3498DB,2ECC71`)
+  - Name each color after entering all codes
+- **Individual Entry:** Add colors one at a time
+  - Enter HEX code and name for each color
+  - Choose to add more colors when ready
 
-10. **Preview and Confirm**
-    Review your color scale(s) in a table, complete with token names and HEX values.
+All colors in batch mode will share the same scale configuration, dramatically speeding up palette creation!
 
-    - For single colors: Full preview with all stops displayed
-    - For batch mode: Preview of the first color with a summary of additional colors
-      You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
+### 7. **Scale Configuration**
 
-11. **Expand Your Palette**
-    Add more colors and repeat the process as many times as you like.
+**Choose Configuration Method:**
 
-12. **Export and Convert**  
-    When you're done, the wizard:
+- **🎯 Use a Preset:** Quick start with industry-standard configurations
+- **⚙️ Custom Configuration:** Full control over all settings
 
-    - Exports tokens in Tokens Studio JSON format (HEX by default)
-    - Offers to convert tokens to RGB, RGBA, HSL, and/or OKLCH
-    - Generates CSS and SCSS files for each format
-    - Cleans up unused files
+**If Using Presets:**
 
-    Your magical artifacts will appear in:
+Select from categorized presets designed for common use cases:
 
-    - JSON: `output_files/tokens/json/color/color_tokens_{format}.json`
-    - CSS: `output_files/tokens/css/color/color_variables_{format}.css`
-    - SCSS: `output_files/tokens/scss/color/color_variables_{format}.scss`
+- **Tailwind-Inspired:** Tailwind-style scales (10 or 11 stops with incremental naming)
+- **Material Design:** Google Material Design color systems
+- **Quick Start:** Simple, ready-to-use scales for rapid prototyping
+- **Compact:** Minimal scales with fewer stops for lightweight projects
 
-13. **Review Your Spellwork**  
-    The wizard lists all updated, new, and deleted files for your review.
+Each preset includes predefined settings for:
+
+- Scale type (incremental, ordinal, alphabetical, or semantic)
+- Number of stops
+- Mix range percentages
+- Naming format
+
+**If Using Custom Configuration:**
+
+Decide how your color stops will be generated:
+
+- **Incremental:** 100, 200, 300, 400
+- **Ordinal:** 01, 02, 03, 04 or 1, 2, 3, 4
+- **Alphabetical:** A, B, C, D or a, b, c, d
+- **Semantic Stops:** dark, base, light, etc.
+
+Then choose how many stops (shades) to generate (1–20, depending on scale type).
+
+Optionally customize color mix range: Set the minimum and maximum mix percentages (default: 10%–90%) to control how your base color blends with white and black for the lightest and darkest stops.
+
+### 8. **Preview and Confirm**
+
+Review your color scale(s) in a table, complete with token names and HEX values.
+
+- For single colors: Full preview with all stops displayed
+- For batch mode: Preview of the first color with a summary of additional colors
+
+You can set the middle tone as the `base` if you wish. Confirm to proceed or restart to adjust.
+
+### 9. **Expand Your Palette**
+
+Add more colors and repeat the process as many times as you like.
+
+### 10. **Export and Convert**
+
+When you're done, the wizard:
+
+- Exports tokens in Tokens Studio JSON format (HEX by default)
+- Offers to convert tokens to RGB, RGBA, HSL, and/or OKLCH
+- Generates CSS and SCSS files for each format
+- Cleans up unused files
+
+Your magical artifacts will appear in:
+
+- JSON: `output_files/tokens/json/color/color_tokens_{format}.json`
+- CSS: `output_files/tokens/css/color/color_variables_{format}.css`
+- SCSS: `output_files/tokens/scss/color/color_variables_{format}.scss`
+
+### 11. **Review Your Spellwork**
+
+The wizard lists all updated, new, and deleted files for your review.
 
 ---
 

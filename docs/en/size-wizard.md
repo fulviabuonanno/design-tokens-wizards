@@ -6,7 +6,19 @@
 
 Conjure the perfect sizing system for your design with the Size Tokens Wizard 🧙! This wizard helps you create a harmonious set of size tokens that will bring consistency and precision to your layouts.
 
-1. **Invoke the Wizard**  
+## Key Capabilities
+
+- **Multiple Scale Types:** Choose from 4-point, 8-point, modular, Fibonacci, or custom interval scales
+- **Flexible Naming Conventions:** T-shirt sizes, incremental, ordinal, or alphabetical naming options
+- **Customizable Values:** Define 1-20 size values to fit your design needs
+- **Pixel-based Units:** Default px units for consistent sizing
+- **Auto-generated Files:** JSON tokens, CSS variables, and SCSS variables ready to use
+
+---
+
+## How to Use
+
+### 1. **Invoke the Wizard**  
    Cast the size spell in your terminal:
 
    ```sh

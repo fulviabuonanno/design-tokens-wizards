@@ -6,14 +6,27 @@
 
 Craft a harmonious typographic elixir for your design system with the Typography Tokens Wizard 🧙! This wizard helps you blend font families, sizes, weights, spacing, and heights into a cohesive typography system.
 
-1. **Invoke the Wizard**  
+## Key Capabilities
+
+- **Multi-Property Configuration:** Configure font families, sizes, weights, letter spacing, and line heights in one session
+- **Flexible Naming Conventions:** Choose from semantic, t-shirt, incremental, ordinal, alphabetical, or purpose-based naming
+- **Multiple Scale Types:** Support for 4-point, 8-point, modular, Fibonacci, and custom scales
+- **Multiple Units:** Export in px, rem, em, or percentage units
+- **Accessibility Guidelines:** Built-in recommendations for optimal typography values
+- **Auto-generated Files:** JSON tokens, CSS variables, and SCSS variables ready to use
+
+---
+
+## How to Use
+
+### 1. **Invoke the Wizard**
    Cast the typography spell in your terminal:
 
    ```sh
    npm run typo
    ```
 
-2. **Choose Your Properties**  
+### 2. **Choose Your Properties**  
    Select which typography properties you wish to configure:
 
    - Font Families
@@ -22,7 +35,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
    - Letter Spacing
    - Line Heights
 
-3. **Configure Font Family**
+### 3. **Configure Font Family**
 
    - Name your property (fontFamily, font-family, fonts, ff, or custom)
    - Define 1–3 font families with fallbacks
@@ -32,7 +45,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - Ordinal (1, 2, 3, 4)
      - Alphabetical (A, B, C, D)
 
-4. **Configure Font Size**
+### 4. **Configure Font Size**
 
    - Name your property (fontSize, font-size, size, fs, or custom)
    - Select scale type:
@@ -48,7 +61,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - Ordinal (1, 2, 3, 4)
      - Alphabetical (A, B, C, D)
 
-5. **Configure Font Weight**
+### 5. **Configure Font Weight**
 
    - Name your property (fontWeight, font-weight, weight, fw, or custom)
    - Select from standard weights (100–900)
@@ -58,7 +71,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - Ordinal (1 to 5)
      - Purpose-based (body, heading...)
 
-6. **Configure Letter Spacing**
+### 6. **Configure Letter Spacing**
 
    - Name your property (letterSpacing, letter-spacing, tracking, ls, or custom)
    - Choose scale type:
@@ -71,7 +84,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - Ordinal (01, 02... or 1, 2...)
      - Alphabetical (a, b, c...)
 
-7. **Configure Line Height**
+### 7. **Configure Line Height**
 
    - Name your property (lineHeight, line-height, leading, lh, or custom)
    - Choose scale type:
@@ -86,10 +99,10 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - Incremental (100, 200, 300...)
      - Alphabetical (a, b, c...)
 
-8. **Preview Your Tokens**  
+### 8. **Preview Your Tokens**
    For each property, you'll see a preview table showing your configured values.
 
-9. **Generate Your Artifacts**  
+### 9. **Generate Your Artifacts**  
    Once confirmed, the wizard will:
 
    - Export your tokens in Tokens Studio JSON format
@@ -98,7 +111,7 @@ Craft a harmonious typographic elixir for your design system with the Typography
      - CSS: `output_files/tokens/css/typography/typography_variables.css`
      - SCSS: `output_files/tokens/scss/typography/typography_variables.scss`
 
-10. **Finalize Your Spell**  
+### 10. **Finalize Your Spell**  
     Review the output files and integrate your typography tokens into your system.
 
 ---

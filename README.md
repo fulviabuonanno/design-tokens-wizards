@@ -53,7 +53,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.0-yellow) |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow) |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |

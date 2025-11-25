@@ -185,7 +185,7 @@ export const promptForTokenStructure = async (tokensData) => {
   if (tokenType === 'global') {
     // Step 2: Category
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("📁 STEP 2: GLOBAL CATEGORY"));
+    console.log(chalk.bold("📁 STEP 2: CATEGORY"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(chalk.whiteBright("Categories help organize your colors into logical groups and create a clear hierarchy in your design system."));

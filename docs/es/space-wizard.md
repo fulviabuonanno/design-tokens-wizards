@@ -6,7 +6,19 @@
 
 ¡Conjura el sistema de espaciado perfecto para tu diseño con el Maguito de Tokens de Espaciado 🧙! Este maguito te ayuda a crear un conjunto armonioso de tokens de espaciado que traerán equilibrio y ritmo a tus diseños.
 
-1. **Invoca el Maguito**  
+## Capacidades Clave
+
+- **Múltiples Tipos de Escala:** Elige entre escalas de 4 puntos, 8 puntos, modular, Fibonacci o intervalos personalizados
+- **Convenciones de Nomenclatura Flexibles:** Opciones de nomenclatura por tallas, incremental, ordinal o alfabética
+- **Valores Personalizables:** Define 1-20 valores de espaciado para ajustarse a tus necesidades de diseño
+- **Unidades Basadas en Píxeles:** Unidades px predeterminadas para espaciado consistente
+- **Archivos Autogenerados:** Tokens JSON, variables CSS y variables SCSS listos para usar
+
+---
+
+## Cómo Usar
+
+### 1. **Invoca el Maguito**  
    Lanza el hechizo de espaciado en tu terminal:
 
    ```sh
