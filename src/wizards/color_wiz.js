@@ -64,7 +64,7 @@ const showLoader = (message, duration) => {
  * @returns {Promise<Object>} - Complete configuration object
  */
 const askForInput = async (tokensData, previousConcept = null, formatChoices = null, scaleSettings = null) => {
-  // Step 1: Get token structure (category, naming level)
+  // Steps 1-3: Get token structure (category, naming level)
   const structure = await promptForTokenStructure(tokensData);
   if (!structure) {
     // User didn't confirm, restart
@@ -73,14 +73,10 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
 
   const { tokenType, category, namingLevel } = structure;
 
-  console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 2: SELECT COLOR"));
-  console.log(chalk.black.bgYellowBright("=======================================\n"));
-
-  // Part of Step 2: Determine color mode (single vs batch)
+  // Step 4: Determine color mode (single vs batch)
   const colorMode = await promptForColorMode();
 
-  // Part of Step 2: Collect colors
+  // Step 5: Collect colors
   let allColors;
   if (colorMode === 'single') {
     const singleColor = await collectSingleColor(tokensData, category, namingLevel);
@@ -96,7 +92,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
   const finalConcept = concept || "color";
   const additionalColors = allColors.slice(1);
 
-  // Step 3: Configure scale (with confirmation loop)
+  // Step 6: Configure scale (with confirmation loop)
   let stops, newScaleSettings;
   let scaleConfig = scaleSettings; // Reuse scale settings if available
 
@@ -144,9 +140,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       padded = false;
     }
 
-    // Step 4: Preview and confirmation
+    // Step 7: Preview and confirmation
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold(`🔍 STEP 4: ${allColors.length > 1 ? 'COLORS' : 'COLOR'} PREVIEW`));
+    console.log(chalk.bold(`🔍 STEP 7: ${allColors.length > 1 ? 'COLORS' : 'COLOR'} PREVIEW`));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(
@@ -208,7 +204,7 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       });
     }
 
-    // Step 6: Apply middle tone logic
+    // Apply middle tone logic
     stops = await applyMiddleToneLogic(stops, newScaleSettings, false);
 
     const { confirmColor } = await inquirer.prompt([

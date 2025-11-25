@@ -6,7 +6,19 @@
 
 Conjure a clean slate with the Clear Tokens Spell 🧙! This spell helps you remove all generated token files, giving you a fresh start for your design system.
 
-1. **Invoke the Spell**  
+## Key Capabilities
+
+- **Complete Cleanup:** Remove all generated token files in one command
+- **Safe Preview:** Review files to be deleted before confirming the cleanup
+- **Directory Management:** Clear all output directories including JSON, CSS, and SCSS files
+- **Fresh Start:** Reset your workspace for new token generation
+- **Selective Removal:** Choose which token types to clear
+
+---
+
+## How to Use
+
+### 1. **Invoke the Spell**  
    Cast the clear spell in your terminal:
 
    ```sh

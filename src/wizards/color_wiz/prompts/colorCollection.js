@@ -34,6 +34,12 @@ export const promptForColorMode = async () => {
  * @returns {Promise<Object>} - { hex, name }
  */
 export const collectSingleColor = async (tokensData, category, namingLevel) => {
+<<<<<<< HEAD
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎨 STEP 5: COLOR INPUT"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+=======
+>>>>>>> master
 
   const hexResponse = await inquirer.prompt([
     {
@@ -73,7 +79,15 @@ export const collectSingleColor = async (tokensData, category, namingLevel) => {
  * @returns {Promise<Array>} - Array of { hex, name } objects
  */
 export const collectBatchColors = async (tokensData, category, namingLevel) => {
+<<<<<<< HEAD
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🎨 STEP 5: COLOR INPUT"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+  console.log(chalk.yellowBright("💡 You can add multiple colors at once. They will all use the same scale configuration."));
+=======
   console.log(chalk.yellowBright("\n💡 You can add multiple colors at once. They will all use the same scale configuration."));
+>>>>>>> master
   console.log(chalk.gray("   You can enter HEX values with or without the # symbol."));
   console.log(chalk.gray("   Format: Separate multiple values with commas (,) or semicolons (;)"));
   console.log(chalk.gray("   Example: #FF5733, 3498DB; 2ECC71 or FF5733,3498DB,2ECC71\n"));

@@ -6,7 +6,19 @@
 
 ¡Conjura una pizarra limpia con el Hechizo de Limpieza de Tokens 🧙! Este hechizo te ayuda a eliminar todos los archivos de tokens generados, dándote un nuevo comienzo para tu sistema de diseño.
 
-1. **Invoca el Hechizo**  
+## Capacidades Clave
+
+- **Limpieza Completa:** Elimina todos los archivos de tokens generados en un solo comando
+- **Vista Previa Segura:** Revisa los archivos a eliminar antes de confirmar la limpieza
+- **Gestión de Directorios:** Limpia todos los directorios de salida incluyendo archivos JSON, CSS y SCSS
+- **Nuevo Comienzo:** Reinicia tu espacio de trabajo para nueva generación de tokens
+- **Eliminación Selectiva:** Elige qué tipos de tokens limpiar
+
+---
+
+## Cómo Usar
+
+### 1. **Invoca el Hechizo**  
    Lanza el hechizo de limpieza en tu terminal:
 
    ```sh

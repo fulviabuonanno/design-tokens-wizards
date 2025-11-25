@@ -4,7 +4,11 @@
   "description": "🧙✨ A magical collection of interactive CLI wizards and spells to generate, manage, and merge design tokens for your design system. Create consistent color palettes, typography scales, spacing tokens, and more with an enchanting RPG-inspired experience!",
   "type": "module",
   "scripts": {
+<<<<<<< HEAD
+    "color": "node src/wizards/color_wiz.js --version=2.12.0",
+=======
     "color": "node src/wizards/color_wiz.js --version=2.11.1",
+>>>>>>> master
     "typo": "node src/wizards/typo_wiz.js --version=1.2.3",
     "space": "node src/wizards/space_wiz.js --version=1.7.2",
     "size": "node src/wizards/size_wiz.js --version=1.7.2",
@@ -15,7 +19,11 @@
     "pdf": "node .github/config/generate-pdf-docs.js && mkdir -p docs/pdf && md-to-pdf temp_README_full.md temp_README_full.es.md --config-file=.github/config/pdf-config.json && mv temp_README_full.pdf docs/pdf/Instructions.pdf && mv temp_README_full.es.pdf docs/pdf/Instrucciones.pdf && rm temp_README_full.md temp_README_full.es.md"
   },
   "scriptVersions": {
+<<<<<<< HEAD
+    "color": "2.12.0",
+=======
     "color": "2.11.1",
+>>>>>>> master
     "typo": "1.2.3",
     "space": "1.7.2",
     "size": "1.7.2",
@@ -30,7 +38,11 @@
     "@builtwithjavascript/oklch-converter": "^0.9.2",
     "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
+<<<<<<< HEAD
+    "inquirer": "^12.11.1",
+=======
     "inquirer": "^13.0.1",
+>>>>>>> master
     "path": "^0.12.7",
     "tinycolor2": "^1.6.0"
   },
