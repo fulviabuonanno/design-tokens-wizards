@@ -1,0 +1,48 @@
+{
+  "core": {
+    "color": {
+      "blue": {
+        "10": {
+          "$value": "#F3F5F7",
+          "$type": "color"
+        },
+        "20": {
+          "$value": "#C4CCD5",
+          "$type": "color"
+        },
+        "30": {
+          "$value": "#94A4B3",
+          "$type": "color"
+        },
+        "40": {
+          "$value": "#657B91",
+          "$type": "color"
+        },
+        "50": {
+          "$value": "#36526F",
+          "$type": "color"
+        },
+        "60": {
+          "$value": "#123456",
+          "$type": "color"
+        },
+        "70": {
+          "$value": "#0C2238",
+          "$type": "color"
+        },
+        "80": {
+          "$value": "#081727",
+          "$type": "color"
+        },
+        "90": {
+          "$value": "#050D16",
+          "$type": "color"
+        },
+        "100": {
+          "$value": "#010304",
+          "$type": "color"
+        }
+      }
+    }
+  }
+}

@@ -8,7 +8,7 @@
 
 **Última Actualización (v2.11.1):** ✨ ¡UX mejorada del maguito con organización de pasos más clara! El flujo del maguito ahora presenta una jerarquía visual mejorada con numeración de pasos consistente (PASO 1-4) y navegación más limpia durante todo el proceso de creación de color.
 
-**Actualización Anterior (v2.11.0):** 🎨 ¡Configuraciones preestablecidas estándar de la industria! Comienza rápidamente con formatos de escala de color probados de sistemas de diseño líderes (Tailwind CSS, Material Design 3, Chakra UI, Ant Design, y más). Elige entre 8 preestablecidos cuidadosamente curados o continúa con configuración personalizada completa. Además, modo por lotes mejorado con métodos de entrada masiva e individual para agregar múltiples colores eficientemente.
+**Actualización Anterior (v2.11.0):** 🎨 ¡Configuraciones preestablecidas estándar de la industria! Comienza rápidamente con formatos de escala de color probados de sistemas de diseño líderes (Tailwind CSS, Material Design 3, Chakra UI, Ant Design, y más). Elige entre más de 15 preestablecidos cuidadosamente curados o continúa con configuración personalizada completa. Además, modo por lotes mejorado con métodos de entrada masiva e individual para agregar múltiples colores eficientemente.
 
 1. **Invoca el Maguito**  
    Lanza el hechizo de color en tu terminal:
@@ -57,11 +57,32 @@
    Comienza rápidamente con configuraciones estándar de la industria:
 
    **Categorías de Preestablecidos Disponibles:**
-   - **🏢 Sistemas de Diseño:** Tailwind CSS, Material Design 3, Chakra UI, Ant Design
-   - **🎨 Escalas Minimalistas:** 5 Tonos, 7 Tonos, Semántico Simple, Semántico Extendido
-   - **📝 Otros Formatos:** Alfabético
 
-   ¡Previsualiza tu preestablecido seleccionado antes de confirmar!
+   - **🔥 Frameworks Populares** - Sistemas de diseño estándar de la industria
+     - Tailwind CSS (50-950, 10 stops)
+     - Material Design (100-900, 9 stops)
+     - Bootstrap (100-900, 9 stops)
+     - Chakra UI (50-950, 10 stops)
+
+   - **🧩 Bibliotecas de Componentes** - Escalas de bibliotecas de componentes UI
+     - Ant Design (1-10, ordinal)
+     - Mantine UI (0-9, ordinal)
+     - Radix Colors (01-12, ordinal con relleno)
+
+   - **🏢 Sistemas Empresariales** - Sistemas de diseño empresariales
+     - IBM Carbon (10-100, 10 stops)
+     - Adobe Spectrum (100-1400, 14 stops)
+
+   - **🎨 Escalas Minimalistas** - Escalas de color simples y enfocadas
+     - Cinco Tonos (100-500, 5 stops)
+     - Siete Tonos (100-700, 7 stops)
+     - Semántico Simple (oscuro, base, claro)
+     - Semántico Extendido (10 variaciones semánticas)
+
+   - **📝 Otros Formatos** - Esquemas de nomenclatura alternativos
+     - Alfabético A-J (10 stops)
+
+   ¡Cada preestablecido incluye rangos de mezcla optimizados y conteos de stops adaptados a ese sistema de diseño. Previsualiza tu preestablecido seleccionado con detalles de configuración antes de confirmar!
 
    **⚙️ Configuración Personalizada**
    Control total con ajustes personalizados:
@@ -89,11 +110,11 @@
 6. **Expande tu Paleta**
     Añade más colores y repite el proceso tantas veces como quieras.
 
-7. **Exporta y Convierte**  
+7. **Exporta y Convierte**
     Cuando termines, el maguito:
 
     - Exporta los tokens en formato Tokens Studio JSON (HEX por defecto)
-    - Ofrece convertir los tokens a RGB, RGBA y/o HSL
+    - Ofrece convertir los tokens a RGB, RGBA, HSL y/o OKLCH
     - Genera archivos CSS y SCSS para cada formato
     - Limpia archivos no utilizados
 

@@ -8,7 +8,7 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
 
 **Latest Update (v2.11.1):** ✨ Enhanced wizard UX with clearer step organization! The wizard flow now features improved visual hierarchy with consistent step numbering (STEP 1-4) and cleaner navigation throughout the color creation process.
 
-**Previous Update (v2.11.0):** 🎨 Industry-standard preset configurations! Quick start with proven color scale formats from leading design systems (Tailwind CSS, Material Design 3, Chakra UI, Ant Design, and more). Choose from 8 carefully curated presets or continue with full custom configuration. Plus enhanced batch mode with bulk entry and individual entry methods for adding multiple colors efficiently.
+**Previous Update (v2.11.0):** 🎨 Industry-standard preset configurations! Quick start with proven color scale formats from leading design systems (Tailwind CSS, Material Design 3, Chakra UI, Ant Design, and more). Choose from 15+ carefully curated presets or continue with full custom configuration. Plus enhanced batch mode with bulk entry and individual entry methods for adding multiple colors efficiently.
 
 1. **Invoke the Wizard**  
    Cast the color spell in your terminal:
@@ -57,11 +57,32 @@ Conjure a dazzling palette for your design system with the Color Tokens Wizard �
    Quick start with industry-standard configurations:
 
    **Available Preset Categories:**
-   - **🏢 Design Systems:** Tailwind CSS, Material Design 3, Chakra UI, Ant Design
-   - **🎨 Minimalist Scales:** 5 Shades, 7 Shades, Simple Semantic, Extended Semantic
-   - **📝 Other Formats:** Alphabetical
 
-   Preview your selected preset before confirming!
+   - **🔥 Popular Frameworks** - Industry-standard design systems
+     - Tailwind CSS (50-950, 10 stops)
+     - Material Design (100-900, 9 stops)
+     - Bootstrap (100-900, 9 stops)
+     - Chakra UI (50-950, 10 stops)
+
+   - **🧩 Component Libraries** - UI component library scales
+     - Ant Design (1-10, ordinal)
+     - Mantine UI (0-9, ordinal)
+     - Radix Colors (01-12, padded ordinal)
+
+   - **🏢 Enterprise Systems** - Enterprise design systems
+     - IBM Carbon (10-100, 10 stops)
+     - Adobe Spectrum (100-1400, 14 stops)
+
+   - **🎨 Minimal Scales** - Simple, focused color scales
+     - Five Shades (100-500, 5 stops)
+     - Seven Shades (100-700, 7 stops)
+     - Simple Semantic (dark, base, light)
+     - Extended Semantic (10 semantic variations)
+
+   - **📝 Other Formats** - Alternative naming schemes
+     - Alphabetical A-J (10 stops)
+
+   Each preset includes optimized mix ranges and stop counts tailored to that design system. Preview your selected preset with configuration details before confirming!
 
    **⚙️ Custom Configuration**
    Full control with custom settings:

@@ -28,27 +28,37 @@ Quick start with proven color scale formats used by leading design systems:
 
 **Available Preset Categories:**
 
-1. **🏢 Design Systems:**
-   - Tailwind CSS (11 stops: 50, 100-900, 950)
-   - Material Design 3 (13 stops: 0, 10, 20...100)
-   - Chakra UI (10 stops: 50, 100-900)
-   - Ant Design (10 stops: 1-10)
+1. **🔥 Popular Frameworks** - Industry-standard design systems
+   - **Tailwind CSS** (10 stops: 50-950, incremental by 100)
+   - **Material Design** (9 stops: 100-900, incremental by 100)
+   - **Bootstrap** (9 stops: 100-900, incremental by 100)
+   - **Chakra UI** (10 stops: 50-950, incremental by 100)
 
-2. **🎨 Minimalist Scales:**
-   - 5 Shades (5 stops)
-   - 7 Shades (7 stops)
-   - Simple Semantic (3 stops: dark, base, light)
-   - Extended Semantic (7 stops: darkest to lightest)
+2. **🧩 Component Libraries** - UI component library scales
+   - **Ant Design** (10 stops: 1-10, ordinal)
+   - **Mantine UI** (10 stops: 0-9, ordinal)
+   - **Radix Colors** (12 stops: 01-12, padded ordinal)
 
-3. **📝 Other Formats:**
-   - Alphabetical (10 stops: A-J)
+3. **🏢 Enterprise Systems** - Enterprise design systems
+   - **IBM Carbon** (10 stops: 10-100, incremental by 10)
+   - **Adobe Spectrum** (14 stops: 100-1400, incremental by 100)
+
+4. **🎨 Minimal Scales** - Simple, focused color scales
+   - **Five Shades** (5 stops: 100-500, incremental by 100)
+   - **Seven Shades** (7 stops: 100-700, incremental by 100)
+   - **Simple Semantic** (2 stops + base: dark, base, light)
+   - **Extended Semantic** (10 stops: ultra-dark to ultra-light with base)
+
+5. **📝 Other Formats** - Alternative naming schemes
+   - **Alphabetical A-J** (10 stops: A-J, uppercase)
 
 **Key Benefits:**
 - 🚀 Instant setup with industry-standard configurations
-- 🎨 Choose from 8 carefully curated presets
+- 🎨 Choose from 15+ carefully curated presets across 5 categories
 - ⚙️ Full control with custom configuration option
-- 📊 Preview and confirm before generating
+- 📊 Preview configuration details before generating
 - ✨ Consistent naming across your design system
+- 🎯 Optimized mix ranges tailored to each design system
 
 ### 🎨 Color Wizard v2.11.1 - UX Improvements
 
@@ -242,9 +252,10 @@ Future enhancements under consideration:
 - **Net improvement**: +400 lines with better organization
 
 **Features:**
-- **Presets available**: 8
-- **Preset categories**: 3
+- **Presets available**: 15
+- **Preset categories**: 5 (Popular Frameworks, Component Libraries, Enterprise Systems, Minimal Scales, Other Formats)
 - **Scale types supported**: 4 (ordinal, incremental, semantic, alphabetical)
+- **Color formats**: 5 (HEX, RGB, RGBA, HSL, OKLCH)
 
 **Performance:**
 - **Batch mode speedup**: 40-60% faster

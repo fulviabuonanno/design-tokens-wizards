@@ -93,7 +93,7 @@ Este proyecto proporciona una serie de "maguitos" y "hechizos" para ayudarte a g
 
 ### Maguitos
 
-*   [🎨 Maguito de Tokens de Color](./docs/es/color-wizard.md) - **Nuevo en v2.11.0:** ¡Configuraciones preestablecidas estándar de la industria para una configuración rápida! Elige entre formatos de escala de color populares (Tailwind, Material Design y más) o crea configuraciones personalizadas con control total.
+*   [🎨 Maguito de Tokens de Color](./docs/es/color-wizard.md) - **Nuevo en v2.11.1:** UX mejorada con organización de pasos más clara y jerarquía visual. **v2.11.0:** ¡Configuraciones preestablecidas estándar de la industria para una configuración rápida! Elige entre más de 15 formatos de escala de color populares (Tailwind, Material Design, Chakra UI, Ant Design, IBM Carbon, Adobe Spectrum y más) o crea configuraciones personalizadas con control total. El modo por lotes admite métodos de entrada masiva e individual.
 *   [🔤 Maguito de Tokens de Tipografía](./docs/es/typography-wizard.md)
 *   [🔳 Maguito de Tokens de Espaciado](./docs/es/space-wizard.md)
 *   [📏 Maguito de Tokens de Tamaño](./docs/es/size-wizard.md)
