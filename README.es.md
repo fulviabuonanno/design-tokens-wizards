@@ -56,11 +56,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | ------- |
-<<<<<<< HEAD
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow) |
-=======
 | 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.1-yellow) |
->>>>>>> master
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
 | 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |
