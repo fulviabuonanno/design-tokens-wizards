@@ -11,9 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 This section is reserved for documenting changes that are staged for an upcoming release.
-Currently, there are no unreleased changes since all recent updates have been published with v2.11.1 of the Color Wizard and toolkit v2.1.0.
+Currently, there are no unreleased changes since all recent updates have been published with v2.12.0 of the Color Wizard and toolkit v2.1.0.
 You can add future changes here as development continues.
 -->
+
+## [2.1.0] - 2025-12-07
+
+### Updated Wizards
+
+- 🎨 Color Wizard updated to v2.12.0 (from v2.11.1)
+
+#### 🎨 Color Wizard (v2.12.0) - Version Update
+
+**Changed:**
+
+- Version bump to v2.12.0
+- Updated all documentation references to reflect new version
+- Synchronized version across all project files (package.json, README files, and wizard documentation)
 
 ## [2.1.0] - 2025-11-22
 
@@ -190,7 +204,7 @@ Track individual Wizards versions:
 
 | Wizard / Spell          | Version | Last Updated |
 | ----------------------- | ------- | ------------ |
-| 🎨 Color Wizard         | 2.11.1 ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.1-yellow) | 2025-11-22   |
+| 🎨 Color Wizard         | 2.12.0 ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow) | 2025-12-07   |
 | 🔤 Typography Wizard    | 1.2.3 ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red)   | -            |
 | 🔳 Space Wizard         | 1.7.2 ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) | -            |
 | 📏 Size Wizard          | 1.7.2 ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue)   | -            |

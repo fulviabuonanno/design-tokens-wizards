@@ -2,11 +2,11 @@
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.11.1-yellow)
+![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow)
 
 Conjure a dazzling palette for your design system with the Color Tokens Wizard 🧙! This magical script guides you through every step of crafting flexible, scalable color tokens—no spellbook required.
 
-**Latest Update (v2.11.1):** ✨ Enhanced wizard UX with clearer step organization! The wizard flow now features improved visual hierarchy with consistent step numbering (STEP 1-4) and cleaner navigation throughout the color creation process.
+**Latest Update (v2.12.0):** ✨ Enhanced wizard UX with clearer step organization! The wizard flow now features improved visual hierarchy with consistent step numbering (STEP 1-4) and cleaner navigation throughout the color creation process.
 
 **Previous Update (v2.11.0):** 🎨 Industry-standard preset configurations! Quick start with proven color scale formats from leading design systems (Tailwind CSS, Material Design 3, Chakra UI, Ant Design, and more). Choose from 15+ carefully curated presets or continue with full custom configuration. Plus enhanced batch mode with bulk entry and individual entry methods for adding multiple colors efficiently.
 
