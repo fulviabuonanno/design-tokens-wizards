@@ -93,7 +93,7 @@ This project provides a suite of "wizards" and "spells" to help you manage your 
 
 ### Wizards
 
-*   [🎨 Color Tokens Wizard](./docs/en/color-wizard.md) - **New in v2.11.0:** Industry-standard preset configurations for quick setup! Choose from popular color scale formats (Tailwind, Material Design, and more) or create custom configurations with full control.
+*   [🎨 Color Tokens Wizard](./docs/en/color-wizard.md) - **New in v2.11.1:** Enhanced UX with clearer step organization and visual hierarchy. **v2.11.0:** Industry-standard preset configurations for quick setup! Choose from 15+ popular color scale formats (Tailwind, Material Design, Chakra UI, Ant Design, IBM Carbon, Adobe Spectrum, and more) or create custom configurations with full control. Batch mode supports bulk and individual color entry methods.
 *   [🔤 Typography Tokens Wizard](./docs/en/typography-wizard.md)
 *   [🔳 Space Tokens Wizard](./docs/en/space-wizard.md)
 *   [📏 Size Tokens Wizard](./docs/en/size-wizard.md)
