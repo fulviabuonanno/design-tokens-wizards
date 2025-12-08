@@ -13,9 +13,9 @@ import { printShadowTable } from "../utils/displayHelpers.js";
  * @returns {Promise<string>} Configuration type ('standard' or 'custom')
  */
 export const promptForConfigType = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 STEP 6: SHADOW CONFIGURATION"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { configType } = await inquirer.prompt([
     {
@@ -38,9 +38,9 @@ export const promptForConfigType = async () => {
  * @returns {Promise<boolean>} Whether user confirmed standard values
  */
 export const promptForStandardValuesConfirmation = async (previewShadows) => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("📋 STANDARD VALUES PREVIEW"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   printShadowTable(previewShadows);
 
@@ -63,9 +63,9 @@ export const promptForStandardValuesConfirmation = async (previewShadows) => {
  * @returns {Promise<Object|null>} Shadow properties object, or null to retry
  */
 export const promptForCustomShadowValues = async (index, shadowType) => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold(`🎨 CUSTOM VALUES FOR SHADOW ${index}`));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { x } = await inquirer.prompt([
     {
@@ -145,9 +145,9 @@ export const promptForCustomShadowValues = async (index, shadowType) => {
  * @returns {Promise<boolean>} Whether user confirmed to save
  */
 export const promptForSaveConfirmation = async (allShadows) => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🔍 STEP 7: PREVIEW"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   printShadowTable(allShadows);
 
@@ -168,9 +168,9 @@ export const promptForSaveConfirmation = async (allShadows) => {
  * @returns {Promise<boolean>} Whether to generate more shadows
  */
 export const promptForGenerateMore = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🔄 GENERATE ANOTHER SET"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { generateMore } = await inquirer.prompt([
     {

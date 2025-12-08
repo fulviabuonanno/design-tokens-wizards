@@ -12,9 +12,9 @@ import tinycolor from "tinycolor2";
  * @returns {Promise<boolean>} Whether to use custom color
  */
 export const promptForUseCustomColor = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 STEP 5: COLOR CONFIGURATION"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { useCustomColor } = await inquirer.prompt([
     {

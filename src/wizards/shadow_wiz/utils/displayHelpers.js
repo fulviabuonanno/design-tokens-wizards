@@ -59,9 +59,9 @@ export const printShadowTable = (shadows) => {
  * @param {string[]} savedNewFiles - Array of new file paths
  */
 export const printOutputFiles = (updatedFiles, savedNewFiles) => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("📄 OUTPUT FILES"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   console.log(chalk.whiteBright("📂 Files are organized in the following folders:"));
   console.log(chalk.whiteBright("   -> /output_files/tokens/json/shadow: JSON Token Files"));

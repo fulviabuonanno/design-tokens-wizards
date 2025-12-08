@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { showLoader, generateCSSVariables, generateSCSSVariables, sortKeysForJSON } from './typo_wiz/utils.js';
-import { setupFontFamily, setupFontSize, setupFontWeight, setupLetterSpacing, setupLineHeight } from './typo_wiz/prompts.js';
+import { setupFontFamily, setupFontSize, setupFontWeight, setupLetterSpacing, setupLineHeight, setupCompositeStyles } from './typo_wiz/prompts.js';
 
 async function typographyWiz() {
   const __filename = fileURLToPath(import.meta.url);
@@ -184,7 +184,33 @@ async function typographyWiz() {
   if(selectedProperties.includes('lineHeight')){
     tokens.typography[lineHeightName] = lineHeight;
   }
-  
+
+  // Offer composite text styles if at least 2 properties are configured
+  let compositeStylesName = '';
+  let compositeStyles = {};
+  if (selectedProperties.length >= 2) {
+    const availableTokens = {
+      fontFamily: fontFamilies,
+      fontFamilyName: fontFamilyName,
+      fontSize: fontSize,
+      fontSizeName: fontSizeName,
+      fontWeight: fontWeight,
+      fontWeightName: fontWeightName,
+      letterSpacing: letterSpacing,
+      letterSpacingName: letterSpacingName,
+      lineHeight: lineHeight,
+      lineHeightName: lineHeightName
+    };
+
+    const compositeResult = await setupCompositeStyles(currentStep, availableTokens);
+    if (compositeResult) {
+      compositeStyles = compositeResult.compositeStyles;
+      compositeStylesName = compositeResult.propertyName;
+      tokens.typography[compositeStylesName] = compositeStyles;
+      currentStep++;
+    }
+  }
+
   const finalTokens = tokens.typography; 
   
   const outputsDir = path.join(__dirname, "..", "..", "output_files");

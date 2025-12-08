@@ -1305,3 +1305,522 @@ export async function setupLineHeight(currentStep) {
   
   return { lineHeight, propertyName: customPropertyName };
 }
+
+export async function setupCompositeStyles(currentStep, availableTokens) {
+  console.log(chalk.bold.bgRedBright("\n========================================"));
+  console.log(chalk.bold(`🎨 STEP ${currentStep}: COMPOSITE TEXT STYLES`));
+  console.log(chalk.bold.bgRedBright("========================================\n"));
+
+  console.log(chalk.yellowBright("Composite text styles combine multiple typography properties into complete text styles."));
+  console.log(chalk.yellowBright("These are similar to Figma's text styles and are useful for defining consistent text patterns."));
+  console.log(chalk.yellowBright("\nExample: A 'heading-1' style might combine:"));
+  console.log(chalk.yellow("  • Font Family: primary"));
+  console.log(chalk.yellow("  • Font Size: xl"));
+  console.log(chalk.yellow("  • Font Weight: bold"));
+  console.log(chalk.yellow("  • Line Height: tight"));
+  console.log(chalk.yellow("  • Letter Spacing: sm\n"));
+
+  const { createComposite } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'createComposite',
+      message: 'Would you like to create composite text styles?\n>>>',
+      default: true
+    }
+  ]);
+
+  if (!createComposite) {
+    return null;
+  }
+
+  let substep = 0;
+  console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Property Naming`));
+  const customPropertyName = await promptForPropertyName(
+    'composite text styles',
+    [
+      { name: 'textStyles', value: 'textStyles' },
+      { name: 'text-styles', value: 'text-styles' },
+      { name: 'text_styles', value: 'text_styles' },
+      { name: 'styles', value: 'styles' },
+      { name: 'typography', value: 'typography' },
+      { name: 'custom', value: 'custom' }
+    ],
+    'textStyles',
+    'designStyles, typeStyles'
+  );
+
+  console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Style Generation Method`));
+  const { styleMethod } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'styleMethod',
+      message: 'How would you like to create your text styles?\n>>>',
+      choices: [
+        { name: 'Preset Styles (heading-1, body, caption, etc.)', value: 'preset' },
+        { name: 'Scale-Based Styles (use naming convention for headings/body)', value: 'scale' },
+        { name: 'Custom Individual Styles', value: 'custom' }
+      ]
+    }
+  ]);
+
+  let compositeStyles = {};
+
+  if (styleMethod === 'preset') {
+    // Define common text style presets
+    const presetStyles = {
+      'heading-1': { usage: 'Large page headings', category: 'heading' },
+      'heading-2': { usage: 'Section headings', category: 'heading' },
+      'heading-3': { usage: 'Subsection headings', category: 'heading' },
+      'heading-4': { usage: 'Small headings', category: 'heading' },
+      'heading-5': { usage: 'Minor headings', category: 'heading' },
+      'heading-6': { usage: 'Smallest headings', category: 'heading' },
+      'body': { usage: 'Main body text', category: 'body' },
+      'body-large': { usage: 'Larger body text', category: 'body' },
+      'body-small': { usage: 'Smaller body text', category: 'body' },
+      'caption': { usage: 'Captions and fine print', category: 'utility' },
+      'overline': { usage: 'Overline text (all caps, small)', category: 'utility' },
+      'button': { usage: 'Button labels', category: 'utility' },
+      'label': { usage: 'Form labels', category: 'utility' }
+    };
+
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Select Preset Styles`));
+    const { selectedPresets } = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'selectedPresets',
+        message: 'Select which preset text styles to include:\n>>>',
+        choices: Object.entries(presetStyles).map(([name, info]) => ({
+          name: `${name} - ${info.usage}`,
+          value: name,
+          checked: ['heading-1', 'heading-2', 'heading-3', 'body'].includes(name)
+        })),
+        validate: (answer) => {
+          if (answer.length < 1) {
+            return chalk.bold.red('🚫 Please select at least one text style.');
+          }
+          return true;
+        }
+      }
+    ]);
+
+    // Now configure each preset
+    for (const styleName of selectedPresets) {
+      console.log(chalk.bold.yellowBright(`\n📝 Configuring: ${styleName}`));
+      console.log(chalk.gray(`Usage: ${presetStyles[styleName].usage}`));
+
+      const styleConfig = await configureTextStyle(styleName, availableTokens);
+      compositeStyles[styleName] = styleConfig;
+    }
+
+  } else if (styleMethod === 'scale') {
+    // Scale-based approach with naming conventions
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Style Categories`));
+    const { selectedCategories } = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'selectedCategories',
+        message: 'Which style categories do you want to create?\n>>>',
+        choices: [
+          { name: 'Headings (display/title styles)', value: 'heading', checked: true },
+          { name: 'Body Text (paragraph/content styles)', value: 'body', checked: true },
+          { name: 'Display (hero/featured text)', value: 'display', checked: false },
+          { name: 'UI Elements (buttons, labels, captions)', value: 'ui', checked: false }
+        ],
+        validate: (answer) => {
+          if (answer.length < 1) {
+            return 'Please select at least one category';
+          }
+          return true;
+        }
+      }
+    ]);
+
+    for (const category of selectedCategories) {
+      console.log(chalk.bold.yellowBright(`\n📝 Configuring ${category.charAt(0).toUpperCase() + category.slice(1)} Styles`));
+
+      const { namingConvention } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'namingConvention',
+          message: `Choose naming convention for ${category} styles:\n>>>`,
+          choices: [
+            { name: 'T-shirt sizes (xs, sm, md, lg, xl)', value: 'tshirt' },
+            { name: 'Ordinal (1, 2, 3, 4, 5)', value: 'ordinal' },
+            { name: 'Semantic (tight, normal, loose)', value: 'semantic' },
+            { name: 'Incremental (100, 200, 300)', value: 'incremental' }
+          ]
+        }
+      ]);
+
+      const { numStyles } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'numStyles',
+          message: `How many ${category} styles? (3-7):\n>>>`,
+          default: category === 'heading' ? '5' : '3',
+          validate: (input) => {
+            const num = parseInt(input);
+            if (isNaN(num) || num < 3 || num > 7) {
+              return 'Please enter a number between 3 and 7';
+            }
+            return true;
+          }
+        }
+      ]);
+
+      const totalStyles = parseInt(numStyles);
+      let styleNames = [];
+
+      // Generate style names based on convention
+      if (namingConvention === 'tshirt') {
+        const tshirtSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'];
+        styleNames = tshirtSizes.slice(0, totalStyles);
+      } else if (namingConvention === 'ordinal') {
+        for (let i = 1; i <= totalStyles; i++) {
+          styleNames.push(i.toString());
+        }
+      } else if (namingConvention === 'semantic') {
+        const semanticNames = ['tight', 'normal', 'loose', 'relaxed', 'spacious', 'airy', 'open'];
+        styleNames = semanticNames.slice(0, totalStyles);
+      } else if (namingConvention === 'incremental') {
+        for (let i = 1; i <= totalStyles; i++) {
+          styleNames.push((i * 100).toString());
+        }
+      }
+
+      // Configure each style in the category
+      for (const scaleName of styleNames) {
+        const fullStyleName = `${category}-${scaleName}`;
+        console.log(chalk.bold.yellowBright(`\n📝 Configuring: ${fullStyleName}`));
+
+        const styleConfig = await configureTextStyle(fullStyleName, availableTokens);
+        compositeStyles[fullStyleName] = styleConfig;
+      }
+    }
+
+  } else {
+    // Custom styles
+    console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Custom Styles`));
+    const { numStyles } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'numStyles',
+        message: 'How many custom text styles do you want to create? (1-10):\n>>>',
+        default: '3',
+        validate: (input) => {
+          const num = parseInt(input);
+          if (isNaN(num) || num < 1 || num > 10) {
+            return 'Please enter a number between 1 and 10';
+          }
+          return true;
+        }
+      }
+    ]);
+
+    const totalStyles = parseInt(numStyles);
+
+    for (let i = 0; i < totalStyles; i++) {
+      const { styleName } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'styleName',
+          message: `Enter name for text style ${i + 1} of ${totalStyles} (e.g., hero-title, card-body):\n>>>`,
+          validate: input => {
+            if (input.trim() === '') return 'Please enter a valid name';
+            if (!/^[a-zA-Z][a-zA-Z0-9-]*$/.test(input)) {
+              return 'Names must start with a letter and can only contain letters, numbers, and hyphens';
+            }
+            if (compositeStyles[input.trim()]) {
+              return 'This name already exists. Please choose a different name.';
+            }
+            return true;
+          }
+        }
+      ]);
+
+      const styleConfig = await configureTextStyle(styleName.trim(), availableTokens);
+      compositeStyles[styleName.trim()] = styleConfig;
+    }
+  }
+
+  // Preview all composite styles
+  console.log(chalk.bold.yellowBright("\n📋 Composite Text Styles Summary:"));
+  console.log(createSettingsTable([
+    ["Token Name", customPropertyName],
+    ["Number of Styles", Object.keys(compositeStyles).length.toString()]
+  ]));
+
+  console.log(chalk.bold.yellowBright("\n🎨 Text Styles:"));
+  const compositeTable = new Table({
+    head: [chalk.bold("Style Name"), chalk.bold("Properties")],
+    style: { head: ["red"], border: ["red"] },
+    wordWrap: true,
+    colWidths: [25, 60]
+  });
+
+  Object.entries(compositeStyles).forEach(([name, style]) => {
+    const props = [];
+    if (style.$value.fontFamily) props.push(`Font Family: ${style.$value.fontFamily}`);
+    if (style.$value.fontSize) props.push(`Font Size: ${style.$value.fontSize}`);
+    if (style.$value.fontWeight) props.push(`Font Weight: ${style.$value.fontWeight}`);
+    if (style.$value.lineHeight) props.push(`Line Height: ${style.$value.lineHeight}`);
+    if (style.$value.letterSpacing) props.push(`Letter Spacing: ${style.$value.letterSpacing}`);
+    compositeTable.push([name, props.join('\n')]);
+  });
+
+  console.log(compositeTable.toString());
+
+  const { action } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "action",
+      message: "What would you like to do?\n>>>",
+      choices: [
+        { name: "✅ Accept these styles", value: "accept" },
+        { name: "↺ Start over", value: "restart" }
+      ]
+    }
+  ]);
+
+  if (action === "restart") {
+    console.log(chalk.bold.yellow("\n↺ Let's reconfigure your composite text styles..."));
+    return await setupCompositeStyles(currentStep, availableTokens);
+  }
+
+  return { compositeStyles, propertyName: customPropertyName };
+}
+
+async function configureTextStyle(styleName, availableTokens, autoSuggest = true) {
+  const style = {
+    $type: "typography",
+    $value: {}
+  };
+
+  const availableProperties = [];
+  if (availableTokens.fontFamily) availableProperties.push('fontFamily');
+  if (availableTokens.fontSize) availableProperties.push('fontSize');
+  if (availableTokens.fontWeight) availableProperties.push('fontWeight');
+  if (availableTokens.lineHeight) availableProperties.push('lineHeight');
+  if (availableTokens.letterSpacing) availableProperties.push('letterSpacing');
+
+  // Auto-suggest smart defaults based on style name
+  let suggestedValues = null;
+  if (autoSuggest) {
+    suggestedValues = suggestTokenCombination(styleName, availableTokens);
+  }
+
+  if (suggestedValues) {
+    console.log(chalk.bold.greenBright("\n💡 Smart Suggestion:"));
+    const suggestionTable = new Table({
+      head: [chalk.bold("Property"), chalk.bold("Suggested Value")],
+      style: { head: ["green"], border: ["green"] },
+      colWidths: [20, 40]
+    });
+
+    Object.entries(suggestedValues).forEach(([prop, tokenName]) => {
+      const tokens = availableTokens[prop];
+      if (tokens && tokens[tokenName]) {
+        const propLabel = prop === 'fontFamily' ? 'Font Family' :
+                          prop === 'fontSize' ? 'Font Size' :
+                          prop === 'fontWeight' ? 'Font Weight' :
+                          prop === 'lineHeight' ? 'Line Height' :
+                          'Letter Spacing';
+        suggestionTable.push([propLabel, `${tokenName} (${tokens[tokenName].$value})`]);
+      }
+    });
+
+    console.log(suggestionTable.toString());
+
+    const { useSuggestion } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'useSuggestion',
+        message: 'Would you like to use this smart suggestion?\n>>>',
+        default: true
+      }
+    ]);
+
+    if (useSuggestion) {
+      // Apply suggestions only for properties that were configured
+      Object.entries(suggestedValues).forEach(([prop, tokenName]) => {
+        const tokens = availableTokens[prop];
+        // Only add if the property was actually configured
+        if (tokens && Object.keys(tokens).length > 0 && tokens[tokenName]) {
+          const propertyName = availableTokens[`${prop}Name`] || prop;
+          style.$value[prop] = `{typography.${propertyName}.${tokenName}}`;
+        }
+      });
+      return style;
+    }
+  }
+
+  // Manual configuration
+  const { selectedProperties } = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'selectedProperties',
+      message: `Which properties do you want to include in "${styleName}"?\n>>>`,
+      choices: [
+        { name: 'Font Family', value: 'fontFamily', checked: availableProperties.includes('fontFamily') },
+        { name: 'Font Size', value: 'fontSize', checked: availableProperties.includes('fontSize') },
+        { name: 'Font Weight', value: 'fontWeight', checked: availableProperties.includes('fontWeight') },
+        { name: 'Line Height', value: 'lineHeight', checked: availableProperties.includes('lineHeight') },
+        { name: 'Letter Spacing', value: 'letterSpacing', checked: availableProperties.includes('letterSpacing') }
+      ].filter(prop => availableProperties.includes(prop.value)),
+      validate: (answer) => {
+        if (answer.length < 1) {
+          return 'Please select at least one property for this text style';
+        }
+        return true;
+      }
+    }
+  ]);
+
+  // For each selected property, let user choose a token reference
+  for (const prop of selectedProperties) {
+    const tokens = availableTokens[prop];
+
+    // Skip if tokens don't exist (property wasn't configured initially)
+    if (!tokens || Object.keys(tokens).length === 0) {
+      console.log(chalk.yellow(`⚠️  Skipping ${prop} - not configured in your token set`));
+      continue;
+    }
+
+    const tokenNames = Object.keys(tokens);
+
+    const propLabel = prop === 'fontFamily' ? 'Font Family' :
+                      prop === 'fontSize' ? 'Font Size' :
+                      prop === 'fontWeight' ? 'Font Weight' :
+                      prop === 'lineHeight' ? 'Line Height' :
+                      'Letter Spacing';
+
+    // Get suggested default if available
+    const suggestedDefault = suggestedValues && suggestedValues[prop] ? suggestedValues[prop] : tokenNames[0];
+
+    const { selectedToken } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'selectedToken',
+        message: `Select ${propLabel} for "${styleName}":\n>>>`,
+        choices: tokenNames.map(name => ({
+          name: `${name} (${tokens[name].$value})`,
+          value: name
+        })),
+        default: suggestedDefault
+      }
+    ]);
+
+    // Create token reference
+    const propertyName = availableTokens[`${prop}Name`] || prop;
+    style.$value[prop] = `{typography.${propertyName}.${selectedToken}}`;
+  }
+
+  return style;
+}
+
+function suggestTokenCombination(styleName, availableTokens) {
+  const suggestions = {};
+
+  // Parse style name to understand intent
+  const nameLower = styleName.toLowerCase();
+  const isHeading = nameLower.includes('heading') || nameLower.includes('title') || nameLower.includes('h1') || nameLower.includes('h2') || nameLower.includes('h3');
+  const isDisplay = nameLower.includes('display') || nameLower.includes('hero');
+  const isBody = nameLower.includes('body') || nameLower.includes('paragraph');
+  const isSmall = nameLower.includes('small') || nameLower.includes('caption') || nameLower.includes('xs');
+  const isLarge = nameLower.includes('large') || nameLower.includes('xl') || nameLower.includes('2xl') || nameLower.includes('3xl');
+
+  // Suggest Font Size
+  if (availableTokens.fontSize && Object.keys(availableTokens.fontSize).length > 0) {
+    const sizeTokens = Object.keys(availableTokens.fontSize);
+    let suggested = null;
+    if (isDisplay || (isHeading && isLarge)) {
+      suggested = findTokenByPattern(sizeTokens, ['3xl', '2xl', 'xl', 'xxl', 'xxxl']) || sizeTokens[sizeTokens.length - 1];
+    } else if (isHeading) {
+      if (nameLower.includes('1') || nameLower.includes('xl')) {
+        suggested = findTokenByPattern(sizeTokens, ['xl', '2xl', 'lg']);
+      } else if (nameLower.includes('2') || nameLower.includes('lg')) {
+        suggested = findTokenByPattern(sizeTokens, ['lg', 'xl']);
+      } else if (nameLower.includes('3') || nameLower.includes('md')) {
+        suggested = findTokenByPattern(sizeTokens, ['md', 'lg']);
+      } else {
+        suggested = findTokenByPattern(sizeTokens, ['lg', 'xl']);
+      }
+    } else if (isSmall) {
+      suggested = findTokenByPattern(sizeTokens, ['xs', 'sm', 'small']) || sizeTokens[0];
+    } else if (isBody) {
+      suggested = findTokenByPattern(sizeTokens, ['md', 'base', 'normal']);
+    }
+    if (suggested) suggestions.fontSize = suggested;
+  }
+
+  // Suggest Font Weight
+  if (availableTokens.fontWeight && Object.keys(availableTokens.fontWeight).length > 0) {
+    const weightTokens = Object.keys(availableTokens.fontWeight);
+    let suggested = null;
+    if (isHeading || isDisplay) {
+      suggested = findTokenByPattern(weightTokens, ['bold', 'semibold', 'semi-bold', '700', '600']);
+    } else if (isBody) {
+      suggested = findTokenByPattern(weightTokens, ['regular', 'normal', '400']);
+    } else if (nameLower.includes('button') || nameLower.includes('label')) {
+      suggested = findTokenByPattern(weightTokens, ['medium', '500', 'semibold', '600']);
+    }
+    if (suggested) suggestions.fontWeight = suggested;
+  }
+
+  // Suggest Line Height
+  if (availableTokens.lineHeight && Object.keys(availableTokens.lineHeight).length > 0) {
+    const lineHeightTokens = Object.keys(availableTokens.lineHeight);
+    let suggested = null;
+    if (isHeading || isDisplay) {
+      suggested = findTokenByPattern(lineHeightTokens, ['tight', 'xs', 'sm', '1', 'tightest']);
+    } else if (isBody) {
+      suggested = findTokenByPattern(lineHeightTokens, ['normal', 'md', 'base', '3', 'loose']);
+    }
+    if (suggested) suggestions.lineHeight = suggested;
+  }
+
+  // Suggest Letter Spacing
+  if (availableTokens.letterSpacing && Object.keys(availableTokens.letterSpacing).length > 0) {
+    const spacingTokens = Object.keys(availableTokens.letterSpacing);
+    let suggested = null;
+    if (isDisplay) {
+      suggested = findTokenByPattern(spacingTokens, ['tight', 'sm', 'xs', '-1']);
+    } else if (isHeading) {
+      suggested = findTokenByPattern(spacingTokens, ['sm', 'normal', 'md', '0']);
+    } else if (isBody) {
+      suggested = findTokenByPattern(spacingTokens, ['normal', 'md', '0']);
+    }
+    if (suggested) suggestions.letterSpacing = suggested;
+  }
+
+  // Suggest Font Family (if available)
+  if (availableTokens.fontFamily && Object.keys(availableTokens.fontFamily).length > 0) {
+    const familyTokens = Object.keys(availableTokens.fontFamily);
+    let suggested = null;
+    if (familyTokens.length > 1) {
+      if (isHeading || isDisplay) {
+        suggested = findTokenByPattern(familyTokens, ['heading', 'display', 'primary', 'title', 'serif', '1']);
+      } else if (isBody) {
+        suggested = findTokenByPattern(familyTokens, ['body', 'text', 'primary', 'sans', 'sans-serif']);
+      }
+    } else if (familyTokens.length === 1) {
+      // If there's only one font family, use it
+      suggested = familyTokens[0];
+    }
+    if (suggested) suggestions.fontFamily = suggested;
+  }
+
+  // Only return suggestions if we found at least 2 properties
+  return Object.keys(suggestions).length >= 2 ? suggestions : null;
+}
+
+function findTokenByPattern(tokens, patterns) {
+  for (const pattern of patterns) {
+    const found = tokens.find(token =>
+      token.toLowerCase() === pattern.toLowerCase() ||
+      token.toLowerCase().includes(pattern.toLowerCase())
+    );
+    if (found) return found;
+  }
+  return null;
+}

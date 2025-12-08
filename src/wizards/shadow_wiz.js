@@ -58,9 +58,9 @@ if (versionArg) {
 const generateShadows = async (allShadows, isAdditionalSet = false, previousSettings = null) => {
   // Show existing shadows if any
   if (Object.keys(allShadows).length > 0) {
-    console.log(chalk.black.bgCyan("\n======================================="));
+    console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
     console.log(chalk.bold("📋 EXISTING SHADOWS"));
-    console.log(chalk.black.bgCyan("=======================================\n"));
+    console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
     printShadowTable(allShadows);
   }
 
@@ -205,31 +205,31 @@ const generateShadows = async (allShadows, isAdditionalSet = false, previousSett
     const savedNewFiles = [];
 
     // Save JSON tokens
-    const jsonPath = path.join(tokensFolder, 'shadow-tokens.json');
+    const jsonPath = path.join(tokensFolder, 'shadow_tokens.json');
     if (fs.existsSync(jsonPath)) {
-      updatedFiles.push('tokens/json/shadow/shadow-tokens.json');
+      updatedFiles.push('tokens/json/shadow/shadow_tokens.json');
     } else {
-      savedNewFiles.push('tokens/json/shadow/shadow-tokens.json');
+      savedNewFiles.push('tokens/json/shadow/shadow_tokens.json');
     }
-    saveTokensToFile(tokens, tokensFolder, 'shadow-tokens.json');
+    saveTokensToFile(tokens, tokensFolder, 'shadow_tokens.json');
 
     // Save CSS tokens
-    const cssPath = path.join(cssFolder, 'shadow-tokens.css');
+    const cssPath = path.join(cssFolder, 'shadow_tokens.css');
     if (fs.existsSync(cssPath)) {
-      updatedFiles.push('tokens/css/shadow/shadow-tokens.css');
+      updatedFiles.push('tokens/css/shadow/shadow_tokens.css');
     } else {
-      savedNewFiles.push('tokens/css/shadow/shadow-tokens.css');
+      savedNewFiles.push('tokens/css/shadow/shadow_tokens.css');
     }
-    saveCSSTokensToFile(tokens, cssFolder, 'shadow-tokens.css');
+    saveCSSTokensToFile(tokens, cssFolder, 'shadow_tokens.css');
 
     // Save SCSS tokens
-    const scssPath = path.join(scssFolder, 'shadow-tokens.scss');
+    const scssPath = path.join(scssFolder, 'shadow_tokens.scss');
     if (fs.existsSync(scssPath)) {
-      updatedFiles.push('tokens/scss/shadow/shadow-tokens.scss');
+      updatedFiles.push('tokens/scss/shadow/shadow_tokens.scss');
     } else {
-      savedNewFiles.push('tokens/scss/shadow/shadow-tokens.scss');
+      savedNewFiles.push('tokens/scss/shadow/shadow_tokens.scss');
     }
-    saveSCSSTokensToFile(tokens, scssFolder, 'shadow-tokens.scss');
+    saveSCSSTokensToFile(tokens, scssFolder, 'shadow_tokens.scss');
 
     printOutputFiles(updatedFiles, savedNewFiles);
 
@@ -237,16 +237,16 @@ const generateShadows = async (allShadows, isAdditionalSet = false, previousSett
     const generateMore = await promptForGenerateMore();
 
     if (!generateMore) {
-      console.log(chalk.black.bgCyan("\n======================================="));
+      console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
       console.log(chalk.bold("🎉🪄 SPELL COMPLETED"));
-      console.log(chalk.black.bgCyan("=======================================\n"));
+      console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
       console.log(
         chalk.bold.whiteBright("Thank you for summoning the ") +
         chalk.bold.cyan("Shadow Tokens Wizard") +
         chalk.bold.whiteBright("! ❤️🧙✨\n")
       );
-      console.log(chalk.black.bgCyan("=======================================\n"));
+      console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
       return { continue: false, settings: null };
     }
@@ -261,9 +261,9 @@ const generateShadows = async (allShadows, isAdditionalSet = false, previousSett
  * Main function - orchestrates the entire wizard flow
  */
 const main = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🪄 STARTING THE SHADOW TOKENS WIZARD'S MAGIC"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   await showLoader(chalk.bold.yellow("🧚 Casting the magic of tokens"), 1500);
 

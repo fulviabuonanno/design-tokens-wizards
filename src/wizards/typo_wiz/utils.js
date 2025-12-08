@@ -118,11 +118,23 @@ export function getDescriptiveName(setting, value) {
 
 export function generateCSSVariables(tokenObj, prefix) {
   let cssLines = [];
+  let cssClasses = [];
   const tshirtOrder = [
     "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
     "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
     "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
   ];
+
+  function resolveTokenReference(ref) {
+    // Resolve token references like {typography.fontFamily.primary}
+    if (typeof ref === 'string' && ref.startsWith('{') && ref.endsWith('}')) {
+      const path = ref.slice(1, -1).split('.');
+      // Join with hyphens to create variable name like --typography-fontFamily-primary
+      return `var(--${path.join('-')})`;
+    }
+    return ref;
+  }
+
   function process(obj, currentPrefix = "") {
     let keys = Object.keys(obj);
     if (keys.length) {
@@ -137,7 +149,50 @@ export function generateCSSVariables(tokenObj, prefix) {
       }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === 'object' && '$value' in obj[key]) {
-          cssLines.push(`  --${currentPrefix}${key}: ${obj[key].$value};`);
+          const value = obj[key].$value;
+          // Handle composite tokens (objects) by creating utility classes
+          if (typeof value === 'object' && value !== null) {
+            const className = `.${currentPrefix}${key}`.replace(/--/g, '-');
+            let classContent = [];
+
+            if (value.fontFamily) {
+              const resolved = resolveTokenReference(value.fontFamily);
+              // Only add if it's not referencing a null token
+              if (!resolved.includes('null')) {
+                classContent.push(`  font-family: ${resolved};`);
+              }
+            }
+            if (value.fontSize) {
+              const resolved = resolveTokenReference(value.fontSize);
+              if (!resolved.includes('null')) {
+                classContent.push(`  font-size: ${resolved};`);
+              }
+            }
+            if (value.fontWeight) {
+              const resolved = resolveTokenReference(value.fontWeight);
+              if (!resolved.includes('null')) {
+                classContent.push(`  font-weight: ${resolved};`);
+              }
+            }
+            if (value.lineHeight) {
+              const resolved = resolveTokenReference(value.lineHeight);
+              if (!resolved.includes('null')) {
+                classContent.push(`  line-height: ${resolved};`);
+              }
+            }
+            if (value.letterSpacing) {
+              const resolved = resolveTokenReference(value.letterSpacing);
+              if (!resolved.includes('null')) {
+                classContent.push(`  letter-spacing: ${resolved};`);
+              }
+            }
+
+            if (classContent.length > 0) {
+              cssClasses.push(`${className} {\n${classContent.join('\n')}\n}`);
+            }
+          } else {
+            cssLines.push(`  --${currentPrefix}${key}: ${value};`);
+          }
         } else {
           process(obj[key], `${currentPrefix}${key}-`);
         }
@@ -145,16 +200,33 @@ export function generateCSSVariables(tokenObj, prefix) {
     }
   }
   process(tokenObj, prefix);
-  return `:root {\n${cssLines.join('\n')}\n}`;
+
+  let output = `:root {\n${cssLines.join('\n')}\n}`;
+  if (cssClasses.length > 0) {
+    output += '\n\n/* Typography Composite Tokens as Utility Classes */\n' + cssClasses.join('\n\n');
+  }
+  return output;
 }
 
 export function generateSCSSVariables(tokenObj, prefix) {
   let scss = '';
+  let scssMixins = [];
   const tshirtOrder = [
     "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
     "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl",
     "9xl", "10xl", "11xl", "12xl", "13xl", "14xl", "15xl"
   ];
+
+  function resolveTokenReference(ref) {
+    // Resolve token references like {typography.fontFamily.primary}
+    if (typeof ref === 'string' && ref.startsWith('{') && ref.endsWith('}')) {
+      const path = ref.slice(1, -1).split('.');
+      // Join with hyphens to create variable name like $typography-fontFamily-primary
+      return `$${path.join('-')}`;
+    }
+    return ref;
+  }
+
   function process(obj, currentPrefix = "") {
     let keys = Object.keys(obj);
     if (keys.length) {
@@ -169,7 +241,50 @@ export function generateSCSSVariables(tokenObj, prefix) {
       }
       for (const key of keys) {
         if (obj[key] && typeof obj[key] === 'object' && '$value' in obj[key]) {
-          scss += `$${currentPrefix}${key}: ${obj[key].$value};\n`;
+          const value = obj[key].$value;
+          // Handle composite tokens (objects) by creating mixins
+          if (typeof value === 'object' && value !== null) {
+            const mixinName = `${currentPrefix}${key}`.replace(/^-+/, '');
+            let mixinContent = [];
+
+            if (value.fontFamily) {
+              const resolved = resolveTokenReference(value.fontFamily);
+              // Only add if it's not referencing a null token
+              if (!resolved.includes('null')) {
+                mixinContent.push(`  font-family: ${resolved};`);
+              }
+            }
+            if (value.fontSize) {
+              const resolved = resolveTokenReference(value.fontSize);
+              if (!resolved.includes('null')) {
+                mixinContent.push(`  font-size: ${resolved};`);
+              }
+            }
+            if (value.fontWeight) {
+              const resolved = resolveTokenReference(value.fontWeight);
+              if (!resolved.includes('null')) {
+                mixinContent.push(`  font-weight: ${resolved};`);
+              }
+            }
+            if (value.lineHeight) {
+              const resolved = resolveTokenReference(value.lineHeight);
+              if (!resolved.includes('null')) {
+                mixinContent.push(`  line-height: ${resolved};`);
+              }
+            }
+            if (value.letterSpacing) {
+              const resolved = resolveTokenReference(value.letterSpacing);
+              if (!resolved.includes('null')) {
+                mixinContent.push(`  letter-spacing: ${resolved};`);
+              }
+            }
+
+            if (mixinContent.length > 0) {
+              scssMixins.push(`@mixin ${mixinName} {\n${mixinContent.join('\n')}\n}`);
+            }
+          } else {
+            scss += `$${currentPrefix}${key}: ${value};\n`;
+          }
         } else {
           process(obj[key], `${currentPrefix}${key}-`);
         }
@@ -177,6 +292,10 @@ export function generateSCSSVariables(tokenObj, prefix) {
     }
   }
   process(tokenObj, prefix);
+
+  if (scssMixins.length > 0) {
+    scss += '\n// Typography Composite Tokens as Mixins\n' + scssMixins.join('\n\n');
+  }
   return scss;
 }
 

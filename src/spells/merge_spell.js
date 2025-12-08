@@ -67,21 +67,35 @@ function mergeTextFiles(filePaths) {
     }
   });
   
-  // For CSS files, combine all :root blocks into one
+  // For CSS files, combine all :root blocks into one and preserve other content
   if (filePaths[0].toLowerCase().endsWith('.css')) {
-    // Extraer todas las variables de todos los bloques :root
+    // Extract all variables from all :root blocks
     const allVariables = contents.flatMap(content => {
-      // Buscar todos los bloques :root { ... }
-      const matches = [...content.matchAll(/:root\s*{([^}]*)}/g)];
+      // Find all :root { ... } blocks
+      const matches = [...content.matchAll(/:root\s*\{([^}]*)\}/gs)];
       return matches.map(match => match[1].trim()).filter(Boolean);
     });
-    // Indentar cada línea de variable con dos espacios
+
+    // Indent each variable line with two spaces
     const indented = allVariables
       .join('\n')
       .split('\n')
       .map(line => line.trim() ? '  ' + line.trim() : '')
       .join('\n');
-    return `:root {\n${indented}\n}`;
+
+    // Extract all non-:root content (utility classes, etc.)
+    const otherContent = contents.flatMap(content => {
+      // Remove :root blocks and get everything else
+      const withoutRoot = content.replace(/:root\s*\{[^}]*\}/gs, '').trim();
+      return withoutRoot ? [withoutRoot] : [];
+    });
+
+    // Combine :root block with other content
+    let result = `:root {\n${indented}\n}`;
+    if (otherContent.length > 0) {
+      result += '\n\n' + otherContent.join('\n\n');
+    }
+    return result;
   }
   
   return contents.join('\n');
@@ -146,16 +160,35 @@ function convertKeysNamingCase(obj, caseStyle) {
 // Add helper functions to transform CSS/SCSS variable names
 function transformScssVariables(text, namingConvention) {
   // Match variable declarations such as "$foundation-color-fabada-100:"
-  return text.replace(/\$([a-z0-9\-\_]+):/gi, (match, p1) => {
+  let transformed = text.replace(/\$([a-z0-9\-\_]+):/gi, (_match, p1) => {
     return '$' + transformKey(p1, namingConvention) + ':';
   });
+
+  // Also transform variable references (usage) such as "$foundation-color-fabada-100"
+  transformed = transformed.replace(/\$([a-z0-9\-\_]+)(?!:)/gi, (_match, p1) => {
+    return '$' + transformKey(p1, namingConvention);
+  });
+
+  return transformed;
 }
 
 function transformCssVariables(text, namingConvention) {
   // Match CSS variable declarations such as "--foundation-color-fabada-100:"
-  return text.replace(/--([a-z0-9\-\_]+):/gi, (match, p1) => {
+  let transformed = text.replace(/--([a-z0-9\-\_]+):/gi, (_match, p1) => {
     return '--' + transformKey(p1, namingConvention) + ':';
   });
+
+  // Also transform variable references inside var() such as "var(--foundation-color-fabada-100)"
+  transformed = transformed.replace(/var\(--([a-z0-9\-\_]+)\)/gi, (_match, p1) => {
+    return 'var(--' + transformKey(p1, namingConvention) + ')';
+  });
+
+  // Also transform class names
+  transformed = transformed.replace(/\.([a-z0-9\-\_]+)\s*\{/gi, (_match, p1) => {
+    return '.' + transformKey(p1, namingConvention) + ' {';
+  });
+
+  return transformed;
 }
 
 async function mergeOutputs() {
@@ -243,6 +276,11 @@ async function mergeOutputs() {
     const relativePath = path.relative(outputsDir, file).toLowerCase();
     return lowerFile.includes('typography_') || relativePath.includes('typography_variables');
   });
+  const hasShadowFiles               = outputFiles.some(file => {
+    const lowerFile = file.toLowerCase();
+    const relativePath = path.relative(outputsDir, file).toLowerCase();
+    return lowerFile.includes('shadow_tokens') || relativePath.includes('shadow/');
+  });
 
   const availableTypographyOptions   = getAvailableOptions(['px','rem','em'], 'Typography');
 
@@ -267,7 +305,8 @@ async function mergeOutputs() {
     Size: availableSizeOptions,
     Space: availableSpaceOptions,
     "Border Radius": availableBorderRadiusOptions,
-    Typography: hasTypographyFiles ? ['Yes'] : []
+    Typography: hasTypographyFiles ? ['Yes'] : [],
+    Shadow: hasShadowFiles ? ['Yes'] : []
   };
 
   let questions = [];
@@ -315,6 +354,14 @@ async function mergeOutputs() {
       default: true
     });
   }
+  if (availableOptionsDict.Shadow.length > 0) {
+    questions.push({
+      type: 'confirm',
+      name: 'includeShadow',
+      message: "Would you like to include " + chalk.bold.yellowBright("shadow tokens") + " in the merge?\n>>>",
+      default: true
+    });
+  }
 
   const answersFromPrompt = questions.length > 0 ? await inquirer.prompt(questions) : {};
   
@@ -323,7 +370,8 @@ async function mergeOutputs() {
     sizeUnit: answersFromPrompt.sizeUnit || "N/A",
     spaceUnit: answersFromPrompt.spaceUnit || "N/A",
     borderRadiusUnit: answersFromPrompt.borderRadiusUnit || "N/A",
-    includeTypography: answersFromPrompt.includeTypography || false
+    includeTypography: answersFromPrompt.includeTypography || false,
+    includeShadow: answersFromPrompt.includeShadow || false
   };
 
   const expectedSuffixes = [];
@@ -341,6 +389,9 @@ async function mergeOutputs() {
   }
   if (availableOptionsDict.Typography.length > 0 && answers.includeTypography) {
     expectedSuffixes.push("typography");
+  }
+  if (availableOptionsDict.Shadow.length > 0 && answers.includeShadow) {
+    expectedSuffixes.push("shadow");
   }
 
   const cssFiles = outputFiles.filter(file => {
@@ -397,9 +448,6 @@ async function mergeOutputs() {
     namingConvention = "none";
   }
 
-  // Check for shadow tokens early for the summary table
-  const mergedShadowJSON = mergeJSONFilesByToken(outputFiles, 'shadow_tokens');
-
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
   console.log(chalk.bold.bgGray("========================================\n"));
@@ -413,7 +461,7 @@ async function mergeOutputs() {
   tableRows.push(['Size', availableOptionsDict.Size.length > 0 ? answers.sizeUnit : "N/A"]);
   tableRows.push(['Space', availableOptionsDict.Space.length > 0 ? answers.spaceUnit : "N/A"]);
   tableRows.push(['Border Radius', availableOptionsDict["Border Radius"].length > 0 ? answers.borderRadiusUnit : "N/A"]);
-  tableRows.push(['Shadow', Object.keys(mergedShadowJSON).length > 0 ? "Included" : "N/A"]);
+  tableRows.push(['Shadow', availableOptionsDict.Shadow.length > 0 ? (answers.includeShadow ? "Yes" : "No") : "N/A"]);
   tableRows.push(['Typography', availableOptionsDict.Typography.length > 0 ? (answers.includeTypography ? "Yes" : "No") : "N/A"]);
   tableRows.push(['Naming Convention', namingConvention]);
   table.push(...tableRows);
@@ -469,10 +517,15 @@ async function mergeOutputs() {
   const mergedSizeJSON          = mergeJSONFilesByToken(outputFiles, 'size_tokens');
   const mergedSpaceJSON         = mergeJSONFilesByToken(outputFiles, 'space_tokens');
   const mergedBorderRadiusJSON  = mergeJSONFilesByToken(outputFiles, 'border_radius_tokens');
-  
+
   let mergedTypographyJSON = {};
   if (answers.includeTypography) {
     mergedTypographyJSON = mergeJSONFilesByToken(outputFiles, 'typography_tokens');
+  }
+
+  let mergedShadowJSON = {};
+  if (answers.includeShadow) {
+    mergedShadowJSON = mergeJSONFilesByToken(outputFiles, 'shadow_tokens');
   }
 
   console.log(chalk.bold.bgGray("\n========================================"));

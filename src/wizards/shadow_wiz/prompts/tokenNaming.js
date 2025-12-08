@@ -11,9 +11,9 @@ import chalk from "chalk";
  * @returns {Promise<Object>} Token naming configuration
  */
 export const promptForTokenNaming = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 STEP 1: TOKEN NAMING"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { tokenName } = await inquirer.prompt([
     {
@@ -57,9 +57,9 @@ export const promptForTokenNaming = async () => {
  * @returns {Promise<string>} Shadow type ('outer' or 'inner')
  */
 export const promptForShadowType = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 STEP 2: SHADOW TYPE"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { shadowType } = await inquirer.prompt([
     {
@@ -81,9 +81,9 @@ export const promptForShadowType = async () => {
  * @returns {Promise<string>} Naming approach
  */
 export const promptForNamingApproach = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 STEP 3: NAMING APPROACH"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { namingApproach } = await inquirer.prompt([
     {
@@ -131,9 +131,9 @@ export const promptForShadowCount = async () => {
  * @returns {Promise<boolean>} Whether to include type in name
  */
 export const promptForIncludeTypeInName = async () => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 STEP 4: TOKEN NAMING OPTIONS"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { includeTypeInName } = await inquirer.prompt([
     {
@@ -177,9 +177,9 @@ export const promptForCustomShadowName = async (index) => {
  * @returns {Promise<Object>} Additional set configuration
  */
 export const promptForAdditionalSet = async (previousSettings) => {
-  console.log(chalk.black.bgCyan("\n======================================="));
+  console.log(chalk.whiteBright.bgBlackBright("\n======================================="));
   console.log(chalk.bold("🎨 ADDITIONAL SHADOW SET"));
-  console.log(chalk.black.bgCyan("=======================================\n"));
+  console.log(chalk.whiteBright.bgBlackBright("=======================================\n"));
 
   const { newShadowType } = await inquirer.prompt([
     {
