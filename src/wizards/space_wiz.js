@@ -806,9 +806,9 @@ const main = async () => {
   }
 
   const outputsDir = path.join(__dirname, "..", "..", "output_files");
-  const tokensFolder = path.join(outputsDir, "tokens/json/space");
-  const cssFolder = path.join(outputsDir, "tokens/css/space");
-  const scssFolder = path.join(outputsDir, "tokens/scss/space");
+  const tokensFolder = path.join(outputsDir, "tokens", "json", "space");
+  const cssFolder = path.join(outputsDir, "tokens", "css", "space");
+  const scssFolder = path.join(outputsDir, "tokens", "scss", "space");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });

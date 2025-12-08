@@ -240,9 +240,9 @@ export const addColorToTokens = (tokensData, { colorType, category, namingLevel,
  */
 export const setupOutputDirectories = (baseDir) => {
   const outputsDir = path.join(baseDir, "output_files");
-  const tokensFolder = path.join(outputsDir, "tokens/json/color");
-  const cssFolder = path.join(outputsDir, "tokens/css/color");
-  const scssFolder = path.join(outputsDir, "tokens/scss/color");
+  const tokensFolder = path.join(outputsDir, "tokens", "json", "color");
+  const cssFolder = path.join(outputsDir, "tokens", "css", "color");
+  const scssFolder = path.join(outputsDir, "tokens", "scss", "color");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });

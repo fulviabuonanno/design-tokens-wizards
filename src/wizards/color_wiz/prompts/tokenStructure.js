@@ -247,7 +247,7 @@ export const promptForTokenStructure = async (tokensData) => {
 
     // Naming Level (sub-step of STEP 1)
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold("📝 NAMING LEVEL"));
+    console.log(chalk.bold("📝 STEP 3: NAMING LEVEL"));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(chalk.whiteBright("The naming level provides context about how the color should be used in your design system."));

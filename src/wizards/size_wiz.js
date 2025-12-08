@@ -760,9 +760,9 @@ const main = async () => {
   const topKey = (namingChoice === 't-shirt') ? 'size' : name;
 
   const outputsDir = path.join(__dirname, "..", "..", "output_files");
-  const tokensFolder = path.join(outputsDir, "tokens/json/size");
-  const cssFolder = path.join(outputsDir, "tokens/css/size");
-  const scssFolder = path.join(outputsDir, "tokens/scss/size");
+  const tokensFolder = path.join(outputsDir, "tokens", "json", "size");
+  const cssFolder = path.join(outputsDir, "tokens", "css", "size");
+  const scssFolder = path.join(outputsDir, "tokens", "scss", "size");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });

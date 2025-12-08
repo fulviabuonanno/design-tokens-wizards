@@ -2,11 +2,13 @@
 
 <img src="src/assets/color_wiz.png" alt="Color Wizard" width="200">
 
-![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow)
+![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.1-yellow)
 
 ¡Conjura una paleta deslumbrante para tu sistema de diseño con el Maguito de Tokens de Color 🧙! Este script mágico te guía a través de cada paso para crear tokens de color flexibles y escalables, sin necesidad de libro de hechizos.
 
-**Última Actualización (v2.12.0):** ✨ ¡UX mejorada del maguito con organización de pasos más clara! El flujo del maguito ahora presenta una jerarquía visual mejorada con numeración de pasos consistente (PASO 1-4) y navegación más limpia durante todo el proceso de creación de color.
+**Última Actualización (v2.12.1):** 🔢 ¡Numeración de pasos corregida para seguimiento preciso de la progresión! Todos los pasos ahora numerados correctamente del PASO 1-8, coincidiendo con el flujo de ejecución real.
+
+**Actualización Anterior (v2.12.0):** ✨ ¡UX mejorada del maguito con organización de pasos más clara! El flujo del maguito ahora presenta una jerarquía visual mejorada con numeración de pasos consistente y navegación más limpia durante todo el proceso de creación de color.
 
 **Actualización Anterior (v2.11.0):** 🎨 ¡Configuraciones preestablecidas estándar de la industria! Comienza rápidamente con formatos de escala de color probados de sistemas de diseño líderes (Tailwind CSS, Material Design 3, Chakra UI, Ant Design, y más). Elige entre más de 15 preestablecidos cuidadosamente curados o continúa con configuración personalizada completa. Además, modo por lotes mejorado con métodos de entrada masiva e individual para agregar múltiples colores eficientemente.
 

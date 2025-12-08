@@ -140,9 +140,9 @@ const askForInput = async (tokensData, previousConcept = null, formatChoices = n
       padded = false;
     }
 
-    // Step 7: Preview and confirmation
+    // Step 8: Preview and confirmation
     console.log(chalk.black.bgYellowBright("\n======================================="));
-    console.log(chalk.bold(`🔍 STEP 7: ${allColors.length > 1 ? 'COLORS' : 'COLOR'} PREVIEW`));
+    console.log(chalk.bold(`🔍 STEP 8: ${allColors.length > 1 ? 'COLORS' : 'COLOR'} PREVIEW`));
     console.log(chalk.black.bgYellowBright("=======================================\n"));
 
     console.log(

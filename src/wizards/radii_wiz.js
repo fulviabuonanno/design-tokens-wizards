@@ -848,9 +848,9 @@ const main = async () => {
   const tokensData = generateBorderRadiusTokens(noneLabel, fullLabel, intermediateNaming, totalTokens, scale, valueScale, multiplier, factor, customIntervals, fibonacciBase);
 
   const outputsDir = path.join(__dirname, "..", "..", "output_files");
-  const tokensFolder = path.join(outputsDir, "tokens/json/border-radius");
-  const cssFolder = path.join(outputsDir, "tokens/css/border-radius");
-  const scssFolder = path.join(outputsDir, "tokens/scss/border-radius");
+  const tokensFolder = path.join(outputsDir, "tokens", "json", "border-radius");
+  const cssFolder = path.join(outputsDir, "tokens", "css", "border-radius");
+  const scssFolder = path.join(outputsDir, "tokens", "scss", "border-radius");
 
   if (!fs.existsSync(outputsDir)) fs.mkdirSync(outputsDir);
   if (!fs.existsSync(tokensFolder)) fs.mkdirSync(tokensFolder, { recursive: true });

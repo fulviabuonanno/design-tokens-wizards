@@ -56,7 +56,7 @@ Una potente colección de scripts para generar y gestionar tokens de diseño par
 
 | Maguito de Tokens        | Nombre del Script | Comando         | Descripción                            | Versión |
 | ------------------------ | ----------------- | --------------- | -------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow) |
+| 🟡 **COLOR WIZ**         | `color-wiz.js`    | `npm run color` | Genera y gestiona tokens de color      | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.1-yellow) |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`     | `npm run typo`  | Genera y gestiona tokens de tipografía | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
 | 🟣 **SPACE WIZ**         | `space_wiz.js`    | `npm run space` | Genera y gestiona tokens de espaciado  | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`     | `npm run size`  | Genera y gestiona tokens de tamaño     | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |
@@ -93,7 +93,7 @@ Este proyecto proporciona una serie de "maguitos" y "hechizos" para ayudarte a g
 
 ### Maguitos
 
-*   [🎨 Maguito de Tokens de Color](./docs/es/color-wizard.md) - **Nuevo en v2.12.0:** UX mejorada con organización de pasos más clara y jerarquía visual. **v2.11.0:** ¡Configuraciones preestablecidas estándar de la industria para una configuración rápida! Elige entre más de 15 formatos de escala de color populares (Tailwind, Material Design, Chakra UI, Ant Design, IBM Carbon, Adobe Spectrum y más) o crea configuraciones personalizadas con control total. El modo por lotes admite métodos de entrada masiva e individual.
+*   [🎨 Maguito de Tokens de Color](./docs/es/color-wizard.md) - **Nuevo en v2.12.1:** Numeración de pasos corregida para un seguimiento preciso de la progresión (PASO 1-8). **v2.12.0:** UX mejorada con organización de pasos más clara y jerarquía visual. **v2.11.0:** ¡Configuraciones preestablecidas estándar de la industria para una configuración rápida! Elige entre más de 15 formatos de escala de color populares (Tailwind, Material Design, Chakra UI, Ant Design, IBM Carbon, Adobe Spectrum y más) o crea configuraciones personalizadas con control total. El modo por lotes admite métodos de entrada masiva e individual.
 *   [🔤 Maguito de Tokens de Tipografía](./docs/es/typography-wizard.md)
 *   [🔳 Maguito de Tokens de Espaciado](./docs/es/space-wizard.md)
 *   [📏 Maguito de Tokens de Tamaño](./docs/es/size-wizard.md)

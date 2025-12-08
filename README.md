@@ -53,7 +53,7 @@ A powerful collection of scripts to generate and manage design tokens for your d
 
 | Token Wizard             | Script Name    | Run Command     | Description                              | Version |
 | ------------------------ | -------------- | --------------- | ---------------------------------------- | ------- |
-| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.0-yellow) |
+| 🟡 **COLOR WIZ**         | `color-wiz.js` | `npm run color` | Generate and manage color tokens         | ![Color Wizard](https://img.shields.io/badge/Color%20Wiz-v2.12.1-yellow) |
 | 🔴 **TYPOGRAPHY WIZ**    | `typo_wiz.js`  | `npm run typo`  | Generate and manage typography tokens    | ![Typography Wizard](https://img.shields.io/badge/Typography%20Wiz-v1.2.3-red) |
 | 🟣 **SPACE WIZ**         | `space_wiz.js` | `npm run space` | Generate and manage spacing tokens       | ![Space Wizard](https://img.shields.io/badge/Space%20Wiz-v1.7.2-blueviolet) |
 | 🔵 **SIZE WIZ**          | `size_wiz.js`  | `npm run size`  | Generate and manage size tokens          | ![Size Wizard](https://img.shields.io/badge/Size%20Wiz-v1.7.2-blue) |
@@ -89,7 +89,7 @@ This project provides a suite of "wizards" and "spells" to help you manage your 
 
 ### Wizards
 
-*   [🎨 Color Tokens Wizard](./docs/en/color-wizard.md) - **New in v2.12.0:** Enhanced UX with clearer step organization and visual hierarchy. **v2.11.0:** Industry-standard preset configurations for quick setup! Choose from 15+ popular color scale formats (Tailwind, Material Design, Chakra UI, Ant Design, IBM Carbon, Adobe Spectrum, and more) or create custom configurations with full control. Batch mode supports bulk and individual color entry methods.
+*   [🎨 Color Tokens Wizard](./docs/en/color-wizard.md) - **New in v2.12.1:** Fixed step numbering for accurate progression tracking (STEP 1-8). **v2.12.0:** Enhanced UX with clearer step organization and visual hierarchy. **v2.11.0:** Industry-standard preset configurations for quick setup! Choose from 15+ popular color scale formats (Tailwind, Material Design, Chakra UI, Ant Design, IBM Carbon, Adobe Spectrum, and more) or create custom configurations with full control. Batch mode supports bulk and individual color entry methods.
 *   [🔤 Typography Tokens Wizard](./docs/en/typography-wizard.md)
 *   [🔳 Space Tokens Wizard](./docs/en/space-wizard.md)
 *   [📏 Size Tokens Wizard](./docs/en/size-wizard.md)

@@ -251,16 +251,19 @@ export async function setupFontFamily(currentStep) {
   console.log(chalk.bold.yellowBright("\n🔤 Font Families:"));
   console.log(createValuesTable(fontFamilies));
 
-  const { confirmFontFamily } = await inquirer.prompt([
+  const { action } = await inquirer.prompt([
     {
-      type: "confirm",
-      name: "confirmFontFamily",
-      message: "Would you like to continue with these font family settings?\n>>>",
-      default: true
+      type: "list",
+      name: "action",
+      message: "What would you like to do?\n>>>",
+      choices: [
+        { name: "✅ Accept these values", value: "accept" },
+        { name: "↺ Start over", value: "restart" }
+      ]
     }
   ]);
 
-  if (!confirmFontFamily) {
+  if (action === "restart") {
     console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font family settings..."));
     return await setupFontFamily(currentStep);
   }
@@ -678,17 +681,20 @@ export async function setupFontSize(currentStep) {
 
   console.log(chalk.bold.yellowBright("\n📏 Font Sizes:"));
   console.log(createValuesTable(fontSizes));
-  
-  const { confirmFontSize } = await inquirer.prompt([
+
+  const { action } = await inquirer.prompt([
     {
-      type: "confirm",
-      name: "confirmFontSize",
-      message: "Would you like to continue with these font size settings?\n>>>",
-      default: true
+      type: "list",
+      name: "action",
+      message: "What would you like to do?\n>>>",
+      choices: [
+        { name: "✅ Accept these values", value: "accept" },
+        { name: "↺ Start over", value: "restart" }
+      ]
     }
   ]);
 
-  if (!confirmFontSize) {
+  if (action === "restart") {
     console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font size settings..."));
     return await setupFontSize(currentStep);
   }
@@ -697,7 +703,6 @@ export async function setupFontSize(currentStep) {
 }
 
 export async function setupFontWeight(currentStep) {
-  const tokenNames = weightOptions.map(opt => opt.name.toLowerCase().replace(' ', ''));
   let substep = 0;
   console.log(chalk.bold.bgRedBright("\n========================================"));
   console.log(chalk.bold(`🔠 STEP ${currentStep}: FONT WEIGHT`));
@@ -755,16 +760,19 @@ export async function setupFontWeight(currentStep) {
   console.log(chalk.bold.yellowBright("\n📏 Font Weights:"));
   console.log(createValuesTable(fontWeight));
 
-  const { confirmFontWeight } = await inquirer.prompt([
+  const { action } = await inquirer.prompt([
     {
-      type: "confirm",
-      name: "confirmFontWeight",
-      message: "Would you like to continue with these font weight settings?\n>>>",
-      default: true
+      type: "list",
+      name: "action",
+      message: "What would you like to do?\n>>>",
+      choices: [
+        { name: "✅ Accept these values", value: "accept" },
+        { name: "↺ Start over", value: "restart" }
+      ]
     }
   ]);
 
-  if (!confirmFontFontWeight) {
+  if (action === "restart") {
     console.log(chalk.bold.yellow("\n↺ Let's reconfigure your font weight settings..."));
     return await setupFontWeight(currentStep);
   }
@@ -811,6 +819,50 @@ export async function setupLetterSpacing(currentStep) {
   ]);
   let namingOptions = {};
   let names = [];
+
+  // Configure naming options based on convention
+  if (namingConvention === 'ordinal') {
+    const { ordinalFormat } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'ordinalFormat',
+        message: 'For Ordinal scale, choose the format:\n>>>',
+        choices: [
+          { name: 'Padded (e.g., 01, 02, 03, 04)', value: 'padded' },
+          { name: 'Unpadded (e.g., 1, 2, 3, 4)', value: 'unpadded' }
+        ]
+      }
+    ]);
+    namingOptions.format = ordinalFormat;
+  } else if (namingConvention === 'incremental') {
+    const { increment } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'increment',
+        message: 'For Incremental scale, choose the step increment:\n>>>',
+        choices: [
+          { name: '100 in 100 (e.g., 100, 200, 300, 400)', value: 100 },
+          { name: '50 in 50 (e.g., 50, 100, 150, 200)', value: 50 },
+          { name: '25 in 25 (e.g., 25, 50, 75, 100)', value: 25 },
+          { name: '10 in 10 (e.g., 10, 20, 30, 40)', value: 10 }
+        ]
+      }
+    ]);
+    namingOptions.increment = increment;
+  } else if (namingConvention === 'alphabetical') {
+    const { alphabeticalCase } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'alphabeticalCase',
+        message: 'For Alphabetical scale, choose the case:\n>>>',
+        choices: [
+          { name: 'Uppercase (A, B, C, D)', value: 'uppercase' },
+          { name: 'Lowercase (a, b, c, d)', value: 'lowercase' }
+        ]
+      }
+    ]);
+    namingOptions.case = alphabeticalCase;
+  }
 
   console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Values`));
   const { numValues } = await inquirer.prompt([
@@ -980,16 +1032,19 @@ export async function setupLetterSpacing(currentStep) {
   console.log(chalk.bold.yellowBright("\n📏 Letter Spacing Values:"));
   console.log(createValuesTable(letterSpacing));
 
-  const { confirmLetterSpacing } = await inquirer.prompt([
+  const { action } = await inquirer.prompt([
     {
-      type: "confirm",
-      name: "confirmLetterSpacing",
-      message: "Would you like to continue with these letter spacing settings?\n>>>",
-      default: true
+      type: "list",
+      name: "action",
+      message: "What would you like to do?\n>>>",
+      choices: [
+        { name: "✅ Accept these values", value: "accept" },
+        { name: "↺ Start over", value: "restart" }
+      ]
     }
   ]);
 
-  if (!confirmLetterSpacing) {
+  if (action === "restart") {
     console.log(chalk.bold.yellow("\n↺ Let's reconfigure your letter spacing settings..."));
     return await setupLetterSpacing(currentStep);
   }
@@ -1036,6 +1091,57 @@ export async function setupLineHeight(currentStep) {
     }
   ]);
 
+  // Configure naming options if needed
+  let namingOptions = {};
+  if (namingConvention === 'ordinal') {
+    const { ordinalFormat } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'ordinalFormat',
+        message: 'For Ordinal scale, choose the format:\n>>>',
+        choices: [
+          { name: 'Padded (e.g., 01, 02, 03)', value: 'padded' },
+          { name: 'Unpadded (e.g., 1, 2, 3)', value: 'unpadded' }
+        ]
+      }
+    ]);
+    namingOptions.format = ordinalFormat;
+  } else if (namingConvention === 'incremental') {
+    const { increment } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'increment',
+        message: 'For Incremental scale, choose the step increment:\n>>>',
+        choices: [
+          { name: '100 in 100 (e.g., 100, 200, 300)', value: 100 },
+          { name: '50 in 50 (e.g., 50, 100, 150)', value: 50 },
+          { name: '25 in 25 (e.g., 25, 50, 75)', value: 25 },
+          { name: '10 in 10 (e.g., 10, 20, 30)', value: 10 }
+        ]
+      }
+    ]);
+    namingOptions.increment = increment;
+  }
+
+  console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define Number of Values`));
+  const { numValues } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'numValues',
+      message: 'How many line height values do you want to create? (3-7):\n>>>',
+      default: '5',
+      validate: (input) => {
+        const num = parseInt(input);
+        if (isNaN(num) || num < 3 || num > 7) {
+          return 'Please enter a number between 3 and 7';
+        }
+        return true;
+      }
+    }
+  ]);
+
+  const totalValues = parseInt(numValues);
+
   console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Choose Scale Type`));
   console.log(chalk.yellow("Select a scale type for line heights. ") + chalk.underline("Recommended:") + chalk.yellow(" 1.0 to 2.0 for optimal readability."));
 
@@ -1053,23 +1159,48 @@ export async function setupLineHeight(currentStep) {
   ]);
 
   let lineHeightValues = [];
+  const allScale1Values = ['1.1', '1.25', '1.5', '1.6', '1.75', '2.0'];
+  const allScale2Values = ['1.0', '1.2', '1.5', '1.6', '2.0'];
+
   if (scaleType === 'scale1') {
-    console.log(chalk.yellow("\n📝 Scale 1 Values:"));
+    console.log(chalk.yellow("\n📝 Scale 1 Available Values:"));
     console.log(chalk.yellow("• 1.1 - Tight spacing, good for headings"));
     console.log(chalk.yellow("• 1.25 - Slightly tight, good for subheadings"));
     console.log(chalk.yellow("• 1.5 - Standard body text"));
     console.log(chalk.yellow("• 1.6 - Slightly loose, good for long text"));
     console.log(chalk.yellow("• 1.75 - Loose spacing, good for readability"));
     console.log(chalk.yellow("• 2.0 - Very loose, good for maximum readability"));
-    lineHeightValues = ['1.1', '1.25', '1.5', '1.6', '1.75', '2.0'];
+
+    // Select values based on totalValues, spreading evenly across the scale
+    if (totalValues >= allScale1Values.length) {
+      lineHeightValues = [...allScale1Values];
+    } else {
+      // Pick evenly spaced values
+      const step = (allScale1Values.length - 1) / (totalValues - 1);
+      for (let i = 0; i < totalValues; i++) {
+        const index = Math.round(i * step);
+        lineHeightValues.push(allScale1Values[index]);
+      }
+    }
   } else if (scaleType === 'scale2') {
-    console.log(chalk.yellow("\n📝 Scale 2 Values:"));
+    console.log(chalk.yellow("\n📝 Scale 2 Available Values:"));
     console.log(chalk.yellow("• 1.0 - Very tight, good for display text"));
     console.log(chalk.yellow("• 1.2 - Tight, good for headings"));
     console.log(chalk.yellow("• 1.5 - Standard body text"));
     console.log(chalk.yellow("• 1.6 - Slightly loose, good for long text"));
     console.log(chalk.yellow("• 2.0 - Very loose, good for maximum readability"));
-    lineHeightValues = ['1.0', '1.2', '1.5', '1.6', '2.0'];
+
+    // Select values based on totalValues, spreading evenly across the scale
+    if (totalValues >= allScale2Values.length) {
+      lineHeightValues = [...allScale2Values];
+    } else {
+      // Pick evenly spaced values
+      const step = (allScale2Values.length - 1) / (totalValues - 1);
+      for (let i = 0; i < totalValues; i++) {
+        const index = Math.round(i * step);
+        lineHeightValues.push(allScale2Values[index]);
+      }
+    }
   } else {
     console.log(chalk.bold.yellowBright(`\n🏷️ Step ${currentStep}${String.fromCharCode(65 + substep++)}: Define your custom values:`));
     console.log(chalk.yellow("\n📝 Line Height Guidelines:"));
@@ -1078,19 +1209,20 @@ export async function setupLineHeight(currentStep) {
     console.log(chalk.yellow("• 1.2-1.5 for normal spacing (body text)"));
     console.log(chalk.yellow("• 1.5-2.0 for loose spacing (long text)"));
     console.log(chalk.yellow("• Values above 2.0 are rarely needed"));
-    
-    for (let i = 0; i < 5; i++) {
+
+    const defaultValues = ['1.0', '1.2', '1.5', '1.6', '1.75', '2.0'];
+    for (let i = 0; i < totalValues; i++) {
       const { customValue } = await inquirer.prompt([
         {
           type: 'input',
           name: 'customValue',
-          message: `Enter value ${i + 1} of 5:\n>>>`,
-          default: i === 0 ? '1.0' : i === 1 ? '1.2' : i === 2 ? '1.5' : i === 3 ? '1.6' : '2.0',
+          message: `Enter value ${i + 1} of ${totalValues}:\n>>>`,
+          default: defaultValues[i] || '1.5',
           validate: input => {
             if (!/^\d*\.?\d+$/.test(input)) return 'Please enter a valid number';
             const value = parseFloat(input);
             if (value < 1.0) return 'Line height should be greater than or equal to 1.0';
-            if (value > 2.0) return 'Values above 2.0 are rarely needed';
+            if (value > 3.0) return 'Values above 3.0 are rarely needed';
             return true;
           }
         }
@@ -1101,13 +1233,37 @@ export async function setupLineHeight(currentStep) {
 
   let tokenNames = [];
   if (namingConvention === 'tshirt') {
-    tokenNames = ['xs', 'sm', 'md', 'lg', 'xl'];
+    const allTshirtSizes = ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'];
+    if (totalValues === 3) {
+      tokenNames = ['sm', 'md', 'lg'];
+    } else if (totalValues === 5) {
+      tokenNames = ['xs', 'sm', 'md', 'lg', 'xl'];
+    } else if (totalValues === 7) {
+      tokenNames = ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl'];
+    } else {
+      tokenNames = allTshirtSizes.slice(0, totalValues);
+    }
   } else if (namingConvention === 'semantic') {
-    tokenNames = ['tight', 'normal', 'loose', 'relaxed', 'spacious'];
+    const allSemanticNames = ['tightest', 'tight', 'normal', 'loose', 'looser', 'loosest', 'spacious'];
+    if (totalValues === 3) {
+      tokenNames = ['tight', 'normal', 'loose'];
+    } else if (totalValues === 5) {
+      tokenNames = ['tight', 'normal', 'loose', 'looser', 'spacious'];
+    } else {
+      tokenNames = allSemanticNames.slice(0, totalValues);
+    }
   } else if (namingConvention === 'ordinal') {
-    tokenNames = ['1', '2', '3', '4', '5'];
+    for (let i = 1; i <= totalValues; i++) {
+      const numberPart = namingOptions.format === 'padded' ? i.toString().padStart(2, '0') : i.toString();
+      tokenNames.push(numberPart);
+    }
+  } else if (namingConvention === 'incremental') {
+    for (let i = 1; i <= totalValues; i++) {
+      tokenNames.push((i * namingOptions.increment).toString());
+    }
   } else if (namingConvention === 'purpose') {
-    tokenNames = ['body', 'heading', 'display', 'compact', 'expanded'];
+    const allPurposeNames = ['display', 'heading', 'subheading', 'body', 'caption', 'comfortable', 'spacious'];
+    tokenNames = allPurposeNames.slice(0, totalValues);
   }
 
   const lineHeight = {};
@@ -1130,16 +1286,19 @@ export async function setupLineHeight(currentStep) {
   console.log(chalk.bold.yellowBright("\n📏 Line Height Values:"));
   console.log(createValuesTable(lineHeight));
 
-  const { confirmLineHeight } = await inquirer.prompt([
+  const { action } = await inquirer.prompt([
     {
-      type: "confirm",
-      name: "confirmLineHeight",
-      message: "Would you like to continue with these line height settings?\n>>>",
-      default: true
+      type: "list",
+      name: "action",
+      message: "What would you like to do?\n>>>",
+      choices: [
+        { name: "✅ Accept these values", value: "accept" },
+        { name: "↺ Start over", value: "restart" }
+      ]
     }
   ]);
 
-  if (!confirmLineHeight) {
+  if (action === "restart") {
     console.log(chalk.bold.yellow("\n↺ Let's reconfigure your line height settings..."));
     return await setupLineHeight(currentStep);
   }

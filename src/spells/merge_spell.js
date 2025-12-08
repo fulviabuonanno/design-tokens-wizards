@@ -397,10 +397,13 @@ async function mergeOutputs() {
     namingConvention = "none";
   }
 
+  // Check for shadow tokens early for the summary table
+  const mergedShadowJSON = mergeJSONFilesByToken(outputFiles, 'shadow_tokens');
+
   console.log(chalk.bold.bgGray("\n========================================"));
   console.log(chalk.bold("🪄 SUMMARY SELECTED FORMATS"));
   console.log(chalk.bold.bgGray("========================================\n"));
-  
+
   const table = new Table({
     head: [chalk.bold.yellow('Token Type'), chalk.bold.yellow('Format/Unit')],
     colWidths: [20, 20]
@@ -410,6 +413,7 @@ async function mergeOutputs() {
   tableRows.push(['Size', availableOptionsDict.Size.length > 0 ? answers.sizeUnit : "N/A"]);
   tableRows.push(['Space', availableOptionsDict.Space.length > 0 ? answers.spaceUnit : "N/A"]);
   tableRows.push(['Border Radius', availableOptionsDict["Border Radius"].length > 0 ? answers.borderRadiusUnit : "N/A"]);
+  tableRows.push(['Shadow', Object.keys(mergedShadowJSON).length > 0 ? "Included" : "N/A"]);
   tableRows.push(['Typography', availableOptionsDict.Typography.length > 0 ? (answers.includeTypography ? "Yes" : "No") : "N/A"]);
   tableRows.push(['Naming Convention', namingConvention]);
   table.push(...tableRows);

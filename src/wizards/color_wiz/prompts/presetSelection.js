@@ -11,7 +11,7 @@ import { COLOR_SCALE_PRESETS, PRESET_CATEGORIES } from '../utils/constants.js';
  */
 export const askPresetOrCustom = async () => {
   console.log(chalk.black.bgYellowBright("\n======================================="));
-  console.log(chalk.bold("🎨 STEP 3: CONFIGURE COLOR SCALE"));
+  console.log(chalk.bold("🎨 STEP 6: CONFIGURE COLOR SCALE"));
   console.log(chalk.black.bgYellowBright("=======================================\n"));
 
   const { choice } = await inquirer.prompt([

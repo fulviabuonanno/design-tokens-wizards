@@ -188,9 +188,9 @@ async function typographyWiz() {
   const finalTokens = tokens.typography; 
   
   const outputsDir = path.join(__dirname, "..", "..", "output_files");
-  const tokensFolder = path.join(outputsDir, "tokens/json/typography");
-  const cssFolder = path.join(outputsDir, "tokens/css/typography");
-  const scssFolder = path.join(outputsDir, "tokens/scss/typography");
+  const tokensFolder = path.join(outputsDir, "tokens", "json", "typography");
+  const cssFolder = path.join(outputsDir, "tokens", "css", "typography");
+  const scssFolder = path.join(outputsDir, "tokens", "scss", "typography");
 
   [outputsDir, tokensFolder, cssFolder, scssFolder].forEach(dir => {
     if (!fs.existsSync(dir)) {

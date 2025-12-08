@@ -7,7 +7,11 @@ import { validateColorName, validateHexColor, normalizeHexColor, isValidHexCache
  * @returns {Promise<string>} - 'single' or 'batch'
  */
 export const promptForColorMode = async () => {
-  console.log(chalk.whiteBright("\nYou can add a single color or multiple colors at once."));
+  console.log(chalk.black.bgYellowBright("\n======================================="));
+  console.log(chalk.bold("🔢 STEP 4: COLOR MODE"));
+  console.log(chalk.black.bgYellowBright("=======================================\n"));
+
+  console.log(chalk.whiteBright("You can add a single color or multiple colors at once."));
   console.log(chalk.whiteBright("When adding multiple colors, they will all use the same scale configuration.\n"));
 
   const { colorMode } = await inquirer.prompt([
